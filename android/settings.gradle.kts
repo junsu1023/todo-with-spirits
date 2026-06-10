@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "TodoWithSpirits"
 include(":app")
+include(":data")
+include(":domain")
