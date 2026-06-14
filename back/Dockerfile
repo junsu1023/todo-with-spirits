@@ -15,7 +15,7 @@ RUN ./gradlew build -x test --no-daemon
 # 2. Staging run
 # ==========================================
 # Setup a lightweight Java runtime environment for execution.
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copy only the build artifact (jar) from the build stage.
