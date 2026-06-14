@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: ${DB_URL:db_url}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/local_db}
     username: ${DB_USERNAME:username}
     password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update # DB table auto update
@@ -10,3 +11,12 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: always
