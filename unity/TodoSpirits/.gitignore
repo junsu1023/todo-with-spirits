@@ -61,3 +61,8 @@ Desktop.ini
 # Local AI agent instructions
 AGENT.md
 AGENTS.md
+
+# Local Unity MCP support files
+[Aa]ssets/[Pp]lugins/[Rr]oslyn/
+[Aa]ssets/[Pp]lugins/[Rr]oslyn.meta
+MCPForUnity.*.csproj
