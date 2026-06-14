@@ -1,0 +1,59 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Unity generated project files
+*.csproj
+*.sln
+*.slnx
+*.unityproj
+*.booproj
+*.pidb
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity generated metadata for debug symbols
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity build artifacts
+*.apk
+*.aab
+*.app
+*.unitypackage
+*.crash
+sysinfo.txt
+
+# Addressables generated player content
+[Aa]ssets/[Ss]treamingAssets/aa.meta
+[Aa]ssets/[Ss]treamingAssets/aa/
+
+# Asset Store tools
+[Aa]ssets/AssetStoreTools*
+
+# IDE and editor folders
+.vs/
+.vscode/
+.idea/
+.consulo/
+*.user
+*.userprefs
+*.suo
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
