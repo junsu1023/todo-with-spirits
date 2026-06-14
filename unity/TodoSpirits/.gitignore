@@ -57,3 +57,7 @@ sysinfo.txt
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local AI agent instructions
+AGENT.md
+AGENTS.md
