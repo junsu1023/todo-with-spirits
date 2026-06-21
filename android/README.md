@@ -1,5 +1,16 @@
 # todo-with-spirits(Andoid)
 
+### ✉️ Commit Message Convention
+| 태그 | 설명 |
+| :--- | :--- |
+| feat | 새로운 기능 추가 |
+| fix | 버그 수정 |
+| docs | 문서 수정 |
+| refactor | 코드 리펙토링 |
+| chore | 설정 변경 |
+
+모노레포이기 때문에 태그 뒤 (android)를 붙여 스코프를 명시하기 
+
 ### 🧩 Module Overview
 
 | 모듈 | 타입 | 역할 및 설명 |
