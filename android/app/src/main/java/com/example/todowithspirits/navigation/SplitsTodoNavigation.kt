@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.todowithspirits.screen.TodayScreen
 
 @Composable
 fun SplitsTodoNavigation(
@@ -17,7 +18,7 @@ fun SplitsTodoNavigation(
         modifier = modifier
     ) {
         composable(Screen.Today.route) {
-
+            TodayScreen()
         }
 
         composable(Screen.Plan.route) {
