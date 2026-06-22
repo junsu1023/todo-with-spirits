@@ -5,4 +5,9 @@
     <string name="forest">Forest</string>
     <string name="record">Record</string>
     <string name="myPage">My Page</string>
+    <string name="add_todo">%s 추가</string>
+    <string name="search_todo">%s 검색</string>
+    <string name="schedule">일정</string>
+    <string name="todo">할 일</string>
+    <string name="routine">루틴</string>
 </resources>
