@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -28,6 +29,7 @@ fun SearchArea(selected: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .padding(horizontal = 16.dp)
     ) {
         BasicTextField(
@@ -35,7 +37,7 @@ fun SearchArea(selected: String) {
             onValueChange = { searchText = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp)
+                .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
                 color = SplitsTodoTheme.colors.textColor2,
@@ -60,6 +62,7 @@ fun SearchArea(selected: String) {
         )
 
         HorizontalDivider(
+            modifier = Modifier.padding(top = 8.dp),
             thickness = 1.dp,
             color = SplitsTodoTheme.colors.dividerColor
         )
