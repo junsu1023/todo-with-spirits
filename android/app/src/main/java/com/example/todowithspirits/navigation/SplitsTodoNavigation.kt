@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.todowithspirits.feature.record.RecordScreen
+import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
@@ -31,11 +31,14 @@ fun SplitsTodoNavigation(
         }
 
         composable(Screen.Record.route) {
-            RecordScreen()
         }
 
         composable(Screen.MyPage.route) {
 
+        }
+
+        composable(Screen.Add.route) {
+            AddScreen()
         }
     }
 }

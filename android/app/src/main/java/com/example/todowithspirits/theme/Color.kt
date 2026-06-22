@@ -7,34 +7,51 @@ import androidx.compose.ui.graphics.Color
 
 val splitsTodoColor = SplitsTodoColor(
     selectedColor = Color(0xFF374957),
+    selectedTabColor = Color(0xFFB286FD),
     unselectedColor = Color(0xFFD1D1D6),
+    unselectedTabBgColor = Color(0xFFF6F6F6),
     titleTextColor = Color(0xFF000000),
+    hintTextColor = Color(0xFF888888),
     textColor1 = Color(0xFF857563),
     textColor2 = Color(0xFF8F8170),
     bgColor1 = Color(0xFFFAFAFA),
     bgColor2 = Color(0xFFFFFFFF),
     dividerColor = Color(0xFFD1D1D6),
+    white = Color(0xFFFFFFFF),
     transparent = Color(0x00000000)
 )
 
 class SplitsTodoColor(
     selectedColor: Color,
+    selectedTabColor: Color,
     unselectedColor: Color,
+    unselectedTabBgColor: Color,
     titleTextColor: Color,
+    hintTextColor: Color,
     textColor1: Color,
     textColor2: Color,
     bgColor1: Color,
     bgColor2: Color,
     dividerColor: Color,
+    white: Color,
     transparent: Color
 ) {
     var selectedColor by mutableStateOf(selectedColor)
         private set
 
+    var selectedTabColor by mutableStateOf(selectedTabColor)
+        private set
+
     var unselectedColor by mutableStateOf(unselectedColor)
         private set
 
+    var unselectedTabBgColor by mutableStateOf(unselectedTabBgColor)
+        private set
+
     var titleTextColor by mutableStateOf(titleTextColor)
+        private set
+
+    var hintTextColor by mutableStateOf(hintTextColor)
         private set
 
     var textColor1 by mutableStateOf(textColor1)
@@ -50,6 +67,9 @@ class SplitsTodoColor(
         private set
 
     var dividerColor by mutableStateOf(dividerColor)
+        private set
+
+    var white by mutableStateOf(white)
         private set
 
     var transparent by mutableStateOf(transparent)

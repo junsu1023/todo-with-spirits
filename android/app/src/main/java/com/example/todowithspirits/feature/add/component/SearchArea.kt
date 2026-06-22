@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.record.component
+package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,14 +23,13 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SplitsTodoTheme
 
 @Composable
-fun SearchArea(selected: String) {
+fun SearchArea() {
     var searchText by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 16.dp)
     ) {
         BasicTextField(
             value = searchText,
@@ -40,7 +39,7 @@ fun SearchArea(selected: String) {
                 .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
-                color = SplitsTodoTheme.colors.textColor2,
+                color = SplitsTodoTheme.colors.textColor1,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),
@@ -48,9 +47,9 @@ fun SearchArea(selected: String) {
             decorationBox = { innerTextField ->
                 if (searchText.isEmpty()) {
                     Text(
-                        text = stringResource(R.string.search_todo, selected),
+                        text = stringResource(R.string.title),
                         style = TextStyle(
-                            color = SplitsTodoTheme.colors.textColor2,
+                            color = SplitsTodoTheme.colors.hintTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium
                         )
