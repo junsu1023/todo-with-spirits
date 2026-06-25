@@ -29,7 +29,7 @@ fun SplitsTodoApp() {
     }
 
     Scaffold(
-        containerColor = SplitsTodoTheme.colors.bgColor1,
+        containerColor = SplitsTodoTheme.colors.bgColor2,
         bottomBar = {
             SplitsTodoBottomBar(
                 currentRoute = currentRoute,
