@@ -20,6 +20,12 @@ import com.example.todowithspirits.theme.SplitsTodoTheme
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+private val HOURS = (0..23).toList()
+private val MINUTES = (0..59).toList()
+private val ITEM_HEIGHT = 45.dp
+private const val VISIBLE_ITEMS_COUNT = 5
+private const val REPEAT_COUNT = 300
+
 @Composable
 fun TimeWheelPicker(
     initialHour: Int = 0,
@@ -50,7 +56,7 @@ fun TimeWheelPicker(
             horizontalArrangement = Arrangement.Center
         ) {
             WheelColumn(
-                items = (0..23).toList(),
+                items = HOURS,
                 initialIndex = initialHour,
                 onItemSelected = {
                     selectedHour = it
@@ -61,13 +67,12 @@ fun TimeWheelPicker(
             Text(
                 text = ":",
                 fontSize = 28.sp,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 color = SplitsTodoTheme.colors.selectedDateTextColor
             )
 
             WheelColumn(
-                items = (0..59).toList(),
+                items = MINUTES,
                 initialIndex = initialMinute,
                 onItemSelected = {
                     selectedMinute = it
@@ -84,32 +89,48 @@ private fun WheelColumn(
     initialIndex: Int,
     onItemSelected: (Int) -> Unit
 ) {
-    val itemHeight = 45.dp
-    val visibleItemsCount = 5
-    val repeatCount = 1000
-    val totalItems = items.size * repeatCount
-    val middleOffset = (repeatCount / 2) * items.size
+    val itemCount = items.size
+    val totalItems = itemCount * REPEAT_COUNT
+    val middleOffset = (REPEAT_COUNT / 2) * itemCount
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = middleOffset + initialIndex)
     val snapFlingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
     val scope = rememberCoroutineScope()
-    val currentSelectedActualIndex by remember {
-        derivedStateOf { listState.firstVisibleItemIndex % items.size }
+
+    val selectedIndex by remember {
+        derivedStateOf { listState.firstVisibleItemIndex }
     }
 
-    LaunchedEffect(currentSelectedActualIndex) {
-        onItemSelected(items[currentSelectedActualIndex])
+    val visibleItemsMap by remember {
+        derivedStateOf {
+            listState.layoutInfo.visibleItemsInfo.associateBy { it.index }
+        }
+    }
+    val viewportCenter by remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            (info.viewportEndOffset + info.viewportStartOffset) / 2f
+        }
+    }
+
+    var isInitialized by remember { mutableStateOf(false) }
+    LaunchedEffect(selectedIndex) {
+        if (isInitialized) {
+            onItemSelected(items[selectedIndex % itemCount])
+        } else {
+            isInitialized = true
+        }
     }
 
     Box(
         modifier = Modifier
             .width(70.dp)
-            .height(itemHeight * visibleItemsCount),
+            .height(ITEM_HEIGHT * VISIBLE_ITEMS_COUNT),
         contentAlignment = Alignment.Center
     ) {
         LazyColumn(
             state = listState,
             flingBehavior = snapFlingBehavior,
-            contentPadding = PaddingValues(vertical = itemHeight * 2),
+            contentPadding = PaddingValues(vertical = ITEM_HEIGHT * 2),
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -117,25 +138,22 @@ private fun WheelColumn(
                 count = totalItems,
                 key = { it }
             ) { index ->
-                val actualIndex = index % items.size
+                val actualIndex = index % itemCount
 
                 Box(
                     modifier = Modifier
-                        .height(itemHeight)
+                        .height(ITEM_HEIGHT)
                         .fillMaxWidth()
                         .graphicsLayer {
-                            val layoutInfo = listState.layoutInfo
-                            val visibleItem = layoutInfo.visibleItemsInfo.find { it.index == index }
-
+                            val visibleItem = visibleItemsMap[index]
                             if (visibleItem != null) {
-                                val viewportCenter = (layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset) / 2f
-                                val itemCenter = visibleItem.offset + visibleItem.size / 2f
-                                val distanceFromCenter = itemCenter - viewportCenter
-                                val fraction = (distanceFromCenter / (itemHeight.toPx() * 2.5f)).coerceIn(-1f, 1f)
+                                val distanceFromCenter = (visibleItem.offset + visibleItem.size / 2f) - viewportCenter
+                                val fraction = (distanceFromCenter / (ITEM_HEIGHT.toPx() * 2.5f)).coerceIn(-1f, 1f)
+                                val scale = 1f - (abs(fraction) * 0.4f)
 
                                 rotationX = fraction * 70f
-                                scaleX = 1f - (abs(fraction) * 0.4f)
-                                scaleY = scaleX
+                                scaleX = scale
+                                scaleY = scale
                                 translationY = -distanceFromCenter * 0.1f
                                 cameraDistance = 16f * density
                             }
@@ -148,12 +166,11 @@ private fun WheelColumn(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    val isSelected = currentSelectedActualIndex == actualIndex && (listState.firstVisibleItemIndex == index)
-
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
                         fontSize = 28.sp,
-                        color = if (isSelected) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.textColor1
+                        color = if (selectedIndex == index) SplitsTodoTheme.colors.selectedDateTextColor
+                                else SplitsTodoTheme.colors.textColor1
                     )
                 }
             }
