@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,11 +34,10 @@ import com.example.todowithspirits.theme.SplitsTodoTheme
 
 @Composable
 fun SettingGroup(
-    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         color = SplitsTodoTheme.colors.bgColor1,
         shape = RoundedCornerShape(6.dp)
     ) {
@@ -50,30 +50,24 @@ fun BaseSettingRow(
     icon: Painter,
     label: String,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
     subContent: (@Composable ColumnScope.() -> Unit)? = null,
     action: @Composable () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(
-                enabled = onClick != null,
-                onClick = { onClick?.invoke() }
-            )
-            .padding(vertical = 14.dp)
+            .padding(vertical = 17.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
+            Image(
                 painter = icon,
-                contentDescription = null,
-                tint = Color.Unspecified
+                contentDescription = null
             )
 
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Text(
                 text = label,
@@ -86,7 +80,7 @@ fun BaseSettingRow(
             )
 
             Box(
-                modifier = Modifier.heightIn(min = 32.dp),
+                modifier = Modifier.heightIn(min = 26.dp),
                 contentAlignment = Alignment.Center
             ) {
                 action()
@@ -146,13 +140,11 @@ fun SettingCheckboxItem(
 fun SettingSelectorItem(
     icon: Painter,
     label: String,
-    value: String,
-    onClick: () -> Unit
+    value: String
 ) {
     BaseSettingRow(
         icon = icon,
         label = label,
-        onClick = onClick,
         action = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -165,7 +157,7 @@ fun SettingSelectorItem(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
 
-                Icon(
+                Image(
                     painter = painterResource(R.drawable.expand_icon),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp)

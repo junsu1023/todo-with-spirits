@@ -46,7 +46,7 @@ fun AddPlanForm() {
                 onCheckedChange = { isAllDay.value = it },
                 subContent = {
                     if (isAllDay.value) {
-                        Column(modifier = Modifier.padding(top = 12.dp, start = 36.dp)) {
+                        Column(modifier = Modifier.padding(top = 12.dp, start = 50.dp)) {
                             Text(
                                 text = startDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
@@ -64,7 +64,7 @@ fun AddPlanForm() {
                     } else {
                         Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp),
+                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp, end = 16.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
@@ -94,18 +94,18 @@ fun AddPlanForm() {
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp, end = 16.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     text = endDate.value.format(dateFormatter),
-                                    fontSize = 18.sp,
-                                    color = Color.Gray
+                                    fontSize = 14.sp,
+                                    color = SplitsTodoTheme.colors.selectedDateTextColor
                                 )
                                 Text(
                                     text = "23:59",
-                                    fontSize = 18.sp,
-                                    color = Color.DarkGray
+                                    fontSize = 14.sp,
+                                    color = SplitsTodoTheme.colors.mainTextColor
                                 )
                             }
                         }
@@ -118,8 +118,7 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.repeat_icon),
                 label = stringResource(R.string.repeat),
-                value = "안 함", // 차후 UI/UX 나온 후 작업
-                onClick = {}
+                value = "안 함" // 차후 UI/UX 나온 후 작업
             )
             
             SettingDivider()
@@ -127,8 +126,7 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.alarm_icon),
                 label = stringResource(R.string.alarm),
-                value = "10분 전", // 차후 UI/UX 나온 후 작업
-                onClick = {}
+                value = "10분 전" // 차후 UI/UX 나온 후 작업
             )
         }
 
@@ -138,8 +136,7 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.category_icon),
                 label = stringResource(R.string.category),
-                value = "인간관계/약속", // 차후 UI/UX 나온 후 작업
-                onClick = {}
+                value = "인간관계/약속" // 차후 UI/UX 나온 후 작업
             )
             
             SettingDivider()
@@ -147,8 +144,7 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.private_icon),
                 label = stringResource(R.string.public_state),
-                value = "비공개", // 차후 UI/UX 나온 후 작업
-                onClick = {}
+                value = "비공개" // 차후 UI/UX 나온 후 작업
             )
         }
     }
