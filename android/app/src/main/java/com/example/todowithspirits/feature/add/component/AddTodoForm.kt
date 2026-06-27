@@ -1,12 +1,18 @@
 package com.example.todowithspirits.feature.add.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,6 +31,8 @@ fun AddPlanForm() {
     val startDate = remember { mutableStateOf(LocalDate.now()) }
     val endDate = remember { mutableStateOf(LocalDate.now()) }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+    val isStartPickerVisible = remember { mutableStateOf(false) }
+    val isEndPickerVisible = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
@@ -43,69 +51,93 @@ fun AddPlanForm() {
                 icon = painterResource(R.drawable.clock_icon),
                 label = stringResource(R.string.all_day),
                 checked = isAllDay.value,
-                onCheckedChange = { isAllDay.value = it },
+                onCheckedChange = { 
+                    isAllDay.value = it 
+                    if (it) {
+                        isStartPickerVisible.value = false
+                        isEndPickerVisible.value = false
+                    }
+                },
                 subContent = {
-                    if (isAllDay.value) {
-                        Column(modifier = Modifier.padding(top = 12.dp, start = 50.dp)) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(top = 22.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { 
+                                    isStartPickerVisible.value = !isStartPickerVisible.value
+                                    isEndPickerVisible.value = false 
+                                }
+                                .padding(start = 50.dp, end = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = startDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
-                                color = SplitsTodoTheme.colors.mainTextColor
+                                color = if (isStartPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor
                             )
 
-                            Spacer(modifier = Modifier.height(18.dp))
-
-                            Text(
-                                text = endDate.value.format(dateFormatter),
-                                fontSize = 14.sp,
-                                color = SplitsTodoTheme.colors.mainTextColor
-                            )
-                        }
-                    } else {
-                        Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp, end = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = startDate.value.format(dateFormatter),
-                                    fontSize = 14.sp,
-                                    color = SplitsTodoTheme.colors.selectedDateTextColor
-                                )
-
+                            if (!isAllDay.value) {
                                 Text(
                                     text = "23:59",
                                     fontSize = 14.sp,
                                     color = SplitsTodoTheme.colors.mainTextColor
                                 )
                             }
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
+                        }
 
-                            CalendarView(
-                                selectedStartDate = startDate.value,
-                                selectedEndDate = endDate.value,
-                                onDateSelected = {
-                                    startDate.value = it
-                                    endDate.value = it
-                                }
-                            )
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp, end = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = endDate.value.format(dateFormatter),
-                                    fontSize = 14.sp,
-                                    color = SplitsTodoTheme.colors.selectedDateTextColor
+                        AnimatedVisibility(
+                            visible = isStartPickerVisible.value,
+                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                        ) {
+                            Column(modifier = Modifier.padding(top = 22.dp)) {
+                                CalendarView(
+                                    selectedStartDate = startDate.value,
+                                    selectedEndDate = startDate.value,
+                                    onDateSelected = { startDate.value = it }
                                 )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { 
+                                    isEndPickerVisible.value = !isEndPickerVisible.value
+                                    isStartPickerVisible.value = false 
+                                }
+                                .padding(start = 50.dp, end = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = endDate.value.format(dateFormatter),
+                                fontSize = 14.sp,
+                                color = if (isEndPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor
+                            )
+
+                            if (!isAllDay.value) {
                                 Text(
                                     text = "23:59",
                                     fontSize = 14.sp,
                                     color = SplitsTodoTheme.colors.mainTextColor
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visible = isEndPickerVisible.value,
+                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                        ) {
+                            Column(modifier = Modifier.padding(top = 22.dp)) {
+                                CalendarView(
+                                    selectedStartDate = endDate.value,
+                                    selectedEndDate = endDate.value,
+                                    onDateSelected = { endDate.value = it }
                                 )
                             }
                         }

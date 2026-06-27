@@ -87,10 +87,7 @@ fun BaseSettingRow(
             }
         }
 
-        subContent?.let {
-            Spacer(modifier = Modifier.height(8.dp))
-            it()
-        }
+        subContent?.let { it() }
     }
 }
 
