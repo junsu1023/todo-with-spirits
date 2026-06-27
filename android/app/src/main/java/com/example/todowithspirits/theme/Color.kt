@@ -12,8 +12,9 @@ val splitsTodoColor = SplitsTodoColor(
     unselectedTabBgColor = Color(0xFFF6F6F6),
     titleTextColor = Color(0xFF000000),
     hintTextColor = Color(0xFF888888),
-    textColor1 = Color(0xFF857563),
-    textColor2 = Color(0xFF8F8170),
+    selectedDateTextColor = Color(0xFFB286FD),
+    mainTextColor = Color(0xFF857563),
+    textColor1 = Color(0xFFC2C2C2),
     bgColor1 = Color(0xFFFAFAFA),
     bgColor2 = Color(0xFFFFFFFF),
     dividerColor = Color(0xFFD1D1D6),
@@ -28,8 +29,9 @@ class SplitsTodoColor(
     unselectedTabBgColor: Color,
     titleTextColor: Color,
     hintTextColor: Color,
+    selectedDateTextColor: Color,
+    mainTextColor: Color,
     textColor1: Color,
-    textColor2: Color,
     bgColor1: Color,
     bgColor2: Color,
     dividerColor: Color,
@@ -54,10 +56,13 @@ class SplitsTodoColor(
     var hintTextColor by mutableStateOf(hintTextColor)
         private set
 
-    var textColor1 by mutableStateOf(textColor1)
+    var selectedDateTextColor by mutableStateOf(selectedDateTextColor)
         private set
 
-    var textColor2 by mutableStateOf(textColor2)
+    var mainTextColor by mutableStateOf(mainTextColor)
+        private set
+
+    var textColor1 by mutableStateOf(textColor1)
         private set
 
     var bgColor1 by mutableStateOf(bgColor1)

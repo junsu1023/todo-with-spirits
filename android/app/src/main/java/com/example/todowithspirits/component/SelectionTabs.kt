@@ -53,20 +53,20 @@ private fun SelectionTabItem(
 ) {
     val selectedMainColor = SplitsTodoTheme.colors.selectedTabColor
     val selectedBgColor = SplitsTodoTheme.colors.white
-    val unselectedTextColor = SplitsTodoTheme.colors.textColor1
+    val unselectedTextColor = SplitsTodoTheme.colors.mainTextColor
     val unselectedBgColor = SplitsTodoTheme.colors.unselectedTabBgColor
 
     Box(
         modifier = Modifier
-            .width(62.dp)
-            .height(36.dp)
+            .width(66.dp)
+            .height(34.dp)
             .background(
-                color = if (isSelected) selectedBgColor else unselectedBgColor,
-                shape = RoundedCornerShape(6.dp)
+                color = if(isSelected) selectedBgColor else unselectedBgColor,
+                shape = RoundedCornerShape(54.dp)
             )
             .then(
                 if (isSelected) {
-                    Modifier.border(1.dp, selectedMainColor, RoundedCornerShape(12.dp))
+                    Modifier.border(1.dp, selectedMainColor, RoundedCornerShape(54.dp))
                 } else {
                     Modifier
                 }

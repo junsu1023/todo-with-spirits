@@ -1,10 +1,8 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -39,8 +37,7 @@ fun SettingGroup(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         color = SplitsTodoTheme.colors.bgColor1,
         shape = RoundedCornerShape(6.dp)
     ) {
@@ -53,57 +50,44 @@ fun BaseSettingRow(
     icon: Painter,
     label: String,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
     subContent: (@Composable ColumnScope.() -> Unit)? = null,
     action: @Composable () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .clickable(
-                enabled = onClick != null,
-                onClick = { onClick?.invoke() }
-            )
-            .padding(horizontal = 14.dp, vertical = 14.dp),
-        verticalAlignment = if (subContent == null) Alignment.CenterVertically else Alignment.Top
+            .padding(vertical = 17.dp)
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = Color.Unspecified
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = if (subContent == null) 0.dp else 2.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Image(
+                painter = icon,
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
             Text(
                 text = label,
+                modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SplitsTodoTheme.colors.textColor1,
+                    color = SplitsTodoTheme.colors.mainTextColor,
                     fontWeight = FontWeight.Medium
                 )
             )
 
-            subContent?.let {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                it()
+            Box(
+                modifier = Modifier.heightIn(min = 26.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                action()
             }
         }
 
-        Box(
-            modifier = Modifier.heightIn(min = 32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            action()
-        }
+        subContent?.let { it() }
     }
 }
 
@@ -153,13 +137,11 @@ fun SettingCheckboxItem(
 fun SettingSelectorItem(
     icon: Painter,
     label: String,
-    value: String,
-    onClick: () -> Unit
+    value: String
 ) {
     BaseSettingRow(
         icon = icon,
         label = label,
-        onClick = onClick,
         action = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -172,11 +154,10 @@ fun SettingSelectorItem(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
 
-                Icon(
+                Image(
                     painter = painterResource(R.drawable.expand_icon),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.LightGray
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
