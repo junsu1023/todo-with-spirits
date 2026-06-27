@@ -53,7 +53,7 @@ private fun SelectionTabItem(
 ) {
     val selectedMainColor = SplitsTodoTheme.colors.selectedTabColor
     val selectedBgColor = SplitsTodoTheme.colors.white
-    val unselectedTextColor = SplitsTodoTheme.colors.textColor1
+    val unselectedTextColor = SplitsTodoTheme.colors.mainTextColor
     val unselectedBgColor = SplitsTodoTheme.colors.unselectedTabBgColor
 
     Box(

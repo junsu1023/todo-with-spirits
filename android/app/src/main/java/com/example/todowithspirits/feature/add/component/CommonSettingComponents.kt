@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.add.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,11 +33,11 @@ import com.example.todowithspirits.theme.SplitsTodoTheme
 
 @Composable
 fun SettingGroup(
+    modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         color = SplitsTodoTheme.colors.bgColor1,
         shape = RoundedCornerShape(6.dp)
     ) {
@@ -53,52 +54,48 @@ fun BaseSettingRow(
     subContent: (@Composable ColumnScope.() -> Unit)? = null,
     action: @Composable () -> Unit
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
             .clickable(
                 enabled = onClick != null,
                 onClick = { onClick?.invoke() }
             )
-            .padding(horizontal = 14.dp, vertical = 14.dp),
-        verticalAlignment = if (subContent == null) Alignment.CenterVertically else Alignment.Top
+            .padding(vertical = 14.dp)
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = Color.Unspecified
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = if (subContent == null) 0.dp else 2.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                tint = Color.Unspecified
+            )
+
+            Spacer(modifier = Modifier.width(18.dp))
+
             Text(
                 text = label,
+                modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SplitsTodoTheme.colors.textColor1,
+                    color = SplitsTodoTheme.colors.mainTextColor,
                     fontWeight = FontWeight.Medium
                 )
             )
 
-            subContent?.let {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                it()
+            Box(
+                modifier = Modifier.heightIn(min = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                action()
             }
         }
 
-        Box(
-            modifier = Modifier.heightIn(min = 32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            action()
+        subContent?.let {
+            Spacer(modifier = Modifier.height(8.dp))
+            it()
         }
     }
 }

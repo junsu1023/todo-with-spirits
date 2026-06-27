@@ -39,7 +39,7 @@ fun SearchArea() {
                 .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
-                color = SplitsTodoTheme.colors.textColor1,
+                color = SplitsTodoTheme.colors.mainTextColor,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),

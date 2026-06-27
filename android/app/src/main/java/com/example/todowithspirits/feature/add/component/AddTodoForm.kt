@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.theme.SplitsTodoTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -23,14 +24,9 @@ fun AddPlanForm() {
     val isAllDay = remember { mutableStateOf(true) }
     val startDate = remember { mutableStateOf(LocalDate.now()) }
     val endDate = remember { mutableStateOf(LocalDate.now()) }
-    
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-
+    Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingCheckboxItem(
                 icon = painterResource(R.drawable.important_icon),
@@ -50,47 +46,53 @@ fun AddPlanForm() {
                 onCheckedChange = { isAllDay.value = it },
                 subContent = {
                     if (isAllDay.value) {
-                        Column(modifier = Modifier.padding(top = 8.dp)) {
-                            Text(startDate.value.format(dateFormatter), fontSize = 16.sp, color = Color.Gray)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(endDate.value.format(dateFormatter), fontSize = 16.sp, color = Color.Gray)
+                        Column(modifier = Modifier.padding(top = 12.dp, start = 36.dp)) {
+                            Text(
+                                text = startDate.value.format(dateFormatter),
+                                fontSize = 14.sp,
+                                color = SplitsTodoTheme.colors.mainTextColor
+                            )
+
+                            Spacer(modifier = Modifier.height(18.dp))
+
+                            Text(
+                                text = endDate.value.format(dateFormatter),
+                                fontSize = 14.sp,
+                                color = SplitsTodoTheme.colors.mainTextColor
+                            )
                         }
                     } else {
-                        // 종일이 아닐 때 (달력 포함 디자인)
-                        Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                            // 시작 일시
+                        Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(start = 36.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
                                     text = startDate.value.format(dateFormatter),
-                                    fontSize = 18.sp,
-                                    color = Color(0xFFB286FD) // 강조색 (보라색)
+                                    fontSize = 14.sp,
+                                    color = SplitsTodoTheme.colors.selectedDateTextColor
                                 )
+
                                 Text(
                                     text = "23:59",
-                                    fontSize = 18.sp,
-                                    color = Color.DarkGray
+                                    fontSize = 14.sp,
+                                    color = SplitsTodoTheme.colors.mainTextColor
                                 )
                             }
                             
                             Spacer(modifier = Modifier.height(16.dp))
-                            
-                            // 달력 뷰
+
                             CalendarView(
                                 selectedStartDate = startDate.value,
                                 selectedEndDate = endDate.value,
-                                onDateSelected = { 
-                                    // 여기서는 단순하게 선택한 날짜로 시작/종료일 동기화 (차후 로직 분리 가능)
+                                onDateSelected = {
                                     startDate.value = it
                                     endDate.value = it
                                 }
                             )
                             
                             Spacer(modifier = Modifier.height(16.dp))
-                            
-                            // 종료 일시
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween

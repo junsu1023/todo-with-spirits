@@ -23,7 +23,7 @@ fun SplitsTodoSwitch(
     Switch(
         checked = checked,
         onCheckedChange = onCheckedChange,
-        modifier = modifier.size(width = 48.dp, height = 24.dp),
+        modifier = modifier.size(width = 52.dp, height = 26.dp),
         colors = SwitchDefaults.colors(
             checkedThumbColor = Color.White,
             checkedTrackColor = Color(0xFFB286FD),

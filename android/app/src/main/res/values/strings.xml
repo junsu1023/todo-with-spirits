@@ -11,9 +11,10 @@
     <string name="todo">할 일</string>
     <string name="routine">루틴</string>
     <string name="important">중요</string>
-    <string name="all_day">종일</string>
+    <string name="all_day">하루 종일</string>
     <string name="repeat">반복</string>
     <string name="alarm">알림</string>
     <string name="category">카테고리</string>
     <string name="public_state">공개 상태</string>
+    <string name="month">%s월</string>
 </resources>
