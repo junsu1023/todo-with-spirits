@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SplitsTodoTheme
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -30,9 +31,14 @@ fun AddPlanForm() {
     val isAllDay = remember { mutableStateOf(true) }
     val startDate = remember { mutableStateOf(LocalDate.now()) }
     val endDate = remember { mutableStateOf(LocalDate.now()) }
+    val startTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
+    val endTime = remember { mutableStateOf(LocalTime.of(23, 59)) }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val isStartPickerVisible = remember { mutableStateOf(false) }
+    val isStartTimePickerVisible = remember { mutableStateOf(false) }
     val isEndPickerVisible = remember { mutableStateOf(false) }
+    val isEndTimePickerVisible = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
@@ -55,7 +61,9 @@ fun AddPlanForm() {
                     isAllDay.value = it 
                     if (it) {
                         isStartPickerVisible.value = false
+                        isStartTimePickerVisible.value = false
                         isEndPickerVisible.value = false
+                        isEndTimePickerVisible.value = false
                     }
                 },
                 subContent = {
@@ -63,10 +71,6 @@ fun AddPlanForm() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { 
-                                    isStartPickerVisible.value = !isStartPickerVisible.value
-                                    isEndPickerVisible.value = false 
-                                }
                                 .padding(start = 50.dp, end = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
@@ -74,14 +78,26 @@ fun AddPlanForm() {
                             Text(
                                 text = startDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
-                                color = if (isStartPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor
+                                color = if (isStartPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                modifier = Modifier.clickable {
+                                    isStartPickerVisible.value = !isStartPickerVisible.value
+                                    isStartTimePickerVisible.value = false
+                                    isEndPickerVisible.value = false
+                                    isEndTimePickerVisible.value = false
+                                }
                             )
 
                             if (!isAllDay.value) {
                                 Text(
-                                    text = "23:59",
+                                    text = startTime.value.format(timeFormatter),
                                     fontSize = 14.sp,
-                                    color = SplitsTodoTheme.colors.mainTextColor
+                                    color = if (isStartTimePickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                    modifier = Modifier.clickable {
+                                        isStartTimePickerVisible.value = !isStartTimePickerVisible.value
+                                        isStartPickerVisible.value = false
+                                        isEndPickerVisible.value = false
+                                        isEndTimePickerVisible.value = false
+                                    }
                                 )
                             }
                         }
@@ -100,15 +116,32 @@ fun AddPlanForm() {
                             }
                         }
 
+                        AnimatedVisibility(
+                            visible = isStartTimePickerVisible.value,
+                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 22.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                TimeWheelPicker(
+                                    initialHour = startTime.value.hour,
+                                    initialMinute = startTime.value.minute,
+                                    onTimeSelected = { h, m ->
+                                        startTime.value = LocalTime.of(h, m)
+                                    }
+                                )
+                            }
+                        }
+
                         Spacer(modifier = Modifier.height(18.dp))
 
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { 
-                                    isEndPickerVisible.value = !isEndPickerVisible.value
-                                    isStartPickerVisible.value = false 
-                                }
                                 .padding(start = 50.dp, end = 16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
@@ -116,14 +149,26 @@ fun AddPlanForm() {
                             Text(
                                 text = endDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
-                                color = if (isEndPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor
+                                color = if (isEndPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                modifier = Modifier.clickable {
+                                    isEndPickerVisible.value = !isEndPickerVisible.value
+                                    isEndTimePickerVisible.value = false
+                                    isStartPickerVisible.value = false
+                                    isStartTimePickerVisible.value = false
+                                }
                             )
 
                             if (!isAllDay.value) {
                                 Text(
-                                    text = "23:59",
+                                    text = endTime.value.format(timeFormatter),
                                     fontSize = 14.sp,
-                                    color = SplitsTodoTheme.colors.mainTextColor
+                                    color = if (isEndTimePickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                    modifier = Modifier.clickable {
+                                        isEndTimePickerVisible.value = !isEndTimePickerVisible.value
+                                        isEndPickerVisible.value = false
+                                        isStartPickerVisible.value = false
+                                        isStartTimePickerVisible.value = false
+                                    }
                                 )
                             }
                         }
@@ -138,6 +183,27 @@ fun AddPlanForm() {
                                     selectedStartDate = endDate.value,
                                     selectedEndDate = endDate.value,
                                     onDateSelected = { endDate.value = it }
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visible = isEndTimePickerVisible.value,
+                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 22.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                TimeWheelPicker(
+                                    initialHour = endTime.value.hour,
+                                    initialMinute = endTime.value.minute,
+                                    onTimeSelected = { h, m ->
+                                        endTime.value = LocalTime.of(h, m)
+                                    }
                                 )
                             }
                         }

@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
@@ -24,6 +25,9 @@ fun SplitsTodoSwitch(
         checked = checked,
         onCheckedChange = onCheckedChange,
         modifier = modifier.size(width = 52.dp, height = 26.dp),
+        thumbContent = {
+            Box(modifier = Modifier.size(22.dp))
+        },
         colors = SwitchDefaults.colors(
             checkedThumbColor = Color.White,
             checkedTrackColor = Color(0xFFB286FD),
