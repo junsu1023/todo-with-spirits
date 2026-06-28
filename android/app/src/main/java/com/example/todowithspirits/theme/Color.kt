@@ -13,12 +13,14 @@ val splitsTodoColor = SplitsTodoColor(
     titleTextColor = Color(0xFF000000),
     hintTextColor = Color(0xFF888888),
     selectedDateTextColor = Color(0xFFB286FD),
+    selectedDateBoxColor = Color(0xFFD7BFFF),
     mainTextColor = Color(0xFF857563),
     textColor1 = Color(0xFFC2C2C2),
     bgColor1 = Color(0xFFFAFAFA),
     bgColor2 = Color(0xFFFFFFFF),
     dividerColor = Color(0xFFD1D1D6),
     selectedTimeBoxColor = Color(0xFFF4ECFC),
+    buttonColor = Color(0xFFD7BFFF),
     white = Color(0xFFFFFFFF),
     transparent = Color(0x00000000)
 )
@@ -31,12 +33,14 @@ class SplitsTodoColor(
     titleTextColor: Color,
     hintTextColor: Color,
     selectedDateTextColor: Color,
+    selectedDateBoxColor: Color,
     mainTextColor: Color,
     textColor1: Color,
     bgColor1: Color,
     bgColor2: Color,
     dividerColor: Color,
     selectedTimeBoxColor: Color,
+    buttonColor: Color,
     white: Color,
     transparent: Color
 ) {
@@ -61,6 +65,9 @@ class SplitsTodoColor(
     var selectedDateTextColor by mutableStateOf(selectedDateTextColor)
         private set
 
+    var selectedDateBoxColor by mutableStateOf(selectedDateBoxColor)
+        private set
+
     var mainTextColor by mutableStateOf(mainTextColor)
         private set
 
@@ -77,6 +84,9 @@ class SplitsTodoColor(
         private set
 
     var selectedTimeBoxColor by mutableStateOf(selectedTimeBoxColor)
+        private set
+
+    var buttonColor by mutableStateOf(buttonColor)
         private set
 
     var white by mutableStateOf(white)

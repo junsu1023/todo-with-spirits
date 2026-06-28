@@ -1,12 +1,16 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +29,7 @@ fun CalendarView(
     selectedEndDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedStartDate)) }
+    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedEndDate)) }
     val daysInMonth = remember(currentMonth) {
         val days = mutableListOf<LocalDate?>()
         val firstDayOfMonth = currentMonth.atDay(1)
@@ -41,9 +45,14 @@ fun CalendarView(
         days
     }
 
+    val rangeColor = SplitsTodoTheme.colors.selectedDateBoxColor
+    val selectedColor = SplitsTodoTheme.colors.selectedDateBoxColor
+
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 15.dp, end = 14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp, end = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -75,7 +84,6 @@ fun CalendarView(
                 .padding(top = 16.dp, bottom = 18.dp)
         ) {
             val weekDays = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
-
             weekDays.forEach { day ->
                 Text(
                     text = day,
@@ -89,25 +97,75 @@ fun CalendarView(
         }
 
         val chunks = daysInMonth.chunked(7)
-        chunks.forEachIndexed { idx, week ->
-            Row(modifier = Modifier.fillMaxWidth()) {
-                week.forEach { date ->
-                    val isSelected = date != null && (date == selectedStartDate || date == selectedEndDate)
-
+        chunks.forEachIndexed { weekIdx, week ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                week.forEachIndexed { dayIdx, date ->
+                    val isStart = date != null && date == selectedStartDate
+                    val isEnd = date != null && date == selectedEndDate
+                    val isRangeActive = selectedStartDate.isBefore(selectedEndDate)
+                    val isInRange = date != null && isRangeActive && 
+                                   date.isAfter(selectedStartDate) && date.isBefore(selectedEndDate)
+                    
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clickable(enabled = date != null) {
-                                date?.let { onDateSelected(it) }
-                            },
+                            .fillMaxHeight()
+                            .clickable(
+                                enabled = date != null,
+                                onClick = { date?.let { onDateSelected(it) } },
+                                indication = null,
+                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         if (date != null) {
+                            if (isStart && isRangeActive) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.5f)
+                                        .fillMaxHeight()
+                                        .align(Alignment.CenterEnd)
+                                        .background(rangeColor)
+                                )
+                            } else if (isEnd && isRangeActive) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.5f)
+                                        .fillMaxHeight()
+                                        .align(Alignment.CenterStart)
+                                        .background(rangeColor)
+                                )
+                            } else if (isInRange) {
+                                val shape = when {
+                                    dayIdx == 0 -> RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+                                    dayIdx == 6 -> RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+                                    else -> RoundedCornerShape(0.dp)
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(rangeColor, shape)
+                                )
+                            }
+
+                            if (isStart || isEnd) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(selectedColor, CircleShape)
+                                )
+                            }
+
                             Text(
                                 text = date.dayOfMonth.toString(),
-                                color = if (isSelected) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                color = if (isStart || isEnd) Color.White else SplitsTodoTheme.colors.mainTextColor,
                                 fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                fontWeight = if (isStart || isEnd) FontWeight.SemiBold else FontWeight.Normal
                             )
                         }
                     }
@@ -119,8 +177,8 @@ fun CalendarView(
                     }
                 }
             }
-
-            if(idx != chunks.lastIndex) {
+            
+            if (weekIdx != chunks.lastIndex) {
                 Spacer(modifier = Modifier.height(18.dp))
             }
         }
