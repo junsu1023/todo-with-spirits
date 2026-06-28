@@ -37,4 +37,24 @@ public class AuthService {
         User user = User.ofLocalSignup(request.getEmail(), encodedPassword, request.getNickname());
         return SignupResponse.from(userRepository.save(user));
     }
+
+
+    @Transactional
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password"));
+
+        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ApiException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password");
+        }
+
+        String accessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
+        String refreshTokenValue = jwtProvider.generateRefreshToken();
+
+        LocalDateTime expiresAt = LocalDateTime.now()
+                .plusSeconds(jwtProvider.getRefreshTokenExpirationMs() / 1000);
+        refreshTokenRepository.save(RefreshToken.create(user.getId(), refreshTokenValue, expiresAt));
+
+        return LoginResponse.of(accessToken, refreshTokenValue, user);
+    }
 }
