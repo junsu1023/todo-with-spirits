@@ -34,7 +34,7 @@ import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
 import com.example.todowithspirits.feature.add.component.SettingSwitchItem
 import com.example.todowithspirits.feature.add.component.TimeWheelPicker
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -100,7 +100,7 @@ fun ScheduleForm() {
                             Text(
                                 text = startDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
-                                color = if (isStartPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                color = if (isStartPickerVisible.value) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
                                 modifier = Modifier.clickable {
                                     isStartPickerVisible.value = !isStartPickerVisible.value
                                     isStartTimePickerVisible.value = false
@@ -113,7 +113,7 @@ fun ScheduleForm() {
                                 Text(
                                     text = startTime.value.format(timeFormatter),
                                     fontSize = 14.sp,
-                                    color = if (isStartTimePickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                    color = if (isStartTimePickerVisible.value) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
                                     modifier = Modifier.clickable {
                                         isStartTimePickerVisible.value =
                                             !isStartTimePickerVisible.value
@@ -172,7 +172,7 @@ fun ScheduleForm() {
                             Text(
                                 text = endDate.value.format(dateFormatter),
                                 fontSize = 14.sp,
-                                color = if (isEndPickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                color = if (isEndPickerVisible.value) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
                                 modifier = Modifier.clickable {
                                     isEndPickerVisible.value = !isEndPickerVisible.value
                                     isEndTimePickerVisible.value = false
@@ -185,7 +185,7 @@ fun ScheduleForm() {
                                 Text(
                                     text = endTime.value.format(timeFormatter),
                                     fontSize = 14.sp,
-                                    color = if (isEndTimePickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                                    color = if (isEndTimePickerVisible.value) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
                                     modifier = Modifier.clickable {
                                         isEndTimePickerVisible.value = !isEndTimePickerVisible.value
                                         isEndPickerVisible.value = false
@@ -285,11 +285,11 @@ fun ScheduleForm() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .border(1.dp, SplitsTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SplitsTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.colors.mainTextColor
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {
@@ -297,7 +297,7 @@ fun ScheduleForm() {
                         text = "메모",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = SplitsTodoTheme.colors.hintTextColor
+                            color = SpiritTodoTheme.colors.hintTextColor
                         )
                     )
                 }

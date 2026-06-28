@@ -33,7 +33,7 @@ import com.example.todowithspirits.feature.add.component.MonthlyCalendarView
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 
 private val routineRepeatOptions = listOf(
@@ -144,11 +144,11 @@ fun RoutineForm() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .border(1.dp, SplitsTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SplitsTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.colors.mainTextColor
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {
@@ -156,7 +156,7 @@ fun RoutineForm() {
                         text = "메모",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = SplitsTodoTheme.colors.hintTextColor
+                            color = SpiritTodoTheme.colors.hintTextColor
                         )
                     )
                 }
@@ -189,7 +189,7 @@ private fun HolidayExcludeRow(
             modifier = Modifier.weight(1f),
             style = TextStyle(
                 fontSize = 15.sp,
-                color = SplitsTodoTheme.colors.mainTextColor,
+                color = SpiritTodoTheme.colors.mainTextColor,
                 fontWeight = FontWeight.Medium
             )
         )

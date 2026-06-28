@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.YearMonth
 
 @Composable
@@ -61,7 +61,7 @@ fun MonthlyCalendarView(
                 text = stringResource(R.string.month, currentMonth.monthValue),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = SplitsTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.colors.mainTextColor
             )
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Image(
@@ -90,7 +90,7 @@ fun MonthlyCalendarView(
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SplitsTodoTheme.colors.textColor1
+                    color = SpiritTodoTheme.colors.textColor1
                 )
             }
         }
@@ -122,12 +122,12 @@ fun MonthlyCalendarView(
                                 Box(
                                     modifier = Modifier
                                         .size(32.dp)
-                                        .background(SplitsTodoTheme.colors.selectedTabColor, CircleShape)
+                                        .background(SpiritTodoTheme.colors.selectedTabColor, CircleShape)
                                 )
                             }
                             Text(
                                 text = day.toString(),
-                                color = if (isSelected) Color.White else SplitsTodoTheme.colors.mainTextColor,
+                                color = if (isSelected) Color.White else SpiritTodoTheme.colors.mainTextColor,
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                             )

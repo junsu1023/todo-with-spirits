@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -47,7 +47,7 @@ fun TimeWheelPicker(
                 .height(35.dp)
                 .padding(horizontal = 14.dp)
                 .clip(RoundedCornerShape(81.dp))
-                .background(SplitsTodoTheme.colors.selectedTimeBoxColor)
+                .background(SpiritTodoTheme.colors.selectedTimeBoxColor)
         )
 
         Row(
@@ -68,7 +68,7 @@ fun TimeWheelPicker(
                 text = ":",
                 fontSize = 28.sp,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = SplitsTodoTheme.colors.selectedDateTextColor
+                color = SpiritTodoTheme.colors.selectedDateTextColor
             )
 
             WheelColumn(
@@ -169,8 +169,8 @@ private fun WheelColumn(
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
                         fontSize = 28.sp,
-                        color = if (selectedIndex == index) SplitsTodoTheme.colors.selectedDateTextColor
-                                else SplitsTodoTheme.colors.textColor1
+                        color = if (selectedIndex == index) SpiritTodoTheme.colors.selectedDateTextColor
+                                else SpiritTodoTheme.colors.textColor1
                     )
                 }
             }

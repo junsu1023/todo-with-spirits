@@ -5,7 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 
-val splitsTodoColor = SplitsTodoColor(
+val spiritsTodoColor = SpiritsTodoColor(
+    homeColor = Color(0xFFF6F6F6),
+    trackColor = Color(0xFF353534),
+    trackColor2 = Color(0xFFEAEAEA),
+    surfaceColor1 = Color(0xFFF3E8FF),
+    onSurfaceColor1 = Color(0xFFB286FD),
+    onSurfaceColor2 = Color(0xFFBCBCBC),
     selectedColor = Color(0xFF374957),
     selectedTabColor = Color(0xFFB286FD),
     unselectedColor = Color(0xFFD1D1D6),
@@ -16,6 +22,7 @@ val splitsTodoColor = SplitsTodoColor(
     selectedDateBoxColor = Color(0xFFD7BFFF),
     mainTextColor = Color(0xFF857563),
     textColor1 = Color(0xFFC2C2C2),
+    textColor2 = Color(0xFFB286FD),
     bgColor1 = Color(0xFFFAFAFA),
     bgColor2 = Color(0xFFFFFFFF),
     dividerColor = Color(0xFFD1D1D6),
@@ -25,7 +32,13 @@ val splitsTodoColor = SplitsTodoColor(
     transparent = Color(0x00000000)
 )
 
-class SplitsTodoColor(
+class SpiritsTodoColor(
+    homeColor: Color,
+    trackColor: Color,
+    trackColor2: Color,
+    surfaceColor1: Color,
+    onSurfaceColor1: Color,
+    onSurfaceColor2: Color,
     selectedColor: Color,
     selectedTabColor: Color,
     unselectedColor: Color,
@@ -36,6 +49,7 @@ class SplitsTodoColor(
     selectedDateBoxColor: Color,
     mainTextColor: Color,
     textColor1: Color,
+    textColor2: Color,
     bgColor1: Color,
     bgColor2: Color,
     dividerColor: Color,
@@ -44,6 +58,24 @@ class SplitsTodoColor(
     white: Color,
     transparent: Color
 ) {
+    var homeColor by mutableStateOf(homeColor)
+        private set
+
+    var trackColor by mutableStateOf(trackColor)
+        private set
+
+    var trackColor2 by mutableStateOf(trackColor2)
+        private set
+
+    var surfaceColor1 by mutableStateOf(surfaceColor1)
+        private set
+
+    var onSurfaceColor2 by mutableStateOf(onSurfaceColor2)
+        private set
+
+    var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
+        private set
+
     var selectedColor by mutableStateOf(selectedColor)
         private set
 
@@ -72,6 +104,9 @@ class SplitsTodoColor(
         private set
 
     var textColor1 by mutableStateOf(textColor1)
+        private set
+
+    var textColor2 by mutableStateOf(textColor2)
         private set
 
     var bgColor1 by mutableStateOf(bgColor1)

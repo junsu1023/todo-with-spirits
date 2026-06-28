@@ -9,7 +9,7 @@ import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
-fun SplitsTodoNavigation(
+fun SpiritsTodoNavigation(
     navController: NavHostController,
     modifier: Modifier
 ) {

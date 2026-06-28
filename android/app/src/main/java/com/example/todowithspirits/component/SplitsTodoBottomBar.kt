@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.navigation.Screen
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 data class BottomNavItem(
     val route: String,
@@ -41,7 +41,7 @@ fun SplitsTodoBottomBar(
     onItemSelected: (String) -> Unit
 ) {
     NavigationBar(
-        containerColor = SplitsTodoTheme.colors.bgColor2,
+        containerColor = SpiritTodoTheme.colors.bgColor2,
         tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -69,11 +69,11 @@ fun SplitsTodoBottomBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = SplitsTodoTheme.colors.selectedColor,
-                    selectedTextColor = SplitsTodoTheme.colors.selectedColor,
-                    unselectedIconColor = SplitsTodoTheme.colors.unselectedColor,
-                    unselectedTextColor = SplitsTodoTheme.colors.unselectedColor,
-                    indicatorColor = SplitsTodoTheme.colors.transparent
+                    selectedIconColor = SpiritTodoTheme.colors.selectedColor,
+                    selectedTextColor = SpiritTodoTheme.colors.selectedColor,
+                    unselectedIconColor = SpiritTodoTheme.colors.unselectedColor,
+                    unselectedTextColor = SpiritTodoTheme.colors.unselectedColor,
+                    indicatorColor = SpiritTodoTheme.colors.transparent
                 )
             )
         }

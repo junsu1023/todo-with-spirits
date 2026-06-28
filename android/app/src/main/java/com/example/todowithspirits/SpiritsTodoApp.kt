@@ -9,11 +9,11 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todowithspirits.component.SplitsTodoBottomBar
-import com.example.todowithspirits.navigation.SplitsTodoNavigation
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.navigation.SpiritsTodoNavigation
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun SplitsTodoApp() {
+fun SpiritsTodoApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -29,7 +29,7 @@ fun SplitsTodoApp() {
     }
 
     Scaffold(
-        containerColor = SplitsTodoTheme.colors.bgColor2,
+        containerColor = SpiritTodoTheme.colors.bgColor2,
         bottomBar = {
             SplitsTodoBottomBar(
                 currentRoute = currentRoute,
@@ -37,7 +37,7 @@ fun SplitsTodoApp() {
             )
         }
     ) { innerPadding ->
-        SplitsTodoNavigation(
+        SpiritsTodoNavigation(
             navController = navController,
             modifier = Modifier.padding(innerPadding)
         )
