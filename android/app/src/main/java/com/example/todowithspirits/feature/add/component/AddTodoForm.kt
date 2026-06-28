@@ -5,8 +5,11 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -15,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SplitsTodoPrimaryButton
 import com.example.todowithspirits.theme.SplitsTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
@@ -43,6 +48,8 @@ fun AddPlanForm() {
     val alarmValue = remember { mutableStateOf("10분 전") }
     val categoryValue = remember { mutableStateOf("인간관계/약속") }
     val publicValue = remember { mutableStateOf("비공개") }
+
+    val memoValue = remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
@@ -184,7 +191,7 @@ fun AddPlanForm() {
                         ) {
                             Column(modifier = Modifier.padding(top = 22.dp)) {
                                 CalendarView(
-                                    selectedStartDate = startDate.value,
+                                    selectedStartDate = endDate.value,
                                     selectedEndDate = endDate.value,
                                     onDateSelected = { endDate.value = it }
                                 )
@@ -231,7 +238,7 @@ fun AddPlanForm() {
                 icon = painterResource(R.drawable.alarm_icon),
                 label = stringResource(R.string.alarm),
                 value = alarmValue.value,
-                options = listOf("안함", "10분 전", "30분 전", "1시간 전"),
+                options = listOf("안 함", "10분 전", "30분 전", "1시간 전"),
                 onOptionSelected = { alarmValue.value = it }
             )
         }
@@ -257,5 +264,40 @@ fun AddPlanForm() {
                 onOptionSelected = { publicValue.value = it }
             )
         }
+
+        Spacer(modifier = Modifier.height(26.dp))
+
+        BasicTextField(
+            value = memoValue.value,
+            onValueChange = { memoValue.value = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .border(1.dp, SplitsTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .padding(16.dp),
+            textStyle = TextStyle(
+                fontSize = 15.sp,
+                color = SplitsTodoTheme.colors.mainTextColor
+            ),
+            decorationBox = { innerTextField ->
+                if (memoValue.value.isEmpty()) {
+                    Text(
+                        text = "메모",
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            color = SplitsTodoTheme.colors.hintTextColor
+                        )
+                    )
+                }
+                innerTextField()
+            }
+        )
+
+        Spacer(modifier = Modifier.height(38.dp))
+
+        SplitsTodoPrimaryButton(
+            text = stringResource(R.string.register),
+            onClick = { /* 등록 로직 */ }
+        )
     }
 }

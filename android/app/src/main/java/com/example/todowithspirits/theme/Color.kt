@@ -20,6 +20,7 @@ val splitsTodoColor = SplitsTodoColor(
     bgColor2 = Color(0xFFFFFFFF),
     dividerColor = Color(0xFFD1D1D6),
     selectedTimeBoxColor = Color(0xFFF4ECFC),
+    buttonColor = Color(0xFFD7BFFF),
     white = Color(0xFFFFFFFF),
     transparent = Color(0x00000000)
 )
@@ -39,6 +40,7 @@ class SplitsTodoColor(
     bgColor2: Color,
     dividerColor: Color,
     selectedTimeBoxColor: Color,
+    buttonColor: Color,
     white: Color,
     transparent: Color
 ) {
@@ -82,6 +84,9 @@ class SplitsTodoColor(
         private set
 
     var selectedTimeBoxColor by mutableStateOf(selectedTimeBoxColor)
+        private set
+
+    var buttonColor by mutableStateOf(buttonColor)
         private set
 
     var white by mutableStateOf(white)

@@ -17,4 +17,5 @@
     <string name="category">카테고리</string>
     <string name="public_state">공개 상태</string>
     <string name="month">%s월</string>
+    <string name="register">등록 하기</string>
 </resources>

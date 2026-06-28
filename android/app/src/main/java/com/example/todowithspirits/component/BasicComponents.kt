@@ -2,15 +2,23 @@ package com.example.todowithspirits.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.todowithspirits.theme.SplitsTodoTheme
 
 /**
  * 프로젝트 공통 스위치 컴포넌트
@@ -51,4 +59,28 @@ fun SplitsTodoCheckbox(
         contentDescription = null,
         tint = Color.Unspecified
     )
+}
+
+@Composable
+fun SplitsTodoPrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(44.dp),
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = SplitsTodoTheme.colors.buttonColor
+        )
+    ) {
+        Text(
+            text = text,
+            color = SplitsTodoTheme.colors.white,
+            fontSize = 16.sp
+        )
+    }
 }
