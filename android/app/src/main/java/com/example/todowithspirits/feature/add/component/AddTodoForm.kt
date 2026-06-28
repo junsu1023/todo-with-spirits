@@ -39,6 +39,10 @@ fun AddPlanForm() {
     val isStartTimePickerVisible = remember { mutableStateOf(false) }
     val isEndPickerVisible = remember { mutableStateOf(false) }
     val isEndTimePickerVisible = remember { mutableStateOf(false) }
+    val repeatValue = remember { mutableStateOf("안 함") }
+    val alarmValue = remember { mutableStateOf("10분 전") }
+    val categoryValue = remember { mutableStateOf("인간관계/약속") }
+    val publicValue = remember { mutableStateOf("비공개") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
@@ -216,7 +220,9 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.repeat_icon),
                 label = stringResource(R.string.repeat),
-                value = "안 함" // 차후 UI/UX 나온 후 작업
+                value = repeatValue.value,
+                options = listOf("안 함", "매일", "매주", "매월", "매년"),
+                onOptionSelected = { repeatValue.value = it }
             )
             
             SettingDivider()
@@ -224,7 +230,9 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.alarm_icon),
                 label = stringResource(R.string.alarm),
-                value = "10분 전" // 차후 UI/UX 나온 후 작업
+                value = alarmValue.value,
+                options = listOf("안함", "10분 전", "30분 전", "1시간 전"),
+                onOptionSelected = { alarmValue.value = it }
             )
         }
 
@@ -234,7 +242,9 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.category_icon),
                 label = stringResource(R.string.category),
-                value = "인간관계/약속" // 차후 UI/UX 나온 후 작업
+                value = categoryValue.value,
+                options = listOf("인간관계/약속", "자기계발", "업무", "취미"),
+                onOptionSelected = { categoryValue.value = it }
             )
             
             SettingDivider()
@@ -242,7 +252,9 @@ fun AddPlanForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.private_icon),
                 label = stringResource(R.string.public_state),
-                value = "비공개" // 차후 UI/UX 나온 후 작업
+                value = publicValue.value,
+                options = listOf("공개", "비공개"),
+                onOptionSelected = { publicValue.value = it }
             )
         }
     }

@@ -1,9 +1,12 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,10 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +32,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
@@ -135,28 +145,72 @@ fun SettingCheckboxItem(
 fun SettingSelectorItem(
     icon: Painter,
     label: String,
-    value: String
+    value: String,
+    options: List<String>,
+    onOptionSelected: (String) -> Unit
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     BaseSettingRow(
         icon = icon,
         label = label,
         action = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 2.dp)
-            ) {
-                Text(
-                    text = value,
-                    fontSize = 16.sp,
-                    color = Color.LightGray
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+            Box {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .clickable { expanded = true }
+                ) {
+                    Text(
+                        text = value,
+                        fontSize = 16.sp,
+                        color = SplitsTodoTheme.colors.mainTextColor
+                    )
 
-                Image(
-                    painter = painterResource(R.drawable.expand_icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Image(
+                        painter = painterResource(R.drawable.expand_icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .width(96.dp)
+                        .background(SplitsTodoTheme.colors.white, RoundedCornerShape(8.dp))
+
+                ) {
+                    options.forEachIndexed { index, option ->
+                        DropdownMenuItem(
+                            text = {
+                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = option,
+                                        color = if (option == value) SplitsTodoTheme.colors.selectedTabColor else SplitsTodoTheme.colors.mainTextColor,
+                                        fontSize = 14.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            },
+                            onClick = {
+                                onOptionSelected(option)
+                                expanded = false
+                            },
+                            contentPadding = PaddingValues(vertical = 12.dp)
+                        )
+                        if (index < options.size - 1) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = SplitsTodoTheme.colors.dividerColor
+                            )
+                        }
+                    }
+                }
             }
         }
     )
