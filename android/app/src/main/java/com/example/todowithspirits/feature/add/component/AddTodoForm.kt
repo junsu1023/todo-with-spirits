@@ -180,7 +180,7 @@ fun AddPlanForm() {
                         ) {
                             Column(modifier = Modifier.padding(top = 22.dp)) {
                                 CalendarView(
-                                    selectedStartDate = endDate.value,
+                                    selectedStartDate = startDate.value,
                                     selectedEndDate = endDate.value,
                                     onDateSelected = { endDate.value = it }
                                 )
