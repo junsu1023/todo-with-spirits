@@ -24,6 +24,7 @@ CREATE TABLE users
 (
     id                       BIGSERIAL PRIMARY KEY,
     email                    VARCHAR(255),                            -- null: social login
+    password                 VARCHAR(255),                            -- null: social login
     nickname                 VARCHAR(50) NOT NULL,
     profile_image_url        TEXT,
     role                     VARCHAR(20) NOT NULL     DEFAULT 'USER', -- user_role ENUM
