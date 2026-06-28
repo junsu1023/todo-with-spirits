@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoCheckbox
 import com.example.todowithspirits.component.SplitsTodoSwitch
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -58,7 +58,7 @@ fun SettingGroup(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = SplitsTodoTheme.colors.bgColor1,
+        color = SpiritTodoTheme.colors.bgColor1,
         shape = RoundedCornerShape(6.dp)
     ) {
         Column(content = content)
@@ -94,7 +94,7 @@ fun BaseSettingRow(
                 modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SplitsTodoTheme.colors.mainTextColor,
+                    color = SpiritTodoTheme.colors.mainTextColor,
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -179,7 +179,7 @@ fun SettingSelectorItem(
                     Text(
                         text = value,
                         fontSize = 16.sp,
-                        color = SplitsTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.colors.mainTextColor
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -196,7 +196,7 @@ fun SettingSelectorItem(
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
                         .width(96.dp)
-                        .background(SplitsTodoTheme.colors.white, RoundedCornerShape(8.dp))
+                        .background(SpiritTodoTheme.colors.white, RoundedCornerShape(8.dp))
 
                 ) {
                     options.forEachIndexed { index, option ->
@@ -205,7 +205,7 @@ fun SettingSelectorItem(
                                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                     Text(
                                         text = option,
-                                        color = if (option == value) SplitsTodoTheme.colors.selectedTabColor else SplitsTodoTheme.colors.mainTextColor,
+                                        color = if (option == value) SpiritTodoTheme.colors.selectedTabColor else SpiritTodoTheme.colors.mainTextColor,
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center
                                     )
@@ -220,7 +220,7 @@ fun SettingSelectorItem(
                         if (index < options.size - 1) {
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = SplitsTodoTheme.colors.dividerColor
+                                color = SpiritTodoTheme.colors.dividerColor
                             )
                         }
                     }
@@ -265,7 +265,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(dateFormatter),
                 fontSize = 16.sp,
-                color = if (expanded) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                color = if (expanded) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
@@ -300,11 +300,11 @@ fun DayOfWeekSelector(
                     .aspectRatio(1f)
                     .border(
                         width = if (isSelected) 1.dp else 0.dp,
-                        color = if (isSelected) SplitsTodoTheme.colors.selectedTabColor else Color.Transparent,
+                        color = if (isSelected) SpiritTodoTheme.colors.selectedTabColor else Color.Transparent,
                         shape = RoundedCornerShape(6.dp)
                     )
                     .background(
-                        color = if (isSelected) SplitsTodoTheme.colors.selectedDateBoxColor else Color.Transparent,
+                        color = if (isSelected) SpiritTodoTheme.colors.selectedDateBoxColor else Color.Transparent,
                         shape = RoundedCornerShape(6.dp)
                     )
                     .clickable { onDayToggled(day) },
@@ -312,7 +312,7 @@ fun DayOfWeekSelector(
             ) {
                 Text(
                     text = label,
-                    color = if (isSelected) SplitsTodoTheme.colors.selectedTabColor else SplitsTodoTheme.colors.mainTextColor,
+                    color = if (isSelected) SpiritTodoTheme.colors.selectedTabColor else SpiritTodoTheme.colors.mainTextColor,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                 )

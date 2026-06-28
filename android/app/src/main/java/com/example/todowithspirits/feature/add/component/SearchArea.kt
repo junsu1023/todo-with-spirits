@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun SearchArea() {
@@ -39,7 +39,7 @@ fun SearchArea() {
                 .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
-                color = SplitsTodoTheme.colors.mainTextColor,
+                color = SpiritTodoTheme.colors.mainTextColor,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),
@@ -49,7 +49,7 @@ fun SearchArea() {
                     Text(
                         text = stringResource(R.string.title),
                         style = TextStyle(
-                            color = SplitsTodoTheme.colors.hintTextColor,
+                            color = SpiritTodoTheme.colors.hintTextColor,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -63,7 +63,7 @@ fun SearchArea() {
         HorizontalDivider(
             modifier = Modifier.padding(top = 8.dp),
             thickness = 1.dp,
-            color = SplitsTodoTheme.colors.dividerColor
+            color = SpiritTodoTheme.colors.dividerColor
         )
     }
 }

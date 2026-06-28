@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 /**
  * 프로젝트 공통 스위치 컴포넌트
@@ -74,12 +74,12 @@ fun SplitsTodoPrimaryButton(
             .height(44.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = SplitsTodoTheme.colors.buttonColor
+            containerColor = SpiritTodoTheme.colors.buttonColor
         )
     ) {
         Text(
             text = text,
-            color = SplitsTodoTheme.colors.white,
+            color = SpiritTodoTheme.colors.white,
             fontSize = 16.sp
         )
     }

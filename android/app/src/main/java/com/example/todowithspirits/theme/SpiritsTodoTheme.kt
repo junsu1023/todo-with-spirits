@@ -5,21 +5,21 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
-val LocalColors = staticCompositionLocalOf { splitsTodoColor }
+val LocalColors = staticCompositionLocalOf { spiritsTodoColor }
 
-object SplitsTodoTheme {
-    val colors: SplitsTodoColor
+object SpiritTodoTheme {
+    val colors: SpiritsTodoColor
         @Composable
         @ReadOnlyComposable
         get() = LocalColors.current
 }
 
 @Composable
-fun SplitsTodoTheme(
+fun SpiritTodoTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalColors provides splitsTodoColor
+        LocalColors provides spiritsTodoColor
     ) {
         content()
     }

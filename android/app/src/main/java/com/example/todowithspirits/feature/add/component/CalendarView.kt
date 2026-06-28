@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.YearMonth
 import com.example.todowithspirits.R
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun CalendarView(
@@ -45,8 +45,8 @@ fun CalendarView(
         days
     }
 
-    val rangeColor = SplitsTodoTheme.colors.selectedDateBoxColor
-    val selectedColor = SplitsTodoTheme.colors.selectedDateBoxColor
+    val rangeColor = SpiritTodoTheme.colors.selectedDateBoxColor
+    val selectedColor = SpiritTodoTheme.colors.selectedDateBoxColor
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -60,7 +60,7 @@ fun CalendarView(
                 text = stringResource(R.string.month, currentMonth.monthValue),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = SplitsTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.colors.mainTextColor
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -91,7 +91,7 @@ fun CalendarView(
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SplitsTodoTheme.colors.textColor1
+                    color = SpiritTodoTheme.colors.textColor1
                 )
             }
         }
@@ -163,7 +163,7 @@ fun CalendarView(
 
                             Text(
                                 text = date.dayOfMonth.toString(),
-                                color = if (isStart || isEnd) Color.White else SplitsTodoTheme.colors.mainTextColor,
+                                color = if (isStart || isEnd) Color.White else SpiritTodoTheme.colors.mainTextColor,
                                 fontSize = 12.sp,
                                 fontWeight = if (isStart || isEnd) FontWeight.SemiBold else FontWeight.Normal
                             )

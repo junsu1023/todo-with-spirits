@@ -37,7 +37,7 @@ import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
 import com.example.todowithspirits.feature.add.component.SettingSwitchItem
 import com.example.todowithspirits.feature.add.component.TimeWheelPicker
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -156,11 +156,11 @@ fun TodoForm() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .border(1.dp, SplitsTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SplitsTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.colors.mainTextColor
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {
@@ -168,7 +168,7 @@ fun TodoForm() {
                         text = "메모",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = SplitsTodoTheme.colors.hintTextColor
+                            color = SpiritTodoTheme.colors.hintTextColor
                         )
                     )
                 }

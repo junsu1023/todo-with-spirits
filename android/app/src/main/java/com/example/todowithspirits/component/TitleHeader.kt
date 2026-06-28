@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun TitleHeader(
@@ -44,7 +44,7 @@ fun TitleHeader(
                 text = title,
                 style = TextStyle(
                     fontSize = 18.sp,
-                    color = SplitsTodoTheme.colors.titleTextColor,
+                    color = SpiritTodoTheme.colors.titleTextColor,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center
                 )

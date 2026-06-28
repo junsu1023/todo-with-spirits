@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.theme.SplitsTodoTheme
+import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Immutable
 data class TabItems(
@@ -51,10 +51,10 @@ private fun SelectionTabItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val selectedMainColor = SplitsTodoTheme.colors.selectedTabColor
-    val selectedBgColor = SplitsTodoTheme.colors.white
-    val unselectedTextColor = SplitsTodoTheme.colors.mainTextColor
-    val unselectedBgColor = SplitsTodoTheme.colors.unselectedTabBgColor
+    val selectedMainColor = SpiritTodoTheme.colors.selectedTabColor
+    val selectedBgColor = SpiritTodoTheme.colors.white
+    val unselectedTextColor = SpiritTodoTheme.colors.mainTextColor
+    val unselectedBgColor = SpiritTodoTheme.colors.unselectedTabBgColor
 
     Box(
         modifier = Modifier
