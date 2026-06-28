@@ -18,4 +18,6 @@
     <string name="public_state">공개 상태</string>
     <string name="month">%s월</string>
     <string name="register">등록 하기</string>
+    <string name="due_date">완료일</string>
+    <string name="time">시간</string>
 </resources>
