@@ -47,6 +47,7 @@ fun TodoForm() {
     val dueDate = remember { mutableStateOf(LocalDate.now()) }
     val isTimeEnabled = remember { mutableStateOf(false) }
     val dueTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
+
     val repeatOption = remember { mutableStateOf(RepeatOption.NONE) }
     val alarmOption = remember { mutableStateOf(AlarmOption.TEN_MIN_BEFORE) }
     val categoryOption = remember { mutableStateOf(CategoryOption.RELATIONSHIP) }
@@ -68,7 +69,7 @@ fun TodoForm() {
 
         SettingGroup {
             SettingDateItem(
-                icon = painterResource(R.drawable.clock_icon),
+                icon = painterResource(R.drawable.fi_rr_calendar),
                 label = stringResource(R.string.due_date),
                 date = dueDate.value,
                 onDateSelected = { dueDate.value = it }
@@ -77,7 +78,7 @@ fun TodoForm() {
             SettingDivider()
 
             SettingSwitchItem(
-                icon = painterResource(R.drawable.clock_icon),
+                icon = painterResource(R.drawable.fi_rr_time_check),
                 label = stringResource(R.string.time),
                 checked = isTimeEnabled.value,
                 onCheckedChange = { isTimeEnabled.value = it },
