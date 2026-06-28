@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.add.component
+package com.example.todowithspirits.feature.add
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -23,6 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoPrimaryButton
+import com.example.todowithspirits.feature.add.component.CalendarView
+import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
+import com.example.todowithspirits.feature.add.component.SettingDivider
+import com.example.todowithspirits.feature.add.component.SettingGroup
+import com.example.todowithspirits.feature.add.component.SettingSelectorItem
+import com.example.todowithspirits.feature.add.component.SettingSwitchItem
+import com.example.todowithspirits.feature.add.component.TimeWheelPicker
 import com.example.todowithspirits.theme.SplitsTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
@@ -68,8 +75,8 @@ fun ScheduleForm() {
                 icon = painterResource(R.drawable.clock_icon),
                 label = stringResource(R.string.all_day),
                 checked = isAllDay.value,
-                onCheckedChange = { 
-                    isAllDay.value = it 
+                onCheckedChange = {
+                    isAllDay.value = it
                     if (it) {
                         isStartPickerVisible.value = false
                         isStartTimePickerVisible.value = false
@@ -104,7 +111,8 @@ fun ScheduleForm() {
                                     fontSize = 14.sp,
                                     color = if (isStartTimePickerVisible.value) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
                                     modifier = Modifier.clickable {
-                                        isStartTimePickerVisible.value = !isStartTimePickerVisible.value
+                                        isStartTimePickerVisible.value =
+                                            !isStartTimePickerVisible.value
                                         isStartPickerVisible.value = false
                                         isEndPickerVisible.value = false
                                         isEndTimePickerVisible.value = false
@@ -221,9 +229,9 @@ fun ScheduleForm() {
                     }
                 }
             )
-            
+
             SettingDivider()
-            
+
             SettingSelectorItem(
                 icon = painterResource(R.drawable.repeat_icon),
                 label = stringResource(R.string.repeat),
@@ -231,9 +239,9 @@ fun ScheduleForm() {
                 options = listOf("안 함", "매일", "매주", "매월", "매년"),
                 onOptionSelected = { repeatValue.value = it }
             )
-            
+
             SettingDivider()
-            
+
             SettingSelectorItem(
                 icon = painterResource(R.drawable.alarm_icon),
                 label = stringResource(R.string.alarm),
@@ -253,9 +261,9 @@ fun ScheduleForm() {
                 options = listOf("인간관계/약속", "자기계발", "업무", "취미"),
                 onOptionSelected = { categoryValue.value = it }
             )
-            
+
             SettingDivider()
-            
+
             SettingSelectorItem(
                 icon = painterResource(R.drawable.private_icon),
                 label = stringResource(R.string.public_state),

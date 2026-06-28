@@ -1,5 +1,10 @@
 package com.example.todowithspirits.feature.add.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +44,9 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoCheckbox
 import com.example.todowithspirits.component.SplitsTodoSwitch
 import com.example.todowithspirits.theme.SplitsTodoTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SettingGroup(
@@ -212,6 +220,48 @@ fun SettingSelectorItem(
                     }
                 }
             }
+        }
+    )
+}
+
+@Composable
+fun SettingDateItem(
+    icon: Painter,
+    label: String,
+    date: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+
+    BaseSettingRow(
+        icon = icon,
+        label = label,
+        subContent = {
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+            ) {
+                Column(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) {
+                    CalendarView(
+                        selectedStartDate = date,
+                        selectedEndDate = date,
+                        onDateSelected = {
+                            onDateSelected(it)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        },
+        action = {
+            Text(
+                text = date.format(dateFormatter),
+                fontSize = 16.sp,
+                color = if (expanded) SplitsTodoTheme.colors.selectedDateTextColor else SplitsTodoTheme.colors.mainTextColor,
+                modifier = Modifier.clickable { expanded = !expanded }
+            )
         }
     )
 }
