@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun AddPlanForm() {
+fun ScheduleForm() {
     // 차후 viewModel로 이전 필요
     val isImportant = remember { mutableStateOf(false) }
     val isAllDay = remember { mutableStateOf(true) }

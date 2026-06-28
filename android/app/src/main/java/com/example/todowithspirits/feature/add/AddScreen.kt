@@ -16,7 +16,7 @@ import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.TabItems
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.VerticalSpacer20
-import com.example.todowithspirits.feature.add.component.AddPlanForm
+import com.example.todowithspirits.feature.add.component.ScheduleForm
 import com.example.todowithspirits.feature.add.component.SearchArea
 
 @Composable
@@ -54,7 +54,12 @@ fun AddScreen() {
 
             VerticalSpacer20()
 
-            AddPlanForm()
+            when(selectedTab.value) {
+                scheduleText -> ScheduleForm()
+                todoText -> { }
+                else -> { }
+            }
+
 
             VerticalSpacer20()
         }
