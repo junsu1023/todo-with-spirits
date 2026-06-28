@@ -10,6 +10,8 @@ import com.oow.todowithspirit.dto.auth.LoginRequest;
 import com.oow.todowithspirit.dto.auth.LoginResponse;
 import com.oow.todowithspirit.dto.auth.SignupRequest;
 import com.oow.todowithspirit.dto.auth.SignupResponse;
+import com.oow.todowithspirit.dto.auth.TokenRefreshRequest;
+import com.oow.todowithspirit.dto.auth.TokenRefreshResponse;
 import com.oow.todowithspirit.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +40,6 @@ public class AuthService {
         return SignupResponse.from(userRepository.save(user));
     }
 
-
     @Transactional
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -51,10 +52,46 @@ public class AuthService {
         String accessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
         String refreshTokenValue = jwtProvider.generateRefreshToken();
 
-        LocalDateTime expiresAt = LocalDateTime.now()
-                .plusSeconds(jwtProvider.getRefreshTokenExpirationMs() / 1000);
-        refreshTokenRepository.save(RefreshToken.create(user.getId(), refreshTokenValue, expiresAt));
+        refreshTokenRepository.save(RefreshToken.create(user.getId(), refreshTokenValue, refreshTokenExpiresAt()));
 
         return LoginResponse.of(accessToken, refreshTokenValue, user);
+    }
+
+    @Transactional
+    public TokenRefreshResponse reissue(TokenRefreshRequest request) {
+        RefreshToken oldToken = refreshTokenRepository.findByToken(request.getRefreshToken())
+                .orElseThrow(() -> new ApiException(ErrorCode.INVALID_TOKEN));
+
+        // 이미 revoke된 토큰 → 탈취 가능성, 해당 유저의 모든 토큰 폐기
+        if (oldToken.isRevoked()) {
+            refreshTokenRepository.deleteAllByUserId(oldToken.getUserId());
+            throw new ApiException(ErrorCode.REVOKED_TOKEN);
+        }
+
+        if (oldToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            refreshTokenRepository.delete(oldToken);
+            throw new ApiException(ErrorCode.EXPIRED_TOKEN);
+        }
+
+        User user = userRepository.findById(oldToken.getUserId())
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        // 기존 토큰 폐기 후 새 토큰 발급 (rotation)
+        oldToken.revoke();
+
+        String newAccessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
+        String newRefreshToken = jwtProvider.generateRefreshToken();
+        refreshTokenRepository.save(RefreshToken.create(user.getId(), newRefreshToken, refreshTokenExpiresAt()));
+
+        return TokenRefreshResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteAllByUserId(userId);
+    }
+
+    private LocalDateTime refreshTokenExpiresAt() {
+        return LocalDateTime.now().plusSeconds(jwtProvider.getRefreshTokenExpirationMs() / 1000);
     }
 }
