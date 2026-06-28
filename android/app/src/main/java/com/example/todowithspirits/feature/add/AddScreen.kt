@@ -56,7 +56,7 @@ fun AddScreen() {
             when(selectedTab.value) {
                 scheduleText -> ScheduleForm()
                 todoText -> TodoForm()
-                else -> { }
+                else -> RoutineForm()
             }
 
 

@@ -72,7 +72,7 @@ fun ScheduleForm() {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         SettingGroup {
             SettingSwitchItem(
@@ -255,7 +255,7 @@ fun ScheduleForm() {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         SettingGroup {
             SettingSelectorItem(
@@ -305,7 +305,7 @@ fun ScheduleForm() {
             }
         )
 
-        Spacer(modifier = Modifier.height(38.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         SplitsTodoPrimaryButton(
             text = stringResource(R.string.register),

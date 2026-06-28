@@ -1,12 +1,8 @@
 package com.example.todowithspirits.feature.add
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.AlarmOption
@@ -29,94 +26,85 @@ import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SplitsTodoCheckbox
 import com.example.todowithspirits.component.SplitsTodoPrimaryButton
-import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
-import com.example.todowithspirits.feature.add.component.SettingDateItem
+import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
+import com.example.todowithspirits.feature.add.component.MonthlyCalendarView
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
-import com.example.todowithspirits.feature.add.component.SettingSwitchItem
-import com.example.todowithspirits.feature.add.component.TimeWheelPicker
 import com.example.todowithspirits.theme.SplitsTodoTheme
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.DayOfWeek
+
+private val routineRepeatOptions = listOf(
+    RepeatOption.DAILY.displayName,
+    RepeatOption.WEEKLY.displayName,
+    RepeatOption.MONTHLY.displayName
+)
 
 @Composable
-fun TodoForm() {
-    val isImportant = remember { mutableStateOf(false) }
-    val dueDate = remember { mutableStateOf(LocalDate.now()) }
-    val isTimeEnabled = remember { mutableStateOf(false) }
-    val dueTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
-    val repeatOption = remember { mutableStateOf(RepeatOption.NONE) }
+fun RoutineForm() {
+    val repeatOption = remember { mutableStateOf(RepeatOption.DAILY) }
+    val selectedWeekDays = remember { mutableStateOf(setOf<DayOfWeek>()) }
+    val selectedMonthDays = remember { mutableStateOf(setOf<Int>()) }
+    val excludeHolidays = remember { mutableStateOf(false) }
     val alarmOption = remember { mutableStateOf(AlarmOption.TEN_MIN_BEFORE) }
     val categoryOption = remember { mutableStateOf(CategoryOption.RELATIONSHIP) }
     val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
-    
     val memoValue = remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
-            SettingCheckboxItem(
-                icon = painterResource(R.drawable.important_icon),
-                label = stringResource(R.string.important),
-                checked = isImportant.value,
-                onCheckedChange = { isImportant.value = it }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        SettingGroup {
-            SettingDateItem(
-                icon = painterResource(R.drawable.fi_rr_calendar),
-                label = stringResource(R.string.due_date),
-                date = dueDate.value,
-                onDateSelected = { dueDate.value = it }
-            )
-
-            SettingDivider()
-
-            SettingSwitchItem(
-                icon = painterResource(R.drawable.fi_rr_time_check),
-                label = stringResource(R.string.time),
-                checked = isTimeEnabled.value,
-                onCheckedChange = { isTimeEnabled.value = it },
-                subContent = {
-                    AnimatedVisibility(
-                        visible = isTimeEnabled.value,
-                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 22.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            TimeWheelPicker(
-                                initialHour = dueTime.value.hour,
-                                initialMinute = dueTime.value.minute,
-                                onTimeSelected = { h, m ->
-                                    dueTime.value = LocalTime.of(h, m)
-                                }
-                            )
-                        }
-                    }
-                }
-            )
-
-            SettingDivider()
-
             SettingSelectorItem(
                 icon = painterResource(R.drawable.repeat_icon),
                 label = stringResource(R.string.repeat),
                 value = repeatOption.value.displayName,
-                options = RepeatOption.getAllDisplayNames(),
-                onOptionSelected = { repeatOption.value = RepeatOption.fromDisplayName(it) }
+                options = routineRepeatOptions,
+                onOptionSelected = { repeatOption.value = RepeatOption.fromDisplayName(it) },
+                subContent = {
+                    when (repeatOption.value) {
+                        RepeatOption.WEEKLY -> {
+                            Spacer(modifier = Modifier.height(22.dp))
+
+                            DayOfWeekSelector(
+                                selectedDays = selectedWeekDays.value,
+                                onDayToggled = { day ->
+                                    selectedWeekDays.value = selectedWeekDays.value.toMutableSet().apply {
+                                        if (day in this) remove(day) else add(day)
+                                    }
+                                },
+                                modifier = Modifier.padding(horizontal = 14.dp)
+                            )
+                        }
+                        RepeatOption.MONTHLY -> {
+                            Spacer(modifier = Modifier.height(22.dp))
+
+                            MonthlyCalendarView(
+                                selectedDays = selectedMonthDays.value,
+                                onDayToggled = { day ->
+                                    selectedMonthDays.value = selectedMonthDays.value.toMutableSet().apply {
+                                        if (day in this) remove(day) else add(day)
+                                    }
+                                },
+                                modifier = Modifier.padding(horizontal = 14.dp)
+                            )
+                        }
+                        else -> { /* Nothing */ }
+                    }
+                }
             )
+        }
 
-            SettingDivider()
+        Spacer(modifier = Modifier.height(10.dp))
 
+        HolidayExcludeRow(
+            checked = excludeHolidays.value,
+            onCheckedChange = { excludeHolidays.value = it }
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        SettingGroup {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.alarm_icon),
                 label = stringResource(R.string.alarm),
@@ -148,7 +136,7 @@ fun TodoForm() {
             )
         }
 
-        Spacer(modifier = Modifier.height(26.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         BasicTextField(
             value = memoValue.value,
@@ -181,6 +169,35 @@ fun TodoForm() {
         SplitsTodoPrimaryButton(
             text = stringResource(R.string.register),
             onClick = { }
+        )
+    }
+}
+
+@Composable
+private fun HolidayExcludeRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.exclude_holidays),
+            modifier = Modifier.weight(1f),
+            style = TextStyle(
+                fontSize = 15.sp,
+                color = SplitsTodoTheme.colors.mainTextColor,
+                fontWeight = FontWeight.Medium
+            )
+        )
+        SplitsTodoCheckbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            checkedIcon = painterResource(R.drawable.checked_checkbox),
+            uncheckedIcon = painterResource(R.drawable.unckecked_checkbox)
         )
     }
 }

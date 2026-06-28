@@ -7,13 +7,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -44,6 +47,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoCheckbox
 import com.example.todowithspirits.component.SplitsTodoSwitch
 import com.example.todowithspirits.theme.SplitsTodoTheme
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -155,13 +159,15 @@ fun SettingSelectorItem(
     label: String,
     value: String,
     options: List<String>,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (String) -> Unit,
+    subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     BaseSettingRow(
         icon = icon,
         label = label,
+        subContent = subContent,
         action = {
             Box {
                 Row(
@@ -264,6 +270,55 @@ fun SettingDateItem(
             )
         }
     )
+}
+
+@Composable
+fun DayOfWeekSelector(
+    selectedDays: Set<DayOfWeek>,
+    onDayToggled: (DayOfWeek) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val days = listOf(
+        "일" to DayOfWeek.SUNDAY,
+        "월" to DayOfWeek.MONDAY,
+        "화" to DayOfWeek.TUESDAY,
+        "수" to DayOfWeek.WEDNESDAY,
+        "목" to DayOfWeek.THURSDAY,
+        "금" to DayOfWeek.FRIDAY,
+        "토" to DayOfWeek.SATURDAY
+    )
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        days.forEach { (label, day) ->
+            val isSelected = day in selectedDays
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(1f)
+                    .border(
+                        width = if (isSelected) 1.dp else 0.dp,
+                        color = if (isSelected) SplitsTodoTheme.colors.selectedTabColor else Color.Transparent,
+                        shape = RoundedCornerShape(6.dp)
+                    )
+                    .background(
+                        color = if (isSelected) SplitsTodoTheme.colors.selectedDateBoxColor else Color.Transparent,
+                        shape = RoundedCornerShape(6.dp)
+                    )
+                    .clickable { onDayToggled(day) },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = label,
+                    color = if (isSelected) SplitsTodoTheme.colors.selectedTabColor else SplitsTodoTheme.colors.mainTextColor,
+                    fontSize = 14.sp,
+                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                )
+            }
+        }
+    }
 }
 
 @Composable
