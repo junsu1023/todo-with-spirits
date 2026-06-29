@@ -63,6 +63,32 @@ public class TaskService {
         return TaskCreateResponse.from(taskRepository.save(task));
     }
 
+    @Transactional
+    public TaskCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
+        if (!ROUTINE_ALLOWED_REPEAT.contains(request.getRepeatType())) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
+                    "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
+        }
+
+        validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
+
+        User user = userRepository.getReferenceById(userId);
+
+        Task task = Task.createRoutine(
+                user,
+                request.getTitle(),
+                request.getMemo(),
+                request.getRepeatType(),
+                request.getRepeatEndDate(),
+                request.getRepeatDaysOfWeek(),
+                request.getRepeatDaysOfMonth(),
+                resolveNotificationMinutes(request.getNotification()),
+                Boolean.TRUE.equals(request.getIsPublic())
+        );
+
+        return TaskCreateResponse.from(taskRepository.save(task));
+    }
+
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {
         if (repeatType == RepeatType.WEEKLY && (daysOfWeek == null || daysOfWeek.isEmpty())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatDaysOfWeek",

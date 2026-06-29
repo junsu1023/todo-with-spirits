@@ -30,4 +30,11 @@ public class TaskController {
                 .body(ApiResponse.success(taskService.createSchedule(userId, request)));
     }
 
+    @PostMapping("/routine")
+    public ResponseEntity<ApiResponse<TaskCreateResponse>> createRoutine(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody RoutineCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(taskService.createRoutine(userId, request)));
+    }
 }

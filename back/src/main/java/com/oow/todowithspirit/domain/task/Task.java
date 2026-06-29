@@ -132,6 +132,24 @@ public class Task extends BaseTimeEntity {
         return task;
     }
 
+    public static Task createRoutine(User user, String title, String memo,
+                                     RepeatType repeatType, LocalDate repeatEndDate,
+                                     Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
+                                     Integer notificationMinutes, boolean isPublic) {
+        Task task = new Task();
+        task.user = user;
+        task.type = TaskType.HABIT;
+        task.title = title;
+        task.memo = memo;
+        task.category = CategoryType.NONE;
+        task.taskDate = LocalDate.now();
+        task.repeatRule = repeatType;
+        task.repeatEndDate = repeatEndDate;
+        task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
+        task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
+        task.notificationMinutes = notificationMinutes;
+        task.isPublic = isPublic;
+        return task;
     }
 
     public void completeTask() {
