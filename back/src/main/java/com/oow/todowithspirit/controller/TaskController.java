@@ -51,11 +51,28 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(taskService.getScheduleDetail(userId, taskId)));
     }
 
+    // ==============================================
+    // ROUTINE
+    // ==============================================
+
     @PostMapping("/routine")
     public ResponseEntity<ApiResponse<TaskCreateResponse>> createRoutine(
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody RoutineCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(taskService.createRoutine(userId, request)));
+    }
+
+    @GetMapping("/routine")
+    public ResponseEntity<ApiResponse<List<TaskSummaryResponse>>> getRoutines(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId)));
+    }
+
+    @GetMapping("/routine/{taskId}")
+    public ResponseEntity<ApiResponse<TaskCreateResponse>> getRoutine(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutineDetail(userId, taskId)));
     }
 }

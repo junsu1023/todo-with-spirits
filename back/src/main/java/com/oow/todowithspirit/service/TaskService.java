@@ -108,6 +108,21 @@ public class TaskService {
                 .stream().map(TaskSummaryResponse::from).toList();
     }
 
+    // 단건 조회: @Transactional 내에서 lazy 컬렉션(repeatDaysOfWeek/Month) 로딩
+    @Transactional(readOnly = true)
+    public TaskCreateResponse getScheduleDetail(Long userId, Long taskId) {
+        Task task = taskRepository.findByIdAndUserIdAndType(taskId, userId, TaskType.SCHEDULE)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+        return TaskCreateResponse.from(task);
+    }
+
+    @Transactional(readOnly = true)
+    public TaskCreateResponse getRoutineDetail(Long userId, Long taskId) {
+        Task task = taskRepository.findByIdAndUserIdAndType(taskId, userId, TaskType.HABIT)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+        return TaskCreateResponse.from(task);
+    }
+
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {
         if (repeatType == RepeatType.WEEKLY && (daysOfWeek == null || daysOfWeek.isEmpty())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatDaysOfWeek",
