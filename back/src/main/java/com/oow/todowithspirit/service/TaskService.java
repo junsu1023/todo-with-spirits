@@ -6,16 +6,20 @@ import com.oow.todowithspirit.domain.task.NotificationOption;
 import com.oow.todowithspirit.domain.task.RepeatType;
 import com.oow.todowithspirit.domain.task.Task;
 import com.oow.todowithspirit.domain.task.TaskRepository;
+import com.oow.todowithspirit.domain.task.TaskType;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
+import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -87,6 +91,21 @@ public class TaskService {
         );
 
         return TaskCreateResponse.from(taskRepository.save(task));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskSummaryResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
+        List<Task> tasks = (from != null && to != null)
+                ? taskRepository.findAllByUserIdAndTypeAndDateRange(userId, TaskType.SCHEDULE, from, to)
+                : taskRepository.findAllByUserIdAndType(userId, TaskType.SCHEDULE);
+
+        return tasks.stream().map(TaskSummaryResponse::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskSummaryResponse> getRoutines(Long userId) {
+        return taskRepository.findAllByUserIdAndType(userId, TaskType.HABIT)
+                .stream().map(TaskSummaryResponse::from).toList();
     }
 
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {
