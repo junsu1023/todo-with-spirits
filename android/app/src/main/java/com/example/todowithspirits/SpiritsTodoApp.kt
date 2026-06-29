@@ -8,7 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.todowithspirits.component.FloatingButton
 import com.example.todowithspirits.component.SplitsTodoBottomBar
+import com.example.todowithspirits.navigation.Screen
 import com.example.todowithspirits.navigation.SpiritsTodoNavigation
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
@@ -35,6 +37,11 @@ fun SpiritsTodoApp() {
                 currentRoute = currentRoute,
                 onItemSelected = { route -> navToRoute(route) }
             )
+        },
+        floatingActionButton = {
+            if(currentRoute == Screen.Today.route) {
+                FloatingButton(navigateToAdd = { navToRoute(Screen.Add.route) })
+            }
         }
     ) { innerPadding ->
         SpiritsTodoNavigation(
