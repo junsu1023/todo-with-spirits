@@ -104,18 +104,34 @@ public class Task extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    @Builder
-    public Task(User user, TaskType type, String title, String category, LocalTime taskTime,
-                RepeatType repeatRule, int power, GrowthType powerType, LocalDate taskDate) {
-        this.user = user;
-        this.type = type;
-        this.title = title;
-        this.category = category;
-        this.taskTime = taskTime;
-        this.repeatRule = repeatRule;
-        this.power = power;
-        this.powerType = powerType;
-        this.taskDate = taskDate;
+    public static Task createSchedule(User user, String title, String memo, CategoryType category,
+                                      LocalDate startDate, LocalTime startTime,
+                                      LocalDate endDate, LocalTime endTime,
+                                      boolean isAllDay, boolean isImportant,
+                                      RepeatType repeatType, LocalDate repeatEndDate,
+                                      Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
+                                      Integer notificationMinutes, boolean isPublic) {
+        Task task = new Task();
+        task.user = user;
+        task.type = TaskType.SCHEDULE;
+        task.title = title;
+        task.memo = memo;
+        task.category = category != null ? category : CategoryType.NONE;
+        task.taskDate = startDate;
+        task.taskTime = isAllDay ? null : startTime;
+        task.endDate = endDate;
+        task.endTime = isAllDay ? null : endTime;
+        task.isAllDay = isAllDay;
+        task.isImportant = isImportant;
+        task.repeatRule = repeatType;
+        task.repeatEndDate = repeatEndDate;
+        task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
+        task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
+        task.notificationMinutes = notificationMinutes;
+        task.isPublic = isPublic;
+        return task;
+    }
+
     }
 
     public void completeTask() {
