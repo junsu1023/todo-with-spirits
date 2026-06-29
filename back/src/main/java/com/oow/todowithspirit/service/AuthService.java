@@ -18,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.util.StringUtils;
+
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +38,12 @@ public class AuthService {
             throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", "Email already in use");
         }
 
+        String nickname = StringUtils.hasText(request.getNickname())
+                ? request.getNickname()
+                : generateDefaultNickname();
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = User.ofLocalSignup(request.getEmail(), encodedPassword, request.getNickname());
+        User user = User.ofLocalSignup(request.getEmail(), encodedPassword, nickname);
         return SignupResponse.from(userRepository.save(user));
     }
 
@@ -89,6 +96,11 @@ public class AuthService {
     @Transactional
     public void logout(Long userId) {
         refreshTokenRepository.deleteAllByUserId(userId);
+    }
+
+    private String generateDefaultNickname() {
+        int suffix = ThreadLocalRandom.current().nextInt(1000, 9999);
+        return "정령유저_" + suffix;
     }
 
     private LocalDateTime refreshTokenExpiresAt() {

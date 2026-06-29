@@ -21,7 +21,6 @@ public class SignupRequest {
     )
     private String password;
 
-    @NotBlank(message = "Nickname is required")
-    @Size(min = 2, max = 50, message = "Nickname must be between 2 and 50 characters")
+    @Size(max = 50, message = "Nickname must be 50 characters or less")
     private String nickname;
 }
