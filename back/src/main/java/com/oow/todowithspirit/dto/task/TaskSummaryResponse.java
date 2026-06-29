@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -13,7 +14,7 @@ import java.time.LocalTime;
 public class TaskSummaryResponse {
 
     private Long taskId;
-    private String type;
+    private String taskType;
     private String title;
     private String category;
 
@@ -31,25 +32,27 @@ public class TaskSummaryResponse {
     private Boolean isPublic;
     private Boolean isCompleted;
     private String memo;
+    private LocalDateTime updatedAt;
 
     public static TaskSummaryResponse from(Task task) {
         return TaskSummaryResponse.builder()
                 .taskId(task.getId())
-                .type(task.getType().name())
+                .taskType(task.getTaskType().name())
                 .title(task.getTitle())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
-                .startDate(task.getTaskDate())
-                .startTime(task.getTaskTime())
+                .startDate(task.getStartDate())
+                .startTime(task.getStartTime())
                 .endDate(task.getEndDate())
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())
                 .isImportant(task.isImportant())
-                .repeatType(task.getRepeatRule().name())
+                .repeatType(task.getRepeatType().name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .notificationMinutes(task.getNotificationMinutes())
                 .isPublic(task.isPublic())
                 .isCompleted(task.isCompleted())
                 .memo(task.getMemo())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 }

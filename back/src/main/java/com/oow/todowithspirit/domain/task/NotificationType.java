@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum NotificationOption {
+public enum NotificationType {
+
     NONE(null),
     TEN_MINUTES(10),
     THIRTY_MINUTES(30),

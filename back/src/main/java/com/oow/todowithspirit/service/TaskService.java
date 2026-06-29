@@ -2,7 +2,7 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.task.NotificationOption;
+import com.oow.todowithspirit.domain.task.NotificationType;
 import com.oow.todowithspirit.domain.task.RepeatType;
 import com.oow.todowithspirit.domain.task.Task;
 import com.oow.todowithspirit.domain.task.TaskRepository;
@@ -96,15 +96,15 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskSummaryResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
         List<Task> tasks = (from != null && to != null)
-                ? taskRepository.findAllByUserIdAndTypeAndDateRange(userId, TaskType.SCHEDULE, from, to)
-                : taskRepository.findAllByUserIdAndType(userId, TaskType.SCHEDULE);
+                ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.SCHEDULE, from, to)
+                : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.SCHEDULE);
 
         return tasks.stream().map(TaskSummaryResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
     public List<TaskSummaryResponse> getRoutines(Long userId) {
-        return taskRepository.findAllByUserIdAndType(userId, TaskType.HABIT)
+        return taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
                 .stream().map(TaskSummaryResponse::from).toList();
     }
 
@@ -140,8 +140,8 @@ public class TaskService {
         }
     }
 
-    private Integer resolveNotificationMinutes(NotificationOption option) {
-        if (option == null || option == NotificationOption.NONE) return null;
+    private Integer resolveNotificationMinutes(NotificationType option) {
+        if (option == null || option == NotificationType.NONE) return null;
         return option.getMinutes();
     }
 }

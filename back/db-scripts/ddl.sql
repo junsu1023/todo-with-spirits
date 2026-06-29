@@ -133,12 +133,12 @@ CREATE TABLE tasks
 (
     id                   BIGSERIAL PRIMARY KEY,
     user_id              BIGINT       NOT NULL,
-    type                 VARCHAR(20)  NOT NULL,                   -- task_type ENUM
+    task_type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
     title                VARCHAR(255) NOT NULL,
     memo                 TEXT,
     category             VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- category_type ENUM
     task_date            DATE         NOT NULL,
-    start_time           TIME,
+    start_time           TIME,                                    -- 종일 일정이면 null
     end_date             DATE,
     end_time             TIME,
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
@@ -308,7 +308,7 @@ CREATE INDEX idx_stage_history_spirit ON spirit_stage_history (spirit_id);
 
 -- 태스크 조회 (캘린더, 목록)
 CREATE INDEX idx_tasks_user_date ON tasks (user_id, task_date);
-CREATE INDEX idx_tasks_user_type ON tasks (user_id, type);
+CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
 CREATE INDEX idx_tasks_user_category ON tasks (user_id, category);
 
 -- 기록

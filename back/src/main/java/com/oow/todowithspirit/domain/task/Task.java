@@ -31,7 +31,7 @@ public class Task extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskType type;
+    private TaskType taskType;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -44,11 +44,11 @@ public class Task extends BaseTimeEntity {
     private CategoryType category;
 
     // 일정 일시
-    @Column(name = "task_date", nullable = false)
-    private LocalDate taskDate;
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
 
-    @Column(name = "task_time")
-    private LocalTime taskTime;
+    @Column(name = "start_time")
+    private LocalTime startTime;
 
     @Column(name = "end_date")
     private LocalDate endDate;
@@ -64,8 +64,8 @@ public class Task extends BaseTimeEntity {
 
     // 반복
     @Enumerated(EnumType.STRING)
-    @Column(name = "repeat_rule", nullable = false)
-    private RepeatType repeatRule = RepeatType.NONE;
+    @Column(name = "repeat_type", nullable = false)
+    private RepeatType repeatType = RepeatType.NONE;
 
     @Column(name = "repeat_end_date")
     private LocalDate repeatEndDate;
@@ -91,11 +91,11 @@ public class Task extends BaseTimeEntity {
 
     // 성장 (서버 계산)
     @Column(nullable = false)
-    private int power = 10;
+    private int growthValue = 10;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "power_type")
-    private GrowthType powerType;
+    @Column(name = "growth_type", nullable = true)  // todo: nullable false로 변경
+    private GrowthType growthType;  // Task 완료 시 서버가 계산하여 설정; 생성 시점엔 null
 
     // 완료
     @Column(name = "is_completed", nullable = false)
@@ -113,17 +113,17 @@ public class Task extends BaseTimeEntity {
                                       Integer notificationMinutes, boolean isPublic) {
         Task task = new Task();
         task.user = user;
-        task.type = TaskType.SCHEDULE;
+        task.taskType = TaskType.SCHEDULE;
         task.title = title;
         task.memo = memo;
         task.category = category != null ? category : CategoryType.NONE;
-        task.taskDate = startDate;
-        task.taskTime = isAllDay ? null : startTime;
+        task.startDate = startDate;
+        task.startTime = isAllDay ? null : startTime;
         task.endDate = endDate;
         task.endTime = isAllDay ? null : endTime;
         task.isAllDay = isAllDay;
         task.isImportant = isImportant;
-        task.repeatRule = repeatType;
+        task.repeatType = repeatType;
         task.repeatEndDate = repeatEndDate;
         task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
         task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
@@ -138,12 +138,12 @@ public class Task extends BaseTimeEntity {
                                      Integer notificationMinutes, boolean isPublic) {
         Task task = new Task();
         task.user = user;
-        task.type = TaskType.HABIT;
+        task.taskType = TaskType.HABIT;
         task.title = title;
         task.memo = memo;
         task.category = CategoryType.NONE;
-        task.taskDate = LocalDate.now();
-        task.repeatRule = repeatType;
+        task.startDate = LocalDate.now();
+        task.repeatType = repeatType;
         task.repeatEndDate = repeatEndDate;
         task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
         task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();

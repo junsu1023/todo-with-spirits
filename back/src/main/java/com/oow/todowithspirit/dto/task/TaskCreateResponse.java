@@ -1,5 +1,6 @@
 package com.oow.todowithspirit.dto.task;
 
+import com.oow.todowithspirit.domain.task.RepeatType;
 import com.oow.todowithspirit.domain.task.Task;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class TaskCreateResponse {
 
     private Long taskId;
-    private String type;
+    private String taskType;
     private String title;
     private String memo;
     private String category;
@@ -39,22 +40,33 @@ public class TaskCreateResponse {
     // 공통
     private Integer notificationMinutes;
     private Boolean isPublic;
+
+    // 성장
+    private Integer growthValue;
+    private String growthType;
+
+    // 완료
+    private Boolean isCompleted;
+    private LocalDateTime completedAt;
+
+    // 타임스탬프
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static TaskCreateResponse from(Task task) {
         return TaskCreateResponse.builder()
                 .taskId(task.getId())
-                .type(task.getType().name())
+                .taskType(task.getTaskType().name())
                 .title(task.getTitle())
                 .memo(task.getMemo())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
                 .isAllDay(task.isAllDay())
-                .startDate(task.getTaskDate())
-                .startTime(task.getTaskTime())
+                .startDate(task.getStartDate())
+                .startTime(task.getStartTime())
                 .endDate(task.getEndDate())
                 .endTime(task.getEndTime())
                 .isImportant(task.isImportant())
-                .repeatType(task.getRepeatRule().name())
+                .repeatType(task.getRepeatType() != null ? task.getRepeatType().name() : RepeatType.NONE.name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .repeatDaysOfWeek(
                         task.getRepeatDaysOfWeek().stream()
@@ -64,7 +76,12 @@ public class TaskCreateResponse {
                 .repeatDaysOfMonth(List.copyOf(task.getRepeatDaysOfMonth()))
                 .notificationMinutes(task.getNotificationMinutes())
                 .isPublic(task.isPublic())
+                .growthValue(task.getGrowthValue())
+                .growthType(task.getGrowthType() != null ? task.getGrowthType().name() : null)
+                .isCompleted(task.isCompleted())
+                .completedAt(task.getCompletedAt())
                 .createdAt(task.getCreatedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 }

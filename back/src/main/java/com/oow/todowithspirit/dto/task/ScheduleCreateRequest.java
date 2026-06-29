@@ -1,7 +1,7 @@
 package com.oow.todowithspirit.dto.task;
 
 import com.oow.todowithspirit.domain.task.CategoryType;
-import com.oow.todowithspirit.domain.task.NotificationOption;
+import com.oow.todowithspirit.domain.task.NotificationType;
 import com.oow.todowithspirit.domain.task.RepeatType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +29,6 @@ public class ScheduleCreateRequest {
 
     private Boolean isAllDay;
 
-    @NotNull(message = "Repeat type is required")
     private RepeatType repeatType;
 
     private LocalDate repeatEndDate;
@@ -40,7 +39,7 @@ public class ScheduleCreateRequest {
     // 매월 반복 시 선택 일 (1 ~ 31)
     private Set<Integer> repeatDaysOfMonth;
 
-    private NotificationOption notification;
+    private NotificationType notification;
 
     private CategoryType category;
 
