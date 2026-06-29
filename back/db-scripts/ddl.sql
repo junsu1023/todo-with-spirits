@@ -2,7 +2,7 @@
 --  1. ENUM 타입
 -- ============================================================
 
--- CREATE TYPE task_type AS ENUM ('TODO', 'SCHEDULE', 'HABIT');
+-- CREATE TYPE task_type AS ENUM ('SCHEDULE', 'ROUTINE');
 -- CREATE TYPE growth_type AS ENUM ('FOCUS', 'ENERGY', 'CONSISTENCY', 'CREATIVITY');
 -- CREATE TYPE repeat_type AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
 -- CREATE TYPE category_type AS ENUM ('NONE', 'WORK_STUDY', 'HEALTH', 'LIFE', 'RELATIONSHIP', 'GROWTH', 'HOBBY', 'REST', 'FINANCE');
@@ -116,11 +116,11 @@ CREATE TABLE spirit_stage_history
 --  정령 상호작용 로그 테이블 (일일 횟수 제한 체크용)
 CREATE TABLE spirit_interactions
 (
-    id            BIGSERIAL PRIMARY KEY,
-    spirit_id     BIGINT NOT NULL,
-    user_id       BIGINT NOT NULL,
+    id               BIGSERIAL PRIMARY KEY,
+    spirit_id        BIGINT      NOT NULL,
+    user_id          BIGINT      NOT NULL,
     interaction_type VARCHAR(20) NOT NULL, -- interaction_type ENUM
-    interacted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    interacted_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_interactions_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
     CONSTRAINT fk_interactions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
@@ -131,25 +131,45 @@ CREATE TABLE spirit_interactions
 -- To-do, schedule, habit 테이블
 CREATE TABLE tasks
 (
-    id              BIGSERIAL PRIMARY KEY,
-    user_id         BIGINT       NOT NULL,
-    type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
-    title           VARCHAR(255) NOT NULL,
-    memo            TEXT,
-    category        VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- category_type ENUM
-    task_date       DATE         NOT NULL,
-    start_time      TIME,
-    end_date        DATE,
-    end_time        TIME,
-    repeat_type     VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
-    repeat_end_date DATE,
-    growth_type VARCHAR(20),                                             -- growth_type ENUM
-    growth_value    INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
-    is_completed    BOOLEAN      NOT NULL    DEFAULT FALSE,
-    completed_at    TIMESTAMP WITH TIME ZONE,
-    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                   BIGSERIAL PRIMARY KEY,
+    user_id              BIGINT       NOT NULL,
+    type                 VARCHAR(20)  NOT NULL,                   -- task_type ENUM
+    title                VARCHAR(255) NOT NULL,
+    memo                 TEXT,
+    category             VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- category_type ENUM
+    task_date            DATE         NOT NULL,
+    start_time           TIME,
+    end_date             DATE,
+    end_time             TIME,
+    repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
+    repeat_end_date      DATE,
+    growth_type          VARCHAR(20),                             -- growth_type ENUM
+    growth_value         INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
+    is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,
+    is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,
+    is_all_day           BOOLEAN      NOT NULL    DEFAULT FALSE,
+    is_public            BOOLEAN      NOT NULL    DEFAULT FALSE,
+    notification_minutes INT,
+    completed_at         TIMESTAMP WITH TIME ZONE,
+    created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_tasks_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- 매주 반복 요일 (WEEKLY)
+CREATE TABLE IF NOT EXISTS task_repeat_days_of_week
+(
+    task_id     BIGINT      NOT NULL,
+    day_of_week VARCHAR(10) NOT NULL,
+    CONSTRAINT fk_rdow_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
+);
+
+-- 매월 반복 일 (MONTHLY)
+CREATE TABLE IF NOT EXISTS task_repeat_days_of_month
+(
+    task_id      BIGINT NOT NULL,
+    day_of_month INT    NOT NULL,
+    CONSTRAINT fk_rdom_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
 );
 
 -- 일일 기록 테이블
@@ -179,13 +199,13 @@ CREATE TABLE monthly_records
     total_completed_count    INT           NOT NULL   DEFAULT 0,
     completion_rate          NUMERIC(5, 2) NOT NULL   DEFAULT 0.00,
     accumulated_growth_power INT           NOT NULL   DEFAULT 0,
-    top_growth_type VARCHAR(20), -- growth_type ENUM
+    top_growth_type          VARCHAR(20), -- growth_type ENUM
     created_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_monthly_records_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT uq_monthly_records_user_ym UNIQUE (user_id, year, month),
     CONSTRAINT chk_monthly_records_year CHECK (year BETWEEN 2000 AND 2100
-) ,
+        ),
     CONSTRAINT chk_monthly_records_month CHECK (month BETWEEN 1 AND 12)
 );
 
@@ -269,7 +289,6 @@ CREATE TABLE notification_settings
     updated_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notification_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
-
 
 -- ============================================================
 --  17. 인덱스
