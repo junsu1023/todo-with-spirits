@@ -11,6 +11,7 @@ import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
+import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
 import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
@@ -108,6 +109,14 @@ public class TaskService {
         List<TaskSummaryResponse> items = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
                 .stream().map(TaskSummaryResponse::from).toList();
         return TaskListResponse.of(items);
+    }
+
+    @Transactional(readOnly = true)
+    public CalendarTaskListResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
+        List<Task> tasks = (from != null && to != null)
+                ? taskRepository.findCalendarTasksWithDateRange(userId, from, to)
+                : taskRepository.findAllCalendarTasks(userId);
+        return CalendarTaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
     }
 
     // 단건 조회: @Transactional 내에서 lazy 컬렉션(repeatDaysOfWeek/Month) 로딩

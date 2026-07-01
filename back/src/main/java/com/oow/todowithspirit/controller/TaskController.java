@@ -3,6 +3,7 @@ package com.oow.todowithspirit.controller;
 import com.oow.todowithspirit.common.response.ApiResponse;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
+import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
 import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
@@ -49,6 +50,18 @@ public class TaskController {
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId) {
         return ResponseEntity.ok(ApiResponse.success(taskService.getScheduleDetail(userId, taskId)));
+    }
+
+    // ==============================================
+    // CALENDAR (일정 + 루틴 통합)
+    // ==============================================
+
+    @GetMapping("/calendar")
+    public ResponseEntity<ApiResponse<CalendarTaskListResponse>> getCalendarTasks(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to)));
     }
 
     // ==============================================

@@ -25,6 +25,35 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("to") LocalDate to
     );
 
+    // 캘린더 통합 조회 (날짜 범위 있음)
+    // - 일정: startDate가 범위 내에 포함
+    // - 루틴: 활성 기간(startDate ~ repeatEndDate)이 조회 범위와 겹침
+    @Query("""
+            SELECT t FROM Task t
+            WHERE t.user.id = :userId
+              AND (
+                (t.taskType = 'SCHEDULE' AND t.startDate BETWEEN :from AND :to)
+                OR (t.taskType = 'HABIT'
+                    AND t.startDate <= :to
+                    AND (t.repeatEndDate IS NULL OR t.repeatEndDate >= :from))
+              )
+            ORDER BY t.startDate ASC
+            """)
+    List<Task> findCalendarTasksWithDateRange(
+            @Param("userId") Long userId,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
+
+    // 캘린더 통합 조회 (날짜 범위 없음) - 일정 + 루틴 전체
+    @Query("""
+            SELECT t FROM Task t
+            WHERE t.user.id = :userId
+              AND (t.taskType = 'SCHEDULE' OR t.taskType = 'HABIT')
+            ORDER BY t.startDate ASC
+            """)
+    List<Task> findAllCalendarTasks(@Param("userId") Long userId);
+
     // 단건 - 소유권 + 타입 동시 검증 (타인 자원 존재 여부 노출 방지)
     @Query("SELECT t FROM Task t WHERE t.id = :id AND t.user.id = :userId AND t.taskType = :taskType")
     Optional<Task> findByIdAndUserIdAndType(
