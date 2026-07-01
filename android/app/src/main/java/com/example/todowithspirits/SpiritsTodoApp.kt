@@ -40,7 +40,7 @@ fun SpiritsTodoApp() {
         },
         floatingActionButton = {
             if(currentRoute == Screen.Today.route) {
-                FloatingButton(navigateToAdd = { navToRoute(Screen.Add.route) })
+                FloatingButton()
             }
         }
     ) { innerPadding ->
