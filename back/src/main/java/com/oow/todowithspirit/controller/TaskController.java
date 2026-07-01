@@ -1,9 +1,9 @@
 package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
+import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
-import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
 import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
@@ -26,7 +26,30 @@ public class TaskController {
     private final TaskService taskService;
 
     // ==============================================
-    // SCHEDULE
+    // 단건 조회 (일정/루틴 공통)
+    // ==============================================
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<TaskCreateResponse>> getTask(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getTaskDetail(userId, taskId)));
+    }
+
+    // ==============================================
+    // 캘린더 (일정 + 루틴 통합 조회)
+    // ==============================================
+
+    @GetMapping("/calendar")
+    public ResponseEntity<ApiResponse<CalendarTaskListResponse>> getCalendarTasks(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to)));
+    }
+
+    // ==============================================
+    // 일정 (SCHEDULE)
     // ==============================================
 
     @PostMapping("/schedule")
@@ -45,27 +68,8 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(taskService.getSchedules(userId, from, to)));
     }
 
-    @GetMapping("/schedule/{taskId}")
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> getSchedule(
-            @AuthenticationPrincipal Long userId,
-            @PathVariable Long taskId) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getScheduleDetail(userId, taskId)));
-    }
-
     // ==============================================
-    // CALENDAR (일정 + 루틴 통합)
-    // ==============================================
-
-    @GetMapping("/calendar")
-    public ResponseEntity<ApiResponse<CalendarTaskListResponse>> getCalendarTasks(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to)));
-    }
-
-    // ==============================================
-    // ROUTINE
+    // 루틴 (ROUTINE)
     // ==============================================
 
     @PostMapping("/routine")
@@ -80,12 +84,5 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getRoutines(
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId)));
-    }
-
-    @GetMapping("/routine/{taskId}")
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> getRoutine(
-            @AuthenticationPrincipal Long userId,
-            @PathVariable Long taskId) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutineDetail(userId, taskId)));
     }
 }

@@ -54,11 +54,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             """)
     List<Task> findAllCalendarTasks(@Param("userId") Long userId);
 
-    // 단건 - 소유권 + 타입 동시 검증 (타인 자원 존재 여부 노출 방지)
-    @Query("SELECT t FROM Task t WHERE t.id = :id AND t.user.id = :userId AND t.taskType = :taskType")
-    Optional<Task> findByIdAndUserIdAndType(
-            @Param("id") Long id,
-            @Param("userId") Long userId,
-            @Param("taskType") TaskType taskType
-    );
+    // 단건 - 소유권 검증 (타인 자원 존재 여부 노출 방지)
+    @Query("SELECT t FROM Task t WHERE t.id = :id AND t.user.id = :userId")
+    Optional<Task> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 }
