@@ -1,4 +1,4 @@
-package com.example.todowithspirits.component
+package com.example.todowithspirits.feature.today.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -37,17 +37,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SelectionTabs
+import com.example.todowithspirits.component.SplitsTodoSwitch
+import com.example.todowithspirits.component.TabItems
 import com.example.todowithspirits.feature.add.component.CalendarView
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
 import com.example.todowithspirits.feature.add.component.MonthlyCalendarView
@@ -156,7 +157,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                     .size(18.dp)
                                     .clickable(
                                         indication = null,
-                                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                        interactionSource = remember { MutableInteractionSource() }
                                     ) {
                                         isScheduleSectionVisible = !isScheduleSectionVisible
 
@@ -367,7 +368,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                         .rotate(45f)
                         .clickable(
                             indication = null,
-                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            interactionSource = remember { MutableInteractionSource() }
                         ) { onDismiss() }
                 )
 

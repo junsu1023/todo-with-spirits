@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.TodoDetailBottomSheet
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
