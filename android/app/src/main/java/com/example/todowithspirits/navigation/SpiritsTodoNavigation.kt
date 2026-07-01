@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.todowithspirits.feature.add.AddScreen
+import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
@@ -13,6 +14,8 @@ fun SpiritsTodoNavigation(
     navController: NavHostController,
     modifier: Modifier
 ) {
+    val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Today.route,
@@ -23,7 +26,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Plan.route) {
-
+            PlanScreen(navigateToAdd = navigateToAdd)
         }
 
         composable(Screen.Forest.route) {
