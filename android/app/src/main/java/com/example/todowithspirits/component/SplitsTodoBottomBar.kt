@@ -2,12 +2,15 @@ package com.example.todowithspirits.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -40,42 +43,49 @@ fun SplitsTodoBottomBar(
     currentRoute: String?,
     onItemSelected: (String) -> Unit
 ) {
-    NavigationBar(
-        containerColor = SpiritTodoTheme.colors.bgColor2,
+    Surface(
+        color = SpiritTodoTheme.colors.bgColor2,
         tonalElevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(74.dp)
+        modifier = Modifier.navigationBarsPadding()
     ) {
-        bottomNavItems.forEach { item ->
-            val isSelected = currentRoute == item.route
+        NavigationBar(
+            containerColor = SpiritTodoTheme.colors.bgColor2,
+            tonalElevation = 0.dp,
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
+        ) {
+            bottomNavItems.forEach { item ->
+                val isSelected = currentRoute == item.route
 
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = { onItemSelected(item.route) },
-                icon = {
-                    Icon(
-                        painter = painterResource(item.iconRes),
-                        contentDescription = stringResource(item.label)
-                    )
-                },
-                label = {
-                    Text(
-                        text = stringResource(item.label),
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 8.sp,
+                NavigationBarItem(
+                    selected = isSelected,
+                    onClick = { onItemSelected(item.route) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(item.iconRes),
+                            contentDescription = stringResource(item.label)
                         )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(item.label),
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 8.sp,
+                            )
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = SpiritTodoTheme.colors.selectedColor,
+                        selectedTextColor = SpiritTodoTheme.colors.selectedColor,
+                        unselectedIconColor = SpiritTodoTheme.colors.unselectedColor,
+                        unselectedTextColor = SpiritTodoTheme.colors.unselectedColor,
+                        indicatorColor = SpiritTodoTheme.colors.transparent
                     )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = SpiritTodoTheme.colors.selectedColor,
-                    selectedTextColor = SpiritTodoTheme.colors.selectedColor,
-                    unselectedIconColor = SpiritTodoTheme.colors.unselectedColor,
-                    unselectedTextColor = SpiritTodoTheme.colors.unselectedColor,
-                    indicatorColor = SpiritTodoTheme.colors.transparent
                 )
-            )
+            }
         }
     }
 }
