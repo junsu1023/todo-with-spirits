@@ -49,10 +49,10 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SplitsTodoSwitch
 import com.example.todowithspirits.component.TabItems
-import com.example.todowithspirits.feature.add.component.CalendarView
+import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
-import com.example.todowithspirits.feature.add.component.MonthlyCalendarView
-import com.example.todowithspirits.feature.add.component.TimeWheelPicker
+import com.example.todowithspirits.component.MonthlyCalendarView
+import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate

@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.add.component
+package com.example.todowithspirits.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
