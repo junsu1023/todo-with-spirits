@@ -34,7 +34,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 // dummy data
-private data class ScheduleItem(val title: String, val isDone: Boolean)
 private data class TodoItem(val title: String, val isDone: Boolean, val isImportant: Boolean)
 private data class RoutineItem(val title: String, val isDone: Boolean)
 
@@ -93,11 +92,8 @@ fun TodayPlanSection() {
         Column(modifier = Modifier.padding(horizontal = 2.dp)) {
             SectionHeader(title = stringResource(R.string.todo))
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(18.dp))
 
-            // 할 일
-            SectionHeader("할 일")
-            Spacer(Modifier.height(8.dp))
             dummyTodos.forEach { item ->
                 TodayListItem(
                     title = item.title,
@@ -107,19 +103,19 @@ fun TodayPlanSection() {
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
 
             HorizontalDivider(
                 color = SpiritTodoTheme.colors.dividerColor,
                 thickness = 0.8.dp
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
 
-            // 루틴
-            SectionHeader("루틴")
+            SectionHeader(title = stringResource(R.string.routine))
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(18.dp))
+
             dummyRoutines.forEach { item ->
                 TodayListItem(
                     title = item.title,
@@ -150,23 +146,27 @@ private fun TodayListItem(
     checkColor: Color,
     isImportant: Boolean = false
 ) {
+    val white = SpiritTodoTheme.colors.white
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Canvas(modifier = Modifier.size(26.dp)) {
+        Canvas(modifier = Modifier.size(22.dp)) {
             if (isDone) {
                 drawCircle(color = checkColor)
+
                 val path = Path().apply {
                     moveTo(size.width * 0.22f, size.height * 0.50f)
                     lineTo(size.width * 0.43f, size.height * 0.68f)
                     lineTo(size.width * 0.78f, size.height * 0.33f)
                 }
+
                 drawPath(
                     path = path,
-                    color = Color.White,
+                    color = white,
                     style = Stroke(
                         width = 2.2.dp.toPx(),
                         cap = StrokeCap.Round,
@@ -181,21 +181,20 @@ private fun TodayListItem(
             }
         }
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(10.dp))
 
         Text(
             text = title,
-            fontSize = 15.sp,
-            color = SpiritTodoTheme.colors.mainTextColor,
-            modifier = Modifier.weight(1f)
+            fontSize = 14.sp,
+            color = SpiritTodoTheme.colors.mainTextColor
         )
 
         if (isImportant) {
             Spacer(Modifier.width(4.dp))
-            Text(
-                text = "★",
-                color = SpiritTodoTheme.colors.selectedTabColor,
-                fontSize = 14.sp
+
+            Image(
+                painter = painterResource(R.drawable.fi_rr_color_star),
+                contentDescription = null
             )
         }
     }
