@@ -48,13 +48,12 @@ private val dummyRoutines = listOf(
     RoutineItem("책 20 페이지 읽기", true)
 )
 
-private val todoCheckColor = Color(0xFF5BBFDE)
-private val routineCheckColor = Color(0xFF7DCB7F)
-
 @Composable
 fun TodayPlanSection() {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     val today = remember { LocalDate.now() }
+    val todoCheckColor = SpiritTodoTheme.colors.onSurfaceColor4
+    val routineCheckColor = SpiritTodoTheme.colors.onSurfaceColor5
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(Modifier.height(24.dp))
