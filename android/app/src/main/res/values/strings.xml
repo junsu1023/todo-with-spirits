@@ -8,7 +8,7 @@
     <string name="add_todo">%s 추가</string>
     <string name="title">제목</string>
     <string name="schedule">일정</string>
-    <string name="todo">할 일</string>
+    <string name="todo">To do</string>
     <string name="routine">루틴</string>
     <string name="important">중요</string>
     <string name="all_day">하루 종일</string>

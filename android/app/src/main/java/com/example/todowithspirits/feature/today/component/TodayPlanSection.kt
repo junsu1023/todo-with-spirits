@@ -38,9 +38,6 @@ private data class ScheduleItem(val title: String, val isDone: Boolean)
 private data class TodoItem(val title: String, val isDone: Boolean, val isImportant: Boolean)
 private data class RoutineItem(val title: String, val isDone: Boolean)
 
-private val dummySchedules = listOf(
-    ScheduleItem("민지랑 저녁", true)
-)
 private val dummyTodos = listOf(
     TodoItem("성과 보고서 제출 마감", true, true),
     TodoItem("26년도 하반기 KPI 목표 설정", true, true),
@@ -97,23 +94,6 @@ fun TodayPlanSection() {
             SectionHeader(title = stringResource(R.string.todo))
 
             Spacer(Modifier.height(8.dp))
-
-            dummySchedules.forEach { item ->
-                TodayListItem(
-                    title = item.title,
-                    isDone = item.isDone,
-                    checkColor = SpiritTodoTheme.colors.selectedTabColor
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            HorizontalDivider(
-                color = SpiritTodoTheme.colors.dividerColor,
-                thickness = 0.8.dp
-            )
-
-            Spacer(Modifier.height(16.dp))
 
             // 할 일
             SectionHeader("할 일")
