@@ -25,4 +25,7 @@
     <string name="today_completion_rate">오늘의 달성률</string>
     <string name="see_all_plan">플랜 전체 보기</string>
     <string name="date">날짜</string>
+    <string name="delete">삭제</string>
+    <string name="delay">미루기</string>
+    <string name="modify">수정</string>
 </resources>

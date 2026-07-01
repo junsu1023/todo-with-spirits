@@ -1,0 +1,229 @@
+package com.example.todowithspirits.component
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.todowithspirits.R
+import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodoDetailBottomSheet(
+    title: String,
+    isImportant: Boolean,
+    dueDate: LocalDate?,
+    dueTime: LocalTime?,
+    memo: String,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onPostpone: () -> Unit,
+    onEdit: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("yy. MM. dd (E)", Locale.KOREAN) }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("a HH:mm", Locale.KOREAN) }
+
+    val dDay = dueDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
+    val dDayText = when {
+        dDay == null -> null
+        dDay == 0 -> "D-Day"
+        dDay > 0 -> "D-$dDay"
+        else -> "D+${-dDay}"
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = SpiritTodoTheme.colors.white,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 28.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = title,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = SpiritTodoTheme.colors.mainTextColor,
+                            textAlign = TextAlign.Center
+                        )
+
+                        if (isImportant) {
+                            Spacer(Modifier.width(4.dp))
+
+                            Image(
+                                painter = painterResource(R.drawable.fi_rr_color_star),
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
+                    if (dueDate != null) {
+                        Spacer(Modifier.height(2.dp))
+
+                        val dateText = buildString {
+                            append("마감일 : ")
+                            append(dueDate.format(dateFormatter))
+                            if (dueTime != null) append(" ${dueTime.format(timeFormatter)}")
+                        }
+
+                        Text(
+                            text = dateText,
+                            fontSize = 14.sp,
+                            color = SpiritTodoTheme.colors.onSurfaceColor2,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_cross),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onDismiss() }
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            if (dDayText != null) {
+                Text(
+                    text = dDayText,
+                    fontSize = 22.sp,
+                    color = SpiritTodoTheme.colors.onSurfaceColor1,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(Modifier.height(12.dp))
+            }
+
+            Text(
+                text = memo.ifEmpty { "메모 없음" },
+                fontSize = 14.sp,
+                color = SpiritTodoTheme.colors.onSurfaceColor2,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                DetailActionButton(
+                    modifier = Modifier.weight(1f),
+                    iconRes = R.drawable.fi_rr_trash,
+                    label = stringResource(R.string.delete),
+                    color = SpiritTodoTheme.colors.onSurfaceColor6,
+                    onClick = onDelete
+                )
+                DetailActionButton(
+                    modifier = Modifier.weight(1f),
+                    iconRes = R.drawable.fi_rr_arrow_right,
+                    label = stringResource(R.string.delay),
+                    color = SpiritTodoTheme.colors.mainTextColor,
+                    onClick = onPostpone
+                )
+                DetailActionButton(
+                    modifier = Modifier.weight(1f),
+                    iconRes = R.drawable.fi_rr_pencil,
+                    label = stringResource(R.string.modify),
+                    color = SpiritTodoTheme.colors.mainTextColor,
+                    onClick = onEdit
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailActionButton(
+    modifier: Modifier = Modifier,
+    iconRes: Int,
+    label: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .border(1.dp, color.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
+            .padding(vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            color = color
+        )
+    }
+}
