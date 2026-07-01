@@ -12,12 +12,17 @@ val spiritsTodoColor = SpiritsTodoColor(
     surfaceColor1 = Color(0xFFF3E8FF),
     surfaceColor2 = Color(0xFFF6F6F6),
     surfaceColor3 = Color(0xFFD7BFFF),
+    surfaceColor4 = Color(0xFFFAFAFA),
+    surfaceColor5 = Color(0xFF8DE4FF),
     onSurfaceColor1 = Color(0xFFB286FD),
     onSurfaceColor2 = Color(0xFFBCBCBC),
     onSurfaceColor3 = Color(0xFFD1D1D6),
     onSurfaceColor4 = Color(0xFF8DE4FF),
     onSurfaceColor5 = Color(0xFFB2F042),
     onSurfaceColor6 = Color(0xFFF49191),
+    onSurfaceColor7 = Color(0xFFC7C7C7),
+    onSurfaceColor8 = Color(0xFFF7F7F7),
+    onSurfaceColor9 = Color(0xFFFBFBFB),
     selectedColor = Color(0xFF374957),
     selectedTabColor = Color(0xFFB286FD),
     unselectedColor = Color(0xFFD1D1D6),
@@ -45,12 +50,17 @@ class SpiritsTodoColor(
     surfaceColor1: Color,
     surfaceColor2: Color,
     surfaceColor3: Color,
+    surfaceColor4: Color,
+    surfaceColor5: Color,
     onSurfaceColor1: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
     onSurfaceColor5: Color,
     onSurfaceColor6: Color,
+    onSurfaceColor7: Color,
+    onSurfaceColor8: Color,
+    onSurfaceColor9: Color,
     selectedColor: Color,
     selectedTabColor: Color,
     unselectedColor: Color,
@@ -88,6 +98,12 @@ class SpiritsTodoColor(
     var surfaceColor3 by mutableStateOf(surfaceColor3)
         private set
 
+    var surfaceColor4 by mutableStateOf(surfaceColor4)
+        private set
+
+    var surfaceColor5 by mutableStateOf(surfaceColor5)
+        private set
+
     var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
         private set
 
@@ -104,6 +120,15 @@ class SpiritsTodoColor(
         private set
 
     var onSurfaceColor6 by mutableStateOf(onSurfaceColor6)
+        private set
+
+    var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
+        private set
+
+    var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
+        private set
+
+    var onSurfaceColor9 by mutableStateOf(onSurfaceColor9)
         private set
 
     var selectedColor by mutableStateOf(selectedColor)

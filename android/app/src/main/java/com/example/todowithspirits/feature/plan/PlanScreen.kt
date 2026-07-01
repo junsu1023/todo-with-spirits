@@ -1,8 +1,185 @@
 package com.example.todowithspirits.feature.plan
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.todowithspirits.R
+import com.example.todowithspirits.feature.plan.component.AddPlanButton
+import com.example.todowithspirits.feature.plan.component.PlanCalendarData
+import com.example.todowithspirits.feature.plan.component.PlanCalendarView
+import com.example.todowithspirits.feature.plan.component.PlanHeader
+import com.example.todowithspirits.feature.plan.component.PlanListItem
+import com.example.todowithspirits.feature.plan.component.PlanSearchArea
+import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
+import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
+import java.time.LocalTime
+
+enum class PlanType { TODO, ROUTINE }
+
+data class PlanItemData(
+    val id: Int,
+    val title: String,
+    val type: PlanType,
+    val isImportant: Boolean,
+    val isDone: Boolean,
+    val dueDate: LocalDate?,
+    val dueTime: LocalTime?,
+    val memo: String = "",
+    val category: String? = null,
+    val repeatInfo: String? = null
+)
+
+private val dummyPlans = listOf(
+    PlanItemData(1, "성과 보고서 제출 마감", PlanType.TODO, true, true, LocalDate.of(2026, 6, 1), LocalTime.of(18, 0), "", "업무/커리어"),
+    PlanItemData(2, "민지랑 저녁", PlanType.TODO, false, false, LocalDate.of(2026, 6, 1), LocalTime.of(19, 0), "", "인간관계/약속"),
+    PlanItemData(3, "책 20페이지 읽기", PlanType.ROUTINE, false, false, LocalDate.of(2026, 6, 1), LocalTime.of(19, 0), "", "자기계발", "매주 월, 화"),
+    PlanItemData(4, "비행기 티켓 끊기", PlanType.TODO, false, false, LocalDate.of(2026, 6, 12), LocalTime.of(23, 59), "", "자기계발", "매주 월, 화")
+)
+
+private val dummyCalendarData = mapOf(
+    1 to PlanCalendarData(listOf(PlanType.TODO), "중요 1"),
+    2 to PlanCalendarData(listOf(PlanType.TODO)),
+    3 to PlanCalendarData(listOf(PlanType.ROUTINE)),
+    4 to PlanCalendarData(listOf(PlanType.TODO)),
+    5 to PlanCalendarData(listOf(PlanType.TODO, PlanType.ROUTINE)),
+    7 to PlanCalendarData(listOf(PlanType.TODO)),
+    8 to PlanCalendarData(listOf(PlanType.TODO)),
+    9 to PlanCalendarData(listOf(PlanType.TODO, PlanType.TODO)),
+    10 to PlanCalendarData(listOf(PlanType.ROUTINE)),
+    12 to PlanCalendarData(listOf(PlanType.TODO)),
+    15 to PlanCalendarData(listOf(PlanType.TODO)),
+    17 to PlanCalendarData(listOf(PlanType.TODO, PlanType.ROUTINE)),
+    18 to PlanCalendarData(listOf(PlanType.TODO), "중요 2"),
+    19 to PlanCalendarData(listOf(PlanType.TODO)),
+    22 to PlanCalendarData(listOf(PlanType.TODO)),
+    24 to PlanCalendarData(listOf(PlanType.TODO, PlanType.TODO)),
+    26 to PlanCalendarData(listOf(PlanType.ROUTINE)),
+    29 to PlanCalendarData(listOf(PlanType.TODO)),
+    30 to PlanCalendarData(listOf(PlanType.TODO, PlanType.ROUTINE))
+)
 
 @Composable
-fun PlanScreen() {
+fun PlanScreen(navigateToAdd: () -> Unit) {
+    var selectedTab by remember { mutableStateOf("전체") }
+    var hideDone by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SpiritTodoTheme.colors.white)
+            .verticalScroll(rememberScrollState())
+    ) {
+        PlanHeader()
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        PlanSearchArea()
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        PlanCalendarView(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            selectedDate = selectedDate,
+            onDateSelected = { selectedDate = it },
+            eventData = dummyCalendarData
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        AddPlanButton(navigateToAdd = navigateToAdd)
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        UnderlinePlanTabs(
+            selectedTab = selectedTab,
+            onTabSelected = { selectedTab = it }
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.hide_completion),
+                color = if (hideDone) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
+                fontSize = 14.sp,
+                modifier = Modifier.clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { hideDone = !hideDone }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "마감 임박 순",
+                    color = SpiritTodoTheme.colors.mainTextColor,
+                    fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        val filteredPlans = dummyPlans.filter { item ->
+            val doneFilter = !hideDone || !item.isDone
+            val tabFilter = when (selectedTab) {
+                "할 일" -> item.type == PlanType.TODO
+                "루틴" -> item.type == PlanType.ROUTINE
+                else -> true
+            }
+            doneFilter && tabFilter
+        }
+
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            filteredPlans.forEach { item ->
+                PlanListItem(
+                    item = item,
+                    onDelete = {},
+                    onEdit = {}
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 }
