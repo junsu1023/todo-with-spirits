@@ -27,13 +27,13 @@ import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoPrimaryButton
-import com.example.todowithspirits.feature.add.component.CalendarView
+import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
 import com.example.todowithspirits.feature.add.component.SettingSwitchItem
-import com.example.todowithspirits.feature.add.component.TimeWheelPicker
+import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime

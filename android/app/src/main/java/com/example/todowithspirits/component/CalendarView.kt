@@ -1,8 +1,9 @@
-package com.example.todowithspirits.feature.add.component
+package com.example.todowithspirits.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -119,7 +120,7 @@ fun CalendarView(
                                 enabled = date != null,
                                 onClick = { date?.let { onDateSelected(it) } },
                                 indication = null,
-                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                interactionSource = remember { MutableInteractionSource() }
                             ),
                         contentAlignment = Alignment.Center
                     ) {

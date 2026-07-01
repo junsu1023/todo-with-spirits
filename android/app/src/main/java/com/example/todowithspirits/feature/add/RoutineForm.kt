@@ -29,7 +29,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoCheckbox
 import com.example.todowithspirits.component.SplitsTodoPrimaryButton
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
-import com.example.todowithspirits.feature.add.component.MonthlyCalendarView
+import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
