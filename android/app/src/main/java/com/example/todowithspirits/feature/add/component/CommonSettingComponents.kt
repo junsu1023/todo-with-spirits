@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -276,7 +277,7 @@ fun SettingDateItem(
 fun DayOfWeekSelector(
     selectedDays: Set<DayOfWeek>,
     onDayToggled: (DayOfWeek) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val days = listOf(
         "일" to DayOfWeek.SUNDAY,
@@ -294,25 +295,26 @@ fun DayOfWeekSelector(
     ) {
         days.forEach { (label, day) ->
             val isSelected = day in selectedDays
+
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(1f)
+                    .height(52.dp)
                     .border(
                         width = if (isSelected) 1.dp else 0.dp,
-                        color = if (isSelected) SpiritTodoTheme.colors.selectedTabColor else Color.Transparent,
-                        shape = RoundedCornerShape(6.dp)
+                        color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else Color.Transparent,
+                        shape = RoundedCornerShape(4.dp)
                     )
                     .background(
-                        color = if (isSelected) SpiritTodoTheme.colors.selectedDateBoxColor else Color.Transparent,
-                        shape = RoundedCornerShape(6.dp)
+                        color = SpiritTodoTheme.colors.white,
+                        shape = RoundedCornerShape(4.dp)
                     )
                     .clickable { onDayToggled(day) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = label,
-                    color = if (isSelected) SpiritTodoTheme.colors.selectedTabColor else SpiritTodoTheme.colors.mainTextColor,
+                    color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                 )

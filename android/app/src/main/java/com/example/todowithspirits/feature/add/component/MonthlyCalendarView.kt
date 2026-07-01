@@ -37,7 +37,8 @@ import java.time.YearMonth
 fun MonthlyCalendarView(
     modifier: Modifier = Modifier,
     selectedDays: Set<Int>,
-    onDayToggled: (Int) -> Unit
+    onDayToggled: (Int) -> Unit,
+    compact: Boolean = false
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     val daysInMonth = remember(currentMonth) {
@@ -51,36 +52,43 @@ fun MonthlyCalendarView(
         days
     }
 
+    val cellSize = if (compact) 22.dp else 32.dp
+    val weekSpacing = if (compact) 0.dp else 18.dp
+    val headerHeight = if (compact) 24.dp else 36.dp
+    val rowHeight = if (compact) 28.dp else 32.dp
+
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.month, currentMonth.monthValue),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = SpiritTodoTheme.colors.mainTextColor
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.left),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { currentMonth = currentMonth.minusMonths(1) }
+        if (!compact) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.month, currentMonth.monthValue),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SpiritTodoTheme.colors.mainTextColor
                 )
-                Image(
-                    painter = painterResource(R.drawable.right),
-                    contentDescription = null,
-                    modifier = Modifier.clickable { currentMonth = currentMonth.plusMonths(1) }
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Image(
+                        painter = painterResource(R.drawable.left),
+                        contentDescription = null,
+                        modifier = Modifier.clickable { currentMonth = currentMonth.minusMonths(1) }
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.right),
+                        contentDescription = null,
+                        modifier = Modifier.clickable { currentMonth = currentMonth.plusMonths(1) }
+                    )
+                }
             }
         }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(36.dp),
+                .height(headerHeight),
             verticalAlignment = Alignment.CenterVertically
         ) {
             listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT").forEach { day ->
@@ -89,7 +97,7 @@ fun MonthlyCalendarView(
                     modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
+                    fontSize = if (compact) 10.sp else 12.sp,
                     color = SpiritTodoTheme.colors.textColor1
                 )
             }
@@ -100,11 +108,12 @@ fun MonthlyCalendarView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(32.dp),
+                    .height(rowHeight),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 week.forEach { day ->
                     val isSelected = day != null && day in selectedDays
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -121,15 +130,15 @@ fun MonthlyCalendarView(
                             if (isSelected) {
                                 Box(
                                     modifier = Modifier
-                                        .size(32.dp)
-                                        .background(SpiritTodoTheme.colors.selectedTabColor, CircleShape)
+                                        .size(cellSize)
+                                        .background(SpiritTodoTheme.colors.surfaceColor3, CircleShape)
                                 )
                             }
+
                             Text(
                                 text = day.toString(),
                                 color = if (isSelected) Color.White else SpiritTodoTheme.colors.mainTextColor,
-                                fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                fontSize = 12.sp
                             )
                         }
                     }
@@ -140,8 +149,9 @@ fun MonthlyCalendarView(
                     }
                 }
             }
-            if (weekIdx != chunks.lastIndex) {
-                Spacer(modifier = Modifier.height(18.dp))
+
+            if (weekIdx != chunks.lastIndex && !compact) {
+                Spacer(modifier = Modifier.height(weekSpacing))
             }
         }
     }
