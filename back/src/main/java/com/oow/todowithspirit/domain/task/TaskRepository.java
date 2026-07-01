@@ -1,6 +1,7 @@
 package com.oow.todowithspirit.domain.task;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -57,4 +58,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // 단건 - 소유권 검증 (타인 자원 존재 여부 노출 방지)
     @Query("SELECT t FROM Task t WHERE t.id = :id AND t.user.id = :userId")
     Optional<Task> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+    // 삭제 - 본인 소유 항목만 삭제, 삭제된 행 수 반환
+    // ElementCollection(repeatDaysOfWeek/Month)은 DB FK ON DELETE CASCADE 로 자동 처리
+    @Modifying
+    @Query("DELETE FROM Task t WHERE t.id IN :ids AND t.user.id = :userId")
+    int deleteAllByIdsAndUserId(@Param("ids") List<Long> ids, @Param("userId") Long userId);
 }

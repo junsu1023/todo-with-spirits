@@ -5,6 +5,8 @@ import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
+import com.oow.todowithspirit.dto.task.TaskDeleteRequest;
+import com.oow.todowithspirit.dto.task.TaskDeleteResponse;
 import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
 import com.oow.todowithspirit.service.TaskService;
@@ -24,6 +26,17 @@ import java.time.LocalDate;
 public class TaskController {
 
     private final TaskService taskService;
+
+    // ==============================================
+    // 삭제 (단건 · 다건 공통)
+    // ==============================================
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<TaskDeleteResponse>> deleteTasks(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody TaskDeleteRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.deleteTasks(userId, request)));
+    }
 
     // ==============================================
     // 단건 조회 (일정/루틴 공통)

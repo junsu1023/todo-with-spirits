@@ -2,19 +2,10 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.task.NotificationType;
-import com.oow.todowithspirit.domain.task.RepeatType;
-import com.oow.todowithspirit.domain.task.Task;
-import com.oow.todowithspirit.domain.task.TaskRepository;
-import com.oow.todowithspirit.domain.task.TaskType;
+import com.oow.todowithspirit.domain.task.*;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
-import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
-import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
-import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
-import com.oow.todowithspirit.dto.task.TaskCreateResponse;
-import com.oow.todowithspirit.dto.task.TaskListResponse;
-import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
+import com.oow.todowithspirit.dto.task.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,6 +108,12 @@ public class TaskService {
                 ? taskRepository.findCalendarTasksWithDateRange(userId, from, to)
                 : taskRepository.findAllCalendarTasks(userId);
         return CalendarTaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
+    }
+
+    @Transactional
+    public TaskDeleteResponse deleteTasks(Long userId, TaskDeleteRequest request) {
+        int deletedCount = taskRepository.deleteAllByIdsAndUserId(request.getTaskIds(), userId);
+        return TaskDeleteResponse.of(deletedCount);
     }
 
     // 단건 조회: @Transactional 내에서 lazy 컬렉션(repeatDaysOfWeek/Month) 로딩
