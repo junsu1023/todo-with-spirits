@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -13,9 +17,11 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun FloatingButton(navigateToAdd: () -> Unit) {
+fun FloatingButton() {
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     FloatingActionButton(
-        onClick = navigateToAdd,
+        onClick = { showBottomSheet = true },
         modifier = Modifier
             .size(50.dp)
             .border(
@@ -30,5 +36,9 @@ fun FloatingButton(navigateToAdd: () -> Unit) {
             painter = painterResource(R.drawable.fi_rr_plus),
             contentDescription = null
         )
+    }
+
+    if (showBottomSheet) {
+        QuickAddBottomSheet(onDismiss = { showBottomSheet = false })
     }
 }
