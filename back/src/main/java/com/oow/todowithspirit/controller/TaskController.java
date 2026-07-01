@@ -4,6 +4,7 @@ import com.oow.todowithspirit.common.response.ApiResponse;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
+import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
 import com.oow.todowithspirit.service.TaskService;
 import jakarta.validation.Valid;
@@ -15,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/task")
@@ -37,7 +37,7 @@ public class TaskController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<ApiResponse<List<TaskSummaryResponse>>> getSchedules(
+    public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getSchedules(
             @AuthenticationPrincipal Long userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -64,7 +64,7 @@ public class TaskController {
     }
 
     @GetMapping("/routine")
-    public ResponseEntity<ApiResponse<List<TaskSummaryResponse>>> getRoutines(
+    public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getRoutines(
             @AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId)));
     }

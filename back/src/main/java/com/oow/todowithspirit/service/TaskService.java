@@ -12,6 +12,7 @@ import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
 import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
 import com.oow.todowithspirit.dto.task.TaskCreateResponse;
+import com.oow.todowithspirit.dto.task.TaskListResponse;
 import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -94,18 +95,19 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskSummaryResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
+    public TaskListResponse<TaskSummaryResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
         List<Task> tasks = (from != null && to != null)
                 ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.SCHEDULE, from, to)
                 : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.SCHEDULE);
 
-        return tasks.stream().map(TaskSummaryResponse::from).toList();
+        return TaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
     }
 
     @Transactional(readOnly = true)
-    public List<TaskSummaryResponse> getRoutines(Long userId) {
-        return taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
+    public TaskListResponse<TaskSummaryResponse> getRoutines(Long userId) {
+        List<TaskSummaryResponse> items = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
                 .stream().map(TaskSummaryResponse::from).toList();
+        return TaskListResponse.of(items);
     }
 
     // 단건 조회: @Transactional 내에서 lazy 컬렉션(repeatDaysOfWeek/Month) 로딩
