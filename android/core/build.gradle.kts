@@ -23,6 +23,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.hilt.android)
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
