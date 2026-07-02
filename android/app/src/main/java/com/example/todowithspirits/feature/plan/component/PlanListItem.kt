@@ -51,18 +51,20 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.roundToInt
-import kotlin.text.ifEmpty
 
 @Composable
 fun PlanListItem(
     item: PlanItemData,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onPostpone: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
-    val actionPanelWidthDp = 60.dp
-    val maxReveal = remember(density) { with(density) { -actionPanelWidthDp.toPx() } }
+    val rightPanelWidthDp = 60.dp
+    val leftPanelWidthDp = 61.dp
+    val maxReveal = remember(density) { with(density) { -rightPanelWidthDp.toPx() } }
+    val maxPostpone = remember(density) { with(density) { leftPanelWidthDp.toPx() } }
     val offsetX = remember { Animatable(0f) }
     val typeColor = when (item.type) {
         PlanType.TODO -> SpiritTodoTheme.colors.surfaceColor5
@@ -80,14 +82,43 @@ fun PlanListItem(
     }
 
     Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.matchParentSize(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(leftPanelWidthDp)
+                    .fillMaxHeight()
+                    .padding(end = 8.dp)
+                    .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp))
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        coroutineScope.launch { offsetX.animateTo(0f, spring()) }
+                        onPostpone()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_arrow_right),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor7)
+                )
+            }
+        }
+
         Row(
             modifier = Modifier.matchParentSize(),
             horizontalArrangement = Arrangement.End
         ) {
             Column(
                 modifier = Modifier
-                    .width(actionPanelWidthDp)
+                    .width(rightPanelWidthDp)
                     .fillMaxHeight()
+                    .padding(start = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -98,13 +129,16 @@ fun PlanListItem(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { onDelete() },
+                        ) {
+                            coroutineScope.launch { offsetX.animateTo(0f, spring()) }
+                            onDelete()
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(R.drawable.fi_rr_trash),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor6)
                     )
                 }
 
@@ -113,11 +147,14 @@ fun PlanListItem(
                         .weight(1f)
                         .fillMaxWidth()
                         .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
-                        .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor7, RoundedCornerShape(6.dp))
+                        .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor2, RoundedCornerShape(6.dp))
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { onEdit() },
+                        ) {
+                            coroutineScope.launch { offsetX.animateTo(0f, spring()) }
+                            onEdit()
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -137,17 +174,23 @@ fun PlanListItem(
                     orientation = Orientation.Horizontal,
                     state = rememberDraggableState { delta ->
                         coroutineScope.launch {
-                            offsetX.snapTo((offsetX.value + delta).coerceIn(maxReveal, 0f))
+                            offsetX.snapTo(
+                                (offsetX.value + delta).coerceIn(maxReveal, maxPostpone)
+                            )
                         }
                     },
                     onDragStopped = {
                         coroutineScope.launch {
-                            val target = if (offsetX.value < maxReveal / 2) maxReveal else 0f
+                            val target = when {
+                                offsetX.value < maxReveal / 2 -> maxReveal
+                                offsetX.value > maxPostpone / 2 -> maxPostpone
+                                else -> 0f
+                            }
                             offsetX.animateTo(target, spring())
                         }
                     }
                 ),
-            color = SpiritTodoTheme.colors.onSurfaceColor9,
+            color = SpiritTodoTheme.colors.homeColor,
             shadowElevation = 1.dp,
             shape = RoundedCornerShape(6.dp)
         ) {
@@ -165,7 +208,7 @@ fun PlanListItem(
                         onCheckedChange = null,
                         colors = CheckboxDefaults.colors(
                             checkedColor = typeColor,
-                            uncheckedColor = SpiritTodoTheme.colors.onSurfaceColor7
+                            uncheckedColor = SpiritTodoTheme.colors.onSurfaceColor2
                         )
                     )
                 }
@@ -175,9 +218,7 @@ fun PlanListItem(
                         .weight(1f)
                         .padding(top = 14.dp, bottom = 8.dp, end = 8.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = item.title,
                             fontSize = 16.sp,
@@ -187,7 +228,6 @@ fun PlanListItem(
 
                         if (item.isImportant) {
                             Spacer(modifier = Modifier.width(4.dp))
-
                             Image(
                                 painter = painterResource(R.drawable.fi_rr_color_star),
                                 contentDescription = null,
@@ -215,7 +255,6 @@ fun PlanListItem(
                     }
                     if (dateTimeText.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
-
                         Text(
                             text = dateTimeText,
                             fontSize = 12.sp,
@@ -229,14 +268,11 @@ fun PlanListItem(
                     Text(
                         text = "(${item.memo.ifEmpty { "메모 없음" }})",
                         fontSize = 14.sp,
-                        color = SpiritTodoTheme.colors.onSurfaceColor7
+                        color = SpiritTodoTheme.colors.onSurfaceColor2
                     )
 
-                    val hasChips = item.category != null || item.repeatInfo != null
-
-                    if (hasChips) {
+                    if (item.category != null || item.repeatInfo != null) {
                         Spacer(modifier = Modifier.height(10.dp))
-
                         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                             item.category?.let { TagChip(it) }
                             item.repeatInfo?.let { TagChip(it) }
@@ -252,14 +288,13 @@ fun PlanListItem(
 private fun TagChip(text: String) {
     Box(
         modifier = Modifier
-            .background(SpiritTodoTheme.colors.transparent, RoundedCornerShape(4.dp))
-            .border(0.8.dp, SpiritTodoTheme.colors.onSurfaceColor7, RoundedCornerShape(4.dp))
+            .border(0.8.dp, SpiritTodoTheme.colors.onSurfaceColor2, RoundedCornerShape(4.dp))
             .padding(horizontal = 8.dp, vertical = 3.dp)
     ) {
         Text(
             text = text,
             fontSize = 12.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor7
+            color = SpiritTodoTheme.colors.onSurfaceColor2
         )
     }
 }

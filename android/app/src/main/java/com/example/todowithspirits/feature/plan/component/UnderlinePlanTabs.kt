@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-private val filterTabs = listOf("전체", "일정", "할 일", "루틴")
+private val filterTabs = listOf("전체", "To do", "루틴")
 
 @Composable
 fun UnderlinePlanTabs(

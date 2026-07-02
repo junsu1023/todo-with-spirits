@@ -161,7 +161,7 @@ fun PlanScreen(navigateToAdd: () -> Unit) {
         val filteredPlans = dummyPlans.filter { item ->
             val doneFilter = !hideDone || !item.isDone
             val tabFilter = when (selectedTab) {
-                "할 일" -> item.type == PlanType.TODO
+                "To do" -> item.type == PlanType.TODO
                 "루틴" -> item.type == PlanType.ROUTINE
                 else -> true
             }
