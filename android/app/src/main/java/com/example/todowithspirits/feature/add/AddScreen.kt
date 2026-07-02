@@ -20,17 +20,15 @@ import com.example.todowithspirits.feature.add.component.SearchArea
 
 @Composable
 fun AddScreen() {
-    val scheduleText = stringResource(R.string.schedule)
     val todoText = stringResource(R.string.todo)
     val routineText = stringResource(R.string.routine)
-    val selectedTab = remember { mutableStateOf(scheduleText) }
-    val tabItems = remember { TabItems(items = listOf(scheduleText, todoText, routineText)) }
+    val selectedTab = remember { mutableStateOf(todoText) }
+    val tabItems = remember { TabItems(items = listOf(todoText, routineText)) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TitleHeader(
             leftIconRes = R.drawable.temp_app_icon,
-            title = stringResource(R.string.add_todo, selectedTab.value),
-            rightIconRes =  R.drawable.alarm_icon
+            title = stringResource(R.string.add_todo)
         )
 
         VerticalSpacer20()
@@ -54,7 +52,6 @@ fun AddScreen() {
             VerticalSpacer20()
 
             when(selectedTab.value) {
-                scheduleText -> ScheduleForm()
                 todoText -> TodoForm()
                 else -> RoutineForm()
             }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,8 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,8 +38,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.unit.IntRect
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.SplitsTodoCheckbox
@@ -192,37 +196,61 @@ fun SettingSelectorItem(
                     )
                 }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .width(96.dp)
-                        .background(SpiritTodoTheme.colors.white, RoundedCornerShape(8.dp))
-
-                ) {
-                    options.forEachIndexed { index, option ->
-                        DropdownMenuItem(
-                            text = {
-                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = option,
-                                        color = if (option == value) SpiritTodoTheme.colors.selectedTabColor else SpiritTodoTheme.colors.mainTextColor,
-                                        fontSize = 14.sp,
-                                        textAlign = TextAlign.Center
-                                    )
+                if (expanded) {
+                    Popup(
+                        popupPositionProvider = object : PopupPositionProvider {
+                            override fun calculatePosition(
+                                anchorBounds: IntRect,
+                                windowSize: IntSize,
+                                layoutDirection: LayoutDirection,
+                                popupContentSize: IntSize
+                            ): IntOffset {
+                                val x = (anchorBounds.right - popupContentSize.width).coerceAtLeast(0)
+                                val y = if (windowSize.height - anchorBounds.bottom >= popupContentSize.height) {
+                                    anchorBounds.bottom
+                                } else {
+                                    (anchorBounds.top - popupContentSize.height).coerceAtLeast(0)
                                 }
-                            },
-                            onClick = {
-                                onOptionSelected(option)
-                                expanded = false
-                            },
-                            contentPadding = PaddingValues(vertical = 12.dp)
-                        )
-                        if (index < options.size - 1) {
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = SpiritTodoTheme.colors.dividerColor
-                            )
+                                return IntOffset(x, y)
+                            }
+                        },
+                        onDismissRequest = { expanded = false },
+                        properties = PopupProperties(focusable = true)
+                    ) {
+                        Surface(
+                            modifier = Modifier.width(96.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            shadowElevation = 4.dp,
+                            color = SpiritTodoTheme.colors.white
+                        ) {
+                            Column {
+                                options.forEachIndexed { index, option ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onOptionSelected(option)
+                                                expanded = false
+                                            }
+                                            .padding(vertical = 12.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = option,
+                                            color = if (option == value) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
+                                            fontSize = 14.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    
+                                    if (index < options.size - 1) {
+                                        HorizontalDivider(
+                                            thickness = 1.dp,
+                                            color = SpiritTodoTheme.colors.dividerColor
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

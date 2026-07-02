@@ -1,12 +1,14 @@
 package com.example.todowithspirits.feature.add
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
@@ -179,21 +181,20 @@ private fun HolidayExcludeRow(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             text = stringResource(R.string.exclude_holidays),
-            modifier = Modifier.weight(1f),
             style = TextStyle(
-                fontSize = 15.sp,
-                color = SpiritTodoTheme.colors.mainTextColor,
-                fontWeight = FontWeight.Medium
+                fontSize = 14.sp,
+                color = SpiritTodoTheme.colors.onSurfaceColor7
             )
         )
+
         SplitsTodoCheckbox(
+            modifier = Modifier.size(18.dp),
             checked = checked,
             onCheckedChange = onCheckedChange,
             checkedIcon = painterResource(R.drawable.checked_checkbox),
