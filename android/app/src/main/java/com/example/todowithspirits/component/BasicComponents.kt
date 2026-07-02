@@ -48,13 +48,14 @@ fun SplitsTodoSwitch(
 
 @Composable
 fun SplitsTodoCheckbox(
+    modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     checkedIcon: Painter,
     uncheckedIcon: Painter
 ) {
     Icon(
-        modifier = Modifier.clickable { onCheckedChange(!checked) },
+        modifier = modifier.clickable { onCheckedChange(!checked) },
         painter = if(checked) checkedIcon else uncheckedIcon,
         contentDescription = null,
         tint = Color.Unspecified

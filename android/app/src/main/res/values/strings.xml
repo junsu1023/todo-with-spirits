@@ -5,9 +5,8 @@
     <string name="forest">Forest</string>
     <string name="record">Record</string>
     <string name="myPage">My Page</string>
-    <string name="add_todo">%s 추가</string>
+    <string name="add_todo">플랜 추가</string>
     <string name="title">제목</string>
-    <string name="schedule">일정</string>
     <string name="todo">To do</string>
     <string name="routine">루틴</string>
     <string name="important">중요</string>
@@ -18,7 +17,6 @@
     <string name="public_state">공개 상태</string>
     <string name="month">%s월</string>
     <string name="register">등록 하기</string>
-    <string name="due_date">완료일</string>
     <string name="time">시간</string>
     <string name="exclude_holidays">공휴일 제외</string>
     <string name="growth_badge">성장 뱃지</string>

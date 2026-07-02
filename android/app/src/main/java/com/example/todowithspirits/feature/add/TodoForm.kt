@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
-import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SplitsTodoPrimaryButton
 import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
@@ -44,10 +43,9 @@ import java.time.LocalTime
 @Composable
 fun TodoForm() {
     val isImportant = remember { mutableStateOf(false) }
-    val dueDate = remember { mutableStateOf(LocalDate.now()) }
+    val date = remember { mutableStateOf(LocalDate.now()) }
     val isTimeEnabled = remember { mutableStateOf(false) }
     val dueTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
-    val repeatOption = remember { mutableStateOf(RepeatOption.NONE) }
     val alarmOption = remember { mutableStateOf(AlarmOption.TEN_MIN_BEFORE) }
     val categoryOption = remember { mutableStateOf(CategoryOption.RELATIONSHIP) }
     val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
@@ -69,9 +67,9 @@ fun TodoForm() {
         SettingGroup {
             SettingDateItem(
                 icon = painterResource(R.drawable.fi_rr_calendar),
-                label = stringResource(R.string.due_date),
-                date = dueDate.value,
-                onDateSelected = { dueDate.value = it }
+                label = stringResource(R.string.date),
+                date = date.value,
+                onDateSelected = { date.value = it }
             )
 
             SettingDivider()
@@ -103,16 +101,6 @@ fun TodoForm() {
                         }
                     }
                 }
-            )
-
-            SettingDivider()
-
-            SettingSelectorItem(
-                icon = painterResource(R.drawable.repeat_icon),
-                label = stringResource(R.string.repeat),
-                value = repeatOption.value.displayName,
-                options = RepeatOption.getAllDisplayNames(),
-                onOptionSelected = { repeatOption.value = RepeatOption.fromDisplayName(it) }
             )
 
             SettingDivider()
