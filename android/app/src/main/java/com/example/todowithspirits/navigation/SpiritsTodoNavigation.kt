@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
+import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.today.TodayScreen
@@ -19,6 +20,8 @@ fun SpiritsTodoNavigation(
 ) {
     val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
 
+    val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
+
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
     }
@@ -29,7 +32,7 @@ fun SpiritsTodoNavigation(
         modifier = modifier
     ) {
         composable(Screen.Today.route) {
-            TodayScreen()
+            TodayScreen(navigateToAlarm = navigateToAlarm)
         }
 
         composable(Screen.Plan.route) {
@@ -44,6 +47,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Record.route) {
+
         }
 
         composable(Screen.MyPage.route) {
@@ -52,6 +56,10 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Add.route) {
             AddScreen()
+        }
+
+        composable(Screen.Alarm.route) {
+            AlarmScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

@@ -19,7 +19,7 @@ import com.example.todowithspirits.feature.today.component.TodayPlanSection
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun TodayScreen() {
+fun TodayScreen(navigateToAlarm: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +31,7 @@ fun TodayScreen() {
                 .background(SpiritTodoTheme.colors.homeColor)
                 .padding(horizontal = 16.dp)
         ) {
-            TodayHeader()
+            TodayHeader(onAlarmClick = navigateToAlarm)
 
             SpiritSection()
 

@@ -30,4 +30,7 @@
     <string name="add_plan">플랜 추가</string>
     <string name="hide_completion">완료 숨기기</string>
     <string name="check">확인</string>
+    <string name="alarm_desc">알림을 설정하고 중요한 플랜을 놓치지 마세요!</string>
+    <string name="new_alarm">새로운 알림</string>
+    <string name="old_alarm">지난 알림</string>
 </resources>
