@@ -77,7 +77,7 @@ fun AlarmScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
-            pastAlarms.forEachIndexed { index, alarm ->
+            pastAlarms.forEach { alarm ->
                 AlarmItem(
                     alarm = alarm,
                     isNew = false
