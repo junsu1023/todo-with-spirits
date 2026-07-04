@@ -3,9 +3,12 @@ package com.example.todowithspirits.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
+import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
@@ -15,6 +18,10 @@ fun SpiritsTodoNavigation(
     modifier: Modifier
 ) {
     val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
+
+    val navigateToDetail: (Int) -> Unit = { itemId ->
+        navController.navigate("${Screen.PlanDetail.route}/$itemId")
+    }
 
     NavHost(
         navController = navController,
@@ -26,7 +33,10 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Plan.route) {
-            PlanScreen(navigateToAdd = navigateToAdd)
+            PlanScreen(
+                navigateToAdd = navigateToAdd,
+                navigateToDetail = navigateToDetail
+            )
         }
 
         composable(Screen.Forest.route) {
@@ -42,6 +52,18 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Add.route) {
             AddScreen()
+        }
+
+        composable(
+            route = "${Screen.PlanDetail.route}/{itemId}",
+            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: return@composable
+
+            PlanDetailScreen(
+                itemId = itemId,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

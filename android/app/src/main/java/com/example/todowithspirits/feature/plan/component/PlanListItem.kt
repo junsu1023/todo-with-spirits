@@ -57,7 +57,8 @@ fun PlanListItem(
     item: PlanItemData,
     onDelete: () -> Unit,
     onEdit: () -> Unit,
-    onPostpone: () -> Unit = {}
+    onPostpone: () -> Unit,
+    navigateToDetail: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -189,7 +190,13 @@ fun PlanListItem(
                             offsetX.animateTo(target, spring())
                         }
                     }
-                ),
+                )
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    if (offsetX.value == 0f) navigateToDetail()
+                },
             color = SpiritTodoTheme.colors.homeColor,
             shadowElevation = 1.dp,
             shape = RoundedCornerShape(6.dp)

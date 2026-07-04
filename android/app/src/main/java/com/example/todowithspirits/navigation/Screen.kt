@@ -7,4 +7,5 @@ sealed class Screen(val route: String) {
     data object Record: Screen("record")
     data object MyPage: Screen("myPage")
     data object Add: Screen("add")
+    data object PlanDetail: Screen("planDetail")
 }
