@@ -173,7 +173,8 @@ fun PlanScreen(navigateToAdd: () -> Unit) {
                 PlanListItem(
                     item = item,
                     onDelete = {},
-                    onEdit = {}
+                    onEdit = {},
+                    onPostpone = {}
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
