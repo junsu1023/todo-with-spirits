@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,13 +39,16 @@ private val pastAlarms = listOf(
 )
 
 @Composable
-fun AlarmScreen(onBack: () -> Unit) {
+fun AlarmScreen(
+    onBack: () -> Unit,
+    onSettingClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(SpiritTodoTheme.colors.homeColor)
     ) {
-        AlarmHeader(onBack = onBack)
+        AlarmHeader(onBack = onBack, onSettingClick = onSettingClick)
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -77,7 +79,7 @@ fun AlarmScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
-            pastAlarms.forEachIndexed { index, alarm ->
+            pastAlarms.forEach { alarm ->
                 AlarmItem(
                     alarm = alarm,
                     isNew = false

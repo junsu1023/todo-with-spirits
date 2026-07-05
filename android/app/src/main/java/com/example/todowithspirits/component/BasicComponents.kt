@@ -25,6 +25,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
  */
 @Composable
 fun SplitsTodoSwitch(
+
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
