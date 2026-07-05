@@ -44,4 +44,14 @@
     <string name="strick_save_alarm">스트릭(연속 달성) 세이브 알림</string>
     <string name="receive_night_time_push_alarm">야간 푸시 알림 수신</string>
     <string name="consent_to_receive_promotions">프로모션 및 시즌 이벤트 수신 동의</string>
+    <string name="daily">일간</string>
+    <string name="weekly">주간</string>
+    <string name="monthly">월간</string>
+    <string name="daily_report">데일리 리포트</string>
+    <string name="today_progressing">오늘 목표 %d / %d개 달성</string>
+    <string name="goal_to_try_again_tomorrow">내일 다시 도전할 목표</string>
+    <string name="goal_to_try_again_tomorrow_desc">잊지말고 도전해보세요!</string>
+    <string name="today_reward">오늘의 보상</string>
+    <string name="exp">EXP</string>
+    <string name="more">더보기</string>
 </resources>

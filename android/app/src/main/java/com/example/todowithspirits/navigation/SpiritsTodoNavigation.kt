@@ -12,6 +12,7 @@ import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
+import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
@@ -48,7 +49,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Record.route) {
-
+            RecordScreen(navigateToAlarm = navigateToAlarm)
         }
 
         composable(Screen.MyPage.route) {
