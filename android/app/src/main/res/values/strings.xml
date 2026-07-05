@@ -54,4 +54,17 @@
     <string name="today_reward">오늘의 보상</string>
     <string name="exp">EXP</string>
     <string name="more">더보기</string>
+    <string name="weekly_report">주간 리포트</string>
+    <string name="weekly_record">주간 기록</string>
+    <string name="weekly_analysis">주간 분석</string>
+    <string name="weekly_top3">주간 실천 Top 3</string>
+    <string name="weekly_most_delayed">주간 최다 미루기</string>
+    <string name="weekly_report_title">버티면 승리에요</string>
+    <string name="weekly_report_subtitle">이번주도 너무 잘하고 있어요!</string>
+    <string name="weekly_comment">이번 주도 꾸준히 목표를 이어나가고 있어요.\n루미가 옆에서 응원하고 있을게요!</string>
+    <string name="week_header_format">%1$d월 %2$d주 리포트</string>
+    <string name="times_count">%d회</string>
+    <string name="weekly_missed_area">자주 놓친 분야</string>
+    <string name="weekly_achieved_plan">이번주 달성 플랜</string>
+    <string name="weekly_avg_rate">평균 달성률</string>
 </resources>
