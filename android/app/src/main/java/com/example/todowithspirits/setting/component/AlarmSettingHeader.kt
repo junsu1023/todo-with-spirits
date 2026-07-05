@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.alarm.component
+package com.example.todowithspirits.setting.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,10 +20,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun AlarmHeader(
-    onBack: () -> Unit,
-    onSettingClick: () -> Unit = {}
-) {
+fun AlarmSettingHeader(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,16 +43,6 @@ fun AlarmHeader(
             color = SpiritTodoTheme.colors.mainTextColor,
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
-        )
-
-        Image(
-            painter = painterResource(R.drawable.fi_rr_setting),
-            contentDescription = null,
-            modifier = Modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onSettingClick() }
         )
     }
 }

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.today.TodayScreen
@@ -19,8 +20,8 @@ fun SpiritsTodoNavigation(
     modifier: Modifier
 ) {
     val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
-
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
+    val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
 
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
@@ -59,7 +60,14 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Alarm.route) {
-            AlarmScreen(onBack = { navController.popBackStack() })
+            AlarmScreen(
+                onBack = { navController.popBackStack() },
+                onSettingClick = navigateToAlarmSetting
+            )
+        }
+
+        composable(Screen.AlarmSetting.route) {
+            AlarmSettingScreen(onBack = { navController.popBackStack() })
         }
 
         composable(
