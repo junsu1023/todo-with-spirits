@@ -67,4 +67,5 @@
     <string name="weekly_missed_area">자주 놓친 분야</string>
     <string name="weekly_achieved_plan">이번주 달성 플랜</string>
     <string name="weekly_avg_rate">평균 달성률</string>
+    <string name="top1">Top 1</string>
 </resources>
