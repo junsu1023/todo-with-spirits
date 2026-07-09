@@ -10,4 +10,5 @@ sealed class Screen(val route: String) {
     data object Alarm: Screen("alarm")
     data object AlarmSetting: Screen("alarmSetting")
     data object MyPage: Screen("myPage")
+    data object AccountSetting: Screen("accountSetting")
 }

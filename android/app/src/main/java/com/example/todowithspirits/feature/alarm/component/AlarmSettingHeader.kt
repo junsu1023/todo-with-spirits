@@ -1,4 +1,4 @@
-package com.example.todowithspirits.setting.component
+package com.example.todowithspirits.feature.alarm.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

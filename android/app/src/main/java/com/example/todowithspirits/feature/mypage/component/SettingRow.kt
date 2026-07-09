@@ -27,14 +27,14 @@ import com.example.todowithspirits.feature.mypage.SettingItem
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun SettingRow(item: SettingItem) {
+fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { }
+            ) { onClick() }
             .padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

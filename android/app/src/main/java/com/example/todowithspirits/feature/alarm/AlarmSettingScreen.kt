@@ -1,4 +1,4 @@
-package com.example.todowithspirits.setting
+package com.example.todowithspirits.feature.alarm
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.component.SplitsTodoSwitch
-import com.example.todowithspirits.setting.component.AlarmSettingHeader
+import com.example.todowithspirits.feature.alarm.component.AlarmSettingHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.R
-import com.example.todowithspirits.setting.component.AlarmToggleRow
+import com.example.todowithspirits.feature.alarm.component.AlarmToggleRow
 
 @Composable
 fun AlarmSettingScreen(onBack: () -> Unit) {

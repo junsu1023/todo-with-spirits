@@ -9,8 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.feature.mypage.AccountSettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
-import com.example.todowithspirits.setting.AlarmSettingScreen
+import com.example.todowithspirits.feature.alarm.AlarmSettingScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.record.RecordScreen
@@ -24,6 +25,7 @@ fun SpiritsTodoNavigation(
     val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
+    val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
 
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
@@ -81,7 +83,14 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.MyPage.route) {
-            MyPageScreen(onBack = { navController.popBackStack() })
+            MyPageScreen(
+                onBack = { navController.popBackStack() },
+                navigateToAccountSetting = navigateToAccountSetting
+            )
+        }
+
+        composable(Screen.AccountSetting.route) {
+            AccountSettingScreen(onBack = { navController.popBackStack() })
         }
     }
 }

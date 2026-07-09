@@ -1,4 +1,4 @@
-package com.example.todowithspirits.setting.component
+package com.example.todowithspirits.feature.alarm.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
