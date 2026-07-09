@@ -16,18 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun WeeklyTop3Section() {
     val trackColor = SpiritTodoTheme.colors.onSurfaceColor3
     val items = listOf(
-        Triple(trackColor, "학업/커리어", "15회"),
         Triple(trackColor, "학업/커리어", "15회"),
         Triple(trackColor, "인간관계/약속", "8회"),
         Triple(trackColor, "취미", "5회")
@@ -52,14 +49,6 @@ fun WeeklyTop3Section() {
                 Spacer(Modifier.width(10.dp))
 
                 Column {
-                    if (index == 0) {
-                        Text(
-                            text = stringResource(R.string.top1),
-                            fontSize = 12.sp,
-                            color = SpiritTodoTheme.colors.onSurfaceColor7
-                        )
-                    }
-
                     Text(
                         text = name,
                         fontSize = 14.sp,
@@ -67,6 +56,7 @@ fun WeeklyTop3Section() {
                     )
                 }
             }
+
             Text(
                 text = count,
                 fontSize = 18.sp,

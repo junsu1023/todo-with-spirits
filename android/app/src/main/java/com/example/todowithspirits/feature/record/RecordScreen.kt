@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.feature.record.component.DailyReportCard
+import com.example.todowithspirits.feature.record.component.MonthlyReportCard
 import com.example.todowithspirits.feature.record.component.RecordHeader
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
 import com.example.todowithspirits.feature.record.component.WeeklyReportCard
@@ -57,6 +58,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
     var selectedTab by remember { mutableStateOf("일간") }
     val tabs = listOf(stringResource(R.string.daily), stringResource(R.string.weekly), stringResource(R.string.monthly))
     val weeklyTab = stringResource(R.string.weekly)
+    val monthlyTab = stringResource(R.string.monthly)
 
     Column(
         modifier = Modifier
@@ -134,10 +136,10 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
         ) {
             Spacer(Modifier.height(20.dp))
 
-            if (selectedTab == weeklyTab) {
-                WeeklyTabContent()
-            } else {
-                DailyTabContent()
+            when (selectedTab) {
+                weeklyTab -> WeeklyTabContent()
+                monthlyTab -> MonthlyTabContent()
+                else -> DailyTabContent()
             }
 
             Spacer(Modifier.height(32.dp))
@@ -231,4 +233,18 @@ private fun WeeklyTabContent() {
     Spacer(Modifier.height(10.dp))
 
     WeeklyReportCard()
+}
+
+@Composable
+private fun MonthlyTabContent() {
+    Text(
+        text = stringResource(R.string.monthly_report),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = SpiritTodoTheme.colors.mainTextColor
+    )
+
+    Spacer(Modifier.height(14.dp))
+
+    MonthlyReportCard()
 }

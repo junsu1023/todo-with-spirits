@@ -25,6 +25,7 @@ val spiritsTodoColor = SpiritsTodoColor(
     onSurfaceColor9 = Color(0xFFECECEC),
     onSurfaceColor10 = Color(0xFFF6F6F6),
     onSurfaceColor11 = Color(0xFFD9D9D9),
+    onSurfaceColor12 = Color(0xFF6A66A1),
     selectedColor = Color(0xFF374957),
     selectedTabColor = Color(0xFFB286FD),
     unselectedColor = Color(0xFFD1D1D6),
@@ -65,6 +66,7 @@ class SpiritsTodoColor(
     onSurfaceColor9: Color,
     onSurfaceColor10: Color,
     onSurfaceColor11: Color,
+    onSurfaceColor12: Color,
     selectedColor: Color,
     selectedTabColor: Color,
     unselectedColor: Color,
@@ -139,6 +141,9 @@ class SpiritsTodoColor(
         private set
 
     var onSurfaceColor11 by mutableStateOf(onSurfaceColor11)
+        private set
+
+    var onSurfaceColor12 by mutableStateOf(onSurfaceColor12)
         private set
 
     var selectedColor by mutableStateOf(selectedColor)
