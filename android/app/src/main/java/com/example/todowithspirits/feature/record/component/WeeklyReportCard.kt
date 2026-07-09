@@ -77,6 +77,7 @@ fun WeeklyReportCard() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                    .padding(top = 9.dp, start = 14.dp, bottom = 16.dp, end = 11.dp)
             ) {
                 Text(
                     text = stringResource(R.string.weekly_record),
