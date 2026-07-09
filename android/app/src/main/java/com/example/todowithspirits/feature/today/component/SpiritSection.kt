@@ -35,7 +35,7 @@ private const val CURRENT_EXP = 9999
 private const val MAX_EXP = 9999
 private const val TODAY_POINTS = 999
 
-private val HexagonShape = GenericShape { size, _ ->
+val HexagonShape = GenericShape { size, _ ->
     val width = size.width
     val height = size.height
     moveTo(width * 0.5f, 0f)

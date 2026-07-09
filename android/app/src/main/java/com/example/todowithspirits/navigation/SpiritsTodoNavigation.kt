@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
@@ -44,16 +45,24 @@ fun SpiritsTodoNavigation(
             )
         }
 
+        composable(
+            route = "${Screen.PlanDetail.route}/{itemId}",
+            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getInt("itemId") ?: return@composable
+
+            PlanDetailScreen(
+                itemId = itemId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         composable(Screen.Forest.route) {
 
         }
 
         composable(Screen.Record.route) {
             RecordScreen(navigateToAlarm = navigateToAlarm)
-        }
-
-        composable(Screen.MyPage.route) {
-
         }
 
         composable(Screen.Add.route) {
@@ -71,16 +80,8 @@ fun SpiritsTodoNavigation(
             AlarmSettingScreen(onBack = { navController.popBackStack() })
         }
 
-        composable(
-            route = "${Screen.PlanDetail.route}/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getInt("itemId") ?: return@composable
-
-            PlanDetailScreen(
-                itemId = itemId,
-                onBack = { navController.popBackStack() }
-            )
+        composable(Screen.MyPage.route) {
+            MyPageScreen(onBack = { navController.popBackStack() })
         }
     }
 }

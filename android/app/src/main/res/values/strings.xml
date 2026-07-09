@@ -81,4 +81,21 @@
     <string name="monthly_avg_rate">평균 달성률</string>
     <string name="monthly_this_month_achieved">이번 달 달성</string>
     <string name="month_report_format">%1$d년 %2$d월 리포트</string>
+    <string name="member_info">회원 정보</string>
+    <string name="consecutive_achievement">연속 달성</string>
+    <string name="total_completion">총 완료 수</string>
+    <string name="my_spirit">내 정령</string>
+    <string name="representative_spirit">대표 정령</string>
+    <string name="view_spirit">정령 보러가기</string>
+    <string name="change_representative">대표 정령 변경</string>
+    <string name="account_setting">계정 설정</string>
+    <string name="account_setting_desc">내 정보, 계정연동, 로그아웃, 회원 탈퇴</string>
+    <string name="alarm_setting_desc">플랜 리마인더, 정령 알림</string>
+    <string name="display_setting">디스플레이 설정</string>
+    <string name="display_setting_desc">다크모드, 언어</string>
+    <string name="data_setting">데이터 설정</string>
+    <string name="data_setting_desc">백업, 동기화, 데이터 내보내기</string>
+    <string name="customer_support">고객 지원</string>
+    <string name="customer_support_desc">공지사항, 고객센터, 약관 및 정책</string>
+    <string name="exp_format">EXP %1$d / %2$d</string>
 </resources>
