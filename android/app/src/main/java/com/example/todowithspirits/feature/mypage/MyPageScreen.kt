@@ -45,7 +45,8 @@ val settingItems = listOf(
 @Composable
 fun MyPageScreen(
     onBack: () -> Unit = {},
-    navigateToAccountSetting: () -> Unit = {}
+    navigateToAccountSetting: () -> Unit = {},
+    navigateToNotificationSetting: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -102,6 +103,7 @@ fun MyPageScreen(
                     item = item,
                     onClick = when (index) {
                         0 -> navigateToAccountSetting
+                        1 -> navigateToNotificationSetting
                         else -> ({})
                     }
                 )

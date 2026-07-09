@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,7 +22,10 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 
 @Composable
-fun AccountSettingHeader(onBack: () -> Unit) {
+fun MyPageSettingHeader(
+    onBack: () -> Unit,
+    title: String
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +46,7 @@ fun AccountSettingHeader(onBack: () -> Unit) {
         )
 
         Text(
-            text = stringResource(R.string.account_setting),
+            text = title,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = SpiritTodoTheme.colors.mainTextColor,
