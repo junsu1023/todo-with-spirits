@@ -67,5 +67,18 @@
     <string name="weekly_missed_area">자주 놓친 분야</string>
     <string name="weekly_achieved_plan">이번주 달성 플랜</string>
     <string name="weekly_avg_rate">평균 달성률</string>
-    <string name="top1">Top 1</string>
+    <string name="monthly_report">월간 리포트</string>
+    <string name="monthly_calendar_subtitle">정령과 함께한 기록</string>
+    <string name="monthly_comparison">월간 비교</string>
+    <string name="monthly_analysis">월간 분석</string>
+    <string name="monthly_top3">월간 실천 Top 3</string>
+    <string name="monthly_most_delayed">월간 최다 미루기</string>
+    <string name="monthly_comparison_desc">이번 달은 지난 달 보다 달성률이 %d%% 높아요!</string>
+    <string name="monthly_analysis_title">기분 좋은 몰입의 흔적🗃</string>
+    <string name="monthly_analysis_subtitle">이번 달도 꾸준히 목표를 이어나가고 있어요.\n루미가 옆에서 응원하고 있을게요!</string>
+    <string name="monthly_achievement_rate">달성률 %1$d%%</string>
+    <string name="monthly_peer_top">또래 상위 %1$d%%</string>
+    <string name="monthly_avg_rate">평균 달성률</string>
+    <string name="monthly_this_month_achieved">이번 달 달성</string>
+    <string name="month_report_format">%1$d년 %2$d월 리포트</string>
 </resources>

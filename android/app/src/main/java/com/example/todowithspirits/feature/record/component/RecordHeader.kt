@@ -30,12 +30,6 @@ fun RecordHeader(navigateToAlarm: () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 20.dp)
     ) {
-        Image(
-            painter = painterResource(R.drawable.fi_rr_back),
-            contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterStart)
-        )
-
         Text(
             text = stringResource(R.string.record),
             fontSize = 18.sp,
