@@ -43,7 +43,10 @@ val settingItems = listOf(
 )
 
 @Composable
-fun MyPageScreen(onBack: () -> Unit = {}) {
+fun MyPageScreen(
+    onBack: () -> Unit = {},
+    navigateToAccountSetting: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,8 +97,14 @@ fun MyPageScreen(onBack: () -> Unit = {}) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 5.dp)
         ) {
-            settingItems.forEach { item ->
-                SettingRow(item = item)
+            settingItems.forEachIndexed { index, item ->
+                SettingRow(
+                    item = item,
+                    onClick = when (index) {
+                        0 -> navigateToAccountSetting
+                        else -> ({})
+                    }
+                )
             }
         }
 
