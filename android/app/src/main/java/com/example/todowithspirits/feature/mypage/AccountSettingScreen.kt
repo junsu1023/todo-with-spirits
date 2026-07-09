@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.feature.mypage.component.AccountSettingHeader
 import com.example.todowithspirits.feature.mypage.component.AvatarSection
+import com.example.todowithspirits.feature.mypage.component.MyPageSettingHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -39,7 +39,7 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
             .background(SpiritTodoTheme.colors.white)
             .verticalScroll(rememberScrollState())
     ) {
-        AccountSettingHeader(onBack = onBack)
+        MyPageSettingHeader(onBack = onBack, title = stringResource(R.string.account_setting))
 
         Spacer(Modifier.height(12.dp))
 
