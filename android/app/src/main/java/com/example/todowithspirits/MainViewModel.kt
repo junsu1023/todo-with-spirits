@@ -18,6 +18,9 @@ class MainViewModel @Inject constructor(
     private val _systemHealth = MutableStateFlow("")
     val systemHealth: StateFlow<String> get() = _systemHealth.asStateFlow()
 
+    private val _isBottomSheetVisible = MutableStateFlow(false)
+    val isBottomSheetVisible: StateFlow<Boolean> get() = _isBottomSheetVisible.asStateFlow()
+
     init {
         checkSystemHealth()
     }
@@ -25,6 +28,12 @@ class MainViewModel @Inject constructor(
     fun checkSystemHealth() {
         viewModelScope.launch {
             _systemHealth.update { checkSystemHealthUseCase() }
+        }
+    }
+
+    fun setSBottomSheetVisible(visible: Boolean) {
+        viewModelScope.launch {
+            _isBottomSheetVisible.update { visible }
         }
     }
 }

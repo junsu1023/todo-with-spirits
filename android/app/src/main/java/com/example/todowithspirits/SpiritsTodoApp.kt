@@ -3,8 +3,10 @@ package com.example.todowithspirits
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -15,10 +17,11 @@ import com.example.todowithspirits.navigation.SpiritsTodoNavigation
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun SpiritsTodoApp() {
+fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isBottomSheetVisible by mainViewModel.isBottomSheetVisible.collectAsState()
 
     val navToRoute: (String) -> Unit = { route ->
         navController.navigate(route) {
@@ -40,7 +43,10 @@ fun SpiritsTodoApp() {
         },
         floatingActionButton = {
             if(currentRoute == Screen.Today.route) {
-                FloatingButton()
+                FloatingButton(
+                    isBottomSheetVisible = isBottomSheetVisible,
+                    setBottomSheetVisible = { visible -> mainViewModel.setSBottomSheetVisible(visible) }
+                )
             }
         }
     ) { innerPadding ->

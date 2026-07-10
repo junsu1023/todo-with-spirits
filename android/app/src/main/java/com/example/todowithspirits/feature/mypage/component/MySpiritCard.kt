@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.feature.today.component.HexagonShape
+import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
