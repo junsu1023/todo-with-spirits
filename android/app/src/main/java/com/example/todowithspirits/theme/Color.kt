@@ -8,7 +8,6 @@ import androidx.compose.ui.graphics.Color
 val spiritsTodoColor = SpiritsTodoColor(
     homeColor = Color(0xFFF6F6F6),
     trackColor = Color(0xFF353534),
-    trackColor2 = Color(0xFFEAEAEA),
     surfaceColor1 = Color(0xFFF3E8FF),
     surfaceColor2 = Color(0xFFF6F6F6),
     surfaceColor3 = Color(0xFFD7BFFF),
@@ -116,7 +115,6 @@ class SpiritColor(
 class SpiritsTodoColor(
     homeColor: Color,
     trackColor: Color,
-    trackColor2: Color,
     surfaceColor1: Color,
     surfaceColor2: Color,
     surfaceColor3: Color,
@@ -153,9 +151,6 @@ class SpiritsTodoColor(
         private set
 
     var trackColor by mutableStateOf(trackColor)
-        private set
-
-    var trackColor2 by mutableStateOf(trackColor2)
         private set
 
     var surfaceColor1 by mutableStateOf(surfaceColor1)
