@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.today.component
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 // dummy data
-private const val ACHIEVEMENT_RATE = 1f
+private const val ACHIEVEMENT_RATE = 0.7f
 
 @Composable
 fun BadgeAndAchievementRow() {
@@ -42,7 +43,7 @@ fun BadgeAndAchievementRow() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        BadgeCard(modifier = Modifier.weight(2f))
+        BadgeCard(modifier = Modifier.weight(2.5f))
 
         AchievementCard(modifier = Modifier.weight(1f))
     }
@@ -52,13 +53,13 @@ fun BadgeAndAchievementRow() {
 private fun BadgeCard(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        color = SpiritTodoTheme.colors.white,
+        color = SpiritTodoTheme.color.surfaceColor1,
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(
             modifier = Modifier
                 .height(116.dp)
-                .padding(start = 10.dp, top = 8.dp, end = 6.dp)
+                .padding(start = 10.dp, top = 8.dp, end = 6.dp, bottom = 8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -68,14 +69,12 @@ private fun BadgeCard(modifier: Modifier = Modifier) {
                 Text(
                     text = stringResource(R.string.growth_badge),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor2
+                    color = SpiritTodoTheme.color.onSurfaceColor6
                 )
 
-                Icon(
-                    painter = painterResource(R.drawable.right),
-                    contentDescription = null,
-                    modifier = Modifier.size(12.dp),
-                    tint = SpiritTodoTheme.colors.onSurfaceColor2
+                Image(
+                    painter = painterResource(R.drawable.todo_arrow2),
+                    contentDescription = null
                 )
             }
 
@@ -85,7 +84,6 @@ private fun BadgeCard(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                // dummy data
                 BadgePlaceholder("첫 루틴 시작")
 
                 BadgePlaceholder("히든 업적")
@@ -99,18 +97,17 @@ private fun BadgeCard(modifier: Modifier = Modifier) {
 @Composable
 private fun BadgePlaceholder(label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(62.dp)
-                .border(1.dp, SpiritTodoTheme.colors.textColor1, CircleShape)
+        Image(
+            painter = painterResource(R.drawable.temp_badge),
+            contentDescription = null
         )
 
         Spacer(Modifier.height(4.dp))
 
         Text(
             text = label,
-            fontSize = 9.sp,
-            color = SpiritTodoTheme.colors.mainTextColor,
+            fontSize = 10.sp,
+            color = SpiritTodoTheme.color.onSurfaceColor6,
             textAlign = TextAlign.Center
         )
     }
@@ -138,7 +135,7 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
                 Text(
                     text = stringResource(R.string.today_completion_rate),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor2
+                    color = SpiritTodoTheme.color.onSurfaceColor6
                 )
             }
 
@@ -153,8 +150,8 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CircularProgressIndicator(progress: Float) {
-    val onSurfaceColor1 = SpiritTodoTheme.colors.onSurfaceColor1
-    val trackColor = SpiritTodoTheme.colors.trackColor2
+    val onSurfaceColor1 = SpiritTodoTheme.color.surfaceColor2
+    val trackColor = SpiritTodoTheme.color.surfaceColor7
     val percentage = (progress * 100).toInt()
 
     Box(
@@ -162,7 +159,7 @@ private fun CircularProgressIndicator(progress: Float) {
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = 9.dp.toPx()
+            val strokeWidth = 4.dp.toPx()
             val diameter = size.minDimension - strokeWidth
             val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
             val arcSize = Size(diameter, diameter)

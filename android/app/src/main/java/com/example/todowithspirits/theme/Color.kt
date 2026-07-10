@@ -49,6 +49,7 @@ val spiritsLightColor = SpiritColor(
     surfaceColor4 = Color(0xFFF6F6F6),
     surfaceColor5 = Color(0xFF353534),
     surfaceColor6 = Color(0xB3F3E8FF),
+    surfaceColor7 = Color(0xFFEAEAEA),
     onSurfaceColor1 = Color(0xFF857563),
     onSurfaceColor2 = Color(0xFFD1D1D6),
     onSurfaceColor3 = Color(0xFFFFFFFF),
@@ -64,6 +65,7 @@ class SpiritColor(
     surfaceColor4: Color,
     surfaceColor5: Color,
     surfaceColor6: Color,
+    surfaceColor7: Color,
     onSurfaceColor1: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
@@ -87,6 +89,9 @@ class SpiritColor(
         private set
 
     var surfaceColor6 by mutableStateOf(surfaceColor6)
+        private set
+
+    var surfaceColor7 by mutableStateOf(surfaceColor7)
         private set
 
     var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
