@@ -66,7 +66,7 @@ fun TodoDetailBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = SpiritTodoTheme.colors.white,
+        containerColor = SpiritTodoTheme.color.surfaceColor1,
         dragHandle = null
     ) {
         Column(
@@ -93,7 +93,7 @@ fun TodoDetailBottomSheet(
                             text = title,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.colors.mainTextColor,
+                            color = SpiritTodoTheme.color.onSurfaceColor5,
                             textAlign = TextAlign.Center
                         )
 
@@ -101,9 +101,8 @@ fun TodoDetailBottomSheet(
                             Spacer(Modifier.width(4.dp))
 
                             Image(
-                                painter = painterResource(R.drawable.fi_rr_color_star),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp)
+                                painter = painterResource(R.drawable.todo_important),
+                                contentDescription = null
                             )
                         }
                     }
@@ -120,16 +119,17 @@ fun TodoDetailBottomSheet(
                         Text(
                             text = dateText,
                             fontSize = 14.sp,
-                            color = SpiritTodoTheme.colors.onSurfaceColor2,
+                            color = SpiritTodoTheme.color.onSurfaceColor6,
                             textAlign = TextAlign.Center
                         )
                     }
                 }
 
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_cross),
+                    painter = painterResource(R.drawable.todo_cross),
                     contentDescription = null,
                     modifier = Modifier
+                        .size(12.dp)
                         .align(Alignment.TopEnd)
                         .clickable(
                             indication = null,
@@ -144,7 +144,7 @@ fun TodoDetailBottomSheet(
                 Text(
                     text = dDayText,
                     fontSize = 22.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor1,
+                    color = SpiritTodoTheme.color.onSurfaceColor4,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -155,7 +155,7 @@ fun TodoDetailBottomSheet(
             Text(
                 text = memo.ifEmpty { "메모 없음" },
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor2,
+                color = SpiritTodoTheme.color.surfaceColor10,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -170,9 +170,10 @@ fun TodoDetailBottomSheet(
                     modifier = Modifier.weight(1f),
                     iconRes = R.drawable.fi_rr_trash,
                     label = stringResource(R.string.delete),
-                    color = SpiritTodoTheme.colors.onSurfaceColor6,
+                    color = SpiritTodoTheme.color.surfaceColor11,
                     onClick = onDelete
                 )
+
                 DetailActionButton(
                     modifier = Modifier.weight(1f),
                     iconRes = R.drawable.fi_rr_arrow_right,
@@ -180,6 +181,7 @@ fun TodoDetailBottomSheet(
                     color = SpiritTodoTheme.colors.mainTextColor,
                     onClick = onPostpone
                 )
+
                 DetailActionButton(
                     modifier = Modifier.weight(1f),
                     iconRes = R.drawable.fi_rr_pencil,
@@ -202,7 +204,7 @@ private fun DetailActionButton(
 ) {
     Column(
         modifier = modifier
-            .border(1.dp, color.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
+            .border(1.dp, color, RoundedCornerShape(6.dp))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }

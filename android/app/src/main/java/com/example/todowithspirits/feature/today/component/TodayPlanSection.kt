@@ -75,7 +75,6 @@ private val dummyRoutines = listOf(
     RoutineItem("책 20 페이지 읽기", true)
 )
 
-// dayOffset (0=Sun … 6=Sat) → list of dot colors (todoColor, routineColor)
 private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
     0 to listOf(0, 1),
     1 to listOf(0, 0, 1),
@@ -90,14 +89,12 @@ private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
 fun TodayPlanSection() {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     val today = remember { LocalDate.now() }
-    val todoCheckColor = SpiritTodoTheme.colors.onSurfaceColor4
-    val routineCheckColor = SpiritTodoTheme.colors.onSurfaceColor5
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var selectedRoutine by remember { mutableStateOf<RoutineItem?>(null) }
     var isWeekExpanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(26.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -109,13 +106,13 @@ fun TodayPlanSection() {
                     text = today.format(dateFormatter),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor5
                 )
 
                 Spacer(Modifier.width(2.dp))
 
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                    painter = painterResource(R.drawable.todo_arrow1),
                     contentDescription = null,
                     modifier = Modifier
                         .clickable(
@@ -128,8 +125,8 @@ fun TodayPlanSection() {
 
             Text(
                 text = stringResource(R.string.see_all_plan),
-                fontSize = 13.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor2
+                fontSize = 12.sp,
+                color = SpiritTodoTheme.color.onSurfaceColor6
             )
         }
 
@@ -143,15 +140,13 @@ fun TodayPlanSection() {
 
                 WeeklyCalendarStrip(
                     today = today,
-                    todoColor = todoCheckColor,
-                    routineColor = routineCheckColor
+                    todoColor = SpiritTodoTheme.color.surfaceColor8,
+                    routineColor = SpiritTodoTheme.color.surfaceColor9
                 )
-
-                Spacer(Modifier.height(4.dp))
             }
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(19.dp))
 
         Column(modifier = Modifier.padding(horizontal = 2.dp)) {
             SectionHeader(title = stringResource(R.string.todo))
@@ -162,19 +157,18 @@ fun TodayPlanSection() {
                 TodayListItem(
                     title = item.title,
                     isDone = item.isDone,
-                    checkColor = todoCheckColor,
                     isImportant = item.isImportant,
                     onClick = { selectedTodo = item }
                 )
 
-                if (index != dummyTodos.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+                if (index != dummyTodos.lastIndex) Spacer(modifier = Modifier.height(18.dp))
             }
 
             Spacer(Modifier.height(24.dp))
 
             HorizontalDivider(
-                color = SpiritTodoTheme.colors.dividerColor,
-                thickness = 0.8.dp
+                color = SpiritTodoTheme.color.surfaceColor7,
+                thickness = 1.dp
             )
 
             Spacer(Modifier.height(24.dp))
@@ -187,7 +181,7 @@ fun TodayPlanSection() {
                 TodayListItem(
                     title = item.title,
                     isDone = item.isDone,
-                    checkColor = routineCheckColor,
+                    isTodo = false,
                     onClick = { selectedRoutine = item }
                 )
 
@@ -250,7 +244,7 @@ private fun WeeklyCalendarStrip(
                     .weight(1f)
                     .border(
                         width = 1.dp,
-                        color = if(isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.onSurfaceColor10,
+                        color = if(isSelected) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.surfaceColor4,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(vertical = 10.dp),
@@ -260,7 +254,7 @@ private fun WeeklyCalendarStrip(
                     text = date.dayOfMonth.toString(),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor
+                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor5
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -268,18 +262,18 @@ private fun WeeklyCalendarStrip(
                 Text(
                     text = dayLabels[offset],
                     fontSize = 10.sp,
-                    color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor
+                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor5
                 )
 
                 Spacer(Modifier.height(6.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    eventTypes.take(3).forEach { type ->
+                    eventTypes.take(2).forEach { type ->
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
                                 .background(
-                                    color = if (type == 0) todoColor else routineColor,
+                                    color = if(type == 0) todoColor else routineColor,
                                     shape = CircleShape
                                 )
                         )
@@ -300,7 +294,7 @@ private fun SectionHeader(title: String) {
         text = title,
         fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
-        color = SpiritTodoTheme.colors.mainTextColor
+        color = SpiritTodoTheme.color.onSurfaceColor5
     )
 }
 
@@ -308,62 +302,42 @@ private fun SectionHeader(title: String) {
 private fun TodayListItem(
     title: String,
     isDone: Boolean,
-    checkColor: Color,
+    isTodo: Boolean = true,
     isImportant: Boolean = false,
     onClick: () -> Unit = {}
 ) {
-    val white = SpiritTodoTheme.colors.white
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() }
-            .padding(vertical = 6.dp),
+            ) { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Canvas(modifier = Modifier.size(22.dp)) {
-            if (isDone) {
-                drawCircle(color = checkColor)
-
-                val path = Path().apply {
-                    moveTo(size.width * 0.22f, size.height * 0.50f)
-                    lineTo(size.width * 0.43f, size.height * 0.68f)
-                    lineTo(size.width * 0.78f, size.height * 0.33f)
-                }
-
-                drawPath(
-                    path = path,
-                    color = white,
-                    style = Stroke(
-                        width = 2.2.dp.toPx(),
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
-                    )
-                )
-            } else {
-                drawCircle(
-                    color = Color(0xFFD5D5D5),
-                    style = Stroke(width = 1.5.dp.toPx())
-                )
-            }
-        }
+        Image(
+            painter = when {
+                isDone && isTodo -> painterResource(R.drawable.todo_icon_check_pp)
+                isDone ->painterResource(R.drawable.todo_icon_check_gn)
+                else -> painterResource(R.drawable.todo_icon_check_bl)
+            },
+            contentDescription = null
+        )
 
         Spacer(Modifier.width(10.dp))
 
         Text(
             text = title,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.colors.mainTextColor
+            fontWeight = FontWeight.Medium,
+            color = SpiritTodoTheme.color.onSurfaceColor5
         )
 
         if (isImportant) {
             Spacer(Modifier.width(4.dp))
 
             Image(
-                painter = painterResource(R.drawable.fi_rr_color_star),
+                painter = painterResource(R.drawable.todo_important),
                 contentDescription = null
             )
         }
