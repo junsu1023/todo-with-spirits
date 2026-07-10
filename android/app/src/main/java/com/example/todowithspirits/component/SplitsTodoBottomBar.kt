@@ -81,8 +81,8 @@ fun SplitsTodoBottomBar(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = SpiritTodoTheme.color.todoTextMain,
-                        unselectedTextColor = SpiritTodoTheme.color.onSurfaceColor1,
+                        selectedTextColor = SpiritTodoTheme.color.onSurfaceColor1,
+                        unselectedTextColor = SpiritTodoTheme.color.onSurfaceColor2,
                         indicatorColor = SpiritTodoTheme.colors.transparent
                     )
                 )

@@ -45,23 +45,23 @@ val spiritsTodoColor = SpiritsTodoColor(
 )
 
 val spiritsLightColor = SpiritColor(
-    todoTextMain = Color(0xFF857563),
     surfaceColor1 = Color(0xFFFFFFFF),
-    onSurfaceColor1 = Color(0xFFD1D1D6)
+    onSurfaceColor1 = Color(0xFF857563),
+    onSurfaceColor2 = Color(0xFFD1D1D6)
 )
 
 class SpiritColor(
-    todoTextMain : Color,
     surfaceColor1: Color,
-    onSurfaceColor1: Color
+    onSurfaceColor1: Color,
+    onSurfaceColor2: Color
 ) {
-    var todoTextMain by mutableStateOf(todoTextMain)
-        private set
-
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
 
     var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
+        private set
+
+    var onSurfaceColor2 by mutableStateOf(onSurfaceColor2)
         private set
 }
 
