@@ -2,11 +2,12 @@ package com.example.todowithspirits.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -26,16 +27,17 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 data class BottomNavItem(
     val route: String,
-    @StringRes val label: Int,
-    @DrawableRes val iconRes: Int
+    @param:StringRes val label: Int,
+    @param:DrawableRes val selectedIconRes: Int,
+    @param:DrawableRes val unselectedIconRes: Int
 )
 
 val bottomNavItems = listOf(
-    BottomNavItem(Screen.Today.route, R.string.today, R.drawable.today),
-    BottomNavItem(Screen.Plan.route, R.string.plan, R.drawable.plan),
-    BottomNavItem(Screen.Forest.route, R.string.forest, R.drawable.forest),
-    BottomNavItem(Screen.Record.route, R.string.record, R.drawable.record),
-    BottomNavItem(Screen.MyPage.route, R.string.myPage, R.drawable.my_page)
+    BottomNavItem(Screen.Today.route, R.string.today, R.drawable.home_selected, R.drawable.home_status),
+    BottomNavItem(Screen.Plan.route, R.string.plan, R.drawable.plan_selected, R.drawable.plan_status),
+    BottomNavItem(Screen.Forest.route, R.string.forest, R.drawable.forest_selected, R.drawable.forest_status),
+    BottomNavItem(Screen.Record.route, R.string.record, R.drawable.record_selected, R.drawable.record_status),
+    BottomNavItem(Screen.MyPage.route, R.string.myPage, R.drawable.my_page_selected, R.drawable.my_page_status)
 )
 
 @Composable
@@ -49,12 +51,13 @@ fun SplitsTodoBottomBar(
         modifier = Modifier.navigationBarsPadding()
     ) {
         NavigationBar(
-            containerColor = SpiritTodoTheme.colors.bgColor2,
+            containerColor = SpiritTodoTheme.color.surfaceColor1,
             tonalElevation = 0.dp,
             windowInsets = WindowInsets(0, 0, 0, 0),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(74.dp)
+                .padding(horizontal = 10.dp)
         ) {
             bottomNavItems.forEach { item ->
                 val isSelected = currentRoute == item.route
@@ -63,8 +66,8 @@ fun SplitsTodoBottomBar(
                     selected = isSelected,
                     onClick = { onItemSelected(item.route) },
                     icon = {
-                        Icon(
-                            painter = painterResource(item.iconRes),
+                        Image(
+                            painter = if(isSelected) painterResource(item.selectedIconRes) else painterResource(item.unselectedIconRes),
                             contentDescription = stringResource(item.label)
                         )
                     },
@@ -73,15 +76,13 @@ fun SplitsTodoBottomBar(
                             text = stringResource(item.label),
                             style = TextStyle(
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 8.sp,
+                                fontSize = 8.sp
                             )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = SpiritTodoTheme.colors.selectedColor,
-                        selectedTextColor = SpiritTodoTheme.colors.selectedColor,
-                        unselectedIconColor = SpiritTodoTheme.colors.unselectedColor,
-                        unselectedTextColor = SpiritTodoTheme.colors.unselectedColor,
+                        selectedTextColor = SpiritTodoTheme.color.todoTextMain,
+                        unselectedTextColor = SpiritTodoTheme.color.onSurfaceColor1,
                         indicatorColor = SpiritTodoTheme.colors.transparent
                     )
                 )
