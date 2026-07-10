@@ -1,5 +1,7 @@
 package com.example.todowithspirits.feature.today.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,56 +9,63 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-// Dummy spirit/exp data
-private const val SPIRIT_NAME = "루미"
-private const val SPIRIT_LEVEL = 99
-private const val CURRENT_EXP = 9999
-private const val MAX_EXP = 9999
-private const val TODAY_POINTS = 999
 
-val HexagonShape = GenericShape { size, _ ->
-    val width = size.width
-    val height = size.height
-    moveTo(width * 0.5f, 0f)
-    lineTo(width, height * 0.25f)
-    lineTo(width, height * 0.75f)
-    lineTo(width * 0.5f, height)
-    lineTo(0f, height * 0.75f)
-    lineTo(0f, height * 0.25f)
-    close()
-}
+data class DummySpiritInfo(
+    val name: String = "루미",
+    val level: Int = 99,
+    val currentExp: Int = 5555,
+    val maxExp: Int = 9999,
+    val todayPoints: Int = 999
+)
 
 @Composable
 fun SpiritSection() {
+    val dummySpiritInfo = DummySpiritInfo()
+
+    var progressTarget by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(dummySpiritInfo.currentExp, dummySpiritInfo.maxExp) {
+        progressTarget = dummySpiritInfo.currentExp.toFloat() / dummySpiritInfo.maxExp.toFloat()
+    }
+
+    val progress by animateFloatAsState(
+        targetValue = progressTarget,
+        animationSpec = tween(durationMillis = 1000),
+        label = "spiritExpProgress"
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 14.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(R.drawable.temp_app_icon),
+            painter = painterResource(R.drawable.temp_spirit),
             contentDescription = null,
             modifier = Modifier.size(110.dp)
         )
@@ -66,7 +75,7 @@ fun SpiritSection() {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "벌써 절반 왔어요!\n루미랑 조금 더 힘내봐요 :)",
-                color = SpiritTodoTheme.colors.textColor2,
+                color = SpiritTodoTheme.color.onSurfaceColor4,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp
             )
@@ -80,23 +89,23 @@ fun SpiritSection() {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = SPIRIT_NAME,
+                        text = dummySpiritInfo.name,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.onSurfaceColor5
                     )
 
                     Spacer(Modifier.width(2.dp))
 
                     Box(
                         modifier = Modifier
-                            .size(20.dp)
-                            .background(SpiritTodoTheme.colors.selectedTabColor, HexagonShape),
+                            .size(18.dp)
+                            .background(SpiritTodoTheme.color.surfaceColor2, HexagonShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "$SPIRIT_LEVEL",
-                            color = SpiritTodoTheme.colors.white,
+                            text = "${dummySpiritInfo.level}",
+                            color = SpiritTodoTheme.color.onSurfaceColor3,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -104,23 +113,29 @@ fun SpiritSection() {
                 }
                 
                 Text(
-                    text = "$CURRENT_EXP / $MAX_EXP",
-                    fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.textColor1
+                    text = "${dummySpiritInfo.currentExp} / ${dummySpiritInfo.maxExp}",
+                    fontSize = 10.sp,
+                    color = SpiritTodoTheme.color.onSurfaceColor6
                 )
             }
 
-            Spacer(Modifier.height(5.dp))
+            Spacer(Modifier.height(6.dp))
 
-            LinearProgressIndicator(
-                progress = { CURRENT_EXP.toFloat() / MAX_EXP.toFloat() },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(3.dp)
-                    .clip(RoundedCornerShape(9999.dp)),
-                color = SpiritTodoTheme.colors.onSurfaceColor1,
-                trackColor = SpiritTodoTheme.colors.trackColor
-            )
+                    .clip(RoundedCornerShape(9999.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor5)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(fraction = progress)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(9999.dp))
+                        .background(SpiritTodoTheme.color.surfaceColor2)
+                )
+            }
 
             Spacer(Modifier.height(8.dp))
 
@@ -128,24 +143,23 @@ fun SpiritSection() {
                 modifier = Modifier
                     .width(150.dp)
                     .height(21.dp)
-                    .background(SpiritTodoTheme.colors.surfaceColor1, RoundedCornerShape(4.dp)),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(SpiritTodoTheme.color.surfaceColor6, RoundedCornerShape(4.dp))
+                    .padding(horizontal = 6.dp, vertical = 3.5.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Spacer(modifier = Modifier.width(6.dp))
-
                 Image(
                     painter = painterResource(R.drawable.fi_rr_fire),
                     contentDescription = null,
-                    modifier = Modifier.size(12.dp),
-                    colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.selectedTabColor)
+                    modifier = Modifier.size(12.dp)
                 )
 
                 Spacer(Modifier.width(4.dp))
 
                 Text(
-                    text = "오늘의 성장 포인트 +$TODAY_POINTS",
+                    text = "오늘의 성장 포인트 +${dummySpiritInfo.todayPoints}",
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor1
+                    fontWeight = FontWeight.Medium,
+                    color = SpiritTodoTheme.color.onSurfaceColor4
                 )
             }
         }
