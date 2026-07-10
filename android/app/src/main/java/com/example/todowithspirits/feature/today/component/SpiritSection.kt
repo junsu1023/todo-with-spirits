@@ -31,25 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-
-data class DummySpiritInfo(
-    val name: String = "루미",
-    val level: Int = 99,
-    val currentExp: Int = 5555,
-    val maxExp: Int = 9999,
-    val todayPoints: Int = 999
-)
-
 @Composable
-fun SpiritSection() {
-    val dummySpiritInfo = DummySpiritInfo()
-
+fun SpiritSection(spiritInfo: SpiritInfo) {
     var progressTarget by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(dummySpiritInfo.currentExp, dummySpiritInfo.maxExp) {
-        progressTarget = dummySpiritInfo.currentExp.toFloat() / dummySpiritInfo.maxExp.toFloat()
+    LaunchedEffect(spiritInfo.curExp, spiritInfo.maxExp) {
+        progressTarget = spiritInfo.curExp.toFloat() / spiritInfo.maxExp.toFloat()
     }
 
     val progress by animateFloatAsState(
@@ -89,7 +79,7 @@ fun SpiritSection() {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = dummySpiritInfo.name,
+                        text = spiritInfo.name,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = SpiritTodoTheme.color.onSurfaceColor5
@@ -104,7 +94,7 @@ fun SpiritSection() {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "${dummySpiritInfo.level}",
+                            text = "${spiritInfo.level}",
                             color = SpiritTodoTheme.color.onSurfaceColor3,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold
@@ -113,7 +103,7 @@ fun SpiritSection() {
                 }
                 
                 Text(
-                    text = "${dummySpiritInfo.currentExp} / ${dummySpiritInfo.maxExp}",
+                    text = "${spiritInfo.curExp} / ${spiritInfo.maxExp}",
                     fontSize = 10.sp,
                     color = SpiritTodoTheme.color.onSurfaceColor6
                 )
@@ -156,7 +146,7 @@ fun SpiritSection() {
                 Spacer(Modifier.width(4.dp))
 
                 Text(
-                    text = "오늘의 성장 포인트 +${dummySpiritInfo.todayPoints}",
+                    text = "오늘의 성장 포인트 +${spiritInfo.todayPoints}",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = SpiritTodoTheme.color.onSurfaceColor4
