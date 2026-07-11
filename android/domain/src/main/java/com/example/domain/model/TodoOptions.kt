@@ -30,6 +30,7 @@ enum class AlarmOption(val displayName: String) {
 }
 
 enum class CategoryOption(val displayName: String) {
+    NONE("미정"),
     RELATIONSHIP("인간관계/약속"),
     SELF_DEVELOPMENT("자기계발"),
     WORK("업무"),
@@ -37,7 +38,7 @@ enum class CategoryOption(val displayName: String) {
 
     companion object {
         fun fromDisplayName(name: String): CategoryOption {
-            return entries.find { it.displayName == name } ?: RELATIONSHIP
+            return entries.find { it.displayName == name } ?: NONE
         }
         fun getAllDisplayNames() = entries.map { it.displayName }
     }
