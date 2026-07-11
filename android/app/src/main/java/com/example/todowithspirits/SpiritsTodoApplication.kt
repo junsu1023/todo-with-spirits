@@ -2,6 +2,7 @@ package com.example.todowithspirits
 
 import android.app.Application
 import android.util.Log
+import com.example.core.auth.TokenHolder
 import com.example.domain.usecase.LoginUseCase
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -26,8 +27,12 @@ class SpiritsTodoApplication : Application() {
         super.onCreate()
 
         applicationScope.launch {
-            loginUseCase(TEST_EMAIL, TEST_PASSWORD)
-                .onFailure { Log.e("SpiritsTodoApplication", "테스트 계정 자동 로그인 실패", it) }
+            try {
+                loginUseCase(TEST_EMAIL, TEST_PASSWORD)
+                    .onFailure { Log.e("SpiritsTodoApplication", "테스트 계정 자동 로그인 실패", it) }
+            } finally {
+                TokenHolder.markBootstrapCompleted()
+            }
         }
     }
 }
