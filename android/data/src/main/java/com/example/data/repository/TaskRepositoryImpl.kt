@@ -3,7 +3,9 @@ package com.example.data.repository
 import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
 import com.example.domain.model.Task
+import com.example.domain.model.TaskCalendar
 import com.example.domain.repository.TaskRepository
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -11,5 +13,9 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
     override suspend fun getTask(taskId: Long): Result<Task> {
         return taskRemoteDataSource.getTask(taskId).map { it.toDomain() }
+    }
+
+    override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> {
+        return taskRemoteDataSource.getTaskCalendar(from?.toString(), to?.toString()).map { it.toDomain() }
     }
 }

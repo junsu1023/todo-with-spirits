@@ -13,6 +13,7 @@ object URLConstant {
     object TASK {
         private const val TASK = "$API/task"
         const val TASK_DETAIL = "$TASK/{taskId}"
+        const val TASK_CALENDAR = "$TASK/calendar"
     }
 
     object LOGIN {
