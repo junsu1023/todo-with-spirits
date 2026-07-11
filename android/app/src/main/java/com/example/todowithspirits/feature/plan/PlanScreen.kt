@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanCalendarData
@@ -35,6 +37,7 @@ import com.example.todowithspirits.feature.plan.component.PlanHeader
 import com.example.todowithspirits.feature.plan.component.PlanListItem
 import com.example.todowithspirits.feature.plan.component.PlanSearchArea
 import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
@@ -85,12 +88,11 @@ private val dummyCalendarData = mapOf(
 
 @Composable
 fun PlanScreen(
+    planViewModel: PlanViewModel = hiltViewModel(),
     navigateToAdd: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf("전체") }
-    var hideDone by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val uiState by planViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -108,8 +110,8 @@ fun PlanScreen(
 
         PlanCalendarView(
             modifier = Modifier.padding(horizontal = 16.dp),
-            selectedDate = selectedDate,
-            onDateSelected = { selectedDate = it },
+            selectedDate = uiState.selectedDate,
+            onDateSelected = { planViewModel.setSelectedDate(it) },
             eventData = dummyCalendarData
         )
 
@@ -120,24 +122,26 @@ fun PlanScreen(
         Spacer(modifier = Modifier.height(30.dp))
 
         UnderlinePlanTabs(
-            selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
+            selectedTab = uiState.selectedTab,
+            onTabSelected = { planViewModel.setSelectedTab(it) }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(R.string.hide_completion),
-                color = if (hideDone) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
+                color = if(uiState.isHidden) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8,
                 fontSize = 14.sp,
                 modifier = Modifier.clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) { hideDone = !hideDone }
+                ) { planViewModel.setHiddenState(!uiState.isHidden) }
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -162,10 +166,10 @@ fun PlanScreen(
         Spacer(modifier = Modifier.height(18.dp))
 
         val filteredPlans = dummyPlans.filter { item ->
-            val doneFilter = !hideDone || !item.isDone
-            val tabFilter = when (selectedTab) {
-                "To do" -> item.type == PlanType.TODO
-                "루틴" -> item.type == PlanType.ROUTINE
+            val doneFilter = !uiState.isHidden || !item.isDone
+            val tabFilter = when (uiState.selectedTab) {
+                stringResource(R.string.todo) -> item.type == PlanType.TODO
+                stringResource(R.string.routine) -> item.type == PlanType.ROUTINE
                 else -> true
             }
             doneFilter && tabFilter
