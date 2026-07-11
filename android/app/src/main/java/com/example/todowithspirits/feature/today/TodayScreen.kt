@@ -61,7 +61,10 @@ fun TodayScreen(
                 .background(SpiritTodoTheme.color.surfaceColor1)
                 .padding(horizontal = 16.dp)
         ) {
-            TodayPlanSection()
+            TodayPlanSection(
+                todos = uiState.todos,
+                routines = uiState.routines
+            )
         }
     }
 }

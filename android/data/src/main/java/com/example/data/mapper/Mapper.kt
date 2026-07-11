@@ -1,12 +1,25 @@
 package com.example.data.mapper
 
 import com.example.data.response.LoginResponse
+import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
+import com.example.data.response.TaskListItemResponse
 import com.example.domain.model.LoginSession
 import com.example.domain.model.Task
+import com.example.domain.model.TaskCalendar
+import com.example.domain.model.TaskSummary
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+
+fun LoginResponse.toDomain(): LoginSession = LoginSession(
+    userId = userId,
+    email = email,
+    nickname = nickname,
+    accessToken = accessToken,
+    refreshToken = refreshToken,
+    tokenType = tokenType
+)
 
 fun TaskDetailResponse.toDomain(): Task = Task(
     category = category,
@@ -34,11 +47,33 @@ fun TaskDetailResponse.toDomain(): Task = Task(
     updatedAt = LocalDateTime.parse(updatedAt)
 )
 
-fun LoginResponse.toDomain(): LoginSession = LoginSession(
-    userId = userId,
-    email = email,
-    nickname = nickname,
-    accessToken = accessToken,
-    refreshToken = refreshToken,
-    tokenType = tokenType
+fun TaskCalendarResponse.toDomain(): TaskCalendar = TaskCalendar(
+    completedCount = completedCount,
+    completedRoutineCount = completedRoutineCount,
+    completedScheduleCount = completedScheduleCount,
+    incompleteCount = incompleteCount,
+    routineCount = routineCount,
+    scheduleCount = scheduleCount,
+    totalCount = totalCount,
+    items = items.map { it.toDomain() }
+)
+
+fun TaskListItemResponse.toDomain(): TaskSummary = TaskSummary(
+    category = category,
+    endDate = endDate?.let { LocalDate.parse(it) },
+    endTime = endTime?.let { LocalTime.parse(it) },
+    isAllDay = isAllDay,
+    isCompleted = isCompleted,
+    isImportant = isImportant,
+    isPublic = isPublic,
+    memo = memo,
+    notificationMinutes = notificationMinutes,
+    repeatType = repeatType,
+    repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
+    startDate = LocalDate.parse(startDate),
+    startTime = startTime?.let { LocalTime.parse(it) },
+    taskId = taskId,
+    taskType = taskType,
+    title = title,
+    updatedAt = LocalDateTime.parse(updatedAt)
 )

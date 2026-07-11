@@ -5,7 +5,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,46 +33,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.feature.today.state.RoutineItem
+import com.example.todowithspirits.feature.today.state.TodoItem
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-private data class TodoItem(
-    val title: String,
-    val isDone: Boolean,
-    val isImportant: Boolean,
-    val dueDate: LocalDate? = null,
-    val dueTime: LocalTime? = null,
-    val memo: String = ""
-)
-private data class RoutineItem(
-    val title: String,
-    val isDone: Boolean,
-    val memo: String = ""
-)
-
-private val dummyTodos = listOf(
-    TodoItem("성과 보고서 제출 마감", true, true, LocalDate.of(2026, 6, 1), LocalTime.of(19, 0)),
-    TodoItem("26년도 하반기 KPI 목표 설정", true, true, LocalDate.of(2026, 7, 10)),
-    TodoItem("월세 내기", false, false, LocalDate.now()),
-    TodoItem("비행기 티켓 끊기", false, false)
-)
-private val dummyRoutines = listOf(
-    RoutineItem("영어 단어 100개 외우기", true),
-    RoutineItem("책 20 페이지 읽기", true)
-)
 
 private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
     0 to listOf(0, 1),
@@ -86,7 +57,10 @@ private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
 )
 
 @Composable
-fun TodayPlanSection() {
+fun TodayPlanSection(
+    todos: List<TodoItem>,
+    routines: List<RoutineItem>
+) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     val today = remember { LocalDate.now() }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -153,7 +127,7 @@ fun TodayPlanSection() {
 
             Spacer(Modifier.height(18.dp))
 
-            dummyTodos.forEachIndexed { index, item ->
+            todos.forEachIndexed { index, item ->
                 TodayListItem(
                     title = item.title,
                     isDone = item.isDone,
@@ -161,7 +135,7 @@ fun TodayPlanSection() {
                     onClick = { selectedTodo = item }
                 )
 
-                if (index != dummyTodos.lastIndex) Spacer(modifier = Modifier.height(18.dp))
+                if (index != todos.lastIndex) Spacer(modifier = Modifier.height(16.dp))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -177,7 +151,7 @@ fun TodayPlanSection() {
 
             Spacer(Modifier.height(18.dp))
 
-            dummyRoutines.forEachIndexed { index, item ->
+            routines.forEachIndexed { index, item ->
                 TodayListItem(
                     title = item.title,
                     isDone = item.isDone,
@@ -185,7 +159,7 @@ fun TodayPlanSection() {
                     onClick = { selectedRoutine = item }
                 )
 
-                if (index != dummyRoutines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+                if (index != routines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -210,8 +184,8 @@ fun TodayPlanSection() {
         TodoDetailBottomSheet(
             title = routine.title,
             isImportant = false,
-            dueDate = null,
-            dueTime = null,
+            dueDate = routine.dueDate,
+            dueTime = routine.dueTime,
             memo = routine.memo,
             onDismiss = { selectedRoutine = null },
             onDelete = { selectedRoutine = null },
