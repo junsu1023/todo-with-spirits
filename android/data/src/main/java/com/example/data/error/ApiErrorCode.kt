@@ -9,15 +9,16 @@ sealed class ApiErrorCode(val code: String) {
     data object Conflict : ApiErrorCode("CONFLICT")
     data object InternalServerError : ApiErrorCode("INTERNAL_SERVER_ERROR")
     data object ServiceUnavailable : ApiErrorCode("SERVICE_UNAVAILABLE")
-    // 문서상의 패턴은 {RESOURCE}_NOT_FOUND 이지만, 실제 API는 리소스 접두어 없이 NOT_FOUND만 내려주는 경우도 있다.
     data object NotFound : ApiErrorCode("NOT_FOUND")
+    data object InvalidCredentials : ApiErrorCode("INVALID_CREDENTIALS")
     data class ResourceNotFound(val resource: String) : ApiErrorCode("${resource}_NOT_FOUND")
     data class Unknown(val rawCode: String) : ApiErrorCode(rawCode)
 
     companion object {
         private val knownCodes: List<ApiErrorCode> = listOf(
             MissingParameter, InvalidParameter, Unauthorized, TokenExpired,
-            Forbidden, Conflict, InternalServerError, ServiceUnavailable, NotFound
+            Forbidden, Conflict, InternalServerError, ServiceUnavailable, NotFound,
+            InvalidCredentials
         )
 
         fun from(code: String): ApiErrorCode {

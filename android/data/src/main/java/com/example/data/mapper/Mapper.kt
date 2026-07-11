@@ -1,6 +1,8 @@
 package com.example.data.mapper
 
+import com.example.data.response.LoginResponse
 import com.example.data.response.TaskDetailResponse
+import com.example.domain.model.LoginSession
 import com.example.domain.model.Task
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -30,4 +32,13 @@ fun TaskDetailResponse.toDomain(): Task = Task(
     taskType = taskType,
     title = title,
     updatedAt = LocalDateTime.parse(updatedAt)
+)
+
+fun LoginResponse.toDomain(): LoginSession = LoginSession(
+    userId = userId,
+    email = email,
+    nickname = nickname,
+    accessToken = accessToken,
+    refreshToken = refreshToken,
+    tokenType = tokenType
 )
