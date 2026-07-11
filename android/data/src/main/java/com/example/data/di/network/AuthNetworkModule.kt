@@ -1,11 +1,18 @@
 package com.example.data.di.network
 
+import com.example.core.qualifier.Auth
+import com.example.data.api.TaskApi
 import com.example.data.constant.URLConstant
+import com.example.data.network.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -20,4 +27,38 @@ object AuthNetworkModule {
     @Provides
     @Singleton
     fun provideBaseUrl(): String = URLConstant.BASE_URL
+
+    @Auth
+    @Provides
+    @Singleton
+    fun provideAuthOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        httpLoggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(httpLoggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Auth
+    @Provides
+    @Singleton
+    fun provideAuthRetrofit(
+        baseUrl: String,
+        @Auth okHttpClient: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskApi(
+        @Auth retrofit: Retrofit
+    ): TaskApi = retrofit.create(TaskApi::class.java)
 }
