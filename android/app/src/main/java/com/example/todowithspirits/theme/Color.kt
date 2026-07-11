@@ -36,8 +36,7 @@ val spiritsTodoColor = SpiritsTodoColor(
     dividerColor = Color(0xFFD1D1D6),
     selectedTimeBoxColor = Color(0xFFF4ECFC),
     buttonColor = Color(0xFFD7BFFF),
-    white = Color(0xFFFFFFFF),
-    transparent = Color(0x00000000)
+    white = Color(0xFFFFFFFF)
 )
 
 val spiritsLightColor = SpiritColor(
@@ -58,7 +57,9 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor4 = Color(0xFFB286FD),
     onSurfaceColor5 = Color(0xFF8F8170),
     onSurfaceColor6 = Color(0xFFBCBCBC),
-    onSurfaceColor7 = Color(0xFFF49191)
+    onSurfaceColor7 = Color(0xFFF49191),
+    onSurfaceColor8 = Color(0xFFC7C7C7),
+    transparent = Color(0x00000000)
 )
 
 class SpiritColor(
@@ -79,7 +80,9 @@ class SpiritColor(
     onSurfaceColor4: Color,
     onSurfaceColor5: Color,
     onSurfaceColor6: Color,
-    onSurfaceColor7: Color
+    onSurfaceColor7: Color,
+    onSurfaceColor8: Color,
+    transparent: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -134,6 +137,12 @@ class SpiritColor(
 
     var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
         private set
+
+    var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
+        private set
+
+    var transparent by mutableStateOf(transparent)
+        private set
 }
 
 class SpiritsTodoColor(
@@ -167,8 +176,7 @@ class SpiritsTodoColor(
     dividerColor: Color,
     selectedTimeBoxColor: Color,
     buttonColor: Color,
-    white: Color,
-    transparent: Color
+    white: Color
 ) {
     var homeColor by mutableStateOf(homeColor)
         private set
@@ -260,8 +268,5 @@ class SpiritsTodoColor(
         private set
 
     var white by mutableStateOf(white)
-        private set
-
-    var transparent by mutableStateOf(transparent)
         private set
 }

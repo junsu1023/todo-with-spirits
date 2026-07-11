@@ -9,6 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,11 +31,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -307,7 +315,7 @@ fun DayOfWeekSelector(
     onDayToggled: (DayOfWeek) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val days = listOf(
+    val weekDays = listOf(
         "일" to DayOfWeek.SUNDAY,
         "월" to DayOfWeek.MONDAY,
         "화" to DayOfWeek.TUESDAY,
@@ -317,34 +325,79 @@ fun DayOfWeekSelector(
         "토" to DayOfWeek.SATURDAY
     )
 
+    val currentSelectedDays by rememberUpdatedState(selectedDays)
+    val currentOnDayToggled by rememberUpdatedState(onDayToggled)
+    // 각 요일 Box의 부모(Row) 기준 좌표. 드래그 포인터가 어느 요일 위에 있는지 판별하는 데 사용.
+    val itemBounds = remember { arrayOfNulls<Rect>(weekDays.size) }
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                // 드래그 도중 이미 처리한 요일을 다시 토글하지 않도록 방문 기록을 유지하고,
+                // 드래그가 시작된 요일의 반대 상태를 목표값으로 삼아 지나가는 요일들을 같은 방향으로 맞춘다.
+                val visitedIndices = mutableSetOf<Int>()
+                var dragTargetSelected = true
+
+                fun indexAt(position: Offset): Int =
+                    itemBounds.indexOfFirst { it?.contains(position) == true }
+
+                fun applyDrag(index: Int) {
+                    if (index == -1 || !visitedIndices.add(index)) return
+                    val day = weekDays[index].second
+                    val isSelected = day in currentSelectedDays
+                    if (isSelected != dragTargetSelected) {
+                        currentOnDayToggled(day)
+                    }
+                }
+
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    visitedIndices.clear()
+
+                    val startIndex = indexAt(down.position)
+                    if (startIndex != -1) {
+                        dragTargetSelected = weekDays[startIndex].second !in currentSelectedDays
+                        applyDrag(startIndex)
+                    }
+
+                    do {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                        if (change.pressed) {
+                            applyDrag(indexAt(change.position))
+                            change.consume()
+                        }
+                    } while (event.changes.any { it.pressed })
+                }
+            },
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        days.forEach { (label, day) ->
+        weekDays.forEachIndexed { index, (label, day) ->
             val isSelected = day in selectedDays
 
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .height(52.dp)
+                    .onGloballyPositioned { coordinates ->
+                        itemBounds[index] = coordinates.boundsInParent()
+                    }
                     .border(
-                        width = if (isSelected) 1.dp else 0.dp,
-                        color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else Color.Transparent,
+                        width = if(isSelected) 1.dp else 0.dp,
+                        color = if(isSelected) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.transparent,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
                         color = SpiritTodoTheme.colors.white,
                         shape = RoundedCornerShape(4.dp)
-                    )
-                    .clickable { onDayToggled(day) },
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = label,
-                    color = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8,
+                    fontSize = 16.sp
                 )
             }
         }
