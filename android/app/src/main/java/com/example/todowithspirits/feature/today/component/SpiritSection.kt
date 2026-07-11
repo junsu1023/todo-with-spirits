@@ -90,7 +90,7 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
                     Box(
                         modifier = Modifier
                             .size(18.dp)
-                            .background(SpiritTodoTheme.color.surfaceColor2, HexagonShape),
+                            .background(SpiritTodoTheme.color.surfaceColor3, HexagonShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -123,7 +123,7 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
                         .fillMaxWidth(fraction = progress)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(9999.dp))
-                        .background(SpiritTodoTheme.color.surfaceColor2)
+                        .background(SpiritTodoTheme.color.surfaceColor3)
                 )
             }
 

@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.today
+package com.example.todowithspirits.feature.today.viewmodel
 
 import com.example.core.viewmodel.BaseViewModel
 import com.example.todowithspirits.feature.today.state.SpiritInfo
@@ -11,7 +11,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TodayViewModel @Inject constructor(): BaseViewModel() {
-    private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
+    private val _uiState =
+        MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
     val uiState: StateFlow<TodayUiState> get() = _uiState.asStateFlow()
 
 }

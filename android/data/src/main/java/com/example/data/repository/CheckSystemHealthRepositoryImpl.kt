@@ -10,7 +10,9 @@ class CheckSystemHealthRepositoryImpl @Inject constructor(
 ): CheckSystemHealthRepository {
     override suspend fun checkSystemHealth(): Result<Unit> {
         return try {
-            if(healthCheckRemoteDataSource.getHealth().isSuccessful) {
+            val result = healthCheckRemoteDataSource.getHealth()
+
+            if(result.isSuccessful) {
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Not Connected to the server"))

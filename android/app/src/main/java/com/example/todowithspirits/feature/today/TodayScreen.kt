@@ -20,6 +20,7 @@ import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.today.component.BadgeAndAchievementRow
 import com.example.todowithspirits.feature.today.component.SpiritSection
 import com.example.todowithspirits.feature.today.component.TodayPlanSection
+import com.example.todowithspirits.feature.today.viewmodel.TodayViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable

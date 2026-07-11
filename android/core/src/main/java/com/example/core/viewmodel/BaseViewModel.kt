@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /*
 모든 ViewModel의 기반이 될 BaseViewModel
@@ -28,7 +29,7 @@ open class BaseViewModel: ViewModel() {
 
     // 로딩 상태 관리 및 에러 핸들링
     fun CoroutineScope.launchWithLoading(
-        context: CoroutineContext,
+        context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
         handleError: Boolean = true,
         block: suspend CoroutineScope.() -> Unit
