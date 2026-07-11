@@ -97,7 +97,7 @@ fun PlanScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
         PlanHeader()
@@ -149,7 +149,7 @@ fun PlanScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "마감 임박 순",
-                    color = SpiritTodoTheme.colors.mainTextColor,
+                    color = SpiritTodoTheme.color.onSurfaceColor1,
                     fontSize = 14.sp
                 )
 
