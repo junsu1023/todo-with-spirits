@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.AlarmOption
@@ -50,8 +49,8 @@ fun RoutineForm() {
     val selectedWeekDays = remember { mutableStateOf(setOf<DayOfWeek>()) }
     val selectedMonthDays = remember { mutableStateOf(setOf<Int>()) }
     val excludeHolidays = remember { mutableStateOf(false) }
-    val alarmOption = remember { mutableStateOf(AlarmOption.TEN_MIN_BEFORE) }
-    val categoryOption = remember { mutableStateOf(CategoryOption.RELATIONSHIP) }
+    val alarmOption = remember { mutableStateOf(AlarmOption.NONE) }
+    val categoryOption = remember { mutableStateOf(CategoryOption.NONE) }
     val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
     val memoValue = remember { mutableStateOf("") }
 

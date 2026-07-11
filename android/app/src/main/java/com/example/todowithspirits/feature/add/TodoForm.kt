@@ -46,8 +46,8 @@ fun TodoForm() {
     val date = remember { mutableStateOf(LocalDate.now()) }
     val isTimeEnabled = remember { mutableStateOf(false) }
     val dueTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
-    val alarmOption = remember { mutableStateOf(AlarmOption.TEN_MIN_BEFORE) }
-    val categoryOption = remember { mutableStateOf(CategoryOption.RELATIONSHIP) }
+    val alarmOption = remember { mutableStateOf(AlarmOption.NONE) }
+    val categoryOption = remember { mutableStateOf(CategoryOption.NONE) }
     val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
     
     val memoValue = remember { mutableStateOf("") }

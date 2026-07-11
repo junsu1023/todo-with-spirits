@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todowithspirits.component.FloatingButton
 import com.example.todowithspirits.component.SplitsTodoBottomBar
+import com.example.todowithspirits.component.bottomNavItems
 import com.example.todowithspirits.navigation.Screen
 import com.example.todowithspirits.navigation.SpiritsTodoNavigation
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -36,10 +37,12 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
     Scaffold(
         containerColor = SpiritTodoTheme.colors.bgColor2,
         bottomBar = {
-            SplitsTodoBottomBar(
-                currentRoute = currentRoute,
-                onItemSelected = { route -> navToRoute(route) }
-            )
+            if(bottomNavItems.map { it.route }.contains(currentRoute)) {
+                SplitsTodoBottomBar(
+                    currentRoute = currentRoute,
+                    onItemSelected = { route -> navToRoute(route) }
+                )
+            }
         },
         floatingActionButton = {
             if(currentRoute == Screen.Today.route) {
