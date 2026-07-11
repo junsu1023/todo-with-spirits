@@ -58,7 +58,7 @@ private fun BadgeCard(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier
-                .height(116.dp)
+                .height(120.dp)
                 .padding(start = 10.dp, top = 8.dp, end = 6.dp, bottom = 8.dp)
         ) {
             Row(
@@ -122,7 +122,7 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier
-                .height(116.dp)
+                .height(120.dp)
                 .padding(top = 8.dp)
                 .padding(horizontal = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
