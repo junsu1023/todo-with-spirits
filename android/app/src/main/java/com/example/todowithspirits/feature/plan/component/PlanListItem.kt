@@ -72,9 +72,9 @@ fun PlanListItem(
     val maxPostpone = remember(density) { with(density) { leftPanelWidthDp.toPx() } }
     val offsetX = remember { Animatable(0f) }
 
-    // 드래그가 시작된 시점의 앵커(닫힘/왼쪽 열림/오른쪽 열림)에 인접한 한 단계 범위로만
-    // 이동을 제한한다. 예를 들어 왼쪽으로 열린 상태라면 [maxReveal, 0] 범위 안에서만
-    // 움직여서, 아무리 크게 반대로 드래그해도 반대쪽 끝까지 한 번에 넘어가지 않는다.
+    /* 드래그가 시작된 시점의 앵커(닫힘/왼쪽 열림/오른쪽 열림)에 인접한 한 단계 범위로만
+       이동을 제한한다. 예를 들어 왼쪽으로 열린 상태라면 [maxReveal, 0] 범위 안에서만
+       움직여서, 아무리 크게 반대로 드래그해도 반대쪽 끝까지 한 번에 넘어가지 않는다. */
     var dragMinBound by remember { mutableFloatStateOf(maxReveal) }
     var dragMaxBound by remember { mutableFloatStateOf(maxPostpone) }
 
@@ -83,8 +83,8 @@ fun PlanListItem(
         action()
     }
     val typeColor = when (item.type) {
-        PlanType.TODO -> SpiritTodoTheme.colors.surfaceColor5
-        PlanType.ROUTINE -> SpiritTodoTheme.colors.onSurfaceColor5
+        PlanType.TODO -> SpiritTodoTheme.color.surfaceColor8
+        PlanType.ROUTINE -> SpiritTodoTheme.color.surfaceColor9
     }
     val dDay = item.dueDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
     val dDayText = when {
@@ -107,7 +107,7 @@ fun PlanListItem(
                     .width(leftPanelWidthDp)
                     .fillMaxHeight()
                     .padding(end = 8.dp)
-                    .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor10, RoundedCornerShape(6.dp))
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() },
@@ -118,7 +118,7 @@ fun PlanListItem(
                 Image(
                     painter = painterResource(R.drawable.fi_rr_arrow_right),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor7)
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor8)
                 )
             }
         }
@@ -138,8 +138,8 @@ fun PlanListItem(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
-                        .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor6, RoundedCornerShape(6.dp))
+                        .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
+                        .border(1.dp, SpiritTodoTheme.color.onSurfaceColor7, RoundedCornerShape(6.dp))
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
@@ -150,7 +150,7 @@ fun PlanListItem(
                     Image(
                         painter = painterResource(R.drawable.fi_rr_trash),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor6)
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor7)
                     )
                 }
 
@@ -158,8 +158,8 @@ fun PlanListItem(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
-                        .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor2, RoundedCornerShape(6.dp))
+                        .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
+                        .border(1.dp, SpiritTodoTheme.color.onSurfaceColor8, RoundedCornerShape(6.dp))
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
@@ -170,7 +170,7 @@ fun PlanListItem(
                     Image(
                         painter = painterResource(R.drawable.fi_rr_pencil),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor7)
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor8)
                     )
                 }
             }
@@ -212,8 +212,7 @@ fun PlanListItem(
                 ) {
                     if (offsetX.value == 0f) navigateToDetail()
                 },
-            color = SpiritTodoTheme.colors.homeColor,
-            shadowElevation = 1.dp,
+            color = SpiritTodoTheme.color.surfaceColor12,
             shape = RoundedCornerShape(6.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -230,7 +229,7 @@ fun PlanListItem(
                         onCheckedChange = null,
                         colors = CheckboxDefaults.colors(
                             checkedColor = typeColor,
-                            uncheckedColor = SpiritTodoTheme.colors.onSurfaceColor2
+                            uncheckedColor = SpiritTodoTheme.color.onSurfaceColor8
                         )
                     )
                 }
@@ -245,11 +244,12 @@ fun PlanListItem(
                             text = item.title,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.colors.mainTextColor
+                            color = SpiritTodoTheme.color.onSurfaceColor5
                         )
 
                         if (item.isImportant) {
                             Spacer(modifier = Modifier.width(4.dp))
+
                             Image(
                                 painter = painterResource(R.drawable.fi_rr_color_star),
                                 contentDescription = null,
@@ -263,7 +263,7 @@ fun PlanListItem(
                             Text(
                                 text = dDayText,
                                 fontSize = 16.sp,
-                                color = SpiritTodoTheme.colors.onSurfaceColor1,
+                                color = if(dDayText == "D-Day") SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -277,10 +277,11 @@ fun PlanListItem(
                     }
                     if (dateTimeText.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
+
                         Text(
                             text = dateTimeText,
                             fontSize = 12.sp,
-                            color = SpiritTodoTheme.colors.mainTextColor,
+                            color = SpiritTodoTheme.color.onSurfaceColor1,
                             fontWeight = FontWeight.Light
                         )
                     }
@@ -290,11 +291,12 @@ fun PlanListItem(
                     Text(
                         text = "(${item.memo.ifEmpty { "메모 없음" }})",
                         fontSize = 14.sp,
-                        color = SpiritTodoTheme.colors.onSurfaceColor2
+                        color = SpiritTodoTheme.color.onSurfaceColor8
                     )
 
                     if (item.category != null || item.repeatInfo != null) {
                         Spacer(modifier = Modifier.height(10.dp))
+
                         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                             item.category?.let { TagChip(it) }
                             item.repeatInfo?.let { TagChip(it) }
@@ -310,13 +312,13 @@ fun PlanListItem(
 private fun TagChip(text: String) {
     Box(
         modifier = Modifier
-            .border(0.8.dp, SpiritTodoTheme.colors.onSurfaceColor2, RoundedCornerShape(4.dp))
+            .border(0.8.dp, SpiritTodoTheme.color.onSurfaceColor8, RoundedCornerShape(4.dp))
             .padding(horizontal = 8.dp, vertical = 3.dp)
     ) {
         Text(
             text = text,
             fontSize = 12.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor2
+            color = SpiritTodoTheme.color.onSurfaceColor8
         )
     }
 }
