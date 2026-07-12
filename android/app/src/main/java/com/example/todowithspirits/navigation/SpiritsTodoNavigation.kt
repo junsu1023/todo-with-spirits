@@ -86,7 +86,6 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.MyPage.route) {
             MyPageScreen(
-                onBack = { navController.popBackStack() },
                 navigateToAccountSetting = navigateToAccountSetting,
                 navigateToAlarmSetting = navigateToAlarmSetting
             )

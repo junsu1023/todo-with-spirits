@@ -33,16 +33,15 @@ fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
             .fillMaxWidth()
             .clickable(
                 indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() }
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = { onClick() }
+            )
             .padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(item.iconRes),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.mainTextColor),
-            modifier = Modifier.size(22.dp)
+            contentDescription = null
         )
 
         Spacer(Modifier.width(14.dp))
@@ -52,7 +51,7 @@ fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
                 text = stringResource(item.titleRes),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             )
 
             Spacer(Modifier.height(2.dp))
@@ -60,14 +59,14 @@ fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
             Text(
                 text = stringResource(item.descRes),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor2
+                color = SpiritTodoTheme.color.onSurfaceColor6
             )
         }
 
         Image(
             painter = painterResource(R.drawable.fi_rr_angle_small_right),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor2),
+            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor6),
             modifier = Modifier.size(22.dp)
         )
     }

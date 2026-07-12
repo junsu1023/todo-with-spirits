@@ -36,7 +36,7 @@ fun MySpiritCard() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.surfaceColor10, RoundedCornerShape(6.dp))
             .padding(top = 16.dp, bottom = 14.dp)
             .padding(horizontal = 16.dp)
     ) {
@@ -44,7 +44,7 @@ fun MySpiritCard() {
             text = stringResource(R.string.my_spirit),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.onSurfaceColor1
         )
 
         Spacer(Modifier.height(10.dp))
@@ -70,19 +70,19 @@ fun MySpiritCard() {
                     Text(
                         text = stringResource(R.string.representative_spirit),
                         fontSize = 10.sp,
-                        color = SpiritTodoTheme.colors.onSurfaceColor1,
+                        color = SpiritTodoTheme.color.onSurfaceColor4,
                         fontWeight = FontWeight.Medium
                     )
                 }
 
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(4.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "루미", // dummy
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.onSurfaceColor1
                     )
 
                     Spacer(Modifier.width(4.dp))
@@ -90,14 +90,14 @@ fun MySpiritCard() {
                     Box(
                         modifier = Modifier
                             .size(16.dp)
-                            .background(SpiritTodoTheme.colors.onSurfaceColor1, HexagonShape),
+                            .background(SpiritTodoTheme.color.surfaceColor3, HexagonShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "3", // dummy
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.colors.white
+                            color = SpiritTodoTheme.color.onSurfaceColor3
                         )
                     }
                 }
@@ -112,13 +112,14 @@ fun MySpiritCard() {
                     Text(
                         text = stringResource(R.string.exp_format, 999, 1000),
                         fontSize = 10.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        fontWeight = FontWeight.Light,
+                        color = SpiritTodoTheme.color.onSurfaceColor1
                     )
                     Text(
                         text = "100%",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.colors.onSurfaceColor1
+                        color = SpiritTodoTheme.color.surfaceColor3
                     )
                 }
 
@@ -136,7 +137,7 @@ fun MySpiritCard() {
                             .fillMaxWidth(0.999f)
                             .fillMaxHeight()
                             .clip(RoundedCornerShape(9999.dp))
-                            .background(SpiritTodoTheme.colors.onSurfaceColor1)
+                            .background(SpiritTodoTheme.color.surfaceColor3)
                     )
                 }
             }
@@ -154,17 +155,18 @@ fun MySpiritCard() {
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                     .clickable(
                         indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { },
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.view_spirit),
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 )
             }
 
@@ -172,17 +174,18 @@ fun MySpiritCard() {
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                     .clickable(
                         indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { },
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { }
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(R.string.change_representative),
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 )
             }
         }

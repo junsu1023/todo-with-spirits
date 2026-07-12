@@ -26,7 +26,7 @@ fun StatusRow() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.surfaceColor10, RoundedCornerShape(6.dp))
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
@@ -35,7 +35,7 @@ fun StatusRow() {
             Text(
                 text = stringResource(R.string.consecutive_achievement),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             )
 
             Spacer(Modifier.height(2.dp))
@@ -44,21 +44,21 @@ fun StatusRow() {
                 text = "12일", // dummy
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             )
         }
 
         VerticalDivider(
             modifier = Modifier.height(40.dp),
             thickness = 1.dp,
-            color = SpiritTodoTheme.colors.onSurfaceColor3
+            color = SpiritTodoTheme.color.onSurfaceColor2
         )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = stringResource(R.string.total_completion),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             )
 
             Spacer(Modifier.height(4.dp))
@@ -67,7 +67,7 @@ fun StatusRow() {
                 text = "12일", // dummy
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             )
         }
     }

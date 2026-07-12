@@ -1,27 +1,26 @@
 package com.example.todowithspirits.feature.mypage
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.mypage.component.MySpiritCard
 import com.example.todowithspirits.feature.mypage.component.ProfileSection
 import com.example.todowithspirits.feature.mypage.component.SettingRow
@@ -35,53 +34,34 @@ data class SettingItem(
 )
 
 val settingItems = listOf(
-    SettingItem(R.drawable.fi_rr_user, R.string.account_setting, R.string.account_setting_desc),
-    SettingItem(R.drawable.alarm_icon, R.string.alarm_setting, R.string.alarm_setting_desc),
-    SettingItem(R.drawable.fi_rr_computer, R.string.display_setting, R.string.display_setting_desc),
-    SettingItem(R.drawable.fi_rr_cloud, R.string.data_setting, R.string.data_setting_desc),
-    SettingItem(R.drawable.fi_rr_info, R.string.customer_support, R.string.customer_support_desc)
+    SettingItem(R.drawable.todo_bottom_nv, R.string.account_setting, R.string.account_setting_desc),
+    SettingItem(R.drawable.todo_alarm, R.string.alarm_setting, R.string.alarm_setting_desc),
+    SettingItem(R.drawable.todo_computer, R.string.display_setting, R.string.display_setting_desc),
+    SettingItem(R.drawable.todo_cloud, R.string.data_setting, R.string.data_setting_desc),
+    SettingItem(R.drawable.todo_info, R.string.customer_support, R.string.customer_support_desc)
 )
 
 @Composable
 fun MyPageScreen(
-    onBack: () -> Unit = {},
     navigateToAccountSetting: () -> Unit = {},
     navigateToAlarmSetting: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
+        TitleHeader(title = stringResource(R.string.my_page_title))
+
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 14.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_back),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.CenterStart)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { onBack() }
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
-
             ProfileSection()
 
             Spacer(Modifier.height(15.dp))
 
             StatusRow()
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(14.dp))
 
             MySpiritCard()
         }
@@ -90,7 +70,7 @@ fun MyPageScreen(
 
         HorizontalDivider(
             thickness = 6.dp,
-            color = SpiritTodoTheme.colors.surfaceColor4
+            color = SpiritTodoTheme.color.surfaceColor10
         )
 
         Column(
@@ -110,6 +90,49 @@ fun MyPageScreen(
             }
         }
 
-        Spacer(Modifier.height(21.dp))
+        Spacer(Modifier.height(24.dp))
+
+        HorizontalDivider(
+            thickness = 6.dp,
+            color = SpiritTodoTheme.color.surfaceColor10
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        SettingRow2(title = stringResource(R.string.version), desc = "v.0.0.00")
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        SettingRow2(title = stringResource(R.string.logout))
+
+        Spacer(modifier = Modifier.height(26.dp))
+    }
+}
+
+@Composable
+fun SettingRow2(
+    title: String,
+    desc: String? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = SpiritTodoTheme.color.onSurfaceColor6
+        )
+
+        if(desc != null) {
+            Text(
+                text = desc,
+                fontSize = 14.sp,
+                color = SpiritTodoTheme.color.onSurfaceColor6
+            )
+        }
     }
 }

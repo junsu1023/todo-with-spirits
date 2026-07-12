@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.mypage.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,8 +41,15 @@ fun ProfileSection() {
             Box(
                 modifier = Modifier
                     .size(42.dp)
-                    .background(SpiritTodoTheme.colors.onSurfaceColor9, CircleShape)
-            )
+                    .background(SpiritTodoTheme.color.surfaceColor17, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.todo_bottom_nv),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor6)
+                )
+            }
 
             Spacer(Modifier.width(10.dp))
 
@@ -48,30 +58,31 @@ fun ProfileSection() {
                     text = "일하기 싫어요",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 )
 
                 Text(
                     text = "wish0221@gmail.com",
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor2
+                    color = SpiritTodoTheme.color.onSurfaceColor6
                 )
             }
         }
 
         Box(
             modifier = Modifier
-                .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor2, RoundedCornerShape(54.dp))
+                .border(1.dp, SpiritTodoTheme.color.onSurfaceColor6, RoundedCornerShape(6.dp))
                 .clickable(
                     indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { }
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = { }
+                )
                 .padding(horizontal = 10.dp, vertical = 8.dp)
         ) {
             Text(
-                text = stringResource(R.string.member_info),
+                text = stringResource(R.string.account_management),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor2
+                color = SpiritTodoTheme.color.onSurfaceColor6
             )
         }
     }

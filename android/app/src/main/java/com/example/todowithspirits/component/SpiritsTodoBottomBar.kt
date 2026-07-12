@@ -39,7 +39,7 @@ val bottomNavItems = listOf(
     BottomNavItem(Screen.Plan.route, R.string.plan, R.drawable.plan_selected, R.drawable.plan_status),
     BottomNavItem(Screen.Forest.route, R.string.forest, R.drawable.forest_selected, R.drawable.forest_status),
     BottomNavItem(Screen.Record.route, R.string.record, R.drawable.record_selected, R.drawable.record_status),
-    BottomNavItem(Screen.MyPage.route, R.string.myPage, R.drawable.my_page_selected, R.drawable.my_page_status)
+    BottomNavItem(Screen.MyPage.route, R.string.my_page, R.drawable.my_page_selected, R.drawable.my_page_status)
 )
 
 @Composable
