@@ -10,10 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,11 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final HabitCompletionRepository habitCompletionRepository;
+
+    // =========================================================
+    // 생성
+    // =========================================================
 
     @Transactional
     public TaskCreateResponse createSchedule(Long userId, ScheduleCreateRequest request) {
@@ -122,6 +129,73 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
         return TaskCreateResponse.from(task);
+    }
+
+    // =========================================================
+    // 완료 / 완료 취소
+    // =========================================================
+
+    @Transactional
+    public void completeTask(Long userId, Long taskId, LocalDate date) {
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        if (task.getTaskType() == TaskType.HABIT) {
+            LocalDate completionDate = date != null ? date : LocalDate.now();
+            if (habitCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
+                throw new ApiException(ErrorCode.ALREADY_COMPLETED,
+                        "Habit already completed on " + completionDate);
+            }
+            habitCompletionRepository.save(HabitCompletion.of(task, completionDate));
+        } else {
+            task.completeTask();
+        }
+    }
+
+    @Transactional
+    public void undoCompleteTask(Long userId, Long taskId, LocalDate date) {
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        if (task.getTaskType() == TaskType.HABIT) {
+            LocalDate completionDate = date != null ? date : LocalDate.now();
+            HabitCompletion completion = habitCompletionRepository
+                    .findByTaskIdAndCompletionDate(taskId, completionDate)
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+            habitCompletionRepository.delete(completion);
+        } else {
+            task.undoCompleteTask();
+        }
+    }
+
+    // =========================================================
+    // 삭제
+    // =========================================================
+
+    @Transactional
+    public TaskDeleteResponse deleteTasks(Long userId, TaskDeleteRequest request) {
+        List<Task> tasks = taskRepository.findAllById(request.getTaskIds())
+                .stream()
+                .filter(t -> userId.equals(t.getUser().getId()))
+                .toList();
+        taskRepository.deleteAll(tasks);
+        return TaskDeleteResponse.of(tasks.size());
+    }
+
+    // =========================================================
+    // private helpers
+    // =========================================================
+
+    private Map<Long, Map<LocalDate, HabitCompletion>> loadCompletionMap(
+            List<Long> habitIds, LocalDate from, LocalDate to) {
+        if (habitIds.isEmpty()) return Map.of();
+        return habitCompletionRepository
+                .findAllByTaskIdInAndCompletionDateBetween(habitIds, from, to)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        hc -> hc.getTask().getId(),
+                        Collectors.toMap(HabitCompletion::getCompletionDate, Function.identity())
+                ));
     }
 
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {

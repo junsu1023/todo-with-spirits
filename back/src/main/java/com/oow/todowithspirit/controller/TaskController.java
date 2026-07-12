@@ -1,14 +1,7 @@
 package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
-import com.oow.todowithspirit.dto.task.CalendarTaskListResponse;
-import com.oow.todowithspirit.dto.task.RoutineCreateRequest;
-import com.oow.todowithspirit.dto.task.ScheduleCreateRequest;
-import com.oow.todowithspirit.dto.task.TaskCreateResponse;
-import com.oow.todowithspirit.dto.task.TaskDeleteRequest;
-import com.oow.todowithspirit.dto.task.TaskDeleteResponse;
-import com.oow.todowithspirit.dto.task.TaskListResponse;
-import com.oow.todowithspirit.dto.task.TaskSummaryResponse;
+import com.oow.todowithspirit.dto.task.*;
 import com.oow.todowithspirit.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +43,29 @@ public class TaskController {
     }
 
     // ==============================================
-    // 캘린더 (일정 + 루틴 통합 조회)
+    // 완료 / 완료 취소
+    // ==============================================
+
+    @PostMapping("/{taskId}/complete")
+    public ResponseEntity<ApiResponse<Void>> completeTask(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        taskService.completeTask(userId, taskId, date);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @DeleteMapping("/{taskId}/complete")
+    public ResponseEntity<ApiResponse<Void>> undoCompleteTask(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        taskService.undoCompleteTask(userId, taskId, date);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    // ==============================================
+    // 캘린더 (일정 + 루틴 occurrence 통합 조회)
     // ==============================================
 
     @GetMapping("/calendar")
