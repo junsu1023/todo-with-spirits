@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.today.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -87,316 +89,319 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
 
     Popup(
-        alignment = Alignment.BottomCenter,
         onDismissRequest = onDismiss,
         properties = PopupProperties(
             focusable = true,
             dismissOnClickOutside = true,
-            dismissOnBackPress = true
+            dismissOnBackPress = true,
+            usePlatformDefaultWidth = false
         )
     ) {
-        Surface(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp)
+                .fillMaxSize()
                 .imePadding(),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, SpiritTodoTheme.color.surfaceColor2),
-            color = SpiritTodoTheme.color.surfaceColor1
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Column(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp)
-                    .padding(top = 14.dp, bottom = 12.dp)
+                    .padding(horizontal = 14.dp),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, SpiritTodoTheme.color.surfaceColor2),
+                color = SpiritTodoTheme.color.surfaceColor1
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp)
+                        .padding(top = 14.dp, bottom = 12.dp)
+                        .animateContentSize()
                 ) {
-                    SelectionTabs(
-                        tabItems = TabItems(listOf(stringResource(R.string.todo), stringResource(R.string.routine))),
-                        selectedItem = selectedTab,
-                        onItemSelected = { tab ->
-                            selectedTab = tab
-                            isDateExpanded = false
-                            isTimeEnabled = false
-                            isScheduleSectionVisible = false
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Image(
-                        modifier = Modifier
-                            .size(26.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { isImportant = !isImportant }
-                            ),
-                        painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
-                        contentDescription = null,
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                BasicTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(
-                        fontSize = 18.sp,
-                        color = SpiritTodoTheme.color.onSurfaceColor1
-                    ),
-                    decorationBox = { innerTextField ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(modifier = Modifier.weight(1f)) {
-                                if (title.isEmpty()) {
-                                    Text(
-                                        text = "제목 없음",
-                                        style = TextStyle(
-                                            fontSize = 18.sp,
-                                            color = SpiritTodoTheme.color.onSurfaceColor2
-                                        )
-                                    )
-                                }
-
-                                innerTextField()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SelectionTabs(
+                            tabItems = TabItems(listOf(stringResource(R.string.todo), stringResource(R.string.routine))),
+                            selectedItem = selectedTab,
+                            onItemSelected = { tab ->
+                                selectedTab = tab
+                                isDateExpanded = false
+                                isTimeEnabled = false
+                                isScheduleSectionVisible = false
                             }
+                        )
 
-                            if (selectedTab == stringResource(R.string.todo)) {
-                                Image(
-                                    painter = painterResource(R.drawable.todo_clock),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            isScheduleSectionVisible = !isScheduleSectionVisible
+                        Spacer(modifier = Modifier.weight(1f))
 
-                                            if (!isScheduleSectionVisible) {
-                                                isDateExpanded = false
-                                                isTimeEnabled = false
-                                            }
-                                        },
-                                    colorFilter = ColorFilter.tint(
-                                        if(isScheduleSectionVisible) SpiritTodoTheme.color.surfaceColor3
-                                        else SpiritTodoTheme.color.onSurfaceColor6
-                                    )
-                                )
-                            }
-                        }
+                        Image(
+                            modifier = Modifier
+                                .size(26.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    onClick = { isImportant = !isImportant }
+                                ),
+                            painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
+                            contentDescription = null,
+                        )
                     }
-                )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                HorizontalDivider(color = SpiritTodoTheme.color.onSurfaceColor2, thickness = 1.dp)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                when (selectedTab) {
-                    stringResource(R.string.todo) -> {
-                        AnimatedVisibility(
-                            visible = isScheduleSectionVisible,
-                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                        ) {
-                            Column {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            isDateExpanded = !isDateExpanded
-                                            if (isDateExpanded) isTimeEnabled = false
-                                        }
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(14.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
+                    BasicTextField(
+                        value = title,
+                        onValueChange = { title = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            color = SpiritTodoTheme.color.onSurfaceColor1
+                        ),
+                        decorationBox = { innerTextField ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(modifier = Modifier.weight(1f)) {
+                                    if (title.isEmpty()) {
                                         Text(
-                                            text = stringResource(R.string.date),
-                                            modifier = Modifier.weight(1f),
-                                            fontSize = 14.sp,
-                                            color = SpiritTodoTheme.color.onSurfaceColor1
+                                            text = "제목 없음",
+                                            style = TextStyle(
+                                                fontSize = 18.sp,
+                                                color = SpiritTodoTheme.color.onSurfaceColor2
+                                            )
                                         )
-
-                                        selectedDate?.let { date ->
-                                            Text(
-                                                text = date.format(dateFormatter),
-                                                fontSize = 14.sp,
-                                                color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1
-                                            )
-                                        }
                                     }
 
-                                    AnimatedVisibility(
-                                        visible = isDateExpanded,
-                                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                                    ) {
-                                        Column {
-                                            CalendarView(
-                                                selectedDate = selectedDate ?: LocalDate.now(),
-                                                onDateSelected = {
-                                                    selectedDate = it
-                                                    isDateExpanded = false
-                                                },
-                                                showMonthNavigation = false
-                                            )
-                                        
-                                            Spacer(Modifier.height(24.dp))
-                                        }
-                                    }
+                                    innerTextField()
                                 }
 
-                                Spacer(Modifier.height(6.dp))
+                                if (selectedTab == stringResource(R.string.todo)) {
+                                    Image(
+                                        painter = painterResource(R.drawable.todo_clock),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                isScheduleSectionVisible = !isScheduleSectionVisible
 
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
-                                ) {
-                                    Row(
+                                                if (!isScheduleSectionVisible) {
+                                                    isDateExpanded = false
+                                                    isTimeEnabled = false
+                                                }
+                                            },
+                                        colorFilter = ColorFilter.tint(
+                                            if(isScheduleSectionVisible) SpiritTodoTheme.color.surfaceColor3
+                                            else SpiritTodoTheme.color.onSurfaceColor6
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    HorizontalDivider(color = SpiritTodoTheme.color.onSurfaceColor2, thickness = 1.dp)
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    when (selectedTab) {
+                        stringResource(R.string.todo) -> {
+                            AnimatedVisibility(
+                                visible = isScheduleSectionVisible,
+                                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                            ) {
+                                Column {
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(14.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.time),
-                                            modifier = Modifier.weight(1f),
-                                            fontSize = 14.sp,
-                                            color = SpiritTodoTheme.color.onSurfaceColor1
-                                        )
-
-                                        SplitsTodoSwitch(
-                                            checked = isTimeEnabled,
-                                            onCheckedChange = { enabled ->
-                                                isTimeEnabled = enabled
-                                                if (enabled) isDateExpanded = false
+                                            .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                isDateExpanded = !isDateExpanded
+                                                if (isDateExpanded) isTimeEnabled = false
                                             }
-                                        )
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(14.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.date),
+                                                modifier = Modifier.weight(1f),
+                                                fontSize = 14.sp,
+                                                color = SpiritTodoTheme.color.onSurfaceColor1
+                                            )
+
+                                            selectedDate?.let { date ->
+                                                Text(
+                                                    text = date.format(dateFormatter),
+                                                    fontSize = 14.sp,
+                                                    color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1
+                                                )
+                                            }
+                                        }
+
+                                        AnimatedVisibility(
+                                            visible = isDateExpanded,
+                                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                        ) {
+                                            Column {
+                                                CalendarView(
+                                                    selectedDate = selectedDate ?: LocalDate.now(),
+                                                    onDateSelected = {
+                                                        selectedDate = it
+                                                        isDateExpanded = false
+                                                    },
+                                                    showMonthNavigation = false
+                                                )
+                                        
+                                                Spacer(Modifier.height(24.dp))
+                                            }
+                                        }
                                     }
 
-                                    AnimatedVisibility(
-                                        visible = isTimeEnabled,
-                                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                    Spacer(Modifier.height(6.dp))
+
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
                                     ) {
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(14.dp),
+                                            verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            TimeWheelPicker(
-                                                initialHour = selectedTime.hour,
-                                                initialMinute = selectedTime.minute,
-                                                onTimeSelected = { h, m ->
-                                                    selectedTime = LocalTime.of(h, m)
+                                            Text(
+                                                text = stringResource(R.string.time),
+                                                modifier = Modifier.weight(1f),
+                                                fontSize = 14.sp,
+                                                color = SpiritTodoTheme.color.onSurfaceColor1
+                                            )
+
+                                            SplitsTodoSwitch(
+                                                checked = isTimeEnabled,
+                                                onCheckedChange = { enabled ->
+                                                    isTimeEnabled = enabled
+                                                    if (enabled) isDateExpanded = false
                                                 }
                                             )
+                                        }
 
-                                            Spacer(Modifier.height(16.dp))
+                                        AnimatedVisibility(
+                                            visible = isTimeEnabled,
+                                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalAlignment = Alignment.CenterHorizontally
+                                            ) {
+                                                TimeWheelPicker(
+                                                    initialHour = selectedTime.hour,
+                                                    initialMinute = selectedTime.minute,
+                                                    onTimeSelected = { h, m ->
+                                                        selectedTime = LocalTime.of(h, m)
+                                                    }
+                                                )
+
+                                                Spacer(Modifier.height(16.dp))
+                                            }
                                         }
                                     }
                                 }
+                            }
+                        }
 
-                                Spacer(Modifier.height(16.dp))
+                        stringResource(R.string.routine) -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(
+                                        when(repeatOption) {
+                                            RepeatOption.WEEKLY -> 113.dp
+                                            RepeatOption.MONTHLY -> 219.dp
+                                            else -> 45.dp
+                                        }
+                                    )
+                                    .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
+                                    .padding(horizontal = 14.dp)
+                            ) {
+                                QuickRepeatRow(
+                                    value = repeatOption.displayName,
+                                    onOptionSelected = { repeatOption = RepeatOption.fromDisplayName(it) }
+                                )
+
+                                AnimatedVisibility(
+                                    visible = repeatOption == RepeatOption.WEEKLY,
+                                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                ) {
+                                    DayOfWeekSelector(
+                                        selectedDays = selectedWeekDays,
+                                        onDayToggled = { day ->
+                                            selectedWeekDays = selectedWeekDays.toMutableSet().apply {
+                                                if (day in this) remove(day) else add(day)
+                                            }
+                                        }
+                                    )
+                                }
+
+                                AnimatedVisibility(
+                                    visible = repeatOption == RepeatOption.MONTHLY,
+                                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                ) {
+                                    MonthlyCalendarView(
+                                        selectedDays = selectedMonthDays,
+                                        onDayToggled = { day ->
+                                            selectedMonthDays = selectedMonthDays.toMutableSet().apply {
+                                                if (day in this) remove(day) else add(day)
+                                            }
+                                        },
+                                        compact = true
+                                    )
+                                }
                             }
                         }
                     }
 
-                    stringResource(R.string.routine) -> {
-                        Column(
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.fi_rr_plus),
+                            contentDescription = null,
+                            tint = SpiritTodoTheme.color.onSurfaceColor6,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(
-                                    when(repeatOption) {
-                                        RepeatOption.WEEKLY -> 113.dp
-                                        RepeatOption.MONTHLY -> 219.dp
-                                        else -> 45.dp
-                                    }
-                                )
-                                .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
-                                .padding(horizontal = 14.dp)
-                        ) {
-                            QuickRepeatRow(
-                                value = repeatOption.displayName,
-                                onOptionSelected = { repeatOption = RepeatOption.fromDisplayName(it) }
-                            )
+                                .rotate(45f)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { onDismiss() }
+                        )
 
-                            AnimatedVisibility(
-                                visible = repeatOption == RepeatOption.WEEKLY,
-                                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                            ) {
-                                DayOfWeekSelector(
-                                    selectedDays = selectedWeekDays,
-                                    onDayToggled = { day ->
-                                        selectedWeekDays = selectedWeekDays.toMutableSet().apply {
-                                            if (day in this) remove(day) else add(day)
-                                        }
-                                    }
-                                )
-
-                                Spacer(modifier = Modifier.height(18.dp))
-                            }
-
-                            AnimatedVisibility(
-                                visible = repeatOption == RepeatOption.MONTHLY,
-                                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                            ) {
-                                MonthlyCalendarView(
-                                    selectedDays = selectedMonthDays,
-                                    onDayToggled = { day ->
-                                        selectedMonthDays = selectedMonthDays.toMutableSet().apply {
-                                            if (day in this) remove(day) else add(day)
-                                        }
-                                    },
-                                    compact = true
-                                )
-
-                                Spacer(modifier = Modifier.height(18.dp))
-                            }
-                        }
+                        Image(
+                            painter = painterResource(R.drawable.fi_rr_plus),
+                            contentDescription = null
+                        )
                     }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.fi_rr_plus),
-                        contentDescription = null,
-                        tint = SpiritTodoTheme.color.onSurfaceColor6,
-                        modifier = Modifier
-                            .rotate(45f)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { onDismiss() }
-                    )
-
-                    Image(
-                        painter = painterResource(R.drawable.fi_rr_plus),
-                        contentDescription = null
-                    )
                 }
             }
         }
