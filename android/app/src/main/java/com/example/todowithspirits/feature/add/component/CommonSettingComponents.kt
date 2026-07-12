@@ -288,8 +288,7 @@ fun SettingDateItem(
             ) {
                 Column(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) {
                     CalendarView(
-                        selectedStartDate = date,
-                        selectedEndDate = date,
+                        selectedDate = date,
                         onDateSelected = {
                             onDateSelected(it)
                             expanded = false

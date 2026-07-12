@@ -38,12 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getString
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SelectionTabs
@@ -69,10 +71,9 @@ private val routineRepeatOptions = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickAddBottomSheet(onDismiss: () -> Unit) {
+    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val todoTabText = "To do"
-    val routineTabText = "루틴"
-    var selectedTab by remember { mutableStateOf(todoTabText) }
+    var selectedTab by remember { mutableStateOf(getString(context, R.string.todo)) }
     var title by remember { mutableStateOf("") }
     var isImportant by remember { mutableStateOf(false) }
     var isScheduleSectionVisible by remember { mutableStateOf(false) }
@@ -88,7 +89,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = SpiritTodoTheme.colors.white,
+        containerColor = SpiritTodoTheme.color.surfaceColor1,
         dragHandle = null,
     ) {
         Column(
@@ -101,7 +102,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SelectionTabs(
-                    tabItems = TabItems(listOf(todoTabText, routineTabText)),
+                    tabItems = TabItems(listOf(stringResource(R.string.todo), stringResource(R.string.routine))),
                     selectedItem = selectedTab,
                     onItemSelected = { tab ->
                         selectedTab = tab
@@ -114,13 +115,19 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Image(
-                    modifier = Modifier.size(26.dp).clickable(onClick = { isImportant = !isImportant } ),
-                    painter = if(isImportant) painterResource(R.drawable.fi_rr_color_star) else painterResource(R.drawable.fi_rr_star),
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { isImportant = !isImportant }
+                        ),
+                    painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
                     contentDescription = null,
                 )
             }
 
-            Spacer(modifier = Modifier.height(27.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             BasicTextField(
                 value = title,
@@ -128,7 +135,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(
                     fontSize = 18.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 ),
                 decorationBox = { innerTextField ->
                     Row(
@@ -141,7 +148,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                     text = "제목 없음",
                                     style = TextStyle(
                                         fontSize = 18.sp,
-                                        color = SpiritTodoTheme.colors.onSurfaceColor3
+                                        color = SpiritTodoTheme.color.onSurfaceColor2
                                     )
                                 )
                             }
@@ -149,12 +156,11 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                             innerTextField()
                         }
 
-                        if (selectedTab == todoTabText) {
+                        if (selectedTab == stringResource(R.string.todo)) {
                             Image(
-                                painter = painterResource(R.drawable.fi_rr_clock),
+                                painter = painterResource(R.drawable.todo_clock),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(18.dp)
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -167,8 +173,8 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                         }
                                     },
                                 colorFilter = ColorFilter.tint(
-                                    if (isScheduleSectionVisible) SpiritTodoTheme.colors.onSurfaceColor1
-                                    else SpiritTodoTheme.colors.onSurfaceColor3
+                                    if(isScheduleSectionVisible) SpiritTodoTheme.color.surfaceColor3
+                                    else SpiritTodoTheme.color.onSurfaceColor6
                                 )
                             )
                         }
@@ -178,12 +184,12 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            HorizontalDivider(color = SpiritTodoTheme.colors.dividerColor, thickness = 1.dp)
+            HorizontalDivider(color = SpiritTodoTheme.color.onSurfaceColor2, thickness = 1.dp)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             when (selectedTab) {
-                todoTabText -> {
+                stringResource(R.string.todo) -> {
                     AnimatedVisibility(
                         visible = isScheduleSectionVisible,
                         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
@@ -193,7 +199,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(SpiritTodoTheme.colors.surfaceColor2, RoundedCornerShape(8.dp))
+                                    .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -205,21 +211,21 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                                        .padding(14.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         text = stringResource(R.string.date),
                                         modifier = Modifier.weight(1f),
                                         fontSize = 14.sp,
-                                        color = SpiritTodoTheme.colors.mainTextColor
+                                        color = SpiritTodoTheme.color.onSurfaceColor1
                                     )
 
                                     selectedDate?.let { date ->
                                         Text(
                                             text = date.format(dateFormatter),
                                             fontSize = 14.sp,
-                                            color = SpiritTodoTheme.colors.mainTextColor
+                                            color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1
                                         )
                                     }
                                 }
@@ -231,15 +237,15 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                 ) {
                                     Column {
                                         CalendarView(
-                                            selectedStartDate = selectedDate ?: LocalDate.now(),
-                                            selectedEndDate = selectedDate ?: LocalDate.now(),
+                                            selectedDate = selectedDate ?: LocalDate.now(),
                                             onDateSelected = {
                                                 selectedDate = it
                                                 isDateExpanded = false
-                                            }
+                                            },
+                                            showMonthNavigation = false
                                         )
                                         
-                                        Spacer(Modifier.height(8.dp))
+                                        Spacer(Modifier.height(24.dp))
                                     }
                                 }
                             }
@@ -249,7 +255,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(SpiritTodoTheme.colors.surfaceColor2, RoundedCornerShape(8.dp))
+                                    .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -261,7 +267,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                                         text = stringResource(R.string.time),
                                         modifier = Modifier.weight(1f),
                                         fontSize = 14.sp,
-                                        color = SpiritTodoTheme.colors.mainTextColor
+                                        color = SpiritTodoTheme.color.onSurfaceColor1
                                     )
 
                                     SplitsTodoSwitch(
@@ -300,7 +306,7 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
                     }
                 }
 
-                routineTabText -> {
+                stringResource(R.string.routine) -> {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
