@@ -56,7 +56,7 @@ fun MyPageScreen(
         TitleHeader(title = stringResource(R.string.my_page_title))
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            ProfileSection()
+            ProfileSection(navigateToAccountSetting = navigateToAccountSetting)
 
             Spacer(Modifier.height(15.dp))
 

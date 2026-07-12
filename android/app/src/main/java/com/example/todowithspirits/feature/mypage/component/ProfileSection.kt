@@ -31,7 +31,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun ProfileSection() {
+fun ProfileSection(navigateToAccountSetting: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -75,7 +75,7 @@ fun ProfileSection() {
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
-                    onClick = { }
+                    onClick = navigateToAccountSetting
                 )
                 .padding(horizontal = 10.dp, vertical = 8.dp)
         ) {
