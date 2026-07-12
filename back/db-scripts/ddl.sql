@@ -172,6 +172,17 @@ CREATE TABLE IF NOT EXISTS task_repeat_days_of_month
     CONSTRAINT fk_rdom_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
 );
 
+-- 루틴 날짜별 완료 기록 (HABIT 전용)
+CREATE TABLE habit_completions
+(
+    id              BIGSERIAL PRIMARY KEY,
+    task_id         BIGINT                   NOT NULL,
+    completion_date DATE                     NOT NULL,
+    completed_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_habit_completions_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT uq_habit_completions UNIQUE (task_id, completion_date)
+);
+
 -- 일일 기록 테이블
 CREATE TABLE daily_records
 (
