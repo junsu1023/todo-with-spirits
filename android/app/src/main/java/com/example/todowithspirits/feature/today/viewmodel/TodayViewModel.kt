@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.today.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
@@ -35,6 +36,8 @@ class TodayViewModel @Inject constructor(
             val today = LocalDate.now()
             getTaskCalendarUseCase(today, today).onSuccess { calendar ->
                 _uiState.update { state ->
+                    Log.d(TAG, "loadTask = $calendar")
+
                     state.copy(
                         todos = calendar.items
                             .filter { it.taskType == TaskType.TODO.type }
@@ -45,7 +48,7 @@ class TodayViewModel @Inject constructor(
                     )
                 }
             }.onFailure {
-                Log.e("TodayViewModel", "loadToday failed!", it)
+                Log.e(TAG, "loadToday failed!", it)
                 emitErrorMsg(it.localizedMessage ?: "오늘의 일정을 불러오지 못했습니다")
             }
         }
