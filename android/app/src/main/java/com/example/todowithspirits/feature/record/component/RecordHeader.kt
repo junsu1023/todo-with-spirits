@@ -56,7 +56,7 @@ fun RecordHeader(navigateToAlarm: () -> Unit) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .background(SpiritTodoTheme.colors.buttonColor, RoundedCornerShape(14.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(14.dp))
                     .padding(horizontal = 3.dp, vertical = 1.dp)
             ) {
                 Text(

@@ -98,7 +98,7 @@ fun MonthlyCalendarView(
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     fontSize = if (compact) 10.sp else 12.sp,
-                    color = SpiritTodoTheme.colors.textColor1
+                    color = SpiritTodoTheme.color.onSurfaceColor9
                 )
             }
         }

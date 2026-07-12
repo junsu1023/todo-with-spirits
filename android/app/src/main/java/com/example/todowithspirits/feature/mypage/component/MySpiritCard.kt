@@ -64,7 +64,7 @@ fun MySpiritCard() {
             Column(modifier = Modifier.weight(1f)) {
                 Box(
                     modifier = Modifier
-                        .background(SpiritTodoTheme.colors.surfaceColor1, RoundedCornerShape(4.dp))
+                        .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(4.dp))
                         .padding(horizontal = 6.dp, vertical = 4.dp)
                 ) {
                     Text(
@@ -129,7 +129,7 @@ fun MySpiritCard() {
                         .fillMaxWidth()
                         .height(4.dp)
                         .clip(RoundedCornerShape(3.dp))
-                        .background(SpiritTodoTheme.colors.trackColor)
+                        .background(SpiritTodoTheme.color.surfaceColor5)
                 ) {
                     Box(
                         modifier = Modifier

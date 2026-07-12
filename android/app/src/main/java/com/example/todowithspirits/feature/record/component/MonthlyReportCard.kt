@@ -278,7 +278,7 @@ fun MonthlyReportCard() {
                     Box(
                         modifier = Modifier
                             .offset(x = (-60).dp, y = (5).dp)
-                            .background(SpiritTodoTheme.colors.surfaceColor1, RoundedCornerShape(50.dp))
+                            .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(50.dp))
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(
@@ -292,7 +292,7 @@ fun MonthlyReportCard() {
                     Box(
                         modifier = Modifier
                             .offset(x = ((-50).dp), y = 25.dp)
-                            .background(SpiritTodoTheme.colors.surfaceColor1, RoundedCornerShape(50.dp))
+                            .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(50.dp))
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(

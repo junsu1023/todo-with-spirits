@@ -35,7 +35,7 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        containerColor = SpiritTodoTheme.colors.bgColor2,
+        containerColor = SpiritTodoTheme.color.surfaceColor1,
         bottomBar = {
             if(bottomNavItems.map { it.route }.contains(currentRoute)) {
                 SplitsTodoBottomBar(

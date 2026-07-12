@@ -45,7 +45,7 @@ data class PlanCalendarData(
 
 @Composable
 fun PlanType.color(): Color = when (this) {
-    PlanType.TODO -> SpiritTodoTheme.colors.surfaceColor5
+    PlanType.TODO -> SpiritTodoTheme.color.surfaceColor9
     PlanType.ROUTINE -> SpiritTodoTheme.colors.onSurfaceColor5
 }
 
@@ -70,7 +70,7 @@ fun PlanCalendarView(
         DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN)
     }
     val selectedTabColor = SpiritTodoTheme.colors.selectedTabColor
-    val surfaceColor1 = SpiritTodoTheme.colors.surfaceColor1
+    val surfaceColor1 = SpiritTodoTheme.color.surfaceColor14
 
     Column(modifier = modifier.fillMaxWidth().background(SpiritTodoTheme.colors.surfaceColor4)) {
         Spacer(modifier = Modifier.height(14.dp))

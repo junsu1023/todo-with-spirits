@@ -38,7 +38,7 @@ fun TodayScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.colors.homeColor)
+                .background(SpiritTodoTheme.color.surfaceColor4)
                 .padding(horizontal = 16.dp)
         ) {
             TitleHeader(

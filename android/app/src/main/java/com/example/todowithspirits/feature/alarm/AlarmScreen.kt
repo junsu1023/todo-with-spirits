@@ -46,7 +46,7 @@ fun AlarmScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.homeColor)
+            .background(SpiritTodoTheme.color.surfaceColor4)
     ) {
         AlarmHeader(onBack = onBack, onSettingClick = onSettingClick)
 

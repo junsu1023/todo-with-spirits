@@ -48,7 +48,7 @@ fun SplitsTodoBottomBar(
     onItemSelected: (String) -> Unit
 ) {
     Surface(
-        color = SpiritTodoTheme.colors.bgColor2,
+        color = SpiritTodoTheme.color.surfaceColor1,
         tonalElevation = 0.dp,
         modifier = Modifier.navigationBarsPadding()
     ) {

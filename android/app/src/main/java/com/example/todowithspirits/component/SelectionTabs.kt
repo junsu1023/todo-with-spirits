@@ -54,7 +54,7 @@ private fun SelectionTabItem(
     val selectedMainColor = SpiritTodoTheme.colors.selectedTabColor
     val selectedBgColor = SpiritTodoTheme.colors.white
     val unselectedTextColor = SpiritTodoTheme.colors.mainTextColor
-    val unselectedBgColor = SpiritTodoTheme.colors.unselectedTabBgColor
+    val unselectedBgColor = SpiritTodoTheme.color.surfaceColor4
 
     Box(
         modifier = Modifier

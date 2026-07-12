@@ -71,7 +71,7 @@ fun SettingGroup(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = SpiritTodoTheme.colors.bgColor1,
+        color = SpiritTodoTheme.color.surfaceColor10,
         shape = RoundedCornerShape(6.dp)
     ) {
         Column(content = content)
@@ -301,7 +301,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(dateFormatter),
                 fontSize = 16.sp,
-                color = if (expanded) SpiritTodoTheme.colors.selectedDateTextColor else SpiritTodoTheme.colors.mainTextColor,
+                color = if (expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
