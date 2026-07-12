@@ -39,7 +39,7 @@ fun SearchArea() {
                 .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
-                color = SpiritTodoTheme.colors.mainTextColor,
+                color = SpiritTodoTheme.color.onSurfaceColor1,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),
@@ -49,7 +49,7 @@ fun SearchArea() {
                     Text(
                         text = stringResource(R.string.title),
                         style = TextStyle(
-                            color = SpiritTodoTheme.colors.hintTextColor,
+                            color = SpiritTodoTheme.color.onSurfaceColor8,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -63,7 +63,7 @@ fun SearchArea() {
         HorizontalDivider(
             modifier = Modifier.padding(top = 8.dp),
             thickness = 1.dp,
-            color = SpiritTodoTheme.colors.dividerColor
+            color = SpiritTodoTheme.color.onSurfaceColor2
         )
     }
 }

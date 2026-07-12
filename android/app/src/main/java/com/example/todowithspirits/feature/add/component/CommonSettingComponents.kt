@@ -107,7 +107,7 @@ fun BaseSettingRow(
                 modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor,
+                    color = SpiritTodoTheme.color.onSurfaceColor1,
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -161,8 +161,9 @@ fun SettingCheckboxItem(
             SpiritsTodoCheckbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                checkedIcon = painterResource(R.drawable.checked_checkbox),
-                uncheckedIcon = painterResource(R.drawable.unckecked_checkbox)
+                checkedIcon = painterResource(R.drawable.todo_check_pp),
+                uncheckedIcon = painterResource(R.drawable.todo_check_up),
+                modifier = Modifier.size(26.dp)
             )
         }
     )
@@ -194,7 +195,7 @@ fun SettingSelectorItem(
                     Text(
                         text = value,
                         fontSize = 16.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.onSurfaceColor1
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -231,7 +232,7 @@ fun SettingSelectorItem(
                             modifier = Modifier.width(96.dp),
                             shape = RoundedCornerShape(8.dp),
                             shadowElevation = 4.dp,
-                            color = SpiritTodoTheme.colors.white
+                            color = SpiritTodoTheme.color.surfaceColor1
                         ) {
                             Column {
                                 options.forEachIndexed { index, option ->
@@ -247,7 +248,7 @@ fun SettingSelectorItem(
                                     ) {
                                         Text(
                                             text = option,
-                                            color = if (option == value) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.mainTextColor,
+                                            color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
                                             fontSize = 14.sp,
                                             textAlign = TextAlign.Center
                                         )
@@ -256,7 +257,7 @@ fun SettingSelectorItem(
                                     if (index < options.size - 1) {
                                         HorizontalDivider(
                                             thickness = 1.dp,
-                                            color = SpiritTodoTheme.colors.dividerColor
+                                            color = SpiritTodoTheme.color.surfaceColor4
                                         )
                                     }
                                 }
@@ -303,7 +304,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(dateFormatter),
                 fontSize = 16.sp,
-                color = if (expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
+                color = if(expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
@@ -410,6 +411,6 @@ fun SettingDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
         thickness = 0.8.dp,
-        color = Color(0xFFEEEEEE)
+        color = SpiritTodoTheme.color.onSurfaceColor2
     )
 }

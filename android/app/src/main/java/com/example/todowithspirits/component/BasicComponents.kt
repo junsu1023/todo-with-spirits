@@ -77,11 +77,12 @@ fun SpiritsTodoCheckbox(
     uncheckedIcon: Painter
 ) {
     Icon(
-        modifier = modifier.clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() },
-            onClick = { onCheckedChange(!checked) }
-        ),
+        modifier = modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = { onCheckedChange(!checked) }
+            ),
         painter = if(checked) checkedIcon else uncheckedIcon,
         contentDescription = null,
         tint = Color.Unspecified

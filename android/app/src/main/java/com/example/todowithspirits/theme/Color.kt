@@ -18,7 +18,6 @@ val spiritsTodoColor = SpiritsTodoColor(
     onSurfaceColor9 = Color(0xFFECECEC),
     onSurfaceColor11 = Color(0xFFD9D9D9),
     onSurfaceColor12 = Color(0xFF6A66A1),
-    selectedTabColor = Color(0xFFB286FD),
     hintTextColor = Color(0xFF888888),
     mainTextColor = Color(0xFF857563),
     dividerColor = Color(0xFFD1D1D6),
@@ -179,7 +178,6 @@ class SpiritsTodoColor(
     onSurfaceColor9: Color,
     onSurfaceColor11: Color,
     onSurfaceColor12: Color,
-    selectedTabColor: Color,
     hintTextColor: Color,
     mainTextColor: Color,
     dividerColor: Color,
@@ -220,9 +218,6 @@ class SpiritsTodoColor(
         private set
 
     var onSurfaceColor12 by mutableStateOf(onSurfaceColor12)
-        private set
-
-    var selectedTabColor by mutableStateOf(selectedTabColor)
         private set
 
     var hintTextColor by mutableStateOf(hintTextColor)

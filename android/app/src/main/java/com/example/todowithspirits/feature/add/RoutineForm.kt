@@ -57,7 +57,7 @@ fun RoutineForm() {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingSelectorItem(
-                icon = painterResource(R.drawable.repeat_icon),
+                icon = painterResource(R.drawable.todo_repeat),
                 label = stringResource(R.string.repeat),
                 value = repeatOption.value.displayName,
                 options = routineRepeatOptions,
@@ -107,7 +107,7 @@ fun RoutineForm() {
 
         SettingGroup {
             SettingSelectorItem(
-                icon = painterResource(R.drawable.alarm_icon),
+                icon = painterResource(R.drawable.todo_alarm2),
                 label = stringResource(R.string.alarm),
                 value = alarmOption.value.displayName,
                 options = AlarmOption.getAllDisplayNames(),
@@ -115,11 +115,11 @@ fun RoutineForm() {
             )
         }
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(13.dp))
 
         SettingGroup {
             SettingSelectorItem(
-                icon = painterResource(R.drawable.category_icon),
+                icon = painterResource(R.drawable.todo_category),
                 label = stringResource(R.string.category),
                 value = categoryOption.value.displayName,
                 options = CategoryOption.getAllDisplayNames(),
@@ -129,7 +129,7 @@ fun RoutineForm() {
             SettingDivider()
 
             SettingSelectorItem(
-                icon = painterResource(R.drawable.private_icon),
+                icon = painterResource(R.drawable.todo_private),
                 label = stringResource(R.string.public_state),
                 value = publicOption.value.displayName,
                 options = PublicStateOption.getAllDisplayNames(),
@@ -145,11 +145,11 @@ fun RoutineForm() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .border(1.dp, SpiritTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp))
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {
@@ -157,7 +157,7 @@ fun RoutineForm() {
                         text = "메모",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = SpiritTodoTheme.colors.hintTextColor
+                            color = SpiritTodoTheme.color.onSurfaceColor2
                         )
                     )
                 }
@@ -165,7 +165,7 @@ fun RoutineForm() {
             }
         )
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(38.dp))
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
@@ -188,7 +188,7 @@ private fun HolidayExcludeRow(
             text = stringResource(R.string.exclude_holidays),
             style = TextStyle(
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor7
+                color = SpiritTodoTheme.color.onSurfaceColor8
             )
         )
 
@@ -196,8 +196,8 @@ private fun HolidayExcludeRow(
             modifier = Modifier.size(18.dp),
             checked = checked,
             onCheckedChange = onCheckedChange,
-            checkedIcon = painterResource(R.drawable.checked_checkbox),
-            uncheckedIcon = painterResource(R.drawable.unckecked_checkbox)
+            checkedIcon = painterResource(R.drawable.todo_check_pp),
+            uncheckedIcon = painterResource(R.drawable.todo_check_up)
         )
     }
 }

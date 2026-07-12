@@ -55,7 +55,7 @@ fun TodoForm() {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingCheckboxItem(
-                icon = painterResource(R.drawable.important_icon),
+                icon = painterResource(R.drawable.todo_important2),
                 label = stringResource(R.string.important),
                 checked = isImportant.value,
                 onCheckedChange = { isImportant.value = it }
@@ -66,7 +66,7 @@ fun TodoForm() {
 
         SettingGroup {
             SettingDateItem(
-                icon = painterResource(R.drawable.fi_rr_calendar),
+                icon = painterResource(R.drawable.todo_calendar),
                 label = stringResource(R.string.date),
                 date = date.value,
                 onDateSelected = { date.value = it }
@@ -75,7 +75,7 @@ fun TodoForm() {
             SettingDivider()
 
             SettingSwitchItem(
-                icon = painterResource(R.drawable.fi_rr_time_check),
+                icon = painterResource(R.drawable.todo_clock2),
                 label = stringResource(R.string.time),
                 checked = isTimeEnabled.value,
                 onCheckedChange = { isTimeEnabled.value = it },
@@ -94,6 +94,7 @@ fun TodoForm() {
                             TimeWheelPicker(
                                 initialHour = dueTime.value.hour,
                                 initialMinute = dueTime.value.minute,
+                                textSize = 28,
                                 onTimeSelected = { h, m ->
                                     dueTime.value = LocalTime.of(h, m)
                                 }
@@ -106,7 +107,7 @@ fun TodoForm() {
             SettingDivider()
 
             SettingSelectorItem(
-                icon = painterResource(R.drawable.alarm_icon),
+                icon = painterResource(R.drawable.todo_alarm2),
                 label = stringResource(R.string.alarm),
                 value = alarmOption.value.displayName,
                 options = AlarmOption.getAllDisplayNames(),
@@ -118,7 +119,7 @@ fun TodoForm() {
 
         SettingGroup {
             SettingSelectorItem(
-                icon = painterResource(R.drawable.category_icon),
+                icon = painterResource(R.drawable.todo_category),
                 label = stringResource(R.string.category),
                 value = categoryOption.value.displayName,
                 options = CategoryOption.getAllDisplayNames(),
@@ -128,7 +129,7 @@ fun TodoForm() {
             SettingDivider()
 
             SettingSelectorItem(
-                icon = painterResource(R.drawable.private_icon),
+                icon = painterResource(R.drawable.todo_private),
                 label = stringResource(R.string.public_state),
                 value = publicOption.value.displayName,
                 options = PublicStateOption.getAllDisplayNames(),
@@ -144,11 +145,11 @@ fun TodoForm() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
-                .border(1.dp, SpiritTodoTheme.colors.dividerColor, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp))
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.onSurfaceColor1
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {
@@ -156,7 +157,7 @@ fun TodoForm() {
                         text = "메모",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = SpiritTodoTheme.colors.hintTextColor
+                            color = SpiritTodoTheme.color.onSurfaceColor2
                         )
                     )
                 }

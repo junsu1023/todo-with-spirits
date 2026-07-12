@@ -51,9 +51,9 @@ private fun SelectionTabItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val selectedMainColor = SpiritTodoTheme.colors.selectedTabColor
-    val selectedBgColor = SpiritTodoTheme.colors.white
-    val unselectedTextColor = SpiritTodoTheme.colors.mainTextColor
+    val selectedMainColor = SpiritTodoTheme.color.surfaceColor2
+    val selectedBgColor = SpiritTodoTheme.color.surfaceColor1
+    val unselectedTextColor = SpiritTodoTheme.color.onSurfaceColor1
     val unselectedBgColor = SpiritTodoTheme.color.surfaceColor4
 
     Box(
@@ -65,7 +65,7 @@ private fun SelectionTabItem(
                 shape = RoundedCornerShape(54.dp)
             )
             .then(
-                if (isSelected) {
+                if(isSelected) {
                     Modifier.border(1.dp, selectedMainColor, RoundedCornerShape(54.dp))
                 } else {
                     Modifier
@@ -81,7 +81,7 @@ private fun SelectionTabItem(
     ) {
         Text(
             text = text,
-            color = if (isSelected) selectedMainColor else unselectedTextColor,
+            color = if(isSelected) selectedMainColor else unselectedTextColor,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )

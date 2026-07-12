@@ -1,7 +1,9 @@
 package com.example.todowithspirits.feature.add
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +17,6 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.TabItems
 import com.example.todowithspirits.component.TitleHeader
-import com.example.todowithspirits.component.VerticalSpacer20
 import com.example.todowithspirits.feature.add.component.SearchArea
 
 @Composable
@@ -27,11 +28,11 @@ fun AddScreen() {
 
     Column(modifier = Modifier.fillMaxSize()) {
         TitleHeader(
-            leftIconRes = R.drawable.temp_app_icon,
+            leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.add_todo)
         )
 
-        VerticalSpacer20()
+        Spacer(modifier = Modifier.height(20.dp))
 
         Column(
             modifier = Modifier
@@ -41,7 +42,7 @@ fun AddScreen() {
         ) {
             SearchArea()
 
-            VerticalSpacer20()
+            Spacer(modifier = Modifier.height(20.dp))
 
             SelectionTabs(
                 tabItems = tabItems,
@@ -49,7 +50,7 @@ fun AddScreen() {
                 onItemSelected = { selectedTab.value = it }
             )
 
-            VerticalSpacer20()
+            Spacer(modifier = Modifier.height(20.dp))
 
             when(selectedTab.value) {
                 todoText -> TodoForm()
@@ -57,7 +58,7 @@ fun AddScreen() {
             }
 
 
-            VerticalSpacer20()
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
