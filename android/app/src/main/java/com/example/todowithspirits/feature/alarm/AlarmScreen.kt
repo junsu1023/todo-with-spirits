@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.alarm.component.AlarmBanner
-import com.example.todowithspirits.feature.alarm.component.AlarmHeader
 import com.example.todowithspirits.feature.alarm.component.AlarmItem
 import com.example.todowithspirits.feature.alarm.component.AlarmSectionHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -48,7 +48,13 @@ fun AlarmScreen(
             .fillMaxSize()
             .background(SpiritTodoTheme.color.surfaceColor4)
     ) {
-        AlarmHeader(onBack = onBack, onSettingClick = onSettingClick)
+        TitleHeader(
+            leftIconRes = R.drawable.todo_back1,
+            title = stringResource(R.string.alarm),
+            rightIconRes = R.drawable.todo_setting,
+            onLeftIconClick = onBack,
+            onRightIconClick = onSettingClick
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 

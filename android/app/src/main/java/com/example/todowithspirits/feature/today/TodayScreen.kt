@@ -35,19 +35,19 @@ fun TodayScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        TitleHeader(
+            leftIconRes = R.drawable.temp_app_icon,
+            rightIconRes = R.drawable.todo_alarm,
+            onRightIconClick = navigateToAlarm,
+            isAlarm = true
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(SpiritTodoTheme.color.surfaceColor4)
                 .padding(horizontal = 16.dp)
         ) {
-            TitleHeader(
-                leftIconRes = R.drawable.temp_app_icon,
-                rightIconRes = R.drawable.todo_alarm,
-                onRightIconClick = navigateToAlarm,
-                isAlarm = true
-            )
-
             SpiritSection(uiState.spiritInfo)
 
             BadgeAndAchievementRow()

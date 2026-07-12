@@ -40,7 +40,8 @@ fun TitleHeader(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(horizontal = 16.dp),
+            .background(SpiritTodoTheme.color.surfaceColor1)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if(leftIconRes != null) {

@@ -25,9 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.component.SplitsTodoSwitch
-import com.example.todowithspirits.feature.alarm.component.AlarmSettingHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.alarm.component.AlarmToggleRow
 
 @Composable
@@ -48,7 +48,11 @@ fun AlarmSettingScreen(onBack: () -> Unit) {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            AlarmSettingHeader(onBack = onBack)
+            TitleHeader(
+                leftIconRes = R.drawable.todo_back1,
+                title = stringResource(R.string.alarm_setting),
+                onLeftIconClick = onBack
+            )
 
             Spacer(Modifier.height(17.dp))
 
