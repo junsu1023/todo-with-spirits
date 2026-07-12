@@ -18,7 +18,6 @@ val spiritsTodoColor = SpiritsTodoColor(
     onSurfaceColor3 = Color(0xFFD1D1D6),
     onSurfaceColor4 = Color(0xFF8DE4FF),
     onSurfaceColor5 = Color(0xFFB2F042),
-    onSurfaceColor6 = Color(0xFFF49191),
     onSurfaceColor7 = Color(0xFFC7C7C7),
     onSurfaceColor8 = Color(0xFFF7F7F7),
     onSurfaceColor9 = Color(0xFFECECEC),
@@ -28,7 +27,6 @@ val spiritsTodoColor = SpiritsTodoColor(
     unselectedTabBgColor = Color(0xFFF6F6F6),
     hintTextColor = Color(0xFF888888),
     selectedDateTextColor = Color(0xFFB286FD),
-    selectedDateBoxColor = Color(0xFFD7BFFF),
     mainTextColor = Color(0xFF857563),
     textColor1 = Color(0xFFC2C2C2),
     bgColor1 = Color(0xFFFAFAFA),
@@ -60,6 +58,7 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor6 = Color(0xFFBCBCBC),
     onSurfaceColor7 = Color(0xFFF49191),
     onSurfaceColor8 = Color(0xFFC7C7C7),
+    onSurfaceColor9 = Color(0xFFC2C2C2),
     transparent = Color(0x00000000)
 )
 
@@ -84,6 +83,7 @@ class SpiritColor(
     onSurfaceColor6: Color,
     onSurfaceColor7: Color,
     onSurfaceColor8: Color,
+    onSurfaceColor9: Color,
     transparent: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
@@ -146,6 +146,9 @@ class SpiritColor(
     var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
         private set
 
+    var onSurfaceColor9 by mutableStateOf(onSurfaceColor9)
+        private set
+
     var transparent by mutableStateOf(transparent)
         private set
 }
@@ -163,7 +166,6 @@ class SpiritsTodoColor(
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
     onSurfaceColor5: Color,
-    onSurfaceColor6: Color,
     onSurfaceColor7: Color,
     onSurfaceColor8: Color,
     onSurfaceColor9: Color,
@@ -173,7 +175,6 @@ class SpiritsTodoColor(
     unselectedTabBgColor: Color,
     hintTextColor: Color,
     selectedDateTextColor: Color,
-    selectedDateBoxColor: Color,
     mainTextColor: Color,
     textColor1: Color,
     bgColor1: Color,
@@ -219,8 +220,6 @@ class SpiritsTodoColor(
     var onSurfaceColor5 by mutableStateOf(onSurfaceColor5)
         private set
 
-    var onSurfaceColor6 by mutableStateOf(onSurfaceColor6)
-        private set
 
     var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
         private set
@@ -246,9 +245,6 @@ class SpiritsTodoColor(
         private set
 
     var selectedDateTextColor by mutableStateOf(selectedDateTextColor)
-        private set
-
-    var selectedDateBoxColor by mutableStateOf(selectedDateBoxColor)
         private set
 
     var mainTextColor by mutableStateOf(mainTextColor)
