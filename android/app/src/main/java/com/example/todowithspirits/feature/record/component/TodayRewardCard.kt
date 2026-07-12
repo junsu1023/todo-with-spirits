@@ -46,7 +46,7 @@ fun TodayRewardCard() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(10.dp))
+            .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(10.dp))
             .padding(16.dp)
     ) {
         Text(
@@ -74,14 +74,14 @@ fun TodayRewardCard() {
         ) {
             Box(
                 modifier = Modifier
-                    .background(SpiritTodoTheme.colors.onSurfaceColor7, RoundedCornerShape(30.dp))
+                    .background(SpiritTodoTheme.color.onSurfaceColor8, RoundedCornerShape(30.dp))
                     .padding(horizontal = 24.dp, vertical = 8.5.dp)
             ) {
                 Text(
                     text = stringResource(R.string.more),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.colors.white
+                    color = SpiritTodoTheme.color.onSurfaceColor3
                 )
             }
         }
@@ -90,12 +90,12 @@ fun TodayRewardCard() {
 
 @Composable
 private fun RewardRow(reward: RewardItem) {
-    val accentColor = if(reward.isHidden) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.onSurfaceColor7
+    val accentColor = if(reward.isHidden) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
             .padding(vertical = 12.dp, horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -111,7 +111,6 @@ private fun RewardRow(reward: RewardItem) {
             Text(
                 text = reward.type,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
                 color = accentColor
             )
 

@@ -48,7 +48,10 @@ val spiritsLightColor = SpiritColor(
     dimColor = Color(0x33000000),
     transparent = Color(0x00000000),
     systemGrey = Color(0xFFBCBCBC),
-    todoTextMain = Color(0xFF857563)
+    todoTextMain = Color(0xFF857563),
+    keyTodo = Color(0xFF8DE4FF),
+    keyRoutine = Color(0xFFB2F042),
+    systemBackground = Color(0xFFFAFAFA)
 )
 
 class SpiritColor(
@@ -79,7 +82,10 @@ class SpiritColor(
     dimColor: Color,
     transparent: Color,
     systemGrey: Color,
-    todoTextMain: Color
+    todoTextMain: Color,
+    keyTodo: Color,
+    keyRoutine: Color,
+    systemBackground: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -163,6 +169,15 @@ class SpiritColor(
         private set
 
     var todoTextMain by mutableStateOf(todoTextMain)
+        private set
+
+    var keyTodo by mutableStateOf(keyTodo)
+        private set
+
+    var keyRoutine by mutableStateOf(keyRoutine)
+        private set
+
+    var systemBackground by mutableStateOf(systemBackground)
         private set
 }
 

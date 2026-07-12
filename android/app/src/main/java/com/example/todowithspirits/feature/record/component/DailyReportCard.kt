@@ -38,7 +38,7 @@ fun DailyReportCard() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(12.dp))
+            .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Row(
@@ -51,7 +51,7 @@ fun DailyReportCard() {
                     text = "다 잘해 진짜!",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.colors.onSurfaceColor1
+                    color = SpiritTodoTheme.color.onSurfaceColor4
                 )
 
                 Spacer(Modifier.height(2.dp))
@@ -64,7 +64,7 @@ fun DailyReportCard() {
             }
 
             Image(
-                painter = painterResource(R.drawable.fi_rr_sign_out),
+                painter = painterResource(R.drawable.todo_share),
                 contentDescription = null
             )
         }
@@ -79,14 +79,14 @@ fun DailyReportCard() {
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(SpiritTodoTheme.colors.white, RoundedCornerShape(211.dp))
-                            .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor1, RoundedCornerShape(211.dp))
+                            .background(SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(211.dp))
+                            .border(1.dp, SpiritTodoTheme.color.onSurfaceColor4, RoundedCornerShape(211.dp))
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
                             text = "60%",
                             fontSize = 12.sp,
-                            color = SpiritTodoTheme.colors.onSurfaceColor1,
+                            color = SpiritTodoTheme.color.onSurfaceColor3,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -104,28 +104,28 @@ fun DailyReportCard() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
+                    .height(14.dp)
                     .align(Alignment.BottomStart)
                     .clip(RoundedCornerShape(169.dp))
-                    .background(SpiritTodoTheme.colors.onSurfaceColor3)
+                    .background(SpiritTodoTheme.color.surfaceColor1)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(169.dp))
-                        .background(SpiritTodoTheme.colors.onSurfaceColor1)
+                        .background(SpiritTodoTheme.color.surfaceColor3)
                 )
             }
         }
 
-        Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(4.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Text(
                 text = stringResource(R.string.today_progressing, 6, 10),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor1
+                color = SpiritTodoTheme.color.onSurfaceColor4
             )
         }
 
@@ -138,8 +138,8 @@ fun DailyReportCard() {
             StatCard(
                 modifier = Modifier.weight(1f),
                 label = stringResource(R.string.todo),
-                progress = 1f,
-                progressColor = SpiritTodoTheme.colors.onSurfaceColor4,
+                progress = 0.4f,
+                progressColor = SpiritTodoTheme.color.keyTodo,
                 countText = "2 / 5"
             )
 
@@ -147,7 +147,7 @@ fun DailyReportCard() {
                 modifier = Modifier.weight(1f),
                 label = "루틴",
                 progress = 1f,
-                progressColor = SpiritTodoTheme.colors.onSurfaceColor5,
+                progressColor = SpiritTodoTheme.color.keyRoutine,
                 countText = "2 / 5"
             )
         }
@@ -156,13 +156,13 @@ fun DailyReportCard() {
 
         Box(
             modifier = Modifier
-                .background(SpiritTodoTheme.colors.onSurfaceColor1, RoundedCornerShape(50.dp))
+                .background(SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(50.dp))
                 .padding(horizontal = 14.dp, vertical = 6.dp)
         ) {
             Text(
                 text = stringResource(R.string.goal_to_try_again_tomorrow_desc),
                 fontSize = 10.sp,
-                color = SpiritTodoTheme.colors.white
+                color = SpiritTodoTheme.color.onSurfaceColor3
             )
         }
 
@@ -172,7 +172,7 @@ fun DailyReportCard() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(53.dp)
-                .background(SpiritTodoTheme.colors.white)
+                .background(SpiritTodoTheme.color.surfaceColor1)
                 .clip(RoundedCornerShape(6.dp))
                 .padding(horizontal = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,6 +181,7 @@ fun DailyReportCard() {
             Text(
                 text = stringResource(R.string.goal_to_try_again_tomorrow),
                 fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
                 color = SpiritTodoTheme.color.todoTextMain
             )
 
@@ -202,17 +203,18 @@ fun StatCard(
     progressColor: Color,
     countText: String
 ) {
-    val trackColor = SpiritTodoTheme.colors.onSurfaceColor3
+    val trackColor = SpiritTodoTheme.color.systemBackground
 
     Column(
         modifier = modifier
-            .background(SpiritTodoTheme.colors.white, RoundedCornerShape(8.dp))
+            .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = label,
             fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
             color = SpiritTodoTheme.color.todoTextMain
         )
 
@@ -226,7 +228,7 @@ fun StatCard(
                 progress = progress,
                 color = progressColor,
                 trackColor = trackColor,
-                strokeWidth = 6.dp,
+                strokeWidth = 4.dp,
                 modifier = Modifier.fillMaxSize()
             )
 
@@ -243,7 +245,7 @@ fun StatCard(
         Text(
             text = countText,
             fontSize = 12.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor7
+            color = SpiritTodoTheme.color.onSurfaceColor8
         )
     }
 }

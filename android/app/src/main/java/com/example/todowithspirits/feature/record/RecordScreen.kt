@@ -45,13 +45,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.record.component.DailyReportCard
 import com.example.todowithspirits.feature.record.component.MonthlyReportCard
-import com.example.todowithspirits.feature.record.component.RecordHeader
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
 import com.example.todowithspirits.feature.record.component.WeeklyReportCard
 import com.example.todowithspirits.theme.SpiritTodoTheme
-
 
 @Composable
 fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
@@ -63,9 +62,14 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        RecordHeader(navigateToAlarm = navigateToAlarm)
+        TitleHeader(
+            title = stringResource(R.string.record_title),
+            rightIconRes = R.drawable.todo_alarm,
+            onRightIconClick = navigateToAlarm,
+            isAlarm = true
+        )
 
         val selectedIndex = tabs.indexOf(selectedTab)
 
@@ -75,8 +79,8 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1.dp)
-                    .background(SpiritTodoTheme.colors.onSurfaceColor8)
+                    .height(2.dp)
+                    .background(SpiritTodoTheme.color.surfaceColor16)
                     .align(Alignment.BottomStart)
             )
 
@@ -92,7 +96,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                     .height(2.dp)
                     .offset(x = indicatorOffset)
                     .background(
-                        SpiritTodoTheme.colors.onSurfaceColor1,
+                        SpiritTodoTheme.color.surfaceColor2,
                         RoundedCornerShape(1.dp)
                     )
                     .align(Alignment.BottomStart)
@@ -102,8 +106,8 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                 tabs.forEachIndexed { index, tab ->
                     val isSelected = index == selectedIndex
                     val textColor by animateColorAsState(
-                        targetValue = if (isSelected) SpiritTodoTheme.colors.onSurfaceColor1
-                        else SpiritTodoTheme.colors.onSurfaceColor7,
+                        targetValue = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4
+                        else SpiritTodoTheme.color.onSurfaceColor8,
                         label = "TabTextColor$index"
                     )
 
@@ -112,15 +116,16 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                             .weight(1f)
                             .clickable(
                                 indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { selectedTab = tab }
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = { selectedTab = tab }
+                            )
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = tab,
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = if(isSelected) FontWeight.Medium else FontWeight.Normal,
                             color = textColor
                         )
                     }
@@ -142,7 +147,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                 else -> DailyTabContent()
             }
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(5.dp))
         }
     }
 }

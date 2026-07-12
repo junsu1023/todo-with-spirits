@@ -116,4 +116,5 @@
     <string name="plan_sort">플랜 정렬</string>
     <string name="theme">테마</string>
     <string name="language">언어</string>
+    <string name="record_title">기록</string>
 </resources>
