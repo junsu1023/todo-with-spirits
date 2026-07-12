@@ -68,7 +68,7 @@ fun MonthlyCalendarView(
                     text = stringResource(R.string.month, currentMonth.monthValue),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Image(
@@ -137,7 +137,7 @@ fun MonthlyCalendarView(
 
                             Text(
                                 text = day.toString(),
-                                color = if (isSelected) Color.White else SpiritTodoTheme.colors.mainTextColor,
+                                color = if (isSelected) Color.White else SpiritTodoTheme.color.todoTextMain,
                                 fontSize = 12.sp
                             )
                         }

@@ -87,7 +87,7 @@ fun MonthlyBarChart() {
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
         }

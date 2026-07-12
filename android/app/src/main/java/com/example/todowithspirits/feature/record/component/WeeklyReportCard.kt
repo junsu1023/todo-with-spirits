@@ -50,7 +50,7 @@ fun WeeklyReportCard() {
                     Text(
                         text = stringResource(R.string.weekly_report_subtitle),
                         fontSize = 14.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
                 }
                 Image(
@@ -83,7 +83,7 @@ fun WeeklyReportCard() {
                     text = stringResource(R.string.weekly_record),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Spacer(Modifier.height(10.dp))
@@ -104,7 +104,7 @@ fun WeeklyReportCard() {
                 text = stringResource(R.string.weekly_analysis),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(20.dp))
@@ -117,7 +117,7 @@ fun WeeklyReportCard() {
                 text = stringResource(R.string.weekly_top3),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(12.dp))
@@ -130,7 +130,7 @@ fun WeeklyReportCard() {
                 text = stringResource(R.string.weekly_missed_area),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(6.dp))

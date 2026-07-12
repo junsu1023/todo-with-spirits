@@ -35,7 +35,7 @@ fun WeeklyStatsRow() {
             Text(
                 text = stringResource(R.string.weekly_achieved_plan),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(5.dp))
@@ -46,7 +46,7 @@ fun WeeklyStatsRow() {
                     text = "999개",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Text(
@@ -68,7 +68,7 @@ fun WeeklyStatsRow() {
             Text(
                 text = stringResource(R.string.weekly_avg_rate),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(5.dp))
@@ -78,7 +78,7 @@ fun WeeklyStatsRow() {
                     text = "100%",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
         }

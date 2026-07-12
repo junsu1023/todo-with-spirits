@@ -53,7 +53,7 @@ fun TodayRewardCard() {
             text = stringResource(R.string.today_reward),
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Spacer(Modifier.height(12.dp))
@@ -121,7 +121,7 @@ private fun RewardRow(reward: RewardItem) {
                 text = reward.description,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
 

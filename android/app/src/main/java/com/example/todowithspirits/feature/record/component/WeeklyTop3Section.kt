@@ -52,7 +52,7 @@ fun WeeklyTop3Section() {
                     Text(
                         text = name,
                         fontSize = 14.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
                 }
             }
@@ -61,7 +61,7 @@ fun WeeklyTop3Section() {
                 text = count,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
 

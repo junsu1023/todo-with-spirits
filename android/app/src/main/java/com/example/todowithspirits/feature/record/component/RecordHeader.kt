@@ -34,7 +34,7 @@ fun RecordHeader(navigateToAlarm: () -> Unit) {
             text = stringResource(R.string.record),
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.colors.mainTextColor,
+            color = SpiritTodoTheme.color.todoTextMain,
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.Center)
         )

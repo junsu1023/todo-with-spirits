@@ -152,7 +152,7 @@ private fun CalendarDayCell(
                     fontSize = 12.sp,
                     color = when {
                         isToday -> SpiritTodoTheme.colors.onSurfaceColor1
-                        else -> SpiritTodoTheme.colors.mainTextColor
+                        else -> SpiritTodoTheme.color.todoTextMain
                     },
                     fontWeight = FontWeight.Medium
                 )

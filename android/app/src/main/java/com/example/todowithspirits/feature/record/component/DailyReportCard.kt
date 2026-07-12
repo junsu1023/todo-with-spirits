@@ -59,7 +59,7 @@ fun DailyReportCard() {
                 Text(
                     text = "루미랑 남은 4개도 끝내볼까요?",
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
 
@@ -181,13 +181,13 @@ fun DailyReportCard() {
             Text(
                 text = stringResource(R.string.goal_to_try_again_tomorrow),
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Text(
                 text = "5개",
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.mainTextColor,
+                color = SpiritTodoTheme.color.todoTextMain,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -213,7 +213,7 @@ fun StatCard(
         Text(
             text = label,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Spacer(Modifier.height(10.dp))

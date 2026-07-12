@@ -84,7 +84,7 @@ fun MonthlyReportCard() {
                     Image(
                         painter = painterResource(R.drawable.fi_rr_angle_small_left),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.mainTextColor),
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
                             .clickable(
@@ -98,7 +98,7 @@ fun MonthlyReportCard() {
                     Image(
                         painter = painterResource(R.drawable.fi_rr_angle_small_right),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.mainTextColor),
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
                             .clickable(
@@ -115,7 +115,7 @@ fun MonthlyReportCard() {
             Text(
                 text = "이번 달도 바쁘겠지만 할 수 있어요!",
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(20.dp))
@@ -139,7 +139,7 @@ fun MonthlyReportCard() {
                     Text(
                         text = stringResource(R.string.monthly_this_month_achieved),
                         fontSize = 12.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor,
+                        color = SpiritTodoTheme.color.todoTextMain,
                         fontWeight = FontWeight.Medium
                     )
 
@@ -150,7 +150,7 @@ fun MonthlyReportCard() {
                             text = "15개",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.colors.mainTextColor,
+                            color = SpiritTodoTheme.color.todoTextMain,
                             modifier = Modifier.alignByBaseline()
                         )
 
@@ -176,7 +176,7 @@ fun MonthlyReportCard() {
                     Text(
                         text = stringResource(R.string.monthly_avg_rate),
                         fontSize = 12.sp,
-                        color = SpiritTodoTheme.colors.mainTextColor,
+                        color = SpiritTodoTheme.color.todoTextMain,
                         fontWeight = FontWeight.Medium
                     )
 
@@ -186,7 +186,7 @@ fun MonthlyReportCard() {
                         text = "99%",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.colors.mainTextColor
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
                 }
             }
@@ -204,7 +204,7 @@ fun MonthlyReportCard() {
                 text = stringResource(R.string.monthly_comparison),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(18.dp))
@@ -241,7 +241,7 @@ fun MonthlyReportCard() {
                 text = stringResource(R.string.monthly_analysis),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(22.dp))
@@ -319,7 +319,7 @@ fun MonthlyReportCard() {
                 Text(
                     text = stringResource(R.string.monthly_analysis_subtitle),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor,
+                    color = SpiritTodoTheme.color.todoTextMain,
                     textAlign = TextAlign.Center
                 )
             }
@@ -330,7 +330,7 @@ fun MonthlyReportCard() {
                 text = stringResource(R.string.monthly_top3),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(6.dp))
@@ -343,7 +343,7 @@ fun MonthlyReportCard() {
                 text = stringResource(R.string.monthly_most_delayed),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(6.dp))

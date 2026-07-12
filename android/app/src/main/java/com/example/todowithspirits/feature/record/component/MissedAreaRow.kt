@@ -41,14 +41,14 @@ fun MissedAreaRow() {
             Text(
                 text = "건강",
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.mainTextColor
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
         Text(
             text = "15회",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.todoTextMain
         )
     }
 }

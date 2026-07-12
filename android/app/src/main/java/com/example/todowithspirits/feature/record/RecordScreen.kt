@@ -153,7 +153,7 @@ private fun DailyTabContent() {
         text = stringResource(R.string.daily_report),
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
-        color = SpiritTodoTheme.colors.mainTextColor
+        color = SpiritTodoTheme.color.todoTextMain
     )
 
     Spacer(Modifier.height(14.dp))
@@ -184,7 +184,7 @@ private fun WeeklyTabContent() {
             text = stringResource(R.string.week_header_format, 6, 1),
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Image(
@@ -216,7 +216,7 @@ private fun WeeklyTabContent() {
             Text(
                 text = "26년 6월 1일 ~ 26년 6월 7일",
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.mainTextColor,
+                color = SpiritTodoTheme.color.todoTextMain,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )
@@ -224,7 +224,7 @@ private fun WeeklyTabContent() {
             Image(
                 painter = painterResource(R.drawable.fi_rr_angle_small_right),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(color = SpiritTodoTheme.colors.mainTextColor),
+                colorFilter = ColorFilter.tint(color = SpiritTodoTheme.color.todoTextMain),
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -241,7 +241,7 @@ private fun MonthlyTabContent() {
         text = stringResource(R.string.monthly_report),
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
-        color = SpiritTodoTheme.colors.mainTextColor
+        color = SpiritTodoTheme.color.todoTextMain
     )
 
     Spacer(Modifier.height(14.dp))
