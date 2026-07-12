@@ -74,11 +74,13 @@ public class Task extends BaseTimeEntity {
     @CollectionTable(name = "task_repeat_days_of_week", joinColumns = @JoinColumn(name = "task_id"))
     @Column(name = "day_of_week")
     @Enumerated(EnumType.STRING)
+    @org.hibernate.annotations.BatchSize(size = 100)
     private Set<DayOfWeek> repeatDaysOfWeek = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "task_repeat_days_of_month", joinColumns = @JoinColumn(name = "task_id"))
     @Column(name = "day_of_month")
+    @org.hibernate.annotations.BatchSize(size = 100)
     private Set<Integer> repeatDaysOfMonth = new HashSet<>();
 
     // 알림

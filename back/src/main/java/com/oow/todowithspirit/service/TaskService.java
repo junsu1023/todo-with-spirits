@@ -37,14 +37,12 @@ public class TaskService {
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
         boolean isAllDay = Boolean.TRUE.equals(request.getIsAllDay());
-
         if (!isAllDay && request.getEndDatetime() == null) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "endDatetime",
                     "End datetime is required when not all day");
         }
 
         User user = userRepository.getReferenceById(userId);
-
         Task task = Task.createSchedule(
                 user,
                 request.getTitle(),
@@ -63,7 +61,6 @@ public class TaskService {
                 resolveNotificationMinutes(request.getNotification()),
                 Boolean.TRUE.equals(request.getIsPublic())
         );
-
         return TaskCreateResponse.from(taskRepository.save(task));
     }
 
@@ -73,11 +70,9 @@ public class TaskService {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
                     "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
         }
-
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
         User user = userRepository.getReferenceById(userId);
-
         Task task = Task.createRoutine(
                 user,
                 request.getTitle(),
@@ -89,41 +84,66 @@ public class TaskService {
                 resolveNotificationMinutes(request.getNotification()),
                 Boolean.TRUE.equals(request.getIsPublic())
         );
-
         return TaskCreateResponse.from(taskRepository.save(task));
     }
+
+    // =========================================================
+    // 목록 조회
+    // =========================================================
 
     @Transactional(readOnly = true)
     public TaskListResponse<TaskSummaryResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
         List<Task> tasks = (from != null && to != null)
                 ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.SCHEDULE, from, to)
                 : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.SCHEDULE);
-
         return TaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
     }
 
     @Transactional(readOnly = true)
     public TaskListResponse<TaskSummaryResponse> getRoutines(Long userId) {
-        List<TaskSummaryResponse> items = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
-                .stream().map(TaskSummaryResponse::from).toList();
-        return TaskListResponse.of(items);
+        return TaskListResponse.of(
+                taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
+                        .stream().map(TaskSummaryResponse::from).toList()
+        );
     }
+
+    // =========================================================
+    // 캘린더 통합 조회 (occurrence 기반 — from/to 필수)
+    // =========================================================
 
     @Transactional(readOnly = true)
     public CalendarTaskListResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
-        List<Task> tasks = (from != null && to != null)
-                ? taskRepository.findCalendarTasksWithDateRange(userId, from, to)
-                : taskRepository.findAllCalendarTasks(userId);
-        return CalendarTaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
+        List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
+
+        List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.SCHEDULE).toList();
+        List<Task> habits = tasks.stream().filter(t -> t.getTaskType() == TaskType.HABIT).toList();
+
+        List<CalendarOccurrenceResponse> scheduleOccurrences = schedules.stream()
+                .map(CalendarOccurrenceResponse::fromSchedule)
+                .toList();
+
+        List<Long> habitIds = habits.stream().map(Task::getId).toList();
+        Map<Long, Map<LocalDate, HabitCompletion>> completionMap = loadCompletionMap(habitIds, from, to);
+
+        List<CalendarOccurrenceResponse> habitOccurrences = habits.stream()
+                .flatMap(task -> expandOccurrences(task, from, to).stream()
+                        .map(date -> CalendarOccurrenceResponse.fromHabitOccurrence(
+                                task, date,
+                                completionMap.getOrDefault(task.getId(), Map.of()).get(date))))
+                .toList();
+
+        List<CalendarOccurrenceResponse> allItems = Stream
+                .concat(scheduleOccurrences.stream(), habitOccurrences.stream())
+                .sorted(Comparator.comparing(CalendarOccurrenceResponse::getOccurrenceDate))
+                .toList();
+
+        return CalendarTaskListResponse.of(allItems);
     }
 
-    @Transactional
-    public TaskDeleteResponse deleteTasks(Long userId, TaskDeleteRequest request) {
-        int deletedCount = taskRepository.deleteAllByIdsAndUserId(request.getTaskIds(), userId);
-        return TaskDeleteResponse.of(deletedCount);
-    }
+    // =========================================================
+    // 단건 조회
+    // =========================================================
 
-    // 단건 조회: @Transactional 내에서 lazy 컬렉션(repeatDaysOfWeek/Month) 로딩
     @Transactional(readOnly = true)
     public TaskCreateResponse getTaskDetail(Long userId, Long taskId) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
@@ -196,6 +216,31 @@ public class TaskService {
                         hc -> hc.getTask().getId(),
                         Collectors.toMap(HabitCompletion::getCompletionDate, Function.identity())
                 ));
+    }
+
+    private List<LocalDate> expandOccurrences(Task task, LocalDate from, LocalDate to) {
+        LocalDate rangeStart = task.getStartDate().isAfter(from) ? task.getStartDate() : from;
+        LocalDate rangeEnd = task.getRepeatEndDate() == null ? to
+                : task.getRepeatEndDate().isBefore(to) ? task.getRepeatEndDate() : to;
+
+        if (rangeStart.isAfter(rangeEnd)) return List.of();
+
+        return switch (task.getRepeatType()) {
+            case DAILY -> rangeStart.datesUntil(rangeEnd.plusDays(1)).toList();
+            case WEEKLY -> {
+                Set<DayOfWeek> days = task.getRepeatDaysOfWeek();
+                yield rangeStart.datesUntil(rangeEnd.plusDays(1))
+                        .filter(d -> days.contains(d.getDayOfWeek()))
+                        .toList();
+            }
+            case MONTHLY -> {
+                Set<Integer> dayNums = task.getRepeatDaysOfMonth();
+                yield rangeStart.datesUntil(rangeEnd.plusDays(1))
+                        .filter(d -> dayNums.contains(d.getDayOfMonth()))
+                        .toList();
+            }
+            default -> List.of();
+        };
     }
 
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {

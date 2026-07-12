@@ -71,8 +71,8 @@ public class TaskController {
     @GetMapping("/calendar")
     public ResponseEntity<ApiResponse<CalendarTaskListResponse>> getCalendarTasks(
             @AuthenticationPrincipal Long userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to)));
     }
 
@@ -97,7 +97,7 @@ public class TaskController {
     }
 
     // ==============================================
-    // 루틴 (ROUTINE)
+    // 루틴 (HABIT)
     // ==============================================
 
     @PostMapping("/routine")
