@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.alarm
+package com.example.todowithspirits.feature.setting
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
-import com.example.todowithspirits.feature.alarm.component.AlarmToggleRow
-import com.example.todowithspirits.feature.alarm.viewmodel.AlarmSettingViewModel
+import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
+import com.example.todowithspirits.feature.setting.viewmodel.AlarmSettingViewModel
 
 @Composable
 fun AlarmSettingScreen(

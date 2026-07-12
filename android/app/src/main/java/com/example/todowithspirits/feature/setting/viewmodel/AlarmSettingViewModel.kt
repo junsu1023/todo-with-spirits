@@ -1,8 +1,8 @@
-package com.example.todowithspirits.feature.alarm.viewmodel
+package com.example.todowithspirits.feature.setting.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
-import com.example.todowithspirits.feature.alarm.state.AlarmSettingUiState
+import com.example.todowithspirits.feature.setting.state.AlarmSettingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.alarm.state
+package com.example.todowithspirits.feature.setting.state
 
 data class AlarmSettingUiState(
     val isOnActiveRemind: Boolean = false,

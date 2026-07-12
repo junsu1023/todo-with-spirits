@@ -111,4 +111,9 @@
     <string name="version">버전</string>
     <string name="modify_profile">프로필 수정</string>
     <string name="modify_password">비밀번호 수정</string>
+    <string name="dark_mode">다크모드</string>
+    <string name="show_plan_dday">플랜 디데이 표시</string>
+    <string name="plan_sort">플랜 정렬</string>
+    <string name="theme">테마</string>
+    <string name="language">언어</string>
 </resources>
