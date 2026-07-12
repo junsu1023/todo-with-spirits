@@ -45,7 +45,8 @@ fun SpiritsTodoNavigation(
         composable(Screen.Plan.route) {
             PlanScreen(
                 navigateToAdd = navigateToAdd,
-                navigateToDetail = navigateToDetail
+                navigateToDetail = navigateToDetail,
+                navigateToAlarm = navigateToAlarm
             )
         }
 

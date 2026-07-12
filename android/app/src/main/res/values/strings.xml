@@ -106,4 +106,5 @@
     <string name="logout">로그아웃</string>
     <string name="withdraw">회원 탈퇴</string>
     <string name="detail_alarm_setting">세부 설정</string>
+    <string name="all_plan">전체 플랜</string>
 </resources>

@@ -33,8 +33,8 @@ fun PlanSearchArea() {
             .fillMaxWidth()
             .height(40.dp)
             .padding(horizontal = 16.dp, vertical = 0.dp)
-            .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
-            .border(width = 1.dp, color = SpiritTodoTheme.colors.onSurfaceColor3, RoundedCornerShape(6.dp)),
+            .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -48,14 +48,14 @@ fun PlanSearchArea() {
                 modifier = Modifier.weight(1f),
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 ),
                 decorationBox = { innerTextField ->
                     if (searchQuery.value.isEmpty()) {
                         Text(
                             text = stringResource(R.string.search_plan),
                             fontSize = 14.sp,
-                            color = SpiritTodoTheme.colors.onSurfaceColor2
+                            color = SpiritTodoTheme.color.onSurfaceColor8
                         )
                     }
 

@@ -26,7 +26,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 @Composable
 fun TodayScreen(
     todayViewModel: TodayViewModel = hiltViewModel(),
-    navigateToAlarm: () -> Unit = {}
+    navigateToAlarm: () -> Unit
 ) {
     val uiState by todayViewModel.uiState.collectAsState()
 

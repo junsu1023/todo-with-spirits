@@ -6,10 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
@@ -26,14 +30,25 @@ private data class CalendarDay(
     val isCurrentMonth: Boolean
 )
 
+/**
+ * 특정 날짜 아래에 표시할 이벤트 점과 라벨 배지.
+ */
+data class CalendarDayEvent(
+    val dotColors: List<Color> = emptyList(),
+    val label: String? = null
+)
+
 @Composable
 fun CalendarView(
     modifier: Modifier = Modifier,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
-    showMonthNavigation: Boolean = true
+    showMonthNavigation: Boolean = true,
+    showSelectedDateInHeader: Boolean = false,
+    eventData: Map<LocalDate, CalendarDayEvent> = emptyMap()
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
+    val selectedDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
 
     val calendarDays = remember(currentMonth) {
         val firstDayOfMonth = currentMonth.atDay(1)
@@ -67,9 +82,13 @@ fun CalendarView(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.month, currentMonth.monthValue),
+                    text = if (showSelectedDateInHeader) {
+                        selectedDate.format(selectedDateFormatter)
+                    } else {
+                        stringResource(R.string.month, currentMonth.monthValue)
+                    },
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = SpiritTodoTheme.color.onSurfaceColor1
                 )
 
@@ -111,14 +130,14 @@ fun CalendarView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(32.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .height(IntrinsicSize.Max)
             ) {
                 week.forEach { calendarDay ->
                     val date = calendarDay.date
                     val isSelected = date == selectedDate
+                    val event = eventData[date]
 
-                    Box(
+                    Column(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
@@ -131,32 +150,67 @@ fun CalendarView(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             ),
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (isSelected) {
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .background(SpiritTodoTheme.color.surfaceColor3, CircleShape)
+                        Box(
+                            modifier = Modifier.size(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .background(SpiritTodoTheme.color.surfaceColor3, CircleShape)
+                                )
+                            }
+
+                            Text(
+                                text = date.dayOfMonth.toString(),
+                                color = when {
+                                    isSelected -> SpiritTodoTheme.color.onSurfaceColor3
+                                    !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.onSurfaceColor9
+                                    else -> SpiritTodoTheme.color.onSurfaceColor1
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                             )
                         }
 
-                        Text(
-                            text = date.dayOfMonth.toString(),
-                            color = when {
-                                isSelected -> SpiritTodoTheme.color.onSurfaceColor3
-                                !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.onSurfaceColor9
-                                else -> SpiritTodoTheme.color.onSurfaceColor1
-                            },
-                            fontSize = 12.sp,
-                            fontWeight = if(isSelected) FontWeight.SemiBold else FontWeight.Normal
-                        )
+                        if (event != null && event.dotColors.isNotEmpty()) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                event.dotColors.forEach { dotColor ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(5.dp)
+                                            .background(dotColor, CircleShape)
+                                    )
+                                }
+                            }
+                        }
+
+                        if (event?.label != null) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(2.dp))
+                                    .padding(horizontal = 4.dp)
+                            ) {
+                                Text(
+                                    text = event.label,
+                                    fontSize = 10.sp,
+                                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
                 }
             }
 
             if (weekIdx != chunks.lastIndex) {
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
