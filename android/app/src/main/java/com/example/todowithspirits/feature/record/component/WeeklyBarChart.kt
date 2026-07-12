@@ -75,7 +75,6 @@ fun WeeklyBarChart() {
     val validValues = data.mapNotNull { it.value }
     val maxValue = if (validValues.isEmpty()) 1 else validValues.max().coerceAtLeast(1)
     val maxIndex = data.indexOfFirst { it.value != null && it.value == validValues.max() }
-
     var selectedBarIndex by remember { mutableIntStateOf(-1) }
 
     Column(Modifier.fillMaxWidth()) {
@@ -95,11 +94,12 @@ fun WeeklyBarChart() {
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize()
                             )
+
                             Text(
                                 text = "${data[maxIndex].value}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = SpiritTodoTheme.colors.white,
+                                color = SpiritTodoTheme.color.onSurfaceColor3,
                                 modifier = Modifier.offset(y = 2.dp)
                             )
                         }
@@ -155,7 +155,7 @@ fun WeeklyBarChart() {
                                 .fillMaxWidth(0.5f)
                                 .fillMaxHeight(fraction.coerceAtLeast(0.01f))
                                 .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                                .background(SpiritTodoTheme.colors.onSurfaceColor9)
+                                .background(SpiritTodoTheme.color.surfaceColor17)
                         )
                     }
                 }
@@ -172,12 +172,11 @@ fun WeeklyBarChart() {
             }
         }
 
-        // Baseline
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(SpiritTodoTheme.colors.onSurfaceColor7)
+                .background(SpiritTodoTheme.color.onSurfaceColor8)
         )
 
         Spacer(Modifier.height(6.dp))
@@ -192,12 +191,12 @@ fun WeeklyBarChart() {
                     Text(
                         text = "${day.date}",
                         fontSize = 12.sp,
-                        color = SpiritTodoTheme.colors.onSurfaceColor7
+                        color = SpiritTodoTheme.color.onSurfaceColor8
                     )
                     Text(
                         text = day.dayLabel,
                         fontSize = 10.sp,
-                        color = SpiritTodoTheme.colors.onSurfaceColor7
+                        color = SpiritTodoTheme.color.onSurfaceColor8
                     )
                 }
             }
@@ -207,7 +206,7 @@ fun WeeklyBarChart() {
 
 @Composable
 fun BarTooltipBubble() {
-    val bubbleColor = SpiritTodoTheme.colors.white
+    val bubbleColor = SpiritTodoTheme.color.surfaceColor1
 
     Column(
         modifier = Modifier
@@ -287,14 +286,14 @@ fun BarTooltipBubble() {
             Text(
                 text = stringResource(R.string.todo),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor4,
+                color = SpiritTodoTheme.color.keyTodo,
                 modifier = Modifier.alignByBaseline()
             )
 
             Text(
                 text = "1 / 3", //dummy
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor7,
+                color = SpiritTodoTheme.color.onSurfaceColor8,
                 modifier = Modifier.alignByBaseline()
             )
         }
@@ -307,14 +306,14 @@ fun BarTooltipBubble() {
             Text(
                 text = stringResource(R.string.routine),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor5,
+                color = SpiritTodoTheme.color.keyRoutine,
                 modifier = Modifier.alignByBaseline()
             )
 
             Text(
                 text = "1 / 2", //dummy
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor7,
+                color = SpiritTodoTheme.color.onSurfaceColor8,
                 modifier = Modifier.alignByBaseline()
             )
         }

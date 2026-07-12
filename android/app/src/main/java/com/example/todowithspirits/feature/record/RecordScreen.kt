@@ -193,7 +193,7 @@ private fun WeeklyTabContent() {
         )
 
         Image(
-            painter = painterResource(R.drawable.fi_rr_angle_small_down),
+            painter = painterResource(R.drawable.todo_arrow1),
             contentDescription = null,
             modifier = Modifier
                 .rotate(if(isWeekExpanded) 180f else 0f)
@@ -208,8 +208,8 @@ private fun WeeklyTabContent() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.colors.surfaceColor4)
-                .padding(vertical = 10.dp, horizontal = 8.dp),
+                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(6.dp))
+                .padding(vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -220,7 +220,7 @@ private fun WeeklyTabContent() {
 
             Text(
                 text = "26년 6월 1일 ~ 26년 6월 7일",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = SpiritTodoTheme.color.todoTextMain,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)

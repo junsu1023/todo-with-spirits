@@ -29,12 +29,13 @@ fun WeeklyStatsRow() {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                 .padding(vertical = 14.dp, horizontal = 10.dp)
         ) {
             Text(
                 text = stringResource(R.string.weekly_achieved_plan),
                 fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
                 color = SpiritTodoTheme.color.todoTextMain
             )
 
@@ -52,7 +53,7 @@ fun WeeklyStatsRow() {
                 Text(
                     text = " / 1000",
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor7
+                    color = SpiritTodoTheme.color.onSurfaceColor8
                 )
             }
         }
@@ -62,12 +63,13 @@ fun WeeklyStatsRow() {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                 .padding(vertical = 14.dp, horizontal = 10.dp)
         ) {
             Text(
                 text = stringResource(R.string.weekly_avg_rate),
                 fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
                 color = SpiritTodoTheme.color.todoTextMain
             )
 

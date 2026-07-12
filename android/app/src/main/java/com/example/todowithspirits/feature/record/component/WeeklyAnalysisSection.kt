@@ -41,42 +41,42 @@ fun WeeklyAnalysisSection(
             modifier = Modifier
                 .weight(todoFraction)
                 .fillMaxHeight()
-                .background(SpiritTodoTheme.colors.onSurfaceColor4),
+                .background(SpiritTodoTheme.color.keyTodo),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "${(todoFraction * 100).toInt()}%",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.white
+                color = SpiritTodoTheme.color.onSurfaceColor3
             )
         }
         Box(
             modifier = Modifier
                 .weight(routineFraction)
                 .fillMaxHeight()
-                .background(SpiritTodoTheme.colors.onSurfaceColor5),
+                .background(SpiritTodoTheme.color.keyRoutine),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "${(routineFraction * 100).toInt()}%",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.white
+                color = SpiritTodoTheme.color.onSurfaceColor3
             )
         }
         Box(
             modifier = Modifier
                 .weight(delayFraction)
                 .fillMaxHeight()
-                .background(SpiritTodoTheme.colors.onSurfaceColor11),
+                .background(SpiritTodoTheme.color.surfaceColor15),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "${(delayFraction * 100).toInt()}%",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.colors.white
+                color = SpiritTodoTheme.color.onSurfaceColor3
             )
         }
     }
@@ -87,15 +87,15 @@ fun WeeklyAnalysisSection(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        LegendDot(color = SpiritTodoTheme.colors.onSurfaceColor4, label = stringResource(R.string.todo))
+        LegendDot(color = SpiritTodoTheme.color.keyTodo, label = stringResource(R.string.todo))
 
         Spacer(modifier = Modifier.width(44.dp))
 
-        LegendDot(color = SpiritTodoTheme.colors.onSurfaceColor5, label = stringResource(R.string.routine))
+        LegendDot(color = SpiritTodoTheme.color.keyRoutine, label = stringResource(R.string.routine))
 
         Spacer(modifier = Modifier.width(44.dp))
 
-        LegendDot(color = SpiritTodoTheme.colors.onSurfaceColor11, label = stringResource(R.string.delay))
+        LegendDot(color = SpiritTodoTheme.color.surfaceColor15, label = stringResource(R.string.delay))
     }
 }
 
@@ -109,7 +109,7 @@ fun LegendDot(color: Color, label: String) {
         Text(
             text = label,
             fontSize = 12.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor7
+            color = SpiritTodoTheme.color.onSurfaceColor8
         )
     }
 }

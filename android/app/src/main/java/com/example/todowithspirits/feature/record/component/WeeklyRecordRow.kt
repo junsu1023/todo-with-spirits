@@ -34,12 +34,12 @@ fun WeeklyRecordRow(statuses: List<WeekDayStatus>) {
                     modifier = Modifier
                         .size(38.dp)
                         .background(
-                            color = SpiritTodoTheme.colors.white,
+                            color = SpiritTodoTheme.color.surfaceColor1,
                             shape = CircleShape
                         )
                         .border(
                             width = 2.dp,
-                            color = SpiritTodoTheme.colors.onSurfaceColor11,
+                            color = SpiritTodoTheme.color.surfaceColor15,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -63,7 +63,7 @@ fun WeeklyRecordRow(statuses: List<WeekDayStatus>) {
                 Text(
                     text = "${index + 1}일차",
                     fontSize = 10.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor7
+                    color = SpiritTodoTheme.color.onSurfaceColor8
                 )
             }
         }

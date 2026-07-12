@@ -29,7 +29,7 @@ fun WeeklyReportCard() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(6.dp))
                 .padding(16.dp)
         ) {
             Row(
@@ -42,7 +42,7 @@ fun WeeklyReportCard() {
                         text = stringResource(R.string.weekly_report_title),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SpiritTodoTheme.colors.onSurfaceColor1
+                        color = SpiritTodoTheme.color.onSurfaceColor4
                     )
 
                     Spacer(Modifier.height(2.dp))
@@ -54,12 +54,12 @@ fun WeeklyReportCard() {
                     )
                 }
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_sign_out),
+                    painter = painterResource(R.drawable.todo_share),
                     contentDescription = null
                 )
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(28.dp))
 
             WeeklyBarChart()
 
@@ -67,16 +67,12 @@ fun WeeklyReportCard() {
 
             WeeklyStatsRow()
 
-            Spacer(Modifier.height(16.dp))
-
-            HorizontalDivider(color = SpiritTodoTheme.colors.onSurfaceColor8)
-
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(14.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                     .padding(top = 9.dp, start = 14.dp, bottom = 16.dp, end = 11.dp)
             ) {
                 Text(
@@ -97,7 +93,7 @@ fun WeeklyReportCard() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.colors.surfaceColor4, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(10.dp))
                 .padding(16.dp)
         ) {
             Text(
@@ -120,7 +116,7 @@ fun WeeklyReportCard() {
                 color = SpiritTodoTheme.color.todoTextMain
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(6.dp))
 
             WeeklyTop3Section()
 
