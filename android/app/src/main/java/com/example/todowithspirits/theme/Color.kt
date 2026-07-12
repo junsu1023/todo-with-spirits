@@ -9,7 +9,6 @@ val spiritsTodoColor = SpiritsTodoColor(
     homeColor = Color(0xFFF6F6F6),
     trackColor = Color(0xFF353534),
     surfaceColor1 = Color(0xFFF3E8FF),
-    surfaceColor2 = Color(0xFFF6F6F6),
     surfaceColor3 = Color(0xFFD7BFFF),
     surfaceColor4 = Color(0xFFFAFAFA),
     surfaceColor5 = Color(0xFF8DE4FF),
@@ -161,7 +160,6 @@ class SpiritsTodoColor(
     homeColor: Color,
     trackColor: Color,
     surfaceColor1: Color,
-    surfaceColor2: Color,
     surfaceColor3: Color,
     surfaceColor4: Color,
     surfaceColor5: Color,
@@ -194,9 +192,6 @@ class SpiritsTodoColor(
         private set
 
     var surfaceColor1 by mutableStateOf(surfaceColor1)
-        private set
-
-    var surfaceColor2 by mutableStateOf(surfaceColor2)
         private set
 
     var surfaceColor3 by mutableStateOf(surfaceColor3)
