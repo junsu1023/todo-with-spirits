@@ -47,7 +47,7 @@ fun TimeWheelPicker(
                 .height(35.dp)
                 .padding(horizontal = 14.dp)
                 .clip(RoundedCornerShape(81.dp))
-                .background(SpiritTodoTheme.colors.selectedTimeBoxColor)
+                .background(SpiritTodoTheme.color.surfaceColor13)
         )
 
         Row(
@@ -66,9 +66,9 @@ fun TimeWheelPicker(
 
             Text(
                 text = ":",
-                fontSize = 28.sp,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = SpiritTodoTheme.colors.selectedDateTextColor
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal = 12.dp),
+                color = SpiritTodoTheme.color.onSurfaceColor4
             )
 
             WheelColumn(
@@ -95,24 +95,16 @@ private fun WheelColumn(
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = middleOffset + initialIndex)
     val snapFlingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
     val scope = rememberCoroutineScope()
-
-    val selectedIndex by remember {
-        derivedStateOf { listState.firstVisibleItemIndex }
-    }
-
-    val visibleItemsMap by remember {
-        derivedStateOf {
-            listState.layoutInfo.visibleItemsInfo.associateBy { it.index }
-        }
-    }
+    val selectedIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+    val visibleItemsMap by remember { derivedStateOf { listState.layoutInfo.visibleItemsInfo.associateBy { it.index } } }
     val viewportCenter by remember {
         derivedStateOf {
             val info = listState.layoutInfo
             (info.viewportEndOffset + info.viewportStartOffset) / 2f
         }
     }
-
     var isInitialized by remember { mutableStateOf(false) }
+
     LaunchedEffect(selectedIndex) {
         if (isInitialized) {
             onItemSelected(items[selectedIndex % itemCount])
@@ -123,7 +115,7 @@ private fun WheelColumn(
 
     Box(
         modifier = Modifier
-            .width(70.dp)
+            .width(22.dp)
             .height(ITEM_HEIGHT * VISIBLE_ITEMS_COUNT),
         contentAlignment = Alignment.Center
     ) {
@@ -168,9 +160,9 @@ private fun WheelColumn(
                 ) {
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
-                        fontSize = 28.sp,
-                        color = if (selectedIndex == index) SpiritTodoTheme.colors.selectedDateTextColor
-                                else SpiritTodoTheme.colors.textColor1
+                        fontSize = 18.sp,
+                        color = if(selectedIndex == index) SpiritTodoTheme.color.onSurfaceColor4
+                                else SpiritTodoTheme.color.onSurfaceColor8
                     )
                 }
             }
