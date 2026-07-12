@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +53,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat.getString
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.BottomBarHeight
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SplitsTodoSwitch
 import com.example.todowithspirits.component.TabItems
@@ -73,7 +75,7 @@ private val routineRepeatOptions = listOf(
 )
 
 @Composable
-fun QuickAddBottomSheet(onDismiss: () -> Unit) {
+fun QuickAddBottomPopup(onDismiss: () -> Unit) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(getString(context, R.string.todo)) }
     var title by remember { mutableStateOf("") }
@@ -100,6 +102,8 @@ fun QuickAddBottomSheet(onDismiss: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(bottom = BottomBarHeight)
                 .imePadding(),
             contentAlignment = Alignment.BottomCenter
         ) {

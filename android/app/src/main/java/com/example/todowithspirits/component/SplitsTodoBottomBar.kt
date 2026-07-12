@@ -25,6 +25,8 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.navigation.Screen
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
+val BottomBarHeight = 74.dp
+
 data class BottomNavItem(
     val route: String,
     @param:StringRes val label: Int,
@@ -56,7 +58,7 @@ fun SplitsTodoBottomBar(
             windowInsets = WindowInsets(0, 0, 0, 0),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(74.dp)
+                .height(BottomBarHeight)
                 .padding(horizontal = 10.dp)
         ) {
             bottomNavItems.forEach { item ->

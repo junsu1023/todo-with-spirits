@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.feature.today.component.QuickAddBottomSheet
+import com.example.todowithspirits.feature.today.component.QuickAddBottomPopup
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -39,6 +39,6 @@ fun FloatingButton(
     }
 
     if (isBottomSheetVisible) {
-        QuickAddBottomSheet(onDismiss = { setBottomSheetVisible(false) })
+        QuickAddBottomPopup(onDismiss = { setBottomSheetVisible(false) })
     }
 }
