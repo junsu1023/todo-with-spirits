@@ -44,7 +44,7 @@ fun MySpiritCard() {
             text = stringResource(R.string.my_spirit),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = SpiritTodoTheme.color.onSurfaceColor1
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Spacer(Modifier.height(10.dp))
@@ -82,7 +82,7 @@ fun MySpiritCard() {
                         text = "루미", // dummy
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.color.onSurfaceColor1
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
 
                     Spacer(Modifier.width(4.dp))
@@ -113,7 +113,7 @@ fun MySpiritCard() {
                         text = stringResource(R.string.exp_format, 999, 1000),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Light,
-                        color = SpiritTodoTheme.color.onSurfaceColor1
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
                     Text(
                         text = "100%",
@@ -166,7 +166,7 @@ fun MySpiritCard() {
                 Text(
                     text = stringResource(R.string.view_spirit),
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
 
@@ -185,7 +185,7 @@ fun MySpiritCard() {
                 Text(
                     text = stringResource(R.string.change_representative),
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
         }

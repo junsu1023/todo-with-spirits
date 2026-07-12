@@ -89,7 +89,7 @@ fun CalendarView(
                     },
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -169,7 +169,7 @@ fun CalendarView(
                                 color = when {
                                     isSelected -> SpiritTodoTheme.color.onSurfaceColor3
                                     !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.onSurfaceColor9
-                                    else -> SpiritTodoTheme.color.onSurfaceColor1
+                                    else -> SpiritTodoTheme.color.todoTextMain
                                 },
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
@@ -198,7 +198,7 @@ fun CalendarView(
                                 Text(
                                     text = event.label,
                                     fontSize = 10.sp,
-                                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                                    color = SpiritTodoTheme.color.todoTextMain,
                                     maxLines = 1
                                 )
                             }

@@ -58,7 +58,7 @@ fun ProfileSection() {
                     text = "일하기 싫어요",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Text(

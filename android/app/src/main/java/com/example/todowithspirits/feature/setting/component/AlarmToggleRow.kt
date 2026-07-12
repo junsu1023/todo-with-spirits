@@ -28,7 +28,7 @@ fun AlarmToggleRow(
         Text(
             text = label,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1,
+            color = SpiritTodoTheme.color.todoTextMain,
             modifier = Modifier.weight(1f)
         )
 

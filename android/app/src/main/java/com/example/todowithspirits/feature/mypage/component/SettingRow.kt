@@ -51,7 +51,7 @@ fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
                 text = stringResource(item.titleRes),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(2.dp))

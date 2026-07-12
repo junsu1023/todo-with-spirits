@@ -107,7 +107,7 @@ fun BaseSettingRow(
                 modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                    color = SpiritTodoTheme.color.todoTextMain,
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -195,7 +195,7 @@ fun SettingSelectorItem(
                     Text(
                         text = value,
                         fontSize = 16.sp,
-                        color = SpiritTodoTheme.color.onSurfaceColor1
+                        color = SpiritTodoTheme.color.todoTextMain
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -248,7 +248,7 @@ fun SettingSelectorItem(
                                     ) {
                                         Text(
                                             text = option,
-                                            color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
+                                            color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain,
                                             fontSize = 14.sp,
                                             textAlign = TextAlign.Center
                                         )
@@ -304,7 +304,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(dateFormatter),
                 fontSize = 16.sp,
-                color = if(expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
+                color = if(expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }

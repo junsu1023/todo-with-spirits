@@ -48,7 +48,7 @@ fun PlanSearchArea() {
                 modifier = Modifier.weight(1f),
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 ),
                 decorationBox = { innerTextField ->
                     if (searchQuery.value.isEmpty()) {

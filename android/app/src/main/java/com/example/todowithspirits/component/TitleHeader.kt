@@ -63,7 +63,7 @@ fun TitleHeader(
                 text = title,
                 style = TextStyle(
                     fontSize = 18.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                    color = SpiritTodoTheme.color.todoTextMain,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center
                 ),

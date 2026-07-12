@@ -35,7 +35,7 @@ fun StatusRow() {
             Text(
                 text = stringResource(R.string.consecutive_achievement),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(2.dp))
@@ -44,7 +44,7 @@ fun StatusRow() {
                 text = "12일", // dummy
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
 
@@ -58,7 +58,7 @@ fun StatusRow() {
             Text(
                 text = stringResource(R.string.total_completion),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(4.dp))
@@ -67,7 +67,7 @@ fun StatusRow() {
                 text = "12일", // dummy
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
     }

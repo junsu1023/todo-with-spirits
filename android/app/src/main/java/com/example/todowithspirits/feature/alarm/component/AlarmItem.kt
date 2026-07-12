@@ -54,7 +54,7 @@ fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
         Text(
             text = alarm.message,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1,
+            color = SpiritTodoTheme.color.todoTextMain,
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 

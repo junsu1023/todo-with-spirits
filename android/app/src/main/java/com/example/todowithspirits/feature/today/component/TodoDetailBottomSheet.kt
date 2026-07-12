@@ -207,7 +207,7 @@ fun TodoDetailBottomSheet(
                             modifier = Modifier.weight(1f),
                             iconRes = R.drawable.todo_arrow,
                             label = stringResource(R.string.delay),
-                            color = SpiritTodoTheme.color.onSurfaceColor1,
+                            color = SpiritTodoTheme.color.todoTextMain,
                             onClick = onPostpone
                         )
 
@@ -215,7 +215,7 @@ fun TodoDetailBottomSheet(
                             modifier = Modifier.weight(1f),
                             iconRes = R.drawable.todo_pencil,
                             label = stringResource(R.string.modify),
-                            color = SpiritTodoTheme.color.onSurfaceColor1,
+                            color = SpiritTodoTheme.color.todoTextMain,
                             onClick = onEdit
                         )
                     }

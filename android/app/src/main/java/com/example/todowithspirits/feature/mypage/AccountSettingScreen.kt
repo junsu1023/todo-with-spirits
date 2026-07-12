@@ -95,7 +95,7 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
                 text = stringResource(R.string.modify_profile),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             )
         }
 
@@ -136,13 +136,13 @@ private fun ProfileInfoRow(label: String, value: String) {
         Text(
             text = label,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Text(
             text = value,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1
+            color = SpiritTodoTheme.color.todoTextMain
         )
     }
 }

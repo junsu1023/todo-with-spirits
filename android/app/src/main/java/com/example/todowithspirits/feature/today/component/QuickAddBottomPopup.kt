@@ -160,7 +160,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = TextStyle(
                             fontSize = 18.sp,
-                            color = SpiritTodoTheme.color.onSurfaceColor1
+                            color = SpiritTodoTheme.color.todoTextMain
                         ),
                         decorationBox = { innerTextField ->
                             Row(
@@ -243,14 +243,14 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                                 text = stringResource(R.string.date),
                                                 modifier = Modifier.weight(1f),
                                                 fontSize = 14.sp,
-                                                color = SpiritTodoTheme.color.onSurfaceColor1
+                                                color = SpiritTodoTheme.color.todoTextMain
                                             )
 
                                             selectedDate?.let { date ->
                                                 Text(
                                                     text = date.format(dateFormatter),
                                                     fontSize = 14.sp,
-                                                    color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1
+                                                    color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain
                                                 )
                                             }
                                         }
@@ -292,7 +292,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                                 text = stringResource(R.string.time),
                                                 modifier = Modifier.weight(1f),
                                                 fontSize = 14.sp,
-                                                color = SpiritTodoTheme.color.onSurfaceColor1
+                                                color = SpiritTodoTheme.color.todoTextMain
                                             )
 
                                             SpiritsTodoSwitch(
@@ -432,7 +432,7 @@ private fun QuickRepeatRow(
             text = stringResource(R.string.repeat),
             modifier = Modifier.weight(1f),
             fontSize = 14.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1
+            color = SpiritTodoTheme.color.todoTextMain
         )
 
         Box {
@@ -443,7 +443,7 @@ private fun QuickRepeatRow(
                 Text(
                     text = value,
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Spacer(Modifier.width(6.dp))
@@ -469,7 +469,7 @@ private fun QuickRepeatRow(
                                 Text(
                                     text = option,
                                     color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4
-                                            else SpiritTodoTheme.color.onSurfaceColor1,
+                                            else SpiritTodoTheme.color.todoTextMain,
                                     fontSize = 14.sp,
                                     textAlign = TextAlign.Center
                                 )

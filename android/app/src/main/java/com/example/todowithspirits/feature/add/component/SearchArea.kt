@@ -39,7 +39,7 @@ fun SearchArea() {
                 .height(30.dp)
                 .padding(horizontal = 2.dp),
             textStyle = TextStyle(
-                color = SpiritTodoTheme.color.onSurfaceColor1,
+                color = SpiritTodoTheme.color.todoTextMain,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),

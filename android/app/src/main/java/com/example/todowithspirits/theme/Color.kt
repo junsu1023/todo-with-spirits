@@ -39,7 +39,6 @@ val spiritsLightColor = SpiritColor(
     surfaceColor15 = Color(0xFFD9D9D9),
     surfaceColor16 = Color(0xFFF7F7F7),
     surfaceColor17 = Color(0xFFECECEC),
-    onSurfaceColor1 = Color(0xFF857563),
     onSurfaceColor2 = Color(0xFFD1D1D6),
     onSurfaceColor3 = Color(0xFFFFFFFF),
     onSurfaceColor4 = Color(0xFFB286FD),
@@ -49,7 +48,8 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor9 = Color(0xFFC2C2C2),
     dimColor = Color(0x33000000),
     transparent = Color(0x00000000),
-    systemGrey = Color(0xFFBCBCBC)
+    systemGrey = Color(0xFFBCBCBC),
+    todoTextMain = Color(0xFF857563)
 )
 
 class SpiritColor(
@@ -70,7 +70,6 @@ class SpiritColor(
     surfaceColor15: Color,
     surfaceColor16: Color,
     surfaceColor17: Color,
-    onSurfaceColor1: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
@@ -80,7 +79,8 @@ class SpiritColor(
     onSurfaceColor9: Color,
     dimColor: Color,
     transparent: Color,
-    systemGrey: Color
+    systemGrey: Color,
+    todoTextMain: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -133,9 +133,6 @@ class SpiritColor(
     var surfaceColor17 by mutableStateOf(surfaceColor17)
         private set
 
-    var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
-        private set
-
     var onSurfaceColor2 by mutableStateOf(onSurfaceColor2)
         private set
 
@@ -164,6 +161,9 @@ class SpiritColor(
         private set
 
     var systemGrey by mutableStateOf(systemGrey)
+        private set
+
+    var todoTextMain by mutableStateOf(todoTextMain)
         private set
 }
 

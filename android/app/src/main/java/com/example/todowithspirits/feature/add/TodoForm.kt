@@ -149,7 +149,7 @@ fun TodoForm() {
                 .padding(16.dp),
             textStyle = TextStyle(
                 fontSize = 15.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor1
+                color = SpiritTodoTheme.color.todoTextMain
             ),
             decorationBox = { innerTextField ->
                 if (memoValue.value.isEmpty()) {

@@ -150,7 +150,7 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CircularProgressIndicator(progress: Float) {
-    val onSurfaceColor1 = SpiritTodoTheme.color.surfaceColor2
+    val todoTextMain = SpiritTodoTheme.color.surfaceColor2
     val trackColor = SpiritTodoTheme.color.surfaceColor7
     val percentage = (progress * 100).toInt()
 
@@ -175,7 +175,7 @@ private fun CircularProgressIndicator(progress: Float) {
             )
 
             drawArc(
-                color = onSurfaceColor1,
+                color = todoTextMain,
                 startAngle = -90f,
                 sweepAngle = 360f * progress,
                 useCenter = false,
@@ -189,7 +189,7 @@ private fun CircularProgressIndicator(progress: Float) {
             text = "$percentage%",
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = onSurfaceColor1
+            color = todoTextMain
         )
     }
 }

@@ -171,7 +171,7 @@ fun PlanScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "마감 임박 순",
-                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                    color = SpiritTodoTheme.color.todoTextMain,
                     fontSize = 14.sp
                 )
 

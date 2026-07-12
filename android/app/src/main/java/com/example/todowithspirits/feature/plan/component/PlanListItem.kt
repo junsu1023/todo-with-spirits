@@ -263,7 +263,7 @@ fun PlanListItem(
                             Text(
                                 text = dDayText,
                                 fontSize = 16.sp,
-                                color = if(dDayText == "D-Day") SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor1,
+                                color = if(dDayText == "D-Day") SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -281,7 +281,7 @@ fun PlanListItem(
                         Text(
                             text = dateTimeText,
                             fontSize = 12.sp,
-                            color = SpiritTodoTheme.color.onSurfaceColor1,
+                            color = SpiritTodoTheme.color.todoTextMain,
                             fontWeight = FontWeight.Light
                         )
                     }

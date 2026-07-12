@@ -82,7 +82,7 @@ fun PlanDetailScreen(
                     Image(
                         painter = painterResource(R.drawable.todo_trash),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor1),
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -115,7 +115,7 @@ fun PlanDetailScreen(
                     text = item.title,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.onSurfaceColor1,
+                    color = SpiritTodoTheme.color.todoTextMain,
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
@@ -136,7 +136,7 @@ fun PlanDetailScreen(
                 Text(
                     text = dateText,
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor1
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             }
 
@@ -180,7 +180,7 @@ fun PlanDetailScreen(
                 Text(
                     text = item.memo.ifEmpty { "메모" },
                     fontSize = 15.sp,
-                    color = if(item.memo.isEmpty()) SpiritTodoTheme.color.onSurfaceColor2 else SpiritTodoTheme.color.onSurfaceColor1
+                    color = if(item.memo.isEmpty()) SpiritTodoTheme.color.onSurfaceColor2 else SpiritTodoTheme.color.todoTextMain
                 )
             }
 
@@ -223,7 +223,7 @@ private fun DetailInfoRow(iconRes: Int, text: String) {
         Text(
             text = text,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor1
+            color = SpiritTodoTheme.color.todoTextMain
         )
     }
 }

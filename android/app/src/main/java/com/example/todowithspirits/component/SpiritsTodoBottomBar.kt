@@ -83,7 +83,7 @@ fun SpiritsTodoBottomBar(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = SpiritTodoTheme.color.onSurfaceColor1,
+                        selectedTextColor = SpiritTodoTheme.color.todoTextMain,
                         unselectedTextColor = SpiritTodoTheme.color.onSurfaceColor2,
                         indicatorColor = SpiritTodoTheme.color.transparent
                     )
