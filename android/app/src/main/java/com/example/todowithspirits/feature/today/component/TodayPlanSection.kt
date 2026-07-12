@@ -62,7 +62,7 @@ fun TodayPlanSection(
     routines: List<RoutineItem>
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
-    val today = remember { LocalDate.now() }
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var selectedRoutine by remember { mutableStateOf<RoutineItem?>(null) }
     var isWeekExpanded by remember { mutableStateOf(false) }
@@ -77,7 +77,7 @@ fun TodayPlanSection(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = today.format(dateFormatter),
+                    text = selectedDate.format(dateFormatter),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.onSurfaceColor5
@@ -113,7 +113,8 @@ fun TodayPlanSection(
                 Spacer(Modifier.height(12.dp))
 
                 WeeklyCalendarStrip(
-                    today = today,
+                    selectedDate = selectedDate,
+                    onDateSelected = { selectedDate = it },
                     todoColor = SpiritTodoTheme.color.surfaceColor8,
                     routineColor = SpiritTodoTheme.color.surfaceColor9
                 )
@@ -197,11 +198,12 @@ fun TodayPlanSection(
 
 @Composable
 private fun WeeklyCalendarStrip(
-    today: LocalDate,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
     todoColor: Color,
     routineColor: Color
 ) {
-    val weekStart = today.minusDays((today.dayOfWeek.value % 7).toLong())
+    val weekStart = selectedDate.minusDays((selectedDate.dayOfWeek.value % 7).toLong())
     val dayLabels = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
 
     Row(
@@ -210,7 +212,7 @@ private fun WeeklyCalendarStrip(
     ) {
         (0..6).forEach { offset ->
             val date = weekStart.plusDays(offset.toLong())
-            val isSelected = date == today
+            val isSelected = date == selectedDate
             val eventTypes = dummyWeeklyEvents[offset] ?: emptyList()
 
             Column(
@@ -221,6 +223,10 @@ private fun WeeklyCalendarStrip(
                         color = if(isSelected) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.surfaceColor4,
                         shape = RoundedCornerShape(8.dp)
                     )
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onDateSelected(date) }
                     .padding(vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
