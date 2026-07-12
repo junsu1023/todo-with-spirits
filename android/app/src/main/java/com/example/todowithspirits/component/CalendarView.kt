@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,59 +22,71 @@ import java.time.YearMonth
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
+private data class CalendarDay(
+    val date: LocalDate,
+    val isCurrentMonth: Boolean
+)
+
 @Composable
 fun CalendarView(
     modifier: Modifier = Modifier,
-    selectedStartDate: LocalDate,
-    selectedEndDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    showMonthNavigation: Boolean = true
 ) {
-    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedEndDate)) }
-    val daysInMonth = remember(currentMonth) {
-        val days = mutableListOf<LocalDate?>()
+    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
+
+    val calendarDays = remember(currentMonth) {
         val firstDayOfMonth = currentMonth.atDay(1)
-        val dayOfWeekOfFirstDay = firstDayOfMonth.dayOfWeek.value % 7
-        
-        repeat(dayOfWeekOfFirstDay) {
-            days.add(null)
+        val leadingCount = firstDayOfMonth.dayOfWeek.value % 7
+
+        val days = mutableListOf<CalendarDay>()
+        for (offset in leadingCount downTo 1) {
+            days.add(CalendarDay(firstDayOfMonth.minusDays(offset.toLong()), isCurrentMonth = false))
         }
-        
+
         for (day in 1..currentMonth.lengthOfMonth()) {
-            days.add(currentMonth.atDay(day))
+            days.add(CalendarDay(currentMonth.atDay(day), isCurrentMonth = true))
         }
+
+        val lastDayOfMonth = currentMonth.atEndOfMonth()
+        val trailingCount = (7 - days.size % 7) % 7
+        for (offset in 1..trailingCount) {
+            days.add(CalendarDay(lastDayOfMonth.plusDays(offset.toLong()), isCurrentMonth = false))
+        }
+
         days
     }
 
-    val rangeColor = SpiritTodoTheme.colors.selectedDateBoxColor
-    val selectedColor = SpiritTodoTheme.colors.selectedDateBoxColor
-
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 15.dp, end = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.month, currentMonth.monthValue),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = SpiritTodoTheme.colors.mainTextColor
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.left),
-                    contentDescription = null,
-                    modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.minusMonths(1)})
+        if (showMonthNavigation) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.month, currentMonth.monthValue),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 )
 
-                Image(
-                    painter = painterResource(R.drawable.right),
-                    contentDescription = null,
-                    modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.plusMonths(1)})
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Image(
+                        painter = painterResource(R.drawable.left),
+                        contentDescription = null,
+                        modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.minusMonths(1) })
+                    )
+
+                    Image(
+                        painter = painterResource(R.drawable.right),
+                        contentDescription = null,
+                        modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.plusMonths(1) })
+                    )
+                }
             }
         }
 
@@ -89,15 +100,14 @@ fun CalendarView(
                 Text(
                     text = day,
                     modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.textColor1
+                    color = SpiritTodoTheme.color.onSurfaceColor9
                 )
             }
         }
 
-        val chunks = daysInMonth.chunked(7)
+        val chunks = calendarDays.chunked(7)
         chunks.forEachIndexed { weekIdx, week ->
             Row(
                 modifier = Modifier
@@ -105,80 +115,47 @@ fun CalendarView(
                     .height(32.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                week.forEachIndexed { dayIdx, date ->
-                    val isStart = date != null && date == selectedStartDate
-                    val isEnd = date != null && date == selectedEndDate
-                    val isRangeActive = selectedStartDate.isBefore(selectedEndDate)
-                    val isInRange = date != null && isRangeActive && 
-                                   date.isAfter(selectedStartDate) && date.isBefore(selectedEndDate)
-                    
+                week.forEach { calendarDay ->
+                    val date = calendarDay.date
+                    val isSelected = date == selectedDate
+
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                             .clickable(
-                                enabled = date != null,
-                                onClick = { date?.let { onDateSelected(it) } },
+                                onClick = {
+                                    onDateSelected(date)
+                                    val month = YearMonth.from(date)
+                                    if (month != currentMonth) currentMonth = month
+                                },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (date != null) {
-                            if (isStart && isRangeActive) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.5f)
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterEnd)
-                                        .background(rangeColor)
-                                )
-                            } else if (isEnd && isRangeActive) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.5f)
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterStart)
-                                        .background(rangeColor)
-                                )
-                            } else if (isInRange) {
-                                val shape = when {
-                                    dayIdx == 0 -> RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-                                    dayIdx == 6 -> RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
-                                    else -> RoundedCornerShape(0.dp)
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(rangeColor, shape)
-                                )
-                            }
-
-                            if (isStart || isEnd) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .background(selectedColor, CircleShape)
-                                )
-                            }
-
-                            Text(
-                                text = date.dayOfMonth.toString(),
-                                color = if (isStart || isEnd) Color.White else SpiritTodoTheme.colors.mainTextColor,
-                                fontSize = 12.sp,
-                                fontWeight = if (isStart || isEnd) FontWeight.SemiBold else FontWeight.Normal
+                        if (isSelected) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(SpiritTodoTheme.color.surfaceColor3, CircleShape)
                             )
                         }
-                    }
-                }
 
-                if (week.size < 7) {
-                    repeat(7 - week.size) {
-                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = date.dayOfMonth.toString(),
+                            color = when {
+                                isSelected -> SpiritTodoTheme.color.onSurfaceColor3
+                                !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.onSurfaceColor9
+                                else -> SpiritTodoTheme.color.onSurfaceColor1
+                            },
+                            fontSize = 12.sp,
+                            fontWeight = if(isSelected) FontWeight.SemiBold else FontWeight.Normal
+                        )
                     }
                 }
             }
-            
+
             if (weekIdx != chunks.lastIndex) {
                 Spacer(modifier = Modifier.height(18.dp))
             }
