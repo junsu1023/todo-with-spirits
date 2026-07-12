@@ -58,7 +58,8 @@ fun SpiritsTodoNavigation(
 
             PlanDetailScreen(
                 itemId = itemId,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                navigateToAdd = navigateToAdd
             )
         }
 

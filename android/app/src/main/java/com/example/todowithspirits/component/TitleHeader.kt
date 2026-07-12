@@ -34,13 +34,14 @@ fun TitleHeader(
     @DrawableRes rightIconRes: Int? = null,
     onLeftIconClick: (() -> Unit)? = null,
     onRightIconClick: (() -> Unit)? = null,
-    isAlarm: Boolean = false
+    isAlarm: Boolean = false,
+    rightComposable: (@Composable () -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.transparent)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -77,6 +78,8 @@ fun TitleHeader(
                 onAlarmClick = onRightIconClick!!,
                 msgCnt = 100
             )
+        } else if(rightComposable != null) {
+          rightComposable()
         } else if(rightIconRes != null) {
             Image(
                 painter = painterResource(rightIconRes),

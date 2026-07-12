@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -27,12 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -40,7 +41,8 @@ import java.util.Locale
 @Composable
 fun PlanDetailScreen(
     itemId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigateToAdd: () -> Unit
 ) {
     val item = dummyPlans.find { it.id == itemId } ?: return
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
@@ -58,37 +60,34 @@ fun PlanDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp, end = 16.dp, top = 18.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.fi_rr_back),
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onBack() }
-            )
+        TitleHeader(
+            leftIconRes = R.drawable.todo_back1,
+            onLeftIconClick = onBack,
+            rightComposable =  {
+                Row(horizontalArrangement = Arrangement.spacedBy(26.dp)) {
+                    Image(
+                        painter = painterResource(R.drawable.todo_pencil),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = navigateToAdd
+                            )
+                    )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_pencil),
-                    contentDescription = null
-                )
-
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_trash),
-                    contentDescription = null
-                )
+                    Image(
+                        painter = painterResource(R.drawable.todo_trash),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor1),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
-        }
+        )
 
         Column(
             modifier = Modifier
@@ -99,13 +98,13 @@ fun PlanDetailScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor1, RoundedCornerShape(30.dp))
+                    .border(1.dp, SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(30.dp))
                     .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = if (item.type == PlanType.TODO) stringResource(R.string.todo) else stringResource(R.string.routine),
-                    color = SpiritTodoTheme.colors.onSurfaceColor1,
-                    fontSize = 14.sp
+                    color = SpiritTodoTheme.color.onSurfaceColor4,
+                    fontSize = 16.sp
                 )
             }
 
@@ -116,7 +115,7 @@ fun PlanDetailScreen(
                     text = item.title,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.colors.mainTextColor,
+                    color = SpiritTodoTheme.color.onSurfaceColor1,
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
@@ -124,7 +123,7 @@ fun PlanDetailScreen(
                     Spacer(Modifier.width(4.dp))
 
                     Image(
-                        painter = painterResource(R.drawable.fi_rr_color_star),
+                        painter = painterResource(R.drawable.todo_important),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
@@ -137,35 +136,35 @@ fun PlanDetailScreen(
                 Text(
                     text = dateText,
                     fontSize = 14.sp,
-                    color = SpiritTodoTheme.colors.mainTextColor
+                    color = SpiritTodoTheme.color.onSurfaceColor1
                 )
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(28.dp))
 
             HorizontalDivider(
                 thickness = 1.dp,
-                color = SpiritTodoTheme.colors.onSurfaceColor3
+                color = SpiritTodoTheme.color.onSurfaceColor2
             )
 
             Spacer(Modifier.height(30.dp))
 
             DetailInfoRow(
-                iconRes = R.drawable.alarm_icon,
+                iconRes = R.drawable.todo_alarm,
                 text = "10분 전"
             )
 
             Spacer(Modifier.height(26.dp))
 
             DetailInfoRow(
-                iconRes = R.drawable.category_icon,
+                iconRes = R.drawable.todo_category,
                 text = item.category ?: "-"
             )
 
             Spacer(Modifier.height(26.dp))
 
             DetailInfoRow(
-                iconRes = R.drawable.private_icon,
+                iconRes = R.drawable.todo_private,
                 text = "비공개"
             )
 
@@ -175,13 +174,13 @@ fun PlanDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 120.dp)
-                    .border(1.dp, SpiritTodoTheme.colors.onSurfaceColor3, RoundedCornerShape(6.dp))
+                    .border(1.dp, SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp))
                     .padding(14.dp)
             ) {
                 Text(
                     text = item.memo.ifEmpty { "메모" },
                     fontSize = 15.sp,
-                    color = if (item.memo.isEmpty()) SpiritTodoTheme.colors.onSurfaceColor3 else SpiritTodoTheme.colors.mainTextColor
+                    color = if(item.memo.isEmpty()) SpiritTodoTheme.color.onSurfaceColor2 else SpiritTodoTheme.color.onSurfaceColor1
                 )
             }
 
@@ -192,7 +191,7 @@ fun PlanDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 20.dp)
-                .background(SpiritTodoTheme.colors.surfaceColor3, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(6.dp))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
@@ -202,7 +201,7 @@ fun PlanDetailScreen(
         ) {
             Text(
                 text = stringResource(R.string.check),
-                color = SpiritTodoTheme.colors.white,
+                color = SpiritTodoTheme.color.onSurfaceColor3,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -216,15 +215,15 @@ private fun DetailInfoRow(iconRes: Int, text: String) {
         Image(
             painter = painterResource(iconRes),
             contentDescription = null,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(20.dp)
         )
 
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(12.dp))
 
         Text(
             text = text,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.onSurfaceColor1
         )
     }
 }
