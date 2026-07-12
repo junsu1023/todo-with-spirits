@@ -199,7 +199,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                             },
                                         colorFilter = ColorFilter.tint(
                                             if(isScheduleSectionVisible) SpiritTodoTheme.color.surfaceColor3
-                                            else SpiritTodoTheme.color.onSurfaceColor6
+                                            else SpiritTodoTheme.color.systemGrey
                                         )
                                     )
                                 }
@@ -395,7 +395,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                         Icon(
                             painter = painterResource(R.drawable.fi_rr_plus),
                             contentDescription = null,
-                            tint = SpiritTodoTheme.color.onSurfaceColor6,
+                            tint = SpiritTodoTheme.color.systemGrey,
                             modifier = Modifier
                                 .rotate(45f)
                                 .clickable(

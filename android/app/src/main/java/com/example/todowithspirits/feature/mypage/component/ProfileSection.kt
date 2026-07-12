@@ -47,7 +47,7 @@ fun ProfileSection() {
                 Image(
                     painter = painterResource(R.drawable.todo_bottom_nv),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor6)
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey)
                 )
             }
 
@@ -64,14 +64,14 @@ fun ProfileSection() {
                 Text(
                     text = "wish0221@gmail.com",
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor6
+                    color = SpiritTodoTheme.color.systemGrey
                 )
             }
         }
 
         Box(
             modifier = Modifier
-                .border(1.dp, SpiritTodoTheme.color.onSurfaceColor6, RoundedCornerShape(6.dp))
+                .border(1.dp, SpiritTodoTheme.color.systemGrey, RoundedCornerShape(6.dp))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
@@ -82,7 +82,7 @@ fun ProfileSection() {
             Text(
                 text = stringResource(R.string.account_management),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor6
+                color = SpiritTodoTheme.color.systemGrey
             )
         }
     }

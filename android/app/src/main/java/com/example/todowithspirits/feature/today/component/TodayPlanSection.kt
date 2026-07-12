@@ -100,7 +100,7 @@ fun TodayPlanSection(
             Text(
                 text = stringResource(R.string.see_all_plan),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor6
+                color = SpiritTodoTheme.color.systemGrey
             )
         }
 

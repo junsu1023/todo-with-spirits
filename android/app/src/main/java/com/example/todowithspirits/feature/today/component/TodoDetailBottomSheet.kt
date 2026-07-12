@@ -148,7 +148,7 @@ fun TodoDetailBottomSheet(
                                 Text(
                                     text = dateText,
                                     fontSize = 14.sp,
-                                    color = SpiritTodoTheme.color.onSurfaceColor6,
+                                    color = SpiritTodoTheme.color.systemGrey,
                                     textAlign = TextAlign.Center
                                 )
                             }

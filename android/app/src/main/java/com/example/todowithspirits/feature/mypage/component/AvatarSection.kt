@@ -36,14 +36,22 @@ fun AvatarSection() {
             Box(
                 modifier = Modifier
                     .size(100.dp)
-                    .background(SpiritTodoTheme.colors.onSurfaceColor9, CircleShape)
-            )
+                    .background(SpiritTodoTheme.color.surfaceColor17, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.todo_bottom_nv),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey)
+                )
+            }
 
             Box(
                 modifier = Modifier
                     .offset(x = (-4).dp, y = (-4).dp)
                     .size(30.dp)
-                    .background(SpiritTodoTheme.colors.white, CircleShape)
+                    .background(SpiritTodoTheme.color.surfaceColor1, CircleShape)
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -53,7 +61,7 @@ fun AvatarSection() {
                 Image(
                     painter = painterResource(R.drawable.fi_rr_pencil),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor9),
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor2),
                     modifier = Modifier.size(14.dp)
                 )
             }
@@ -65,7 +73,7 @@ fun AvatarSection() {
             text = "일하기 싫어요",
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            color = SpiritTodoTheme.colors.mainTextColor,
+            color = SpiritTodoTheme.color.onSurfaceColor1,
             textAlign = TextAlign.Center
         )
 
@@ -74,7 +82,7 @@ fun AvatarSection() {
         Text(
             text = "wish0221@gmail.com",
             fontSize = 12.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor2,
+            color = SpiritTodoTheme.color.systemGrey,
             textAlign = TextAlign.Center
         )
     }

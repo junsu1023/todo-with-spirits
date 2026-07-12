@@ -124,14 +124,14 @@ fun SettingRow2(
             text = title,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.color.onSurfaceColor6
+            color = SpiritTodoTheme.color.systemGrey
         )
 
         if(desc != null) {
             Text(
                 text = desc,
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor6
+                color = SpiritTodoTheme.color.systemGrey
             )
         }
     }

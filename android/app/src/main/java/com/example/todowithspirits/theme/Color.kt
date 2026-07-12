@@ -9,7 +9,6 @@ val spiritsTodoColor = SpiritsTodoColor(
     surfaceColor3 = Color(0xFFD7BFFF),
     surfaceColor4 = Color(0xFFFAFAFA),
     onSurfaceColor1 = Color(0xFFB286FD),
-    onSurfaceColor2 = Color(0xFFBCBCBC),
     onSurfaceColor3 = Color(0xFFD1D1D6),
     onSurfaceColor4 = Color(0xFF8DE4FF),
     onSurfaceColor5 = Color(0xFFB2F042),
@@ -45,12 +44,12 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor3 = Color(0xFFFFFFFF),
     onSurfaceColor4 = Color(0xFFB286FD),
     onSurfaceColor5 = Color(0xFF8F8170),
-    onSurfaceColor6 = Color(0xFFBCBCBC),
     onSurfaceColor7 = Color(0xFFF49191),
     onSurfaceColor8 = Color(0xFFC7C7C7),
     onSurfaceColor9 = Color(0xFFC2C2C2),
     dimColor = Color(0x33000000),
-    transparent = Color(0x00000000)
+    transparent = Color(0x00000000),
+    systemGrey = Color(0xFFBCBCBC)
 )
 
 class SpiritColor(
@@ -76,12 +75,12 @@ class SpiritColor(
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
     onSurfaceColor5: Color,
-    onSurfaceColor6: Color,
     onSurfaceColor7: Color,
     onSurfaceColor8: Color,
     onSurfaceColor9: Color,
     dimColor: Color,
-    transparent: Color
+    transparent: Color,
+    systemGrey: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -149,9 +148,6 @@ class SpiritColor(
     var onSurfaceColor5 by mutableStateOf(onSurfaceColor5)
         private set
 
-    var onSurfaceColor6 by mutableStateOf(onSurfaceColor6)
-        private set
-
     var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
         private set
 
@@ -166,13 +162,15 @@ class SpiritColor(
 
     var transparent by mutableStateOf(transparent)
         private set
+
+    var systemGrey by mutableStateOf(systemGrey)
+        private set
 }
 
 class SpiritsTodoColor(
     surfaceColor3: Color,
     surfaceColor4: Color,
     onSurfaceColor1: Color,
-    onSurfaceColor2: Color,
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
     onSurfaceColor5: Color,
@@ -191,9 +189,6 @@ class SpiritsTodoColor(
         private set
 
     var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
-        private set
-
-    var onSurfaceColor2 by mutableStateOf(onSurfaceColor2)
         private set
 
     var onSurfaceColor3 by mutableStateOf(onSurfaceColor3)

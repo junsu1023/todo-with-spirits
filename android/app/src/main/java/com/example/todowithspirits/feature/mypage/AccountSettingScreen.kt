@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -21,14 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.mypage.component.AvatarSection
-import com.example.todowithspirits.feature.mypage.component.MyPageSettingHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -36,34 +38,26 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.colors.white)
+            .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
-        MyPageSettingHeader(onBack = onBack, title = stringResource(R.string.account_setting))
-
-        Spacer(Modifier.height(12.dp))
+        TitleHeader(
+            leftIconRes = R.drawable.todo_back1,
+            onLeftIconClick = onBack,
+            title = stringResource(R.string.account_management)
+        )
 
         AvatarSection()
 
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(24.dp))
 
-        // Profile info section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp)
         ) {
-            Text(
-                text = stringResource(R.string.profile_info),
-                fontSize = 14.sp,
-                color = SpiritTodoTheme.colors.onSurfaceColor2,
-                modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp)
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
             ProfileInfoRow(
-                label = stringResource(R.string.nickname),
+                label = stringResource(R.string.name),
                 value = "일하기 ***"
             )
 
@@ -85,15 +79,38 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(5.dp))
         }
 
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(38.dp)
+                .padding(horizontal = 16.dp)
+                .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(6.dp))
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = { }
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.modify_profile),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.onSurfaceColor1
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         HorizontalDivider(
             thickness = 6.dp,
             color = SpiritTodoTheme.colors.surfaceColor4
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         ActionRow(
-            label = stringResource(R.string.logout),
+            label = stringResource(R.string.modify_password),
             onClick = {}
         )
 
@@ -120,13 +137,13 @@ private fun ProfileInfoRow(label: String, value: String) {
         Text(
             text = label,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.onSurfaceColor1
         )
 
         Text(
             text = value,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.colors.mainTextColor
+            color = SpiritTodoTheme.color.onSurfaceColor1
         )
     }
 }
@@ -147,14 +164,12 @@ private fun ActionRow(label: String, onClick: () -> Unit) {
         Text(
             text = label,
             fontSize = 16.sp,
-            color = SpiritTodoTheme.colors.onSurfaceColor2
+            color = SpiritTodoTheme.color.systemGrey
         )
 
         Image(
-            painter = painterResource(R.drawable.fi_rr_angle_small_right),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.colors.onSurfaceColor2),
-            modifier = Modifier.size(22.dp)
+            painter = painterResource(R.drawable.todo_arrow2_20),
+            contentDescription = null
         )
     }
 }

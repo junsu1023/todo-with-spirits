@@ -20,7 +20,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
-    val labelColor = if(isNew) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor6
+    val labelColor = if(isNew) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.systemGrey
 
     Column(
         modifier = Modifier

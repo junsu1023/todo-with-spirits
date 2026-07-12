@@ -59,14 +59,14 @@ fun SettingRow(item: SettingItem, onClick: () -> Unit = {}) {
             Text(
                 text = stringResource(item.descRes),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor6
+                color = SpiritTodoTheme.color.systemGrey
             )
         }
 
         Image(
             painter = painterResource(R.drawable.fi_rr_angle_small_right),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor6),
+            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey),
             modifier = Modifier.size(22.dp)
         )
     }

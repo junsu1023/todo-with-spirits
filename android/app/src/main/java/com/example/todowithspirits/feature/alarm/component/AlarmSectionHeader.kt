@@ -12,6 +12,6 @@ fun AlarmSectionHeader(title: String) {
         text = title,
         fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
-        color = SpiritTodoTheme.color.onSurfaceColor6
+        color = SpiritTodoTheme.color.systemGrey
     )
 }

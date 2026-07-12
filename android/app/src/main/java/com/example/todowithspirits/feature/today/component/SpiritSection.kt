@@ -105,7 +105,7 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
                 Text(
                     text = "${spiritInfo.curExp} / ${spiritInfo.maxExp}",
                     fontSize = 10.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor6
+                    color = SpiritTodoTheme.color.systemGrey
                 )
             }
 

@@ -69,7 +69,7 @@ private fun BadgeCard(modifier: Modifier = Modifier) {
                 Text(
                     text = stringResource(R.string.growth_badge),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor6
+                    color = SpiritTodoTheme.color.systemGrey
                 )
 
                 Image(
@@ -107,7 +107,7 @@ private fun BadgePlaceholder(label: String) {
         Text(
             text = label,
             fontSize = 10.sp,
-            color = SpiritTodoTheme.color.onSurfaceColor6,
+            color = SpiritTodoTheme.color.systemGrey,
             textAlign = TextAlign.Center
         )
     }
@@ -135,7 +135,7 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
                 Text(
                     text = stringResource(R.string.today_completion_rate),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor6
+                    color = SpiritTodoTheme.color.systemGrey
                 )
             }
 
