@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -37,59 +36,64 @@ fun TitleHeader(
     isAlarm: Boolean = false,
     rightComposable: (@Composable () -> Unit)? = null
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .background(SpiritTodoTheme.color.transparent)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        if(leftIconRes != null) {
+        if (leftIconRes != null) {
             Image(
                 painter = painterResource(leftIconRes),
                 contentDescription = null,
-                modifier = Modifier.clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = { onLeftIconClick?.invoke() }
-                )
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { onLeftIconClick?.invoke() }
+                    )
             )
         }
 
-        if(title != null) {
+        if (title != null) {
             Text(
-                modifier = Modifier.weight(1f),
                 text = title,
                 style = TextStyle(
                     fontSize = 18.sp,
                     color = SpiritTodoTheme.color.onSurfaceColor1,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center
-                )
+                ),
+                modifier = Modifier.align(Alignment.Center)
             )
-        } else {
-            Box(modifier = Modifier.weight(1f))
         }
 
-        if(isAlarm) {
-            AlarmIconSection(
-                alarmIconRes = rightIconRes!!,
-                onAlarmClick = onRightIconClick!!,
-                msgCnt = 100
-            )
-        } else if(rightComposable != null) {
-          rightComposable()
-        } else if(rightIconRes != null) {
-            Image(
-                painter = painterResource(rightIconRes),
-                contentDescription = null,
-                modifier = Modifier.clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = { onRightIconClick?.invoke() }
+        Box(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isAlarm) {
+                AlarmIconSection(
+                    alarmIconRes = rightIconRes!!,
+                    onAlarmClick = onRightIconClick!!,
+                    msgCnt = 100
                 )
-            )
+            } else if (rightComposable != null) {
+                rightComposable()
+            } else if (rightIconRes != null) {
+                Image(
+                    painter = painterResource(rightIconRes),
+                    contentDescription = null,
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { onRightIconClick?.invoke() }
+                    )
+                )
+            }
         }
     }
 }
