@@ -24,7 +24,7 @@ fun AlarmBanner() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.colors.surfaceColor3, RoundedCornerShape(8.dp))
+            .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(8.dp))
             .padding(vertical = 12.dp)
             .padding(start = 14.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -39,7 +39,7 @@ fun AlarmBanner() {
         Text(
             text = stringResource(R.string.alarm_desc),
             fontSize = 14.sp,
-            color = SpiritTodoTheme.colors.white,
+            color = SpiritTodoTheme.color.onSurfaceColor3,
             modifier = Modifier.weight(1f)
         )
 

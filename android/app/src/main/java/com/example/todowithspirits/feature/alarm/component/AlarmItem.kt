@@ -20,13 +20,13 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
-    val labelColor = if(isNew) SpiritTodoTheme.colors.onSurfaceColor1 else SpiritTodoTheme.colors.onSurfaceColor2
+    val labelColor = if(isNew) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor6
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp)
-            .background(SpiritTodoTheme.colors.white, RoundedCornerShape(8.dp))
+            .background(SpiritTodoTheme.color.onSurfaceColor3, RoundedCornerShape(8.dp))
     ) {
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -54,7 +54,7 @@ fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
         Text(
             text = alarm.message,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.colors.mainTextColor,
+            color = SpiritTodoTheme.color.onSurfaceColor1,
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 
