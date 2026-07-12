@@ -30,7 +30,7 @@ fun AddPlanButton(navigateToAdd: () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .height(42.dp)
-            .background(SpiritTodoTheme.colors.surfaceColor3, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(6.dp))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -41,11 +41,11 @@ fun AddPlanButton(navigateToAdd: () -> Unit) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "+", color = SpiritTodoTheme.colors.white, fontSize = 16.sp)
+            Text(text = "+", color = SpiritTodoTheme.color.onSurfaceColor3, fontSize = 16.sp)
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(text = stringResource(R.string.add_plan), color = SpiritTodoTheme.colors.white, fontSize = 16.sp)
+            Text(text = stringResource(R.string.add_plan), color = SpiritTodoTheme.color.onSurfaceColor3, fontSize = 16.sp)
         }
     }
 }

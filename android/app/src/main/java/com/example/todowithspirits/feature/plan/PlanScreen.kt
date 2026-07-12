@@ -141,7 +141,7 @@ fun PlanScreen(
 
         AddPlanButton(navigateToAdd = navigateToAdd)
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(26.dp))
 
         UnderlinePlanTabs(
             selectedTab = uiState.selectedTab,
@@ -180,7 +180,7 @@ fun PlanScreen(
                 Image(
                     painter = painterResource(R.drawable.fi_rr_angle_small_down),
                     contentDescription = null,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
