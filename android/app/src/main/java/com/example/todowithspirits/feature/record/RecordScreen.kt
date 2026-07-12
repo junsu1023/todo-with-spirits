@@ -243,7 +243,7 @@ private fun WeeklyTabContent() {
 @Composable
 private fun MonthlyTabContent() {
     Text(
-        text = stringResource(R.string.monthly_report),
+        text = stringResource(R.string.monthly_report, 7),
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         color = SpiritTodoTheme.color.todoTextMain

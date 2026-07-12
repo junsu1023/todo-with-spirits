@@ -69,7 +69,7 @@ fun MonthlyBarChart() {
                                 text = "${monthBarDummyData[maxIndex].value}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = SpiritTodoTheme.colors.white,
+                                color = SpiritTodoTheme.color.onSurfaceColor3,
                                 modifier = Modifier.offset(y = 2.dp)
                             )
                         }
@@ -78,7 +78,7 @@ fun MonthlyBarChart() {
             }
         }
 
-        Spacer(Modifier.height(3.dp))
+        Spacer(Modifier.height(4.dp))
 
         Row(Modifier.fillMaxWidth()) {
             monthBarDummyData.forEach { month ->
@@ -114,7 +114,7 @@ fun MonthlyBarChart() {
                             .fillMaxWidth(0.5f)
                             .fillMaxHeight(fraction.coerceAtLeast(0.01f))
                             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                            .background(SpiritTodoTheme.colors.onSurfaceColor9)
+                            .background(SpiritTodoTheme.color.surfaceColor17)
                     )
                 }
             }
@@ -124,7 +124,7 @@ fun MonthlyBarChart() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(SpiritTodoTheme.colors.onSurfaceColor7)
+                .background(SpiritTodoTheme.color.onSurfaceColor8)
         )
 
         Spacer(Modifier.height(5.dp))
@@ -136,7 +136,7 @@ fun MonthlyBarChart() {
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor7
+                    color = SpiritTodoTheme.color.onSurfaceColor8
                 )
             }
         }

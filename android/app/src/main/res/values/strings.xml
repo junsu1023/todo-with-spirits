@@ -67,7 +67,7 @@
     <string name="weekly_missed_area">자주 놓친 분야</string>
     <string name="weekly_achieved_plan">이번주 달성 플랜</string>
     <string name="weekly_avg_rate">평균 달성률</string>
-    <string name="monthly_report">월간 리포트</string>
+    <string name="monthly_report">%d월 리포트</string>
     <string name="monthly_calendar_subtitle">정령과 함께한 기록</string>
     <string name="monthly_comparison">월간 비교</string>
     <string name="monthly_analysis">월간 분석</string>

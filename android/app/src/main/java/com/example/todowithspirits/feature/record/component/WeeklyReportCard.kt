@@ -53,6 +53,7 @@ fun WeeklyReportCard() {
                         color = SpiritTodoTheme.color.todoTextMain
                     )
                 }
+
                 Image(
                     painter = painterResource(R.drawable.todo_share),
                     contentDescription = null

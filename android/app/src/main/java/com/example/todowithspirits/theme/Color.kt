@@ -11,10 +11,7 @@ val spiritsTodoColor = SpiritsTodoColor(
     onSurfaceColor1 = Color(0xFFB286FD),
     onSurfaceColor3 = Color(0xFFD1D1D6),
     onSurfaceColor4 = Color(0xFF8DE4FF),
-    onSurfaceColor5 = Color(0xFFB2F042),
-    onSurfaceColor7 = Color(0xFFC7C7C7),
     onSurfaceColor8 = Color(0xFFF7F7F7),
-    onSurfaceColor9 = Color(0xFFECECEC),
     onSurfaceColor12 = Color(0xFF6A66A1),
     white = Color(0xFFFFFFFF)
 )
@@ -44,6 +41,7 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor7 = Color(0xFFF49191),
     onSurfaceColor8 = Color(0xFFC7C7C7),
     onSurfaceColor9 = Color(0xFFC2C2C2),
+    onSurfaceColor10 = Color(0xFF6A66A1),
     dimColor = Color(0x33000000),
     transparent = Color(0x00000000),
     systemGrey = Color(0xFFBCBCBC),
@@ -78,6 +76,7 @@ class SpiritColor(
     onSurfaceColor7: Color,
     onSurfaceColor8: Color,
     onSurfaceColor9: Color,
+    onSurfaceColor10: Color,
     dimColor: Color,
     transparent: Color,
     systemGrey: Color,
@@ -158,6 +157,9 @@ class SpiritColor(
     var onSurfaceColor9 by mutableStateOf(onSurfaceColor9)
         private set
 
+    var onSurfaceColor10 by mutableStateOf(onSurfaceColor10)
+        private set
+
     var dimColor by mutableStateOf(dimColor)
         private set
 
@@ -186,10 +188,7 @@ class SpiritsTodoColor(
     onSurfaceColor1: Color,
     onSurfaceColor3: Color,
     onSurfaceColor4: Color,
-    onSurfaceColor5: Color,
-    onSurfaceColor7: Color,
     onSurfaceColor8: Color,
-    onSurfaceColor9: Color,
     onSurfaceColor12: Color,
     white: Color
 ) {
@@ -208,17 +207,7 @@ class SpiritsTodoColor(
     var onSurfaceColor4 by mutableStateOf(onSurfaceColor4)
         private set
 
-    var onSurfaceColor5 by mutableStateOf(onSurfaceColor5)
-        private set
-
-
-    var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
-        private set
-
     var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
-        private set
-
-    var onSurfaceColor9 by mutableStateOf(onSurfaceColor9)
         private set
 
     var onSurfaceColor12 by mutableStateOf(onSurfaceColor12)

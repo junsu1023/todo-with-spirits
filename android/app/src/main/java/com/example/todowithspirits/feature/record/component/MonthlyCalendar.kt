@@ -55,7 +55,7 @@ fun MonthlyCalendar(yearMonth: YearMonth, today: LocalDate) {
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.colors.onSurfaceColor7
+                    color = SpiritTodoTheme.color.onSurfaceColor8
                 )
             }
         }
@@ -106,9 +106,8 @@ private fun CalendarDayCell(
     ) {
         if (isPast) {
             Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                Box(Modifier.size(5.dp).background(SpiritTodoTheme.colors.onSurfaceColor4, CircleShape))
-                Box(Modifier.size(5.dp).background(SpiritTodoTheme.colors.onSurfaceColor5, CircleShape))
-                Box(Modifier.size(5.dp).background(SpiritTodoTheme.colors.onSurfaceColor1, CircleShape))
+                Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyTodo, CircleShape))
+                Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyRoutine, CircleShape))
             }
         } else {
             Spacer(Modifier.height(5.dp))
@@ -121,12 +120,12 @@ private fun CalendarDayCell(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(SpiritTodoTheme.colors.white, RoundedCornerShape(8.dp))
+                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(8.dp))
             ) {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .background(SpiritTodoTheme.colors.surfaceColor3, CircleShape),
+                        .background(SpiritTodoTheme.color.onSurfaceColor2, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -140,9 +139,9 @@ private fun CalendarDayCell(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(SpiritTodoTheme.colors.white)
+                    .background(SpiritTodoTheme.color.surfaceColor1)
                     .then(
-                        if (isToday) Modifier.border(1.dp, SpiritTodoTheme.colors.onSurfaceColor1, RoundedCornerShape(8.dp))
+                        if (isToday) Modifier.border(1.dp, SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(8.dp))
                         else Modifier
                     ),
                 contentAlignment = Alignment.Center
@@ -151,7 +150,7 @@ private fun CalendarDayCell(
                     text = "$day",
                     fontSize = 12.sp,
                     color = when {
-                        isToday -> SpiritTodoTheme.colors.onSurfaceColor1
+                        isToday -> SpiritTodoTheme.color.onSurfaceColor2
                         else -> SpiritTodoTheme.color.todoTextMain
                     },
                     fontWeight = FontWeight.Medium
