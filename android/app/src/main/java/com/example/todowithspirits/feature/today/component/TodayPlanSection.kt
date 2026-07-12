@@ -124,46 +124,54 @@ fun TodayPlanSection(
         Spacer(Modifier.height(19.dp))
 
         Column(modifier = Modifier.padding(horizontal = 2.dp)) {
-            SectionHeader(title = stringResource(R.string.todo))
+            if (todos.isNotEmpty()) {
+                SectionHeader(title = stringResource(R.string.todo))
 
-            Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(18.dp))
 
-            todos.forEachIndexed { index, item ->
-                TodayListItem(
-                    title = item.title,
-                    isDone = item.isDone,
-                    isImportant = item.isImportant,
-                    onClick = { selectedTodo = item }
-                )
+                todos.forEachIndexed { index, item ->
+                    TodayListItem(
+                        title = item.title,
+                        isDone = item.isDone,
+                        isImportant = item.isImportant,
+                        onClick = { selectedTodo = item }
+                    )
 
-                if (index != todos.lastIndex) Spacer(modifier = Modifier.height(16.dp))
+                    if (index != todos.lastIndex) Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
-            Spacer(Modifier.height(24.dp))
+            if (todos.isNotEmpty() && routines.isNotEmpty()) {
+                Spacer(Modifier.height(24.dp))
 
-            HorizontalDivider(
-                color = SpiritTodoTheme.color.surfaceColor7,
-                thickness = 1.dp
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            SectionHeader(title = stringResource(R.string.routine))
-
-            Spacer(Modifier.height(18.dp))
-
-            routines.forEachIndexed { index, item ->
-                TodayListItem(
-                    title = item.title,
-                    isDone = item.isDone,
-                    isTodo = false,
-                    onClick = { selectedRoutine = item }
+                HorizontalDivider(
+                    color = SpiritTodoTheme.color.surfaceColor7,
+                    thickness = 1.dp
                 )
 
-                if (index != routines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+                Spacer(Modifier.height(24.dp))
             }
 
-            Spacer(Modifier.height(24.dp))
+            if (routines.isNotEmpty()) {
+                SectionHeader(title = stringResource(R.string.routine))
+
+                Spacer(Modifier.height(18.dp))
+
+                routines.forEachIndexed { index, item ->
+                    TodayListItem(
+                        title = item.title,
+                        isDone = item.isDone,
+                        isTodo = false,
+                        onClick = { selectedRoutine = item }
+                    )
+
+                    if (index != routines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            if (todos.isNotEmpty() || routines.isNotEmpty()) {
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 
