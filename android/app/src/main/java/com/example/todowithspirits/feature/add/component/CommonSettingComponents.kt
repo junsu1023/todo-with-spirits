@@ -57,8 +57,8 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.unit.IntRect
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarView
-import com.example.todowithspirits.component.SplitsTodoCheckbox
-import com.example.todowithspirits.component.SplitsTodoSwitch
+import com.example.todowithspirits.component.SpiritsTodoCheckbox
+import com.example.todowithspirits.component.SpiritsTodoSwitch
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -137,9 +137,11 @@ fun SettingSwitchItem(
         label = label,
         subContent = subContent,
         action = {
-            SplitsTodoSwitch(
+            SpiritsTodoSwitch(
                 checked = checked,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.width(52.dp).height(26.dp),
+                thumbSize = 22.dp
             )
         }
     )
@@ -156,7 +158,7 @@ fun SettingCheckboxItem(
         icon = icon,
         label = label,
         action = {
-            SplitsTodoCheckbox(
+            SpiritsTodoCheckbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 checkedIcon = painterResource(R.drawable.checked_checkbox),

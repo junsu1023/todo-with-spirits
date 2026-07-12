@@ -48,7 +48,11 @@ fun TitleHeader(
             Image(
                 painter = painterResource(leftIconRes),
                 contentDescription = null,
-                modifier = Modifier.clickable(onClick = { onLeftIconClick?.invoke() })
+                modifier = Modifier.clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = { onLeftIconClick?.invoke() }
+                )
             )
         }
 
@@ -77,7 +81,11 @@ fun TitleHeader(
             Image(
                 painter = painterResource(rightIconRes),
                 contentDescription = null,
-                modifier = Modifier.clickable(onClick = { onRightIconClick?.invoke() })
+                modifier = Modifier.clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = { onRightIconClick?.invoke() }
+                )
             )
         }
     }

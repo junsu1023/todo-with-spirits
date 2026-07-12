@@ -28,7 +28,7 @@ import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.SplitsTodoPrimaryButton
+import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
 import com.example.todowithspirits.feature.add.component.SettingDateItem
 import com.example.todowithspirits.feature.add.component.SettingDivider
@@ -166,7 +166,7 @@ fun TodoForm() {
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SplitsTodoPrimaryButton(
+        SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
             onClick = { }
         )

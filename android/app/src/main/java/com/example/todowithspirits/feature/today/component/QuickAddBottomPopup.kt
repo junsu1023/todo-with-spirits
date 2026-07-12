@@ -55,7 +55,7 @@ import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
 import com.example.todowithspirits.component.SelectionTabs
-import com.example.todowithspirits.component.SplitsTodoSwitch
+import com.example.todowithspirits.component.SpiritsTodoSwitch
 import com.example.todowithspirits.component.TabItems
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
@@ -295,12 +295,14 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                                 color = SpiritTodoTheme.color.onSurfaceColor1
                                             )
 
-                                            SplitsTodoSwitch(
+                                            SpiritsTodoSwitch(
                                                 checked = isTimeEnabled,
                                                 onCheckedChange = { enabled ->
                                                     isTimeEnabled = enabled
                                                     if (enabled) isDateExpanded = false
-                                                }
+                                                },
+                                                modifier = Modifier.width(48.dp).height(24.dp),
+                                                thumbSize = 20.dp
                                             )
                                         }
 

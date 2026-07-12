@@ -43,7 +43,7 @@ val bottomNavItems = listOf(
 )
 
 @Composable
-fun SplitsTodoBottomBar(
+fun SpiritsTodoBottomBar(
     currentRoute: String?,
     onItemSelected: (String) -> Unit
 ) {

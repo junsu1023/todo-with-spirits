@@ -27,8 +27,8 @@ import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.SplitsTodoCheckbox
-import com.example.todowithspirits.component.SplitsTodoPrimaryButton
+import com.example.todowithspirits.component.SpiritsTodoCheckbox
+import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
 import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.feature.add.component.SettingDivider
@@ -167,7 +167,7 @@ fun RoutineForm() {
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        SplitsTodoPrimaryButton(
+        SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
             onClick = { }
         )
@@ -192,7 +192,7 @@ private fun HolidayExcludeRow(
             )
         )
 
-        SplitsTodoCheckbox(
+        SpiritsTodoCheckbox(
             modifier = Modifier.size(18.dp),
             checked = checked,
             onCheckedChange = onCheckedChange,

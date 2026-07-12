@@ -11,7 +11,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todowithspirits.component.FloatingButton
-import com.example.todowithspirits.component.SplitsTodoBottomBar
+import com.example.todowithspirits.component.SpiritsTodoBottomBar
 import com.example.todowithspirits.component.bottomNavItems
 import com.example.todowithspirits.navigation.Screen
 import com.example.todowithspirits.navigation.SpiritsTodoNavigation
@@ -38,7 +38,7 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
         containerColor = SpiritTodoTheme.color.surfaceColor1,
         bottomBar = {
             if(bottomNavItems.map { it.route }.contains(currentRoute)) {
-                SplitsTodoBottomBar(
+                SpiritsTodoBottomBar(
                     currentRoute = currentRoute,
                     onItemSelected = { route -> navToRoute(route) }
                 )
