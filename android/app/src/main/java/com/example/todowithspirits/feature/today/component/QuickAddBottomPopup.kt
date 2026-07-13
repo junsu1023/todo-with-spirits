@@ -102,8 +102,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
-                .padding(bottom = BottomBarHeight)
-                .imePadding(),
+                .padding(bottom = BottomBarHeight),
             contentAlignment = Alignment.BottomCenter
         ) {
             Surface(
