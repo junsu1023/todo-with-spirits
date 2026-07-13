@@ -265,45 +265,70 @@ fun DayOfWeekSelector(
 
     val currentSelectedDays by rememberUpdatedState(selectedDays)
     val currentOnDayToggled by rememberUpdatedState(onDayToggled)
-    // 각 요일 Box의 부모(Row) 기준 좌표. 드래그 포인터가 어느 요일 위에 있는지 판별하는 데 사용.
     val itemBounds = remember { arrayOfNulls<Rect>(weekDays.size) }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .pointerInput(Unit) {
-                // 드래그 도중 이미 처리한 요일을 다시 토글하지 않도록 방문 기록을 유지하고,
-                // 드래그가 시작된 요일의 반대 상태를 목표값으로 삼아 지나가는 요일들을 같은 방향으로 맞춘다.
-                val visitedIndices = mutableSetOf<Int>()
-                var dragTargetSelected = true
+                val currentSelected = BooleanArray(weekDays.size)
+                var lastIndex = -1
+                var lastDirection = 0
+                var targetSelected = true
 
                 fun indexAt(position: Offset): Int =
                     itemBounds.indexOfFirst { it?.contains(position) == true }
 
-                fun applyDrag(index: Int) {
-                    if (index == -1 || !visitedIndices.add(index)) return
-                    val day = weekDays[index].second
-                    val isSelected = day in currentSelectedDays
-                    if (isSelected != dragTargetSelected) {
-                        currentOnDayToggled(day)
+                fun applyTo(index: Int) {
+                    if (currentSelected[index] != targetSelected) {
+                        currentSelected[index] = targetSelected
+                        currentOnDayToggled(weekDays[index].second)
                     }
+                }
+
+                fun beginDrag(index: Int) {
+                    weekDays.forEachIndexed { i, (_, day) ->
+                        currentSelected[i] = day in currentSelectedDays
+                    }
+                    targetSelected = !currentSelected[index]
+                    lastIndex = index
+                    lastDirection = 0
+                    applyTo(index)
+                }
+
+                fun dragTo(index: Int) {
+                    if (index == -1 || index == lastIndex) return
+                    val direction = if (index > lastIndex) 1 else -1
+
+                    if (lastDirection != 0 && direction != lastDirection) {
+                        targetSelected = !targetSelected
+                        applyTo(lastIndex)
+                    }
+
+                    val path = if (direction > 0) lastIndex + 1..index else lastIndex - 1 downTo index
+                    for (i in path) applyTo(i)
+
+                    lastIndex = index
+                    lastDirection = direction
                 }
 
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
-                    visitedIndices.clear()
+                    lastIndex = -1
 
-                    val startIndex = indexAt(down.position)
-                    if (startIndex != -1) {
-                        dragTargetSelected = weekDays[startIndex].second !in currentSelectedDays
-                        applyDrag(startIndex)
-                    }
+                    val downIndex = indexAt(down.position)
+                    if (downIndex != -1) beginDrag(downIndex)
 
                     do {
                         val event = awaitPointerEvent()
                         val change = event.changes.firstOrNull { it.id == down.id } ?: break
                         if (change.pressed) {
-                            applyDrag(indexAt(change.position))
+                            val index = indexAt(change.position)
+                            if (lastIndex == -1) {
+                                if (index != -1) beginDrag(index)
+                            } else {
+                                dragTo(index)
+                            }
                             change.consume()
                         }
                     } while (event.changes.any { it.pressed })
