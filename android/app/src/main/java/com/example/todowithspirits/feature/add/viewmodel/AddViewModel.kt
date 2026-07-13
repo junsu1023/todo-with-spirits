@@ -11,6 +11,7 @@ import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.domain.usecase.CreateRoutineUseCase
 import com.example.todowithspirits.feature.add.state.AddUiState
+import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
-    private val createRoutineUseCase: CreateRoutineUseCase
+    private val createRoutineUseCase: CreateRoutineUseCase,
+    private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(AddUiState())
     val uiState: StateFlow<AddUiState> get() = _uiState.asStateFlow()
@@ -136,6 +138,7 @@ class AddViewModel @Inject constructor(
                 .onSuccess {
                     Log.d(TAG, "registerRoutine success = $it")
                     _uiState.update { AddUiState() }
+                    taskRefreshBus.notifyTaskChanged()
                 }
                 .onFailure {
                     Log.e(TAG, "registerRoutine failed!", it)

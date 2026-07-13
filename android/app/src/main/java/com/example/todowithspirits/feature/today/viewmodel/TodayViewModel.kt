@@ -11,24 +11,31 @@ import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.feature.today.state.TodayUiState
 import com.example.todowithspirits.feature.today.state.TodoItem
+import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class TodayViewModel @Inject constructor(
-    private val getTaskCalendarUseCase: GetTaskCalendarUseCase
+    private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
+    private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
-    private val _uiState =
-        MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
+    private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
     val uiState: StateFlow<TodayUiState> get() = _uiState.asStateFlow()
 
     init {
         loadToday()
+
+        taskRefreshBus.events
+            .onEach { loadToday() }
+            .launchIn(viewModelScope)
     }
 
     fun loadToday() {
