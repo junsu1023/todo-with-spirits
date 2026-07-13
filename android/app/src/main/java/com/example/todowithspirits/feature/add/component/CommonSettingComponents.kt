@@ -240,7 +240,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(dateFormatter),
                 fontSize = 16.sp,
-                color = if(expanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain,
+                color = if(expanded) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.todoTextMain,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
@@ -348,7 +348,7 @@ fun DayOfWeekSelector(
                     }
                     .border(
                         width = if(isSelected) 1.dp else 0.dp,
-                        color = if(isSelected) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.transparent,
+                        color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.transparent,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
@@ -359,7 +359,7 @@ fun DayOfWeekSelector(
             ) {
                 Text(
                     text = label,
-                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8,
+                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
                     fontSize = 16.sp
                 )
             }

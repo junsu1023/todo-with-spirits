@@ -141,7 +141,7 @@ private fun CalendarDayCell(
                     .size(40.dp)
                     .background(SpiritTodoTheme.color.surfaceColor1)
                     .then(
-                        if (isToday) Modifier.border(1.dp, SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(8.dp))
+                        if (isToday) Modifier.border(1.dp, SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(8.dp))
                         else Modifier
                     ),
                 contentAlignment = Alignment.Center

@@ -81,7 +81,7 @@ fun SpiritsTodoDropdown(
                             ) {
                                 Text(
                                     text = option,
-                                    color = if (option == value) SpiritTodoTheme.color.onSurfaceColor4 else unselectedOptionColor,
+                                    color = if (option == value) SpiritTodoTheme.color.mainTextAndStroke else unselectedOptionColor,
                                     fontSize = 14.sp,
                                     textAlign = TextAlign.Center
                                 )

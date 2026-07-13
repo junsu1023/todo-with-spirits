@@ -150,7 +150,7 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CircularProgressIndicator(progress: Float) {
-    val todoTextMain = SpiritTodoTheme.color.surfaceColor2
+    val todoTextMain = SpiritTodoTheme.color.mainTextAndStroke
     val trackColor = SpiritTodoTheme.color.surfaceColor7
     val percentage = (progress * 100).toInt()
 

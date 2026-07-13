@@ -42,7 +42,7 @@ fun SpiritsTodoSwitch(
         modifier = modifier
             .clip(CircleShape)
             .background(
-                if (checked) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.surfaceColor15
+                if (checked) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.surfaceColor15
             )
             .toggleable(
                 value = checked,

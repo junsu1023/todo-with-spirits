@@ -70,7 +70,7 @@ fun MySpiritCard() {
                     Text(
                         text = stringResource(R.string.representative_spirit),
                         fontSize = 10.sp,
-                        color = SpiritTodoTheme.color.onSurfaceColor4,
+                        color = SpiritTodoTheme.color.mainTextAndStroke,
                         fontWeight = FontWeight.Medium
                     )
                 }

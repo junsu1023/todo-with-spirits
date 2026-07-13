@@ -8,17 +8,13 @@ import androidx.compose.ui.graphics.Color
 val spiritsTodoColor = SpiritsTodoColor(
     surfaceColor3 = Color(0xFFD7BFFF),
     surfaceColor4 = Color(0xFFFAFAFA),
-    onSurfaceColor1 = Color(0xFFB286FD),
     onSurfaceColor3 = Color(0xFFD1D1D6),
-    onSurfaceColor4 = Color(0xFF8DE4FF),
     onSurfaceColor8 = Color(0xFFF7F7F7),
-    onSurfaceColor12 = Color(0xFF6A66A1),
     white = Color(0xFFFFFFFF)
 )
 
 val spiritsLightColor = SpiritColor(
     surfaceColor1 = Color(0xFFFFFFFF),
-    surfaceColor2 = Color(0xFFB286FD),
     surfaceColor3 = Color(0xFFD7BFFF),
     surfaceColor4 = Color(0xFFF6F6F6),
     surfaceColor5 = Color(0xFF353534),
@@ -36,7 +32,6 @@ val spiritsLightColor = SpiritColor(
     surfaceColor17 = Color(0xFFECECEC),
     onSurfaceColor2 = Color(0xFFD1D1D6),
     onSurfaceColor3 = Color(0xFFFFFFFF),
-    onSurfaceColor4 = Color(0xFFB286FD),
     onSurfaceColor5 = Color(0xFF8F8170),
     onSurfaceColor7 = Color(0xFFF49191),
     onSurfaceColor8 = Color(0xFFC7C7C7),
@@ -48,12 +43,12 @@ val spiritsLightColor = SpiritColor(
     todoTextMain = Color(0xFF857563),
     keyTodo = Color(0xFF8DE4FF),
     keyRoutine = Color(0xFFB2F042),
-    systemBackground = Color(0xFFFAFAFA)
+    systemBackground = Color(0xFFFAFAFA),
+    mainTextAndStroke = Color(0xFFB286FD)
 )
 
 class SpiritColor(
     surfaceColor1: Color,
-    surfaceColor2: Color,
     surfaceColor3: Color,
     surfaceColor4: Color,
     surfaceColor5: Color,
@@ -71,7 +66,6 @@ class SpiritColor(
     surfaceColor17: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
-    onSurfaceColor4: Color,
     onSurfaceColor5: Color,
     onSurfaceColor7: Color,
     onSurfaceColor8: Color,
@@ -83,12 +77,10 @@ class SpiritColor(
     todoTextMain: Color,
     keyTodo: Color,
     keyRoutine: Color,
-    systemBackground: Color
+    systemBackground: Color,
+    mainTextAndStroke: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
-        private set
-
-    var surfaceColor2 by mutableStateOf(surfaceColor2)
         private set
 
     var surfaceColor3 by mutableStateOf(surfaceColor3)
@@ -141,10 +133,6 @@ class SpiritColor(
 
     var onSurfaceColor3 by mutableStateOf(onSurfaceColor3)
         private set
-
-    var onSurfaceColor4 by mutableStateOf(onSurfaceColor4)
-        private set
-
     var onSurfaceColor5 by mutableStateOf(onSurfaceColor5)
         private set
 
@@ -180,16 +168,16 @@ class SpiritColor(
 
     var systemBackground by mutableStateOf(systemBackground)
         private set
+
+    var mainTextAndStroke by mutableStateOf(mainTextAndStroke)
+        private set
 }
 
 class SpiritsTodoColor(
     surfaceColor3: Color,
     surfaceColor4: Color,
-    onSurfaceColor1: Color,
     onSurfaceColor3: Color,
-    onSurfaceColor4: Color,
     onSurfaceColor8: Color,
-    onSurfaceColor12: Color,
     white: Color
 ) {
     var surfaceColor3 by mutableStateOf(surfaceColor3)
@@ -198,19 +186,10 @@ class SpiritsTodoColor(
     var surfaceColor4 by mutableStateOf(surfaceColor4)
         private set
 
-    var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
-        private set
-
     var onSurfaceColor3 by mutableStateOf(onSurfaceColor3)
         private set
 
-    var onSurfaceColor4 by mutableStateOf(onSurfaceColor4)
-        private set
-
     var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
-        private set
-
-    var onSurfaceColor12 by mutableStateOf(onSurfaceColor12)
         private set
 
     var white by mutableStateOf(white)

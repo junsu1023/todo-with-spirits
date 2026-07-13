@@ -51,7 +51,7 @@ private fun SelectionTabItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val selectedMainColor = SpiritTodoTheme.color.surfaceColor2
+    val selectedMainColor = SpiritTodoTheme.color.mainTextAndStroke
     val selectedBgColor = SpiritTodoTheme.color.surfaceColor1
     val unselectedTextColor = SpiritTodoTheme.color.todoTextMain
     val unselectedBgColor = SpiritTodoTheme.color.surfaceColor4

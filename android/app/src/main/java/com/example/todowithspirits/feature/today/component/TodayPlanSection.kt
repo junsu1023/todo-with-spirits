@@ -228,7 +228,7 @@ private fun WeeklyCalendarStrip(
                     .weight(1f)
                     .border(
                         width = 1.dp,
-                        color = if(isSelected) SpiritTodoTheme.color.surfaceColor2 else SpiritTodoTheme.color.surfaceColor4,
+                        color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.surfaceColor4,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable(
@@ -242,7 +242,7 @@ private fun WeeklyCalendarStrip(
                     text = date.dayOfMonth.toString(),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor5
+                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor5
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -250,7 +250,7 @@ private fun WeeklyCalendarStrip(
                 Text(
                     text = dayLabels[offset],
                     fontSize = 10.sp,
-                    color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor5
+                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor5
                 )
 
                 Spacer(Modifier.height(6.dp))

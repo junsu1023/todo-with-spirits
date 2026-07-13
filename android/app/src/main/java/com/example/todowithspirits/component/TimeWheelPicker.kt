@@ -70,7 +70,7 @@ fun TimeWheelPicker(
                 text = ":",
                 fontSize = textSize.sp,
                 modifier = Modifier.padding(horizontal = 12.dp),
-                color = SpiritTodoTheme.color.onSurfaceColor4
+                color = SpiritTodoTheme.color.mainTextAndStroke
             )
 
             WheelColumn(
@@ -165,7 +165,7 @@ private fun WheelColumn(
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
                         fontSize = textSize.sp,
-                        color = if(selectedIndex == index) SpiritTodoTheme.color.onSurfaceColor4
+                        color = if(selectedIndex == index) SpiritTodoTheme.color.mainTextAndStroke
                                 else SpiritTodoTheme.color.onSurfaceColor8
                     )
                 }

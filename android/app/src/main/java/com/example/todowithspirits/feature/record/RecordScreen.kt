@@ -96,7 +96,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                     .height(2.dp)
                     .offset(x = indicatorOffset)
                     .background(
-                        SpiritTodoTheme.color.surfaceColor2,
+                        SpiritTodoTheme.color.mainTextAndStroke,
                         RoundedCornerShape(1.dp)
                     )
                     .align(Alignment.BottomStart)
@@ -106,7 +106,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                 tabs.forEachIndexed { index, tab ->
                     val isSelected = index == selectedIndex
                     val textColor by animateColorAsState(
-                        targetValue = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4
+                        targetValue = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke
                         else SpiritTodoTheme.color.onSurfaceColor8,
                         label = "TabTextColor$index"
                     )

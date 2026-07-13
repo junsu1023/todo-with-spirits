@@ -51,7 +51,7 @@ fun DailyReportCard() {
                     text = "다 잘해 진짜!",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.onSurfaceColor4
+                    color = SpiritTodoTheme.color.mainTextAndStroke
                 )
 
                 Spacer(Modifier.height(2.dp))
@@ -79,8 +79,8 @@ fun DailyReportCard() {
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(211.dp))
-                            .border(1.dp, SpiritTodoTheme.color.onSurfaceColor4, RoundedCornerShape(211.dp))
+                            .background(SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(211.dp))
+                            .border(1.dp, SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(211.dp))
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
@@ -125,7 +125,7 @@ fun DailyReportCard() {
             Text(
                 text = stringResource(R.string.today_progressing, 6, 10),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.onSurfaceColor4
+                color = SpiritTodoTheme.color.mainTextAndStroke
             )
         }
 
@@ -156,7 +156,7 @@ fun DailyReportCard() {
 
         Box(
             modifier = Modifier
-                .background(SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(50.dp))
+                .background(SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(50.dp))
                 .padding(horizontal = 14.dp, vertical = 6.dp)
         ) {
             Text(

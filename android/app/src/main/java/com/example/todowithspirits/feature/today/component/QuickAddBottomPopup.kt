@@ -111,7 +111,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, SpiritTodoTheme.color.surfaceColor2),
+                border = BorderStroke(1.dp, SpiritTodoTheme.color.mainTextAndStroke),
                 color = SpiritTodoTheme.color.surfaceColor1
             ) {
                 Column(
@@ -249,7 +249,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                                 Text(
                                                     text = date.format(dateFormatter),
                                                     fontSize = 14.sp,
-                                                    color = if(isDateExpanded) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain
+                                                    color = if(isDateExpanded) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.todoTextMain
                                                 )
                                             }
                                         }

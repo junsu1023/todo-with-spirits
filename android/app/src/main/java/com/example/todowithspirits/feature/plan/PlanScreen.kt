@@ -160,7 +160,7 @@ fun PlanScreen(
         ) {
             Text(
                 text = stringResource(R.string.hide_completion),
-                color = if(uiState.isHidden) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8,
+                color = if(uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
                 fontSize = 14.sp,
                 modifier = Modifier.clickable(
                     indication = null,

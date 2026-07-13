@@ -42,7 +42,7 @@ fun WeeklyReportCard() {
                         text = stringResource(R.string.weekly_report_title),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SpiritTodoTheme.color.onSurfaceColor4
+                        color = SpiritTodoTheme.color.mainTextAndStroke
                     )
 
                     Spacer(Modifier.height(2.dp))

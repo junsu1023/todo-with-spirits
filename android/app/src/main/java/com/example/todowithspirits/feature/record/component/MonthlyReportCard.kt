@@ -77,7 +77,7 @@ fun MonthlyReportCard() {
                     text = "${yearShort}년 $season ${currentYearMonth.monthValue}월",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.color.onSurfaceColor4
+                    color = SpiritTodoTheme.color.mainTextAndStroke
                 )
 
                 Row {
@@ -227,14 +227,14 @@ fun MonthlyReportCard() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
-                    .border(1.dp, SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(6.dp))
+                    .border(1.dp, SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(6.dp))
                     .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(
                     text = stringResource(R.string.monthly_comparison_desc, 99),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = SpiritTodoTheme.color.onSurfaceColor4
+                    color = SpiritTodoTheme.color.mainTextAndStroke
                 )
             }
         }
@@ -305,7 +305,7 @@ fun MonthlyReportCard() {
                             text = stringResource(R.string.monthly_achievement_rate, 99),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
-                            color = SpiritTodoTheme.color.onSurfaceColor4
+                            color = SpiritTodoTheme.color.mainTextAndStroke
                         )
                     }
 
@@ -319,7 +319,7 @@ fun MonthlyReportCard() {
                             text = stringResource(R.string.monthly_peer_top, 4),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
-                            color = SpiritTodoTheme.color.onSurfaceColor4
+                            color = SpiritTodoTheme.color.mainTextAndStroke
                         )
                     }
                 }

@@ -65,7 +65,7 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "벌써 절반 왔어요!\n루미랑 조금 더 힘내봐요 :)",
-                color = SpiritTodoTheme.color.onSurfaceColor4,
+                color = SpiritTodoTheme.color.mainTextAndStroke,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp
             )
@@ -149,7 +149,7 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
                     text = "오늘의 성장 포인트 +${spiritInfo.todayPoints}",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.onSurfaceColor4
+                    color = SpiritTodoTheme.color.mainTextAndStroke
                 )
             }
         }

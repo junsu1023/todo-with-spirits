@@ -98,12 +98,12 @@ fun PlanDetailScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .border(1.dp, SpiritTodoTheme.color.surfaceColor2, RoundedCornerShape(30.dp))
+                    .border(1.dp, SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(30.dp))
                     .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = if (item.type == PlanType.TODO) stringResource(R.string.todo) else stringResource(R.string.routine),
-                    color = SpiritTodoTheme.color.onSurfaceColor4,
+                    color = SpiritTodoTheme.color.mainTextAndStroke,
                     fontSize = 16.sp
                 )
             }

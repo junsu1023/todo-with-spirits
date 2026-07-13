@@ -25,7 +25,7 @@ fun FloatingButton(
             .size(50.dp)
             .border(
                 width = 1.dp,
-                color = SpiritTodoTheme.color.surfaceColor2,
+                color = SpiritTodoTheme.color.mainTextAndStroke,
                 shape = CircleShape
             ),
         shape = CircleShape,
@@ -33,7 +33,7 @@ fun FloatingButton(
     ) {
         Image(
             painter = painterResource(R.drawable.todo_plus),
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.surfaceColor2),
+            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
             contentDescription = null
         )
     }

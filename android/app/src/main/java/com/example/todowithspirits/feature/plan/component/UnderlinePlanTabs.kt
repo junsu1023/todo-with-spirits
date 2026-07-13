@@ -49,7 +49,7 @@ fun UnderlinePlanTabs(
                 .width(tabWidth)
                 .height(2.dp)
                 .offset(x = indicatorOffset)
-                .background(SpiritTodoTheme.color.surfaceColor2)
+                .background(SpiritTodoTheme.color.mainTextAndStroke)
                 .align(Alignment.BottomStart)
         )
 
@@ -69,7 +69,7 @@ fun UnderlinePlanTabs(
                 ) {
                     Text(
                         text = tab,
-                        color = if(isSelected) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8,
+                        color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
                         fontSize = 16.sp
                     )
                 }

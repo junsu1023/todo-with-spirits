@@ -90,7 +90,7 @@ fun TodayRewardCard() {
 
 @Composable
 private fun RewardRow(reward: RewardItem) {
-    val accentColor = if(reward.isHidden) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.onSurfaceColor8
+    val accentColor = if(reward.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8
 
     Row(
         modifier = Modifier
