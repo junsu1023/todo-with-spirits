@@ -45,19 +45,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
-import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.unit.IntRect
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.SpiritsTodoCheckbox
+import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
@@ -178,19 +171,21 @@ fun SettingSelectorItem(
     onOptionSelected: (String) -> Unit,
     subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     BaseSettingRow(
         icon = icon,
         label = label,
         subContent = subContent,
         action = {
-            Box {
+            SpiritsTodoDropdown(
+                value = value,
+                options = options,
+                onOptionSelected = onOptionSelected
+            ) { expand ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .padding(top = 2.dp)
-                        .clickable { expanded = true }
+                        .clickable { expand() }
                 ) {
                     Text(
                         text = value,
@@ -205,65 +200,6 @@ fun SettingSelectorItem(
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
-                }
-
-                if (expanded) {
-                    Popup(
-                        popupPositionProvider = object : PopupPositionProvider {
-                            override fun calculatePosition(
-                                anchorBounds: IntRect,
-                                windowSize: IntSize,
-                                layoutDirection: LayoutDirection,
-                                popupContentSize: IntSize
-                            ): IntOffset {
-                                val x = (anchorBounds.right - popupContentSize.width).coerceAtLeast(0)
-                                val y = if (windowSize.height - anchorBounds.bottom >= popupContentSize.height) {
-                                    anchorBounds.bottom
-                                } else {
-                                    (anchorBounds.top - popupContentSize.height).coerceAtLeast(0)
-                                }
-                                return IntOffset(x, y)
-                            }
-                        },
-                        onDismissRequest = { expanded = false },
-                        properties = PopupProperties(focusable = true)
-                    ) {
-                        Surface(
-                            modifier = Modifier.width(96.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            shadowElevation = 4.dp,
-                            color = SpiritTodoTheme.color.surfaceColor1
-                        ) {
-                            Column {
-                                options.forEachIndexed { index, option ->
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                onOptionSelected(option)
-                                                expanded = false
-                                            }
-                                            .padding(vertical = 12.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = option,
-                                            color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4 else SpiritTodoTheme.color.todoTextMain,
-                                            fontSize = 14.sp,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                    
-                                    if (index < options.size - 1) {
-                                        HorizontalDivider(
-                                            thickness = 1.dp,
-                                            color = SpiritTodoTheme.color.surfaceColor4
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

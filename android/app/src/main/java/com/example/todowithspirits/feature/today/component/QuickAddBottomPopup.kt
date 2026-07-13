@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -55,6 +53,7 @@ import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
 import com.example.todowithspirits.component.SelectionTabs
+import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
 import com.example.todowithspirits.component.TabItems
 import com.example.todowithspirits.component.CalendarView
@@ -420,8 +419,6 @@ private fun QuickRepeatRow(
     value: String,
     onOptionSelected: (String) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -435,9 +432,13 @@ private fun QuickRepeatRow(
             color = SpiritTodoTheme.color.todoTextMain
         )
 
-        Box {
+        SpiritsTodoDropdown(
+            value = value,
+            options = routineRepeatOptions,
+            onOptionSelected = onOptionSelected
+        ) { expand ->
             Row(
-                modifier = Modifier.clickable { expanded = true },
+                modifier = Modifier.clickable { expand() },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -453,41 +454,6 @@ private fun QuickRepeatRow(
                     contentDescription = null,
                     modifier = Modifier.width(8.dp).height(11.dp)
                 )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(96.dp)
-                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(8.dp))
-            ) {
-                routineRepeatOptions.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-                        text = {
-                            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = option,
-                                    color = if(option == value) SpiritTodoTheme.color.onSurfaceColor4
-                                            else SpiritTodoTheme.color.todoTextMain,
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        },
-                        onClick = {
-                            onOptionSelected(option)
-                            expanded = false
-                        }
-                    )
-
-                    if (index < routineRepeatOptions.size - 1) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = SpiritTodoTheme.color.surfaceColor4
-                        )
-                    }
-                }
             }
         }
     }
