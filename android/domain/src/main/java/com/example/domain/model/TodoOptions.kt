@@ -55,3 +55,16 @@ enum class PublicStateOption(val displayName: String) {
         fun getAllDisplayNames() = entries.map { it.displayName }
     }
 }
+
+enum class PlanSortOption(val displayName: String) {
+    DEADLINE("마감 임박 순"),
+    IMPORTANT("중요 일정 순"),
+    COMPLETE("완료 순");
+
+    companion object {
+        fun fromDisplayName(name: String): PlanSortOption {
+            return entries.find { it.displayName == name } ?: DEADLINE
+        }
+        fun getAllDisplayNames() = entries.map { it.displayName }
+    }
+}

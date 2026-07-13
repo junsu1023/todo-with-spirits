@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.plan.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.feature.plan.state.PlanUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,14 @@ class PlanViewModel @Inject constructor(): BaseViewModel() {
         viewModelScope.launchWithLoading {
             _uiState.update {
                 it.copy(isHidden = hidden)
+            }
+        }
+    }
+
+    fun setSortOption(option: PlanSortOption) {
+        viewModelScope.launchWithLoading {
+            _uiState.update {
+                it.copy(sortOption = option)
             }
         }
     }

@@ -28,9 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
+import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanListItem
@@ -168,20 +170,36 @@ fun PlanScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "마감 임박 순",
-                    color = SpiritTodoTheme.color.todoTextMain,
-                    fontSize = 14.sp
-                )
+            SpiritsTodoDropdown(
+                value = uiState.sortOption.displayName,
+                options = PlanSortOption.getAllDisplayNames(),
+                onOptionSelected = { planViewModel.setSortOption(PlanSortOption.fromDisplayName(it)) },
+                dropdownWidth = 96.dp,
+                dropdownGap = 3.dp,
+                itemVerticalPadding = 14.dp
+            ) { expand ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { expand() }
+                    )
+                ) {
+                    Text(
+                        text = uiState.sortOption.displayName,
+                        color = SpiritTodoTheme.color.todoTextMain,
+                        fontSize = 14.sp
+                    )
 
-                Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
 
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
+                    Image(
+                        painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
 
