@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,12 +37,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -76,6 +77,7 @@ private val routineRepeatOptions = listOf(
 @Composable
 fun QuickAddBottomPopup(onDismiss: () -> Unit) {
     val context = LocalContext.current
+    var isTitleFocused by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(getString(context, R.string.todo)) }
     var title by remember { mutableStateOf("") }
     var isImportant by remember { mutableStateOf(false) }
@@ -98,17 +100,40 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
             usePlatformDefaultWidth = false
         )
     ) {
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .navigationBarsPadding()
-                .padding(bottom = BottomBarHeight),
+                .padding(bottom = BottomBarHeight)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    if (isTitleFocused) {
+                        keyboardController?.hide()
+                        focusManager.clearFocus(force = true)
+                    } else {
+                        onDismiss()
+                    }
+                },
             contentAlignment = Alignment.BottomCenter
         ) {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp),
+                    .padding(horizontal = 14.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        if (isTitleFocused) {
+                            keyboardController?.hide()
+                            focusManager.clearFocus(force = true)
+                        }
+                    },
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, SpiritTodoTheme.color.mainTextAndStroke),
                 color = SpiritTodoTheme.color.surfaceColor1
@@ -155,7 +180,9 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                     BasicTextField(
                         value = title,
                         onValueChange = { title = it },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { isTitleFocused = it.isFocused },
                         textStyle = TextStyle(
                             fontSize = 18.sp,
                             color = SpiritTodoTheme.color.todoTextMain
