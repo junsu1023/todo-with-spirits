@@ -2,6 +2,8 @@ package com.example.data.repository
 
 import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
+import com.example.data.mapper.toRequest
+import com.example.domain.model.NewRoutine
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.repository.TaskRepository
@@ -17,5 +19,9 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> {
         return taskRemoteDataSource.getTaskCalendar(from?.toString(), to?.toString()).map { it.toDomain() }
+    }
+
+    override suspend fun createRoutine(routine: NewRoutine): Result<Task> {
+        return taskRemoteDataSource.createRoutine(routine.toRequest()).map { it.toDomain() }
     }
 }

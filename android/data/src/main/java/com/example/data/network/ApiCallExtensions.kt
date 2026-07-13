@@ -14,7 +14,9 @@ suspend fun <T> apiCall(request: suspend () -> Response<ApiResponse<T>>): Result
         val response = request()
 
         if (response.isSuccessful) {
-            response.body()?.detail?.let { Result.success(it) }
+            response.body()?.detail?.let {
+                Result.success(it)
+            }
                 ?: Result.failure(IllegalStateException("Response body is empty"))
         } else {
             Result.failure(response.toApiException())
