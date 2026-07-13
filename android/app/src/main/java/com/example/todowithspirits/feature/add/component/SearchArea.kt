@@ -9,10 +9,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -23,17 +19,18 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun SearchArea() {
-    var searchText by remember { mutableStateOf("") }
-
+fun SearchArea(
+    title: String,
+    onTitleChange: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
         BasicTextField(
-            value = searchText,
-            onValueChange = { searchText = it },
+            value = title,
+            onValueChange = onTitleChange,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(30.dp)
@@ -45,7 +42,7 @@ fun SearchArea() {
             ),
             singleLine = true,
             decorationBox = { innerTextField ->
-                if (searchText.isEmpty()) {
+                if (title.isEmpty()) {
                     Text(
                         text = stringResource(R.string.title),
                         style = TextStyle(

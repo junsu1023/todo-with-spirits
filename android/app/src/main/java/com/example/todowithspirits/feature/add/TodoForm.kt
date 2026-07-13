@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,36 +27,37 @@ import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
+import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
 import com.example.todowithspirits.feature.add.component.SettingDateItem
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
 import com.example.todowithspirits.feature.add.component.SettingSwitchItem
-import com.example.todowithspirits.component.TimeWheelPicker
+import com.example.todowithspirits.feature.add.state.AddUiState
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
-fun TodoForm() {
-    val isImportant = remember { mutableStateOf(false) }
-    val date = remember { mutableStateOf(LocalDate.now()) }
-    val isTimeEnabled = remember { mutableStateOf(false) }
-    val dueTime = remember { mutableStateOf(LocalTime.of(0, 0)) }
-    val alarmOption = remember { mutableStateOf(AlarmOption.NONE) }
-    val categoryOption = remember { mutableStateOf(CategoryOption.NONE) }
-    val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
-    
-    val memoValue = remember { mutableStateOf("") }
-
+fun TodoForm(
+    uiState: AddUiState,
+    onImportantChange: (Boolean) -> Unit,
+    onDateChange: (LocalDate) -> Unit,
+    onTimeEnabledChange: (Boolean) -> Unit,
+    onDueTimeChange: (LocalTime) -> Unit,
+    onAlarmOptionChange: (AlarmOption) -> Unit,
+    onCategoryOptionChange: (CategoryOption) -> Unit,
+    onPublicOptionChange: (PublicStateOption) -> Unit,
+    onMemoChange: (String) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingCheckboxItem(
                 icon = painterResource(R.drawable.todo_important2),
                 label = stringResource(R.string.important),
-                checked = isImportant.value,
-                onCheckedChange = { isImportant.value = it }
+                checked = uiState.isImportant,
+                onCheckedChange = onImportantChange
             )
         }
 
@@ -68,8 +67,8 @@ fun TodoForm() {
             SettingDateItem(
                 icon = painterResource(R.drawable.todo_calendar),
                 label = stringResource(R.string.date),
-                date = date.value,
-                onDateSelected = { date.value = it }
+                date = uiState.date,
+                onDateSelected = onDateChange
             )
 
             SettingDivider()
@@ -77,11 +76,11 @@ fun TodoForm() {
             SettingSwitchItem(
                 icon = painterResource(R.drawable.todo_clock2),
                 label = stringResource(R.string.time),
-                checked = isTimeEnabled.value,
-                onCheckedChange = { isTimeEnabled.value = it },
+                checked = uiState.isTimeEnabled,
+                onCheckedChange = onTimeEnabledChange,
                 subContent = {
                     AnimatedVisibility(
-                        visible = isTimeEnabled.value,
+                        visible = uiState.isTimeEnabled,
                         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
                         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
                     ) {
@@ -92,11 +91,11 @@ fun TodoForm() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             TimeWheelPicker(
-                                initialHour = dueTime.value.hour,
-                                initialMinute = dueTime.value.minute,
+                                initialHour = uiState.dueTime.hour,
+                                initialMinute = uiState.dueTime.minute,
                                 textSize = 28,
                                 onTimeSelected = { h, m ->
-                                    dueTime.value = LocalTime.of(h, m)
+                                    onDueTimeChange(LocalTime.of(h, m))
                                 }
                             )
                         }
@@ -109,9 +108,9 @@ fun TodoForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_alarm2),
                 label = stringResource(R.string.alarm),
-                value = alarmOption.value.displayName,
+                value = uiState.alarmOption.displayName,
                 options = AlarmOption.getAllDisplayNames(),
-                onOptionSelected = { alarmOption.value = AlarmOption.fromDisplayName(it) }
+                onOptionSelected = { onAlarmOptionChange(AlarmOption.fromDisplayName(it)) }
             )
         }
 
@@ -121,9 +120,9 @@ fun TodoForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_category),
                 label = stringResource(R.string.category),
-                value = categoryOption.value.displayName,
+                value = uiState.categoryOption.displayName,
                 options = CategoryOption.getAllDisplayNames(),
-                onOptionSelected = { categoryOption.value = CategoryOption.fromDisplayName(it) }
+                onOptionSelected = { onCategoryOptionChange(CategoryOption.fromDisplayName(it)) }
             )
 
             SettingDivider()
@@ -131,17 +130,17 @@ fun TodoForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_private),
                 label = stringResource(R.string.public_state),
-                value = publicOption.value.displayName,
+                value = uiState.publicOption.displayName,
                 options = PublicStateOption.getAllDisplayNames(),
-                onOptionSelected = { publicOption.value = PublicStateOption.fromDisplayName(it) }
+                onOptionSelected = { onPublicOptionChange(PublicStateOption.fromDisplayName(it)) }
             )
         }
 
         Spacer(modifier = Modifier.height(26.dp))
 
         BasicTextField(
-            value = memoValue.value,
-            onValueChange = { memoValue.value = it },
+            value = uiState.memo,
+            onValueChange = onMemoChange,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
@@ -152,7 +151,7 @@ fun TodoForm() {
                 color = SpiritTodoTheme.color.todoTextMain
             ),
             decorationBox = { innerTextField ->
-                if (memoValue.value.isEmpty()) {
+                if (uiState.memo.isEmpty()) {
                     Text(
                         text = "메모",
                         style = TextStyle(
@@ -167,6 +166,7 @@ fun TodoForm() {
 
         Spacer(modifier = Modifier.height(28.dp))
 
+        // Todo 생성 API가 아직 없어 등록 동작은 연동하지 않는다
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
             onClick = { }

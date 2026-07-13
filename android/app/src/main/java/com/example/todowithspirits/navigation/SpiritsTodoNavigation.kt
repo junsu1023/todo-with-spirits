@@ -28,10 +28,10 @@ fun SpiritsTodoNavigation(
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
-
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
     }
+    val onBack: () -> Unit = { navController.popBackStack() }
 
     NavHost(
         navController = navController,
@@ -72,18 +72,18 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Add.route) {
-            AddScreen()
+            AddScreen(onBack = onBack)
         }
 
         composable(Screen.Alarm.route) {
             AlarmScreen(
-                onBack = { navController.popBackStack() },
+                onBack = onBack,
                 onSettingClick = navigateToAlarmSetting
             )
         }
 
         composable(Screen.AlarmSetting.route) {
-            AlarmSettingScreen(onBack = { navController.popBackStack() })
+            AlarmSettingScreen(onBack = onBack)
         }
 
         composable(Screen.MyPage.route) {
@@ -95,11 +95,11 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.AccountSetting.route) {
-            AccountSettingScreen(onBack = { navController.popBackStack() })
+            AccountSettingScreen(onBack = onBack)
         }
 
         composable(Screen.DisplaySetting.route) {
-            DisplaySettingScreen(onBack = { navController.popBackStack() })
+            DisplaySettingScreen(onBack = onBack)
         }
     }
 }

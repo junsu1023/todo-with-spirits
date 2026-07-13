@@ -13,8 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,13 +25,14 @@ import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
-import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
 import com.example.todowithspirits.feature.add.component.SettingSelectorItem
+import com.example.todowithspirits.feature.add.state.AddUiState
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 
@@ -44,36 +43,34 @@ private val routineRepeatOptions = listOf(
 )
 
 @Composable
-fun RoutineForm() {
-    val repeatOption = remember { mutableStateOf(RepeatOption.DAILY) }
-    val selectedWeekDays = remember { mutableStateOf(setOf<DayOfWeek>()) }
-    val selectedMonthDays = remember { mutableStateOf(setOf<Int>()) }
-    val excludeHolidays = remember { mutableStateOf(false) }
-    val alarmOption = remember { mutableStateOf(AlarmOption.NONE) }
-    val categoryOption = remember { mutableStateOf(CategoryOption.NONE) }
-    val publicOption = remember { mutableStateOf(PublicStateOption.PRIVATE) }
-    val memoValue = remember { mutableStateOf("") }
-
+fun RoutineForm(
+    uiState: AddUiState,
+    onRepeatOptionChange: (RepeatOption) -> Unit,
+    onWeekDayToggled: (DayOfWeek) -> Unit,
+    onMonthDayToggled: (Int) -> Unit,
+    onExcludeHolidaysChange: (Boolean) -> Unit,
+    onAlarmOptionChange: (AlarmOption) -> Unit,
+    onCategoryOptionChange: (CategoryOption) -> Unit,
+    onPublicOptionChange: (PublicStateOption) -> Unit,
+    onMemoChange: (String) -> Unit,
+    onRegisterClick: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_repeat),
                 label = stringResource(R.string.repeat),
-                value = repeatOption.value.displayName,
+                value = uiState.repeatOption.displayName,
                 options = routineRepeatOptions,
-                onOptionSelected = { repeatOption.value = RepeatOption.fromDisplayName(it) },
+                onOptionSelected = { onRepeatOptionChange(RepeatOption.fromDisplayName(it)) },
                 subContent = {
-                    when (repeatOption.value) {
+                    when (uiState.repeatOption) {
                         RepeatOption.WEEKLY -> {
                             Spacer(modifier = Modifier.height(22.dp))
 
                             DayOfWeekSelector(
-                                selectedDays = selectedWeekDays.value,
-                                onDayToggled = { day ->
-                                    selectedWeekDays.value = selectedWeekDays.value.toMutableSet().apply {
-                                        if (day in this) remove(day) else add(day)
-                                    }
-                                },
+                                selectedDays = uiState.selectedWeekDays,
+                                onDayToggled = onWeekDayToggled,
                                 modifier = Modifier.padding(horizontal = 14.dp)
                             )
                         }
@@ -81,12 +78,8 @@ fun RoutineForm() {
                             Spacer(modifier = Modifier.height(22.dp))
 
                             MonthlyCalendarView(
-                                selectedDays = selectedMonthDays.value,
-                                onDayToggled = { day ->
-                                    selectedMonthDays.value = selectedMonthDays.value.toMutableSet().apply {
-                                        if (day in this) remove(day) else add(day)
-                                    }
-                                },
+                                selectedDays = uiState.selectedMonthDays,
+                                onDayToggled = onMonthDayToggled,
                                 modifier = Modifier.padding(horizontal = 14.dp)
                             )
                         }
@@ -99,8 +92,8 @@ fun RoutineForm() {
         Spacer(modifier = Modifier.height(10.dp))
 
         HolidayExcludeRow(
-            checked = excludeHolidays.value,
-            onCheckedChange = { excludeHolidays.value = it }
+            checked = uiState.excludeHolidays,
+            onCheckedChange = onExcludeHolidaysChange
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -109,9 +102,9 @@ fun RoutineForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_alarm2),
                 label = stringResource(R.string.alarm),
-                value = alarmOption.value.displayName,
+                value = uiState.alarmOption.displayName,
                 options = AlarmOption.getAllDisplayNames(),
-                onOptionSelected = { alarmOption.value = AlarmOption.fromDisplayName(it) }
+                onOptionSelected = { onAlarmOptionChange(AlarmOption.fromDisplayName(it)) }
             )
         }
 
@@ -121,9 +114,9 @@ fun RoutineForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_category),
                 label = stringResource(R.string.category),
-                value = categoryOption.value.displayName,
+                value = uiState.categoryOption.displayName,
                 options = CategoryOption.getAllDisplayNames(),
-                onOptionSelected = { categoryOption.value = CategoryOption.fromDisplayName(it) }
+                onOptionSelected = { onCategoryOptionChange(CategoryOption.fromDisplayName(it)) }
             )
 
             SettingDivider()
@@ -131,17 +124,17 @@ fun RoutineForm() {
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_private),
                 label = stringResource(R.string.public_state),
-                value = publicOption.value.displayName,
+                value = uiState.publicOption.displayName,
                 options = PublicStateOption.getAllDisplayNames(),
-                onOptionSelected = { publicOption.value = PublicStateOption.fromDisplayName(it) }
+                onOptionSelected = { onPublicOptionChange(PublicStateOption.fromDisplayName(it)) }
             )
         }
 
         Spacer(modifier = Modifier.height(28.dp))
 
         BasicTextField(
-            value = memoValue.value,
-            onValueChange = { memoValue.value = it },
+            value = uiState.memo,
+            onValueChange = onMemoChange,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
@@ -152,7 +145,7 @@ fun RoutineForm() {
                 color = SpiritTodoTheme.color.todoTextMain
             ),
             decorationBox = { innerTextField ->
-                if (memoValue.value.isEmpty()) {
+                if (uiState.memo.isEmpty()) {
                     Text(
                         text = "메모",
                         style = TextStyle(
@@ -169,7 +162,7 @@ fun RoutineForm() {
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
-            onClick = { }
+            onClick = onRegisterClick
         )
     }
 }
