@@ -51,7 +51,6 @@ open class BaseViewModel: ViewModel() {
         } finally {
             _isLoading.update { false }
         }
-        _isLoading.update { true }
     }
 
     fun emitErrorMsg(msg: String) {
