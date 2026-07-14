@@ -30,9 +30,6 @@ private data class CalendarDay(
     val isCurrentMonth: Boolean
 )
 
-/**
- * 특정 날짜 아래에 표시할 이벤트 점과 라벨 배지.
- */
 data class CalendarDayEvent(
     val dotColors: List<Color> = emptyList(),
     val label: String? = null
@@ -45,7 +42,8 @@ fun CalendarView(
     onDateSelected: (LocalDate) -> Unit,
     showMonthNavigation: Boolean = true,
     showSelectedDateInHeader: Boolean = false,
-    eventData: Map<LocalDate, CalendarDayEvent> = emptyMap()
+    eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
+    onMonthChanged: (YearMonth) -> Unit = {}
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
     val selectedDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
@@ -96,13 +94,19 @@ fun CalendarView(
                     Image(
                         painter = painterResource(R.drawable.left),
                         contentDescription = null,
-                        modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.minusMonths(1) })
+                        modifier = Modifier.clickable(onClick = {
+                            currentMonth = currentMonth.minusMonths(1)
+                            onMonthChanged(currentMonth)
+                        })
                     )
 
                     Image(
                         painter = painterResource(R.drawable.right),
                         contentDescription = null,
-                        modifier = Modifier.clickable(onClick = { currentMonth = currentMonth.plusMonths(1) })
+                        modifier = Modifier.clickable(onClick = {
+                            currentMonth = currentMonth.plusMonths(1)
+                            onMonthChanged(currentMonth)
+                        })
                     )
                 }
             }
@@ -145,7 +149,10 @@ fun CalendarView(
                                 onClick = {
                                     onDateSelected(date)
                                     val month = YearMonth.from(date)
-                                    if (month != currentMonth) currentMonth = month
+                                    if (month != currentMonth) {
+                                        currentMonth = month
+                                        onMonthChanged(month)
+                                    }
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }

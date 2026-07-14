@@ -71,6 +71,8 @@ fun TaskListItemResponse.toDomain(): TaskSummary = TaskSummary(
     isPublic = isPublic,
     memo = memo,
     notificationMinutes = notificationMinutes,
+    repeatDaysOfWeek = repeatDaysOfWeek.orEmpty(),
+    repeatDaysOfMonth = repeatDaysOfMonth.orEmpty(),
     repeatType = repeatType,
     repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
     startDate = LocalDate.parse(startDate),
@@ -92,7 +94,6 @@ fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
     memo = memo
 )
 
-// API 문서에 명시된 notification 값은 TEN_MINUTES뿐이라 나머지는 같은 명명 규칙을 가정한 값
 private fun AlarmOption.toApiValue(): String? = when (this) {
     AlarmOption.NONE -> null
     AlarmOption.TEN_MIN_BEFORE -> "TEN_MINUTES"

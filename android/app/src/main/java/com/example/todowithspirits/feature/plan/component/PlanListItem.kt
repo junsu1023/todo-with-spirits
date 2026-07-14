@@ -259,7 +259,7 @@ fun PlanListItem(
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        if (dDayText != null) {
+                        if (dDayText != null && item.type != PlanType.ROUTINE) {
                             Text(
                                 text = dDayText,
                                 fontSize = 16.sp,

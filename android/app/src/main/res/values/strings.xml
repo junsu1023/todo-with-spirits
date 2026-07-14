@@ -10,6 +10,7 @@
     <string name="todo">To do</string>
     <string name="routine">루틴</string>
     <string name="important">중요</string>
+    <string name="important_count">중요 %d</string>
     <string name="all_day">하루 종일</string>
     <string name="repeat">반복</string>
     <string name="alarm">알림</string>

@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.TodoItem
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -46,22 +47,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
-    0 to listOf(0, 1),
-    1 to listOf(0, 0, 1),
-    2 to listOf(0),
-    3 to listOf(1, 1),
-    4 to listOf(1),
-    5 to listOf(1),
-    6 to listOf(0, 1)
-)
-
 @Composable
 fun TodayPlanSection(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     todos: List<TodoItem>,
-    routines: List<RoutineItem>
+    routines: List<RoutineItem>,
+    weekEvents: Map<LocalDate, List<PlanType>> = emptyMap()
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -116,6 +108,7 @@ fun TodayPlanSection(
                 WeeklyCalendarStrip(
                     selectedDate = selectedDate,
                     onDateSelected = onDateSelected,
+                    weekEvents = weekEvents,
                     todoColor = SpiritTodoTheme.color.surfaceColor8,
                     routineColor = SpiritTodoTheme.color.surfaceColor9
                 )
@@ -209,6 +202,7 @@ fun TodayPlanSection(
 private fun WeeklyCalendarStrip(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
+    weekEvents: Map<LocalDate, List<PlanType>>,
     todoColor: Color,
     routineColor: Color
 ) {
@@ -222,7 +216,7 @@ private fun WeeklyCalendarStrip(
         (0..6).forEach { offset ->
             val date = weekStart.plusDays(offset.toLong())
             val isSelected = date == selectedDate
-            val eventTypes = dummyWeeklyEvents[offset] ?: emptyList()
+            val eventTypes = weekEvents[date].orEmpty()
 
             Column(
                 modifier = Modifier
@@ -262,7 +256,7 @@ private fun WeeklyCalendarStrip(
                             modifier = Modifier
                                 .size(6.dp)
                                 .background(
-                                    color = if(type == 0) todoColor else routineColor,
+                                    color = if(type == PlanType.TODO) todoColor else routineColor,
                                     shape = CircleShape
                                 )
                         )

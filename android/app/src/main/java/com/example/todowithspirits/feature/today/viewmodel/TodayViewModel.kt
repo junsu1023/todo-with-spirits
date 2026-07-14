@@ -7,11 +7,13 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.GetTaskCalendarUseCase
+import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.feature.today.state.TodayUiState
 import com.example.todowithspirits.feature.today.state.TodoItem
 import com.example.todowithspirits.util.TaskRefreshBus
+import com.example.todowithspirits.util.routineOccurrences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,15 +34,20 @@ class TodayViewModel @Inject constructor(
 
     init {
         loadTask()
+        loadWeekEvents()
 
         taskRefreshBus.events
-            .onEach { loadTask() }
+            .onEach {
+                loadTask()
+                loadWeekEvents()
+            }
             .launchIn(viewModelScope)
     }
 
     fun setSelectedDate(date: LocalDate) {
         _uiState.update { it.copy(selectedDate = date) }
         loadTask()
+        loadWeekEvents()
     }
 
     fun loadTask() {
@@ -63,6 +70,29 @@ class TodayViewModel @Inject constructor(
             }.onFailure {
                 Log.e(TAG, "loadToday failed!", it)
                 emitErrorMsg(it.localizedMessage ?: "오늘의 일정을 불러오지 못했습니다")
+            }
+        }
+    }
+
+    fun loadWeekEvents() {
+        viewModelScope.launchWithLoading {
+            val selectedDate = _uiState.value.selectedDate
+            val weekStart = selectedDate.minusDays((selectedDate.dayOfWeek.value % 7).toLong())
+            val weekEnd = weekStart.plusDays(6)
+
+            getTaskCalendarUseCase(weekStart, weekEnd).onSuccess { calendar ->
+                val events = calendar.items
+                    .filter { it.taskType == TaskType.HABIT.type }
+                    .distinctBy { it.taskId }
+                    .flatMap { routine ->
+                        routine.routineOccurrences(weekStart, weekEnd).map { date -> date to PlanType.ROUTINE }
+                    }
+                    .groupBy({ it.first }, { it.second })
+
+                _uiState.update { it.copy(weekEvents = events) }
+            }.onFailure {
+                Log.e(TAG, "loadWeekEvents failed!", it)
+                emitErrorMsg(it.localizedMessage ?: "주간 일정을 불러오지 못했습니다")
             }
         }
     }

@@ -65,7 +65,8 @@ fun TodayScreen(
                 selectedDate = uiState.selectedDate,
                 onDateSelected = { todayViewModel.setSelectedDate(it) },
                 todos = uiState.todos,
-                routines = uiState.routines
+                routines = uiState.routines,
+                weekEvents = uiState.weekEvents
             )
         }
     }

@@ -8,8 +8,10 @@ import com.example.domain.model.TaskType
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.plan.PlanItemData
 import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.state.DayPlanEvents
 import com.example.todowithspirits.feature.plan.state.PlanUiState
 import com.example.todowithspirits.util.TaskRefreshBus
+import com.example.todowithspirits.util.routineOccurrences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,15 +33,26 @@ class PlanViewModel @Inject constructor(
 
     init {
         loadPlans()
+        loadCalendarEvents()
 
         taskRefreshBus.events
-            .onEach { loadPlans() }
+            .onEach {
+                loadPlans()
+                loadCalendarEvents()
+            }
             .launchIn(viewModelScope)
     }
 
     fun setSelectedDate(date: LocalDate) {
         _uiState.update { it.copy(selectedDate = date) }
         loadPlans()
+    }
+
+    fun setCalendarMonth(month: YearMonth) {
+        if (month == _uiState.value.calendarMonth) return
+
+        _uiState.update { it.copy(calendarMonth = month) }
+        loadCalendarEvents()
     }
 
     fun setSelectedTab(tab: String) {
@@ -75,6 +89,36 @@ class PlanViewModel @Inject constructor(
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "플랜을 불러오지 못했습니다")
+                }
+        }
+    }
+
+    fun loadCalendarEvents() {
+        viewModelScope.launchWithLoading {
+            val month = _uiState.value.calendarMonth
+            val monthStart = month.atDay(1)
+            val monthEnd = month.atEndOfMonth()
+
+            getTaskCalendarUseCase(monthStart, monthEnd)
+                .onSuccess { calendar ->
+                    val events = calendar.items
+                        .filter { it.taskType == TaskType.HABIT.type }
+                        .distinctBy { it.taskId }
+                        .flatMap { routine ->
+                            routine.routineOccurrences(monthStart, monthEnd).map { date -> date to routine }
+                        }
+                        .groupBy({ it.first }, { it.second })
+                        .mapValues { (_, routines) ->
+                            DayPlanEvents(
+                                types = routines.map { PlanType.ROUTINE },
+                                importantCount = routines.count { it.isImportant }
+                            )
+                        }
+
+                    _uiState.update { it.copy(calendarEvents = events) }
+                }
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "캘린더 일정을 불러오지 못했습니다")
                 }
         }
     }

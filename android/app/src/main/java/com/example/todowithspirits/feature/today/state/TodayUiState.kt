@@ -1,13 +1,15 @@
 package com.example.todowithspirits.feature.today.state
 
+import com.example.todowithspirits.feature.plan.PlanType
 import java.time.LocalDate
 import java.time.LocalTime
 
 data class TodayUiState(
-    val spiritInfo: SpiritInfo,
+    val spiritInfo: SpiritInfo = SpiritInfo(),
     val selectedDate: LocalDate = LocalDate.now(),
     val todos: List<TodoItem> = emptyList(),
-    val routines: List<RoutineItem> = emptyList()
+    val routines: List<RoutineItem> = emptyList(),
+    val weekEvents: Map<LocalDate, List<PlanType>> = emptyMap()
 )
 
 data class SpiritInfo(

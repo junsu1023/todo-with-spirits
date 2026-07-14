@@ -42,7 +42,6 @@ import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.YearMonth
 
 enum class PlanType { TODO, ROUTINE }
 
@@ -57,30 +56,6 @@ data class PlanItemData(
     val memo: String = "",
     val category: String? = null,
     val repeatInfo: String? = null
-)
-
-private data class DummyDayPlan(val types: List<PlanType>, val label: String? = null)
-
-private val dummyDayOfMonthPlans = mapOf(
-    1 to DummyDayPlan(listOf(PlanType.TODO), "중요 1"),
-    2 to DummyDayPlan(listOf(PlanType.TODO)),
-    3 to DummyDayPlan(listOf(PlanType.ROUTINE)),
-    4 to DummyDayPlan(listOf(PlanType.TODO)),
-    5 to DummyDayPlan(listOf(PlanType.TODO, PlanType.ROUTINE)),
-    7 to DummyDayPlan(listOf(PlanType.TODO)),
-    8 to DummyDayPlan(listOf(PlanType.TODO)),
-    9 to DummyDayPlan(listOf(PlanType.TODO, PlanType.TODO)),
-    10 to DummyDayPlan(listOf(PlanType.ROUTINE)),
-    12 to DummyDayPlan(listOf(PlanType.TODO)),
-    15 to DummyDayPlan(listOf(PlanType.TODO)),
-    17 to DummyDayPlan(listOf(PlanType.TODO, PlanType.ROUTINE)),
-    18 to DummyDayPlan(listOf(PlanType.TODO), "중요 2"),
-    19 to DummyDayPlan(listOf(PlanType.TODO)),
-    22 to DummyDayPlan(listOf(PlanType.TODO)),
-    24 to DummyDayPlan(listOf(PlanType.TODO, PlanType.TODO)),
-    26 to DummyDayPlan(listOf(PlanType.ROUTINE)),
-    29 to DummyDayPlan(listOf(PlanType.TODO)),
-    30 to DummyDayPlan(listOf(PlanType.TODO, PlanType.ROUTINE))
 )
 
 @Composable
@@ -98,12 +73,15 @@ fun PlanScreen(
 ) {
     val uiState by planViewModel.uiState.collectAsState()
 
-    // 더미 데이터라 선택된 날짜가 속한 달에만 이벤트가 채워진다. 실제 API 연동 시 교체 예정.
-    val calendarYearMonth = YearMonth.from(uiState.selectedDate)
-    val calendarEventData: Map<LocalDate, CalendarDayEvent> = dummyDayOfMonthPlans
-        .filterKeys { it <= calendarYearMonth.lengthOfMonth() }
-        .mapValues { (_, plan) -> CalendarDayEvent(plan.types.map { it.color() }, plan.label) }
-        .mapKeys { (day, _) -> calendarYearMonth.atDay(day) }
+    val calendarEventData: Map<LocalDate, CalendarDayEvent> = uiState.calendarEvents
+        .mapValues { (_, events) ->
+            CalendarDayEvent(
+                dotColors = events.types.map { it.color() },
+                label = events.importantCount
+                    .takeIf { it > 0 }
+                    ?.let { stringResource(R.string.important_count, it) }
+            )
+        }
 
     Column(
         modifier = Modifier
@@ -129,7 +107,8 @@ fun PlanScreen(
             selectedDate = uiState.selectedDate,
             onDateSelected = { planViewModel.setSelectedDate(it) },
             showSelectedDateInHeader = true,
-            eventData = calendarEventData
+            eventData = calendarEventData,
+            onMonthChanged = { planViewModel.setCalendarMonth(it) }
         )
 
         Spacer(modifier = Modifier.height(14.dp))
