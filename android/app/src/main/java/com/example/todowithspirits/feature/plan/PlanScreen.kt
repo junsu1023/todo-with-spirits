@@ -205,7 +205,7 @@ fun PlanScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        val filteredPlans = dummyPlans.filter { item ->
+        val filteredPlans = uiState.plans.filter { item ->
             val doneFilter = !uiState.isHidden || !item.isDone
             val tabFilter = when (uiState.selectedTab) {
                 stringResource(R.string.todo) -> item.type == PlanType.TODO
