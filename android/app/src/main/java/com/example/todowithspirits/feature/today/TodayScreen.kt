@@ -62,6 +62,8 @@ fun TodayScreen(
                 .padding(horizontal = 16.dp)
         ) {
             TodayPlanSection(
+                selectedDate = uiState.selectedDate,
+                onDateSelected = { todayViewModel.setSelectedDate(it) },
                 todos = uiState.todos,
                 routines = uiState.routines
             )

@@ -5,6 +5,7 @@ import java.time.LocalTime
 
 data class TodayUiState(
     val spiritInfo: SpiritInfo,
+    val selectedDate: LocalDate = LocalDate.now(),
     val todos: List<TodoItem> = emptyList(),
     val routines: List<RoutineItem> = emptyList()
 )

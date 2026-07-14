@@ -58,11 +58,12 @@ private val dummyWeeklyEvents: Map<Int, List<Int>> = mapOf(
 
 @Composable
 fun TodayPlanSection(
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
     todos: List<TodoItem>,
     routines: List<RoutineItem>
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var selectedRoutine by remember { mutableStateOf<RoutineItem?>(null) }
     var isWeekExpanded by remember { mutableStateOf(false) }
@@ -114,7 +115,7 @@ fun TodayPlanSection(
 
                 WeeklyCalendarStrip(
                     selectedDate = selectedDate,
-                    onDateSelected = { selectedDate = it },
+                    onDateSelected = onDateSelected,
                     todoColor = SpiritTodoTheme.color.surfaceColor8,
                     routineColor = SpiritTodoTheme.color.surfaceColor9
                 )

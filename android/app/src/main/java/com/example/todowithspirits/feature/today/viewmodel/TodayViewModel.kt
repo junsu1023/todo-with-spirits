@@ -38,10 +38,16 @@ class TodayViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun setSelectedDate(date: LocalDate) {
+        _uiState.update { it.copy(selectedDate = date) }
+        loadToday()
+    }
+
     fun loadToday() {
         viewModelScope.launchWithLoading {
-            val today = LocalDate.now()
-            getTaskCalendarUseCase(today, today).onSuccess { calendar ->
+            val selectedDate = _uiState.value.selectedDate
+
+            getTaskCalendarUseCase(selectedDate, selectedDate).onSuccess { calendar ->
                 _uiState.update { state ->
                     Log.d(TAG, "loadTask = $calendar")
 
