@@ -45,8 +45,11 @@ fun CalendarView(
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
     onMonthChanged: (YearMonth) -> Unit = {}
 ) {
-    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
-    val selectedDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
+    var currentMonth by remember(selectedDate) { mutableStateOf(YearMonth.from(selectedDate)) }
+    val headerDate = remember(currentMonth, selectedDate) {
+        currentMonth.atDay(selectedDate.dayOfMonth.coerceAtMost(currentMonth.lengthOfMonth()))
+    }
+    val selectedDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM.", Locale.KOREAN) }
 
     val calendarDays = remember(currentMonth) {
         val firstDayOfMonth = currentMonth.atDay(1)
@@ -81,7 +84,7 @@ fun CalendarView(
             ) {
                 Text(
                     text = if (showSelectedDateInHeader) {
-                        selectedDate.format(selectedDateFormatter)
+                        headerDate.format(selectedDateFormatter)
                     } else {
                         stringResource(R.string.month, currentMonth.monthValue)
                     },
