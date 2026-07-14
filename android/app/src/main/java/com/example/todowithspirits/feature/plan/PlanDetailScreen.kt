@@ -1,5 +1,11 @@
 package com.example.todowithspirits.feature.plan
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,17 +29,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.feature.plan.viewmodel.PlanDetailViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -42,9 +54,62 @@ import java.util.Locale
 fun PlanDetailScreen(
     itemId: Int,
     onBack: () -> Unit,
-    navigateToAdd: () -> Unit
+    navigateToAdd: () -> Unit,
+    planDetailViewModel: PlanDetailViewModel = hiltViewModel()
 ) {
-    val item = dummyPlans.find { it.id == itemId } ?: return
+    LaunchedEffect(itemId) {
+        planDetailViewModel.loadTask(itemId.toLong())
+    }
+
+    val planState by planDetailViewModel.plan.collectAsState()
+    val isLoading by planDetailViewModel.isLoading.collectAsState()
+    val item = planState
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SpiritTodoTheme.color.surfaceColor1),
+            contentAlignment = Alignment.Center
+        ) {
+            val infiniteTransition = rememberInfiniteTransition(label = "loading")
+            val angle by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = 360f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart
+                ),
+                label = "angle"
+            )
+            Image(
+                painter = painterResource(R.drawable.loading_gray),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .graphicsLayer { rotationZ = angle }
+            )
+        }
+        return
+    }
+
+    if (item == null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SpiritTodoTheme.color.surfaceColor1),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "플랜 정보를 불러오지 못했습니다",
+                fontSize = 15.sp,
+                color = SpiritTodoTheme.color.todoTextMain
+            )
+        }
+        return
+    }
+
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
     val dateText = buildString {
         item.dueDate?.let { date ->

@@ -59,13 +59,6 @@ data class PlanItemData(
     val repeatInfo: String? = null
 )
 
-internal val dummyPlans = listOf(
-    PlanItemData(1, "성과 보고서 제출 마감", PlanType.TODO, true, true, LocalDate.of(2026, 6, 1), LocalTime.of(18, 0), "", "업무/커리어"),
-    PlanItemData(2, "민지랑 저녁", PlanType.TODO, false, false, LocalDate.of(2026, 6, 1), LocalTime.of(19, 0), "", "인간관계/약속"),
-    PlanItemData(3, "책 20페이지 읽기", PlanType.ROUTINE, false, false, LocalDate.of(2026, 6, 1), LocalTime.of(19, 0), "", "자기계발", "매주 월, 화"),
-    PlanItemData(4, "비행기 티켓 끊기", PlanType.TODO, false, false, LocalDate.of(2026, 6, 12), LocalTime.of(23, 59), "", "자기계발", "매주 월, 화")
-)
-
 private data class DummyDayPlan(val types: List<PlanType>, val label: String? = null)
 
 private val dummyDayOfMonthPlans = mapOf(
