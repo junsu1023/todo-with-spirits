@@ -12,7 +12,7 @@ data class TaskDetailResponse(
     val isCompleted: Boolean,
     val isImportant: Boolean,
     val isPublic: Boolean,
-    val memo: String,
+    val memo: String?,
     val notificationMinutes: Int?,
     val repeatDaysOfWeek: List<String> = emptyList(),
     val repeatDaysOfMonth: List<Int> = emptyList(),
