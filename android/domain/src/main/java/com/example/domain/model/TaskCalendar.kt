@@ -25,6 +25,8 @@ data class TaskSummary(
     val isPublic: Boolean,
     val memo: String?,
     val notificationMinutes: Int?,
+    val repeatDaysOfWeek: List<String>,
+    val repeatDaysOfMonth: List<Int>,
     val repeatEndDate: LocalDate?,
     val repeatType: String?,
     val startDate: LocalDate,

@@ -21,6 +21,8 @@ data class TaskListItemResponse(
     val isPublic: Boolean,
     val memo: String?,
     val notificationMinutes: Int?,
+    val repeatDaysOfWeek: List<String>?,
+    val repeatDaysOfMonth: List<Int>?,
     val repeatEndDate: String?,
     val repeatType: String?,
     val startDate: String,
