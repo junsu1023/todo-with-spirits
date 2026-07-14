@@ -31,19 +31,19 @@ class TodayViewModel @Inject constructor(
     val uiState: StateFlow<TodayUiState> get() = _uiState.asStateFlow()
 
     init {
-        loadToday()
+        loadTask()
 
         taskRefreshBus.events
-            .onEach { loadToday() }
+            .onEach { loadTask() }
             .launchIn(viewModelScope)
     }
 
     fun setSelectedDate(date: LocalDate) {
         _uiState.update { it.copy(selectedDate = date) }
-        loadToday()
+        loadTask()
     }
 
-    fun loadToday() {
+    fun loadTask() {
         viewModelScope.launchWithLoading {
             val selectedDate = _uiState.value.selectedDate
 
