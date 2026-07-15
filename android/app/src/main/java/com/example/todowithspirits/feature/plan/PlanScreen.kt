@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -124,59 +126,6 @@ fun PlanScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.hide_completion),
-                color = if(uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
-                fontSize = 14.sp,
-                modifier = Modifier.clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { planViewModel.setHiddenState(!uiState.isHidden) }
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            SpiritsTodoDropdown(
-                value = uiState.sortOption.displayName,
-                options = PlanSortOption.getAllDisplayNames(),
-                onOptionSelected = { planViewModel.setSortOption(PlanSortOption.fromDisplayName(it)) },
-                dropdownWidth = 96.dp,
-                dropdownGap = 3.dp,
-                itemVerticalPadding = 14.dp
-            ) { expand ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = { expand() }
-                    )
-                ) {
-                    Text(
-                        text = uiState.sortOption.displayName,
-                        color = SpiritTodoTheme.color.todoTextMain,
-                        fontSize = 14.sp
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Image(
-                        painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
         val filteredPlans = uiState.plans.filter { item ->
             val doneFilter = !uiState.isHidden || !item.isDone
             val tabFilter = when (uiState.selectedTab) {
@@ -187,20 +136,100 @@ fun PlanScreen(
             doneFilter && tabFilter
         }
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            filteredPlans.forEach { item ->
-                PlanListItem(
-                    item = item,
-                    onDelete = {},
-                    onEdit = {},
-                    onPostpone = {},
-                    navigateToDetail = { navigateToDetail(item.id) }
+        if (filteredPlans.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.todo_empty),
+                    contentDescription = null
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(R.string.empty_plans),
+                    fontSize = 14.sp,
+                    color = SpiritTodoTheme.color.systemGrey
+                )
             }
-        }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.hide_completion),
+                    color = if (uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { planViewModel.setHiddenState(!uiState.isHidden) }
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
+
+                SpiritsTodoDropdown(
+                    value = uiState.sortOption.displayName,
+                    options = PlanSortOption.getAllDisplayNames(),
+                    onOptionSelected = {
+                        planViewModel.setSortOption(
+                            PlanSortOption.fromDisplayName(
+                                it
+                            )
+                        )
+                    },
+                    dropdownWidth = 96.dp,
+                    dropdownGap = 3.dp,
+                    itemVerticalPadding = 14.dp
+                ) { expand ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { expand() }
+                        )
+                    ) {
+                        Text(
+                            text = uiState.sortOption.displayName,
+                            color = SpiritTodoTheme.color.todoTextMain,
+                            fontSize = 14.sp
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Image(
+                            painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                filteredPlans.forEach { item ->
+                    PlanListItem(
+                        item = item,
+                        onDelete = {},
+                        onEdit = {},
+                        onPostpone = {},
+                        navigateToDetail = { navigateToDetail(item.id) }
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
