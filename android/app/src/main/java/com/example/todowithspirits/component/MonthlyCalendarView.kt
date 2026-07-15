@@ -131,7 +131,7 @@ fun MonthlyCalendarView(
                                 Box(
                                     modifier = Modifier
                                         .size(cellSize)
-                                        .background(SpiritTodoTheme.colors.surfaceColor3, CircleShape)
+                                        .background(SpiritTodoTheme.color.surfaceColor3, CircleShape)
                                 )
                             }
 

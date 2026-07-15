@@ -117,7 +117,7 @@ private fun BadgePlaceholder(label: String) {
 private fun AchievementCard(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        color = SpiritTodoTheme.colors.white,
+        color = SpiritTodoTheme.color.surfaceColor1,
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(

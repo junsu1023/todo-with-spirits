@@ -76,7 +76,7 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
 
             FieldLabel(text = stringResource(R.string.linked_account))
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
 
             LinkedAccountRow(email = "wish0221@gmail.com")
 
@@ -85,7 +85,7 @@ fun AccountSettingScreen(onBack: () -> Unit = {}) {
 
         HorizontalDivider(
             thickness = 6.dp,
-            color = SpiritTodoTheme.colors.surfaceColor4
+            color = SpiritTodoTheme.color.surfaceColor10
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -144,13 +144,13 @@ private fun LinkedAccountRow(email: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, SpiritTodoTheme.color.onSurfaceColor9, RoundedCornerShape(6.dp))
+            .border(1.dp, SpiritTodoTheme.color.systemArea, RoundedCornerShape(6.dp))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {}
             )
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
