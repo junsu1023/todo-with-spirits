@@ -43,6 +43,26 @@ public class TaskController {
     }
 
     // ==============================================
+    // 일정 수정
+    // ==============================================
+
+    @PatchMapping("/schedule/{taskId}")
+    public ResponseEntity<ApiResponse<RoutineCreateResponse>> updateSchedule(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @Valid @RequestBody ScheduleUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.updateSchedule(userId, taskId, request)));
+    }
+
+    @PatchMapping("/routine/{taskId}")
+    public ResponseEntity<ApiResponse<RoutineCreateResponse>> updateRoutine(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @Valid @RequestBody RoutineUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.updateRoutine(userId, taskId, request)));
+    }
+
+    // ==============================================
     // 완료 / 완료 취소
     // ==============================================
 
