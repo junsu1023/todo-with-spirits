@@ -17,8 +17,8 @@ public class CalendarTaskListResponse {
     private final int scheduleCount;
     private final int completedScheduleCount;
 
-    private final int habitCount;
-    private final int completedHabitCount;
+    private final int routineCount;
+    private final int completedRoutineCount;
 
     private final List<CalendarOccurrenceResponse> items;
 
@@ -26,13 +26,13 @@ public class CalendarTaskListResponse {
         List<CalendarOccurrenceResponse> schedules = items.stream()
                 .filter(t -> "SCHEDULE".equals(t.getTaskType()))
                 .toList();
-        List<CalendarOccurrenceResponse> habits = items.stream()
-                .filter(t -> "HABIT".equals(t.getTaskType()))
+        List<CalendarOccurrenceResponse> routines = items.stream()
+                .filter(t -> "ROUTINE".equals(t.getTaskType()))
                 .toList();
 
         int completedScheduleCount = (int) schedules.stream().filter(t -> Boolean.TRUE.equals(t.getIsCompleted())).count();
-        int completedHabitCount    = (int) habits.stream().filter(t -> Boolean.TRUE.equals(t.getIsCompleted())).count();
-        int completedCount = completedScheduleCount + completedHabitCount;
+        int completedRoutineCount = (int) routines.stream().filter(t -> Boolean.TRUE.equals(t.getIsCompleted())).count();
+        int completedCount = completedScheduleCount + completedRoutineCount;
 
         return new CalendarTaskListResponse(
                 items.size(),
@@ -40,8 +40,8 @@ public class CalendarTaskListResponse {
                 items.size() - completedCount,
                 schedules.size(),
                 completedScheduleCount,
-                habits.size(),
-                completedHabitCount,
+                routines.size(),
+                completedRoutineCount,
                 items
         );
     }

@@ -1,6 +1,6 @@
 package com.oow.todowithspirit.dto.task;
 
-import com.oow.todowithspirit.domain.task.HabitCompletion;
+import com.oow.todowithspirit.domain.task.RoutineCompletion;
 import com.oow.todowithspirit.domain.task.Task;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -50,7 +50,7 @@ public class CalendarOccurrenceResponse {
                 .build();
     }
 
-    public static CalendarOccurrenceResponse fromHabitOccurrence(Task task, LocalDate occurrenceDate, HabitCompletion completion) {
+    public static CalendarOccurrenceResponse fromRoutineOccurrence(Task task, LocalDate occurrenceDate, RoutineCompletion completion) {
         return CalendarOccurrenceResponse.builder()
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())

@@ -29,7 +29,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             WHERE t.user.id = :userId
               AND (
                 (t.taskType = 'SCHEDULE' AND t.startDate BETWEEN :from AND :to)
-                OR (t.taskType = 'HABIT'
+                OR (t.taskType = 'ROUTINE'
                     AND t.startDate <= :to
                     AND (t.repeatEndDate IS NULL OR t.repeatEndDate >= :from))
               )

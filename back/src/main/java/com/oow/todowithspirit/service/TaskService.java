@@ -26,46 +26,31 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final HabitCompletionRepository habitCompletionRepository;
+    private final RoutineCompletionRepository routineCompletionRepository;
 
     // =========================================================
     // 생성
     // =========================================================
 
     @Transactional
-    public TaskCreateResponse createSchedule(Long userId, ScheduleCreateRequest request) {
-        validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
-
-        boolean isAllDay = Boolean.TRUE.equals(request.getIsAllDay());
-        if (!isAllDay && request.getEndDatetime() == null) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "endDatetime",
-                    "End datetime is required when not all day");
-        }
-
+    public ScheduleCreateResponse createSchedule(Long userId, ScheduleCreateRequest request) {
         User user = userRepository.getReferenceById(userId);
         Task task = Task.createSchedule(
                 user,
                 request.getTitle(),
                 request.getMemo(),
                 request.getCategory(),
-                request.getStartDatetime().toLocalDate(),
-                request.getStartDatetime().toLocalTime(),
-                request.getEndDatetime() != null ? request.getEndDatetime().toLocalDate() : null,
-                request.getEndDatetime() != null ? request.getEndDatetime().toLocalTime() : null,
-                isAllDay,
+                request.getEndDateTime(),
+                Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                request.getRepeatType(),
-                request.getRepeatEndDate(),
-                request.getRepeatDaysOfWeek(),
-                request.getRepeatDaysOfMonth(),
-                resolveNotificationMinutes(request.getNotification()),
+                resolveNotificationMinutes(request.getNotificationType()),
                 Boolean.TRUE.equals(request.getIsPublic())
         );
-        return TaskCreateResponse.from(taskRepository.save(task));
+        return ScheduleCreateResponse.from(taskRepository.save(task));
     }
 
     @Transactional
-    public TaskCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
+    public RoutineCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
         if (!ROUTINE_ALLOWED_REPEAT.contains(request.getRepeatType())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
                     "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
@@ -77,6 +62,37 @@ public class TaskService {
                 user,
                 request.getTitle(),
                 request.getMemo(),
+                request.getCategory(),
+                request.getRepeatType(),
+                request.getRepeatEndDate(),
+                request.getRepeatDaysOfWeek(),
+                request.getRepeatDaysOfMonth(),
+                resolveNotificationMinutes(request.getNotificationType()),
+                Boolean.TRUE.equals(request.getIsPublic())
+        );
+        return RoutineCreateResponse.from(taskRepository.save(task));
+    }
+
+    @Transactional
+    public RoutineCreateResponse updateRoutine(Long userId, Long taskId, RoutineUpdateRequest request) {
+        if (!ROUTINE_ALLOWED_REPEAT.contains(request.getRepeatType())) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
+                    "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
+        }
+        validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
+
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        if (task.getTaskType() != TaskType.ROUTINE) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
+                    "Task is not a routine");
+        }
+
+        task.updateRoutine(
+                request.getTitle(),
+                request.getMemo(),
+                request.getStartDate(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
@@ -84,7 +100,32 @@ public class TaskService {
                 resolveNotificationMinutes(request.getNotification()),
                 Boolean.TRUE.equals(request.getIsPublic())
         );
-        return TaskCreateResponse.from(taskRepository.save(task));
+
+        return RoutineCreateResponse.from(task);
+    }
+
+    @Transactional
+    public RoutineCreateResponse updateSchedule(Long userId, Long taskId, ScheduleUpdateRequest request) {
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+
+        if (task.getTaskType() != TaskType.SCHEDULE) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
+                    "Task is not a schedule");
+        }
+
+        task.updateSchedule(
+                request.getTitle(),
+                request.getMemo(),
+                request.getCategory(),
+                request.getEndDateTime(),
+                Boolean.TRUE.equals(request.getIsAllDay()),
+                Boolean.TRUE.equals(request.getIsImportant()),
+                resolveNotificationMinutes(request.getNotification()),
+                Boolean.TRUE.equals(request.getIsPublic())
+        );
+
+        return RoutineCreateResponse.from(task);
     }
 
     // =========================================================
@@ -102,7 +143,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskListResponse<TaskSummaryResponse> getRoutines(Long userId) {
         return TaskListResponse.of(
-                taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT)
+                taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE)
                         .stream().map(TaskSummaryResponse::from).toList()
         );
     }
@@ -116,24 +157,24 @@ public class TaskService {
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
 
         List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.SCHEDULE).toList();
-        List<Task> habits = tasks.stream().filter(t -> t.getTaskType() == TaskType.HABIT).toList();
+        List<Task> routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
 
         List<CalendarOccurrenceResponse> scheduleOccurrences = schedules.stream()
                 .map(CalendarOccurrenceResponse::fromSchedule)
                 .toList();
 
-        List<Long> habitIds = habits.stream().map(Task::getId).toList();
-        Map<Long, Map<LocalDate, HabitCompletion>> completionMap = loadCompletionMap(habitIds, from, to);
+        List<Long> routineIds = routines.stream().map(Task::getId).toList();
+        Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, from, to);
 
-        List<CalendarOccurrenceResponse> habitOccurrences = habits.stream()
+        List<CalendarOccurrenceResponse> routineOccurrences = routines.stream()
                 .flatMap(task -> expandOccurrences(task, from, to).stream()
-                        .map(date -> CalendarOccurrenceResponse.fromHabitOccurrence(
+                        .map(date -> CalendarOccurrenceResponse.fromRoutineOccurrence(
                                 task, date,
                                 completionMap.getOrDefault(task.getId(), Map.of()).get(date))))
                 .toList();
 
         List<CalendarOccurrenceResponse> allItems = Stream
-                .concat(scheduleOccurrences.stream(), habitOccurrences.stream())
+                .concat(scheduleOccurrences.stream(), routineOccurrences.stream())
                 .sorted(Comparator.comparing(CalendarOccurrenceResponse::getOccurrenceDate))
                 .toList();
 
@@ -145,10 +186,10 @@ public class TaskService {
     // =========================================================
 
     @Transactional(readOnly = true)
-    public TaskCreateResponse getTaskDetail(Long userId, Long taskId) {
+    public RoutineCreateResponse getTaskDetail(Long userId, Long taskId) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
-        return TaskCreateResponse.from(task);
+        return RoutineCreateResponse.from(task);
     }
 
     // =========================================================
@@ -160,13 +201,13 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.HABIT) {
+        if (task.getTaskType() == TaskType.ROUTINE) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
-            if (habitCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
+            if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
                 throw new ApiException(ErrorCode.ALREADY_COMPLETED,
-                        "Habit already completed on " + completionDate);
+                        "Routine already completed on " + completionDate);
             }
-            habitCompletionRepository.save(HabitCompletion.of(task, completionDate));
+            routineCompletionRepository.save(RoutineCompletion.of(task, completionDate));
         } else {
             task.completeTask();
         }
@@ -177,12 +218,12 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.HABIT) {
+        if (task.getTaskType() == TaskType.ROUTINE) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
-            HabitCompletion completion = habitCompletionRepository
+            RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
-            habitCompletionRepository.delete(completion);
+            routineCompletionRepository.delete(completion);
         } else {
             task.undoCompleteTask();
         }
@@ -206,15 +247,15 @@ public class TaskService {
     // private helpers
     // =========================================================
 
-    private Map<Long, Map<LocalDate, HabitCompletion>> loadCompletionMap(
-            List<Long> habitIds, LocalDate from, LocalDate to) {
-        if (habitIds.isEmpty()) return Map.of();
-        return habitCompletionRepository
-                .findAllByTaskIdInAndCompletionDateBetween(habitIds, from, to)
+    private Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
+            List<Long> routineIds, LocalDate from, LocalDate to) {
+        if (routineIds.isEmpty()) return Map.of();
+        return routineCompletionRepository
+                .findAllByTaskIdInAndCompletionDateBetween(routineIds, from, to)
                 .stream()
                 .collect(Collectors.groupingBy(
-                        hc -> hc.getTask().getId(),
-                        Collectors.toMap(HabitCompletion::getCompletionDate, Function.identity())
+                        rc -> rc.getTask().getId(),
+                        Collectors.toMap(RoutineCompletion::getCompletionDate, Function.identity())
                 ));
     }
 

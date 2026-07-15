@@ -36,7 +36,7 @@ public class TaskController {
     // ==============================================
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> getTask(
+    public ResponseEntity<ApiResponse<RoutineCreateResponse>> getTask(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId) {
         return ResponseEntity.ok(ApiResponse.success(taskService.getTaskDetail(userId, taskId)));
@@ -81,7 +81,7 @@ public class TaskController {
     // ==============================================
 
     @PostMapping("/schedule")
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> createSchedule(
+    public ResponseEntity<ApiResponse<ScheduleCreateResponse>> createSchedule(
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody ScheduleCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -97,11 +97,11 @@ public class TaskController {
     }
 
     // ==============================================
-    // 루틴 (HABIT)
+    // 루틴 (ROUTINE)
     // ==============================================
 
     @PostMapping("/routine")
-    public ResponseEntity<ApiResponse<TaskCreateResponse>> createRoutine(
+    public ResponseEntity<ApiResponse<RoutineCreateResponse>> createRoutine(
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody RoutineCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)

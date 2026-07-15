@@ -2,16 +2,12 @@ package com.oow.todowithspirit.dto.task;
 
 import com.oow.todowithspirit.domain.task.CategoryType;
 import com.oow.todowithspirit.domain.task.NotificationType;
-import com.oow.todowithspirit.domain.task.RepeatType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 public class ScheduleCreateRequest {
@@ -22,24 +18,13 @@ public class ScheduleCreateRequest {
 
     private Boolean isImportant;
 
-    @NotNull(message = "Start datetime is required")
-    private LocalDateTime startDatetime;
+    @NotNull(message = "endDateTime is required")
+    private LocalDateTime endDateTime;
 
-    private LocalDateTime endDatetime;
-
+    @NotNull(message = "isAllDay is required")
     private Boolean isAllDay;
 
-    private RepeatType repeatType;
-
-    private LocalDate repeatEndDate;
-
-    // 매주 반복 시 선택 요일 (MONDAY ~ SUNDAY)
-    private Set<DayOfWeek> repeatDaysOfWeek;
-
-    // 매월 반복 시 선택 일 (1 ~ 31)
-    private Set<Integer> repeatDaysOfMonth;
-
-    private NotificationType notification;
+    private NotificationType notificationType;
 
     private CategoryType category;
 
