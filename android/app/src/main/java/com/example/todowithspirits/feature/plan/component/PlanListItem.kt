@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -244,7 +245,8 @@ fun PlanListItem(
                             text = item.title,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.color.onSurfaceColor5
+                            color = SpiritTodoTheme.color.onSurfaceColor5,
+                            textDecoration = if(item.isDone) TextDecoration.LineThrough else TextDecoration.None
                         )
 
                         if (item.isImportant) {

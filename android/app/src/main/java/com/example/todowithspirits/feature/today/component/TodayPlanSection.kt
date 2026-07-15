@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
@@ -334,7 +335,8 @@ private fun TodayListItem(
             text = title,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.color.onSurfaceColor5
+            color = SpiritTodoTheme.color.onSurfaceColor5,
+            textDecoration = if(isDone) TextDecoration.LineThrough else TextDecoration.None
         )
 
         if (isImportant) {
