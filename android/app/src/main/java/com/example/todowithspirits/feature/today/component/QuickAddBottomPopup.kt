@@ -1,7 +1,6 @@
 package com.example.todowithspirits.feature.today.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -143,7 +142,6 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp)
                         .padding(top = 14.dp, bottom = 12.dp)
-                        .animateContentSize()
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -242,8 +240,8 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                         stringResource(R.string.todo) -> {
                             AnimatedVisibility(
                                 visible = isScheduleSectionVisible,
-                                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                                exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut()
                             ) {
                                 Column {
                                     Column(
@@ -282,8 +280,8 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
 
                                         AnimatedVisibility(
                                             visible = isDateExpanded,
-                                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                            enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                                            exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut()
                                         ) {
                                             Column {
                                                 CalendarView(
@@ -333,8 +331,8 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
 
                                         AnimatedVisibility(
                                             visible = isTimeEnabled,
-                                            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                            enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                                            exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut()
                                         ) {
                                             Column(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -361,13 +359,6 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(
-                                        when(repeatOption) {
-                                            RepeatOption.WEEKLY -> 113.dp
-                                            RepeatOption.MONTHLY -> 219.dp
-                                            else -> 45.dp
-                                        }
-                                    )
                                     .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
                                     .padding(horizontal = 14.dp)
                             ) {
@@ -378,8 +369,8 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
 
                                 AnimatedVisibility(
                                     visible = repeatOption == RepeatOption.WEEKLY,
-                                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                                    exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut()
                                 ) {
                                     DayOfWeekSelector(
                                         selectedDays = selectedWeekDays,
@@ -393,8 +384,8 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
 
                                 AnimatedVisibility(
                                     visible = repeatOption == RepeatOption.MONTHLY,
-                                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+                                    enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(),
+                                    exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut()
                                 ) {
                                     MonthlyCalendarView(
                                         selectedDays = selectedMonthDays,
