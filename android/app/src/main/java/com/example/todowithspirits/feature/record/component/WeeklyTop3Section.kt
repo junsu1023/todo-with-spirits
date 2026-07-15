@@ -24,7 +24,7 @@ import com.example.todowithspirits.R
 
 @Composable
 fun WeeklyTop3Section() {
-    val trackColor = SpiritTodoTheme.colors.onSurfaceColor3
+    val trackColor = SpiritTodoTheme.color.surfaceColor3
     val items = listOf(
         Triple(trackColor, "학업/커리어", "15회"),
         Triple(trackColor, "인간관계/약속", "8회"),
@@ -35,7 +35,7 @@ fun WeeklyTop3Section() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.colors.white, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                 .padding(horizontal = 10.dp, vertical = 9.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically

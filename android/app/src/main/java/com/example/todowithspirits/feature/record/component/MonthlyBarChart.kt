@@ -114,7 +114,7 @@ fun MonthlyBarChart() {
                             .fillMaxWidth(0.5f)
                             .fillMaxHeight(fraction.coerceAtLeast(0.01f))
                             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                            .background(SpiritTodoTheme.color.surfaceColor17)
+                            .background(SpiritTodoTheme.color.systemArea)
                     )
                 }
             }

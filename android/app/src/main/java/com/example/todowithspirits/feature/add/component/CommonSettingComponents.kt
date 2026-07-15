@@ -352,7 +352,7 @@ fun DayOfWeekSelector(
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
-                        color = SpiritTodoTheme.colors.white,
+                        color = SpiritTodoTheme.color.surfaceColor1,
                         shape = RoundedCornerShape(4.dp)
                     ),
                 contentAlignment = Alignment.Center
