@@ -130,7 +130,12 @@ public class TaskController {
 
     @GetMapping("/routine")
     public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getRoutines(
-            @AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId)));
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(value = "date", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        LocalDate targetDate = (date != null) ? date : LocalDate.now();
+
+        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId, targetDate)));
     }
 }

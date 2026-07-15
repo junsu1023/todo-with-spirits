@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,8 +22,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private static final EnumSet<RepeatType> ROUTINE_ALLOWED_REPEAT =
-            EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
+    private static final EnumSet<RepeatType> ROUTINE_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -140,12 +140,37 @@ public class TaskService {
         return TaskListResponse.of(tasks.stream().map(TaskSummaryResponse::from).toList());
     }
 
+    // 특정 날짜 기준 활성화 여부 및 완료 판단
     @Transactional(readOnly = true)
-    public TaskListResponse<TaskSummaryResponse> getRoutines(Long userId) {
-        return TaskListResponse.of(
-                taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE)
-                        .stream().map(TaskSummaryResponse::from).toList()
-        );
+    public TaskListResponse<TaskSummaryResponse> getRoutines(Long userId, LocalDate targetDate) {
+        // default: 오늘
+        LocalDate date = (targetDate != null) ? targetDate : LocalDate.now();
+
+        // 사용자의 전체 루틴 조회
+        List<Task> allRoutines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
+
+        // 1. 해당 일자에 실제로 '수행 조건'에 부합하는 루틴들만 필터링 (In-Memory Filter)
+        List<Task> activeRoutines = allRoutines.stream()
+                .filter(task -> isRoutineActiveOnDate(task, date))
+                .toList();
+
+        if (activeRoutines.isEmpty()) {
+            return TaskListResponse.of(Collections.emptyList());
+        }
+
+        // 2. 해당 일자에 실제로 완료된 루틴들의 목록 매핑
+        List<Long> routineIds = activeRoutines.stream().map(Task::getId).toList();
+        Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, date, date);
+
+        // 3. 응답에 해당 일자 기준의 완료 여부(isCompleted)를 정확하게 담아 내려줌
+        List<TaskSummaryResponse> items = activeRoutines.stream()
+                .map(task -> {
+                    boolean isCompleted = completionMap.getOrDefault(task.getId(), Map.of()).containsKey(date);
+                    return TaskSummaryResponse.fromRoutineWithDateContext(task, isCompleted, date);
+                })
+                .toList();
+
+        return TaskListResponse.of(items);
     }
 
     // =========================================================
@@ -154,15 +179,27 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public CalendarTaskListResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From and to dates are required.");
+        }
+
+        // 성능 안전장치: 최대 90일(약 3개월) 까지만 캘린더 한 번에 조회 허용
+        long daysBetween = ChronoUnit.DAYS.between(from, to);
+        if (daysBetween > 90) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of calendar data.");
+        }
+
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
 
         List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.SCHEDULE).toList();
         List<Task> routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
 
+        // 1. 일정 Occurrence 변환
         List<CalendarOccurrenceResponse> scheduleOccurrences = schedules.stream()
                 .map(CalendarOccurrenceResponse::fromSchedule)
                 .toList();
 
+        // 2. 루틴 Occurrence 변환 (완료 상태 맵핑 포함)
         List<Long> routineIds = routines.stream().map(Task::getId).toList();
         Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, from, to);
 
@@ -173,9 +210,11 @@ public class TaskService {
                                 completionMap.getOrDefault(task.getId(), Map.of()).get(date))))
                 .toList();
 
+        // 3. 최종 병합 및 정렬 (날짜 순 -> 같으면 시간 순 정렬)
         List<CalendarOccurrenceResponse> allItems = Stream
                 .concat(scheduleOccurrences.stream(), routineOccurrences.stream())
-                .sorted(Comparator.comparing(CalendarOccurrenceResponse::getOccurrenceDate))
+                .sorted(Comparator.comparing(CalendarOccurrenceResponse::getOccurrenceDate)
+                        .thenComparing(CalendarOccurrenceResponse::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
 
         return CalendarTaskListResponse.of(allItems);
@@ -244,8 +283,21 @@ public class TaskService {
     }
 
     // =========================================================
-    // private helpers
+    // helpers
     // =========================================================
+
+    private boolean isRoutineActiveOnDate(Task task, LocalDate date) {
+        // 루틴 시작 전이거나, 종료일 이후라면 비활성화
+        if (date.isBefore(task.getStartDate())) return false;
+        if (task.getRepeatEndDate() != null && date.isAfter(task.getRepeatEndDate())) return false;
+
+        return switch (task.getRepeatType()) {
+            case DAILY -> true;
+            case WEEKLY -> task.getRepeatDaysOfWeek().contains(date.getDayOfWeek());
+            case MONTHLY -> task.getRepeatDaysOfMonth().contains(date.getDayOfMonth());
+            default -> false;
+        };
+    }
 
     private Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
             List<Long> routineIds, LocalDate from, LocalDate to) {
