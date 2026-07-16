@@ -22,15 +22,7 @@ public class RoutineCreateResponse {
     private String memo;
     private String category;
 
-    // 일정 전용
-    private Boolean isAllDay;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
-    private Boolean isImportant;
-
-    // 반복 (루틴 전용)
+    // 반복
     private String repeatType;
     private LocalDate repeatEndDate;
     private List<String> repeatDaysOfWeek;
@@ -60,7 +52,6 @@ public class RoutineCreateResponse {
                 .title(task.getTitle())
                 .memo(task.getMemo())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
-                .startDate(task.getStartDate())
                 .repeatType(task.getRepeatType() != null ? task.getRepeatType().name() : RepeatType.NONE.name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .repeatDaysOfWeek(task.getRepeatDaysOfWeek().stream().map(DayOfWeek::name).toList())
