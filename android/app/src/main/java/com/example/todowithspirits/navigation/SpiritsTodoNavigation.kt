@@ -17,6 +17,7 @@ import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
+import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
@@ -37,9 +38,19 @@ fun SpiritsTodoNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Today.route,
+        startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onLoginCompleted = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Today.route) {
             TodayScreen(navigateToAlarm = navigateToAlarm)
         }
