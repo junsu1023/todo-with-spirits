@@ -53,10 +53,9 @@ import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun SettingGroup(
@@ -214,7 +213,7 @@ fun SettingDateItem(
     onDateSelected: (LocalDate) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+    val dateFormatter = KoreanDateWithDayFormatter
 
     BaseSettingRow(
         icon = icon,

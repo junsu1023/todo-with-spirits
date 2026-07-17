@@ -1,7 +1,5 @@
 package com.example.todowithspirits.component
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,14 +66,10 @@ fun SpiritsTodoDropdown(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        onClick = {
-                                            onOptionSelected(option)
-                                            expanded = false
-                                        }
-                                    )
+                                    .noRippleClickable {
+                                        onOptionSelected(option)
+                                        expanded = false
+                                    }
                                     .padding(vertical = itemVerticalPadding),
                                 contentAlignment = Alignment.Center
                             ) {

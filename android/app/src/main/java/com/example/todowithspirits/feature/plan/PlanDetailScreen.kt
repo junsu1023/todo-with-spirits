@@ -9,8 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +28,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -45,10 +42,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.viewmodel.PlanDetailViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun PlanDetailScreen(
@@ -61,8 +59,8 @@ fun PlanDetailScreen(
         planDetailViewModel.loadTask(itemId.toLong())
     }
 
-    val planState by planDetailViewModel.plan.collectAsState()
-    val isLoading by planDetailViewModel.isLoading.collectAsState()
+    val planState by planDetailViewModel.plan.collectAsStateWithLifecycle()
+    val isLoading by planDetailViewModel.isLoading.collectAsStateWithLifecycle()
     val item = planState
 
     if (isLoading) {
@@ -110,7 +108,7 @@ fun PlanDetailScreen(
         return
     }
 
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+    val dateFormatter = KoreanDateWithDayFormatter
     val dateText = buildString {
         item.dueDate?.let { date ->
             append(date.format(dateFormatter))
@@ -137,11 +135,7 @@ fun PlanDetailScreen(
                         contentDescription = null,
                         modifier = Modifier
                             .size(24.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = navigateToAdd
-                            )
+                            .noRippleClickable(onClick = navigateToAdd)
                     )
 
                     Image(
@@ -257,10 +251,7 @@ fun PlanDetailScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 20.dp)
                 .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(6.dp))
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onBack() }
+                .noRippleClickable { onBack() }
                 .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
         ) {

@@ -8,8 +8,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +38,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.TodoItem
@@ -83,10 +82,7 @@ fun TodayPlanSection(
                     painter = painterResource(R.drawable.todo_arrow1),
                     contentDescription = null,
                     modifier = Modifier
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { isWeekExpanded = !isWeekExpanded }
+                        .noRippleClickable { isWeekExpanded = !isWeekExpanded }
                         .rotate(if(isWeekExpanded) 180f else 0f)
                 )
             }
@@ -248,10 +244,7 @@ private fun WeeklyCalendarStrip(
                         color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.surfaceColor4,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onDateSelected(date) }
+                    .noRippleClickable { onDateSelected(date) }
                     .padding(vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -314,10 +307,7 @@ private fun TodayListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() },
+            .noRippleClickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

@@ -10,8 +10,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -30,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.record.component.DailyReportCard
 import com.example.todowithspirits.feature.record.component.MonthlyReportCard
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
@@ -118,11 +118,7 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { selectedTab = tab }
-                            )
+                            .noRippleClickable { selectedTab = tab }
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -137,10 +133,16 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
             }
         }
 
+        val scrollState = rememberScrollState()
+
+        LaunchedEffect(selectedTab) {
+            scrollState.scrollTo(0)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(horizontal = 18.dp)
         ) {
             Spacer(Modifier.height(20.dp))
@@ -185,10 +187,7 @@ private fun WeeklyTabContent() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { isWeekExpanded = !isWeekExpanded }
+            .noRippleClickable { isWeekExpanded = !isWeekExpanded }
             .padding(bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -225,10 +224,7 @@ private fun WeeklyTabContent() {
                 contentDescription = null,
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { weekStart = weekStart.minusWeeks(1) }
+                    .noRippleClickable { weekStart = weekStart.minusWeeks(1) }
             )
 
             Text(
@@ -245,10 +241,7 @@ private fun WeeklyTabContent() {
                 colorFilter = ColorFilter.tint(color = SpiritTodoTheme.color.todoTextMain),
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { weekStart = weekStart.plusWeeks(1) }
+                    .noRippleClickable { weekStart = weekStart.plusWeeks(1) }
             )
         }
     }

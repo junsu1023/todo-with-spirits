@@ -1,9 +1,7 @@
 package com.example.todowithspirits.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -154,10 +152,7 @@ private fun WheelColumn(
                                 cameraDistance = 16f * density
                             }
                         }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
+                        .noRippleClickable {
                             scope.launch { listState.animateScrollToItem(index) }
                         },
                     contentAlignment = Alignment.Center

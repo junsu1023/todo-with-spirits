@@ -3,8 +3,6 @@ package com.example.todowithspirits.feature.record.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.PillBadge
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -87,10 +87,7 @@ fun MonthlyReportCard() {
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { currentYearMonth = currentYearMonth.minusMonths(1) }
+                            .noRippleClickable { currentYearMonth = currentYearMonth.minusMonths(1) }
                     )
 
                     Spacer(modifier = Modifier.width(14.dp))
@@ -101,10 +98,7 @@ fun MonthlyReportCard() {
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { currentYearMonth = currentYearMonth.plusMonths(1) }
+                            .noRippleClickable { currentYearMonth = currentYearMonth.plusMonths(1) }
                     )
                 }
             }
@@ -295,33 +289,21 @@ fun MonthlyReportCard() {
                             .offset(x = (-46).dp, y = (-20).dp)
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .offset(x = (-60).dp, y = (5).dp)
-                            .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(50.dp))
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.monthly_achievement_rate, 99),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = SpiritTodoTheme.color.mainTextAndStroke
-                        )
-                    }
+                    PillBadge(
+                        text = stringResource(R.string.monthly_achievement_rate, 99),
+                        backgroundColor = SpiritTodoTheme.color.surfaceColor14,
+                        textColor = SpiritTodoTheme.color.mainTextAndStroke,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.offset(x = (-60).dp, y = (5).dp)
+                    )
 
-                    Box(
-                        modifier = Modifier
-                            .offset(x = ((-50).dp), y = 25.dp)
-                            .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(50.dp))
-                            .padding(horizontal = 12.dp, vertical = 6.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.monthly_peer_top, 4),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = SpiritTodoTheme.color.mainTextAndStroke
-                        )
-                    }
+                    PillBadge(
+                        text = stringResource(R.string.monthly_peer_top, 4),
+                        backgroundColor = SpiritTodoTheme.color.surfaceColor14,
+                        textColor = SpiritTodoTheme.color.mainTextAndStroke,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.offset(x = ((-50).dp), y = 25.dp)
+                    )
                 }
 
                 Spacer(Modifier.height(12.dp))

@@ -1,9 +1,11 @@
 package com.example.todowithspirits.feature.today.state
 
+import androidx.compose.runtime.Immutable
 import com.example.todowithspirits.feature.plan.PlanType
 import java.time.LocalDate
 import java.time.LocalTime
 
+@Immutable
 data class TodayUiState(
     val spiritInfo: SpiritInfo = SpiritInfo(),
     val selectedDate: LocalDate = LocalDate.now(),
@@ -12,6 +14,7 @@ data class TodayUiState(
     val weekEvents: Map<LocalDate, List<PlanType>> = emptyMap()
 )
 
+@Immutable
 data class SpiritInfo(
     val name: String = "",
     val level: Int = 0,
@@ -20,6 +23,7 @@ data class SpiritInfo(
     val todayPoints: Int = 0
 )
 
+@Immutable
 data class TodoItem(
     val taskId: Long,
     val title: String,
@@ -30,6 +34,7 @@ data class TodoItem(
     val memo: String = ""
 )
 
+@Immutable
 data class RoutineItem(
     val taskId: Long,
     val title: String,

@@ -5,11 +5,9 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +42,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.PlanItemData
 import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -109,11 +108,7 @@ fun PlanListItem(
                     .fillMaxHeight()
                     .padding(end = 8.dp)
                     .background(SpiritTodoTheme.color.surfaceColor10, RoundedCornerShape(6.dp))
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = closeThen(onPostpone)
-                    ),
+                    .noRippleClickable(onClick = closeThen(onPostpone)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -141,11 +136,7 @@ fun PlanListItem(
                         .fillMaxWidth()
                         .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                         .border(1.dp, SpiritTodoTheme.color.onSurfaceColor7, RoundedCornerShape(6.dp))
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = closeThen(onDelete)
-                        ),
+                        .noRippleClickable(onClick = closeThen(onDelete)),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -161,11 +152,7 @@ fun PlanListItem(
                         .fillMaxWidth()
                         .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
                         .border(1.dp, SpiritTodoTheme.color.onSurfaceColor8, RoundedCornerShape(6.dp))
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = closeThen(onEdit)
-                        ),
+                        .noRippleClickable(onClick = closeThen(onEdit)),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -207,10 +194,7 @@ fun PlanListItem(
                         }
                     }
                 )
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
+                .noRippleClickable {
                     if (offsetX.value == 0f) navigateToDetail()
                 },
             color = SpiritTodoTheme.color.surfaceColor12,

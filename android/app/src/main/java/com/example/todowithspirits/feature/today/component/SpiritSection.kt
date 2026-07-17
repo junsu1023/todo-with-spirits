@@ -1,7 +1,5 @@
 package com.example.todowithspirits.feature.today.component
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,22 +25,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun SpiritSection(spiritInfo: SpiritInfo) {
-    var progressTarget by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(spiritInfo.curExp, spiritInfo.maxExp) {
-        progressTarget = spiritInfo.curExp.toFloat() / spiritInfo.maxExp.toFloat()
-    }
-
-    val progress by animateFloatAsState(
-        targetValue = progressTarget,
-        animationSpec = tween(durationMillis = 1000),
-        label = "spiritExpProgress"
-    )
+    val expProgress = if (spiritInfo.maxExp == 0) 0f else spiritInfo.curExp.toFloat() / spiritInfo.maxExp.toFloat()
+    val progress by rememberAnimatedProgress(expProgress, label = "spiritExpProgress")
 
     Row(
         modifier = Modifier

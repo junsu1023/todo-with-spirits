@@ -1,11 +1,13 @@
 package com.example.todowithspirits.feature.plan.state
 
+import androidx.compose.runtime.Immutable
 import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.feature.plan.PlanItemData
 import com.example.todowithspirits.feature.plan.PlanType
 import java.time.LocalDate
 import java.time.YearMonth
 
+@Immutable
 data class PlanUiState(
     val selectedTab: String = "전체",
     val isHidden: Boolean = false,
@@ -16,6 +18,7 @@ data class PlanUiState(
     val plans: List<PlanItemData> = emptyList()
 )
 
+@Immutable
 data class DayPlanEvents(
     val types: List<PlanType> = emptyList(),
     val importantCount: Int = 0

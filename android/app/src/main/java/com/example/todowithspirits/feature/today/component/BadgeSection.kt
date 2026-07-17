@@ -1,6 +1,5 @@
 package com.example.todowithspirits.feature.today.component
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +28,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.CircularProgressArc
+import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlin.math.roundToInt
 
 // dummy data
 private const val ACHIEVEMENT_RATE = 0.7f
@@ -152,38 +151,21 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
 private fun CircularProgressIndicator(progress: Float) {
     val todoTextMain = SpiritTodoTheme.color.mainTextAndStroke
     val trackColor = SpiritTodoTheme.color.surfaceColor7
-    val percentage = (progress * 100).toInt()
+
+    val animatedProgress by rememberAnimatedProgress(progress, label = "achievementRateProgress")
+    val percentage = (animatedProgress * 100).roundToInt()
 
     Box(
         modifier = Modifier.size(72.dp),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = 4.dp.toPx()
-            val diameter = size.minDimension - strokeWidth
-            val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
-            val arcSize = Size(diameter, diameter)
-
-            drawArc(
-                color = trackColor,
-                startAngle = -90f,
-                sweepAngle = 360f,
-                useCenter = false,
-                style = Stroke(width = strokeWidth),
-                size = arcSize,
-                topLeft = topLeft
-            )
-
-            drawArc(
-                color = todoTextMain,
-                startAngle = -90f,
-                sweepAngle = 360f * progress,
-                useCenter = false,
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
-                size = arcSize,
-                topLeft = topLeft
-            )
-        }
+        CircularProgressArc(
+            progress = animatedProgress,
+            color = todoTextMain,
+            trackColor = trackColor,
+            strokeWidth = 4.dp,
+            modifier = Modifier.fillMaxSize()
+        )
 
         Text(
             text = "$percentage%",
