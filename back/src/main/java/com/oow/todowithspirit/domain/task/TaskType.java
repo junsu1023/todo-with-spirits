@@ -2,7 +2,7 @@ package com.oow.todowithspirit.domain.task;
 
 public enum TaskType {
 
-    TODO("할일"), HABIT("루틴");
+    SCHEDULE("할일"), ROUTINE("루틴");
 
     private final String label;
 

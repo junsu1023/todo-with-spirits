@@ -84,9 +84,9 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() != TaskType.HABIT) {
+        if (task.getTaskType() != TaskType.ROUTINE) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
-                    "Task is not a habit");
+                    "Task is not a routine");
         }
 
         task.updateRoutine(
@@ -109,7 +109,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() != TaskType.TODO) {
+        if (task.getTaskType() != TaskType.SCHEDULE) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
                     "Task is not a schedule");
         }
@@ -135,8 +135,8 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskListResponse<ScheduleCreateResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
         List<Task> tasks = (from != null && to != null)
-                ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.TODO, from, to)
-                : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.TODO);
+                ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.ROUTINE, from, to)
+                : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
         return TaskListResponse.of(tasks.stream().map(ScheduleCreateResponse::from).toList());
     }
 
@@ -150,11 +150,11 @@ public class TaskService {
         // 최대 90일 제한
         long daysBetween = ChronoUnit.DAYS.between(from, to);
         if (daysBetween > 90) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of habit data.");
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of routine data.");
         }
 
         // 사용자의 전체 루틴 조회
-        List<Task> allRoutines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.HABIT);
+        List<Task> allRoutines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
 
         // 루틴 완료 상태 일괄 조회
         List<Long> routineIds = allRoutines.stream().map(Task::getId).toList();
@@ -188,8 +188,8 @@ public class TaskService {
         // 일정과 루틴 데이터를 한 번에 조회 (기존에 작성하신 쿼리 사용)
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
 
-        List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.TODO).toList();
-        List<Task> routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.HABIT).toList();
+        List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
+        List<Task> routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
 
         // 1. 일정 Occurrence 변환 (일정 전용 응답 적용)
         List<ScheduleOccurrenceResponse> scheduleOccurrences = schedules.stream()
@@ -249,7 +249,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.HABIT) {
+        if (task.getTaskType() == TaskType.ROUTINE) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
                 throw new ApiException(ErrorCode.ALREADY_COMPLETED,
@@ -266,7 +266,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.HABIT) {
+        if (task.getTaskType() == TaskType.ROUTINE) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
@@ -327,7 +327,8 @@ public class TaskService {
 
         if (rangeStart.isAfter(rangeEnd)) return List.of();
 
-        return switch (task.getRepeatType()) {
+        // 1. 기본 반복 규칙에 따라 발생 가능한 일자 생성
+        List<LocalDate> baseDates = switch (task.getRepeatType()) {
             case DAILY -> rangeStart.datesUntil(rangeEnd.plusDays(1)).toList();
             case WEEKLY -> {
                 Set<DayOfWeek> days = task.getRepeatDaysOfWeek();
