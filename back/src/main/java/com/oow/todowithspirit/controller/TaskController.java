@@ -109,7 +109,7 @@ public class TaskController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getSchedules(
+    public ResponseEntity<ApiResponse<TaskListResponse<ScheduleCreateResponse>>> getSchedules(
             @AuthenticationPrincipal Long userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {

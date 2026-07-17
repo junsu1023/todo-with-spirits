@@ -21,8 +21,6 @@ public class ScheduleCreateResponse {
 
     // 일정 전용
     private Boolean isAllDay;
-    private LocalDate startDate;
-    private LocalTime startTime;
     private LocalDate endDate;
     private LocalTime endTime;
     private Boolean isImportant;
