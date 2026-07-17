@@ -89,7 +89,7 @@ public class TaskController {
     // ==============================================
 
     @GetMapping("/calendar")
-    public ResponseEntity<ApiResponse<CalendarTaskListResponse>> getCalendarTasks(
+    public ResponseEntity<ApiResponse<TaskListResponse<TaskOccurrenceResponse>>> getCalendarTasks(
             @AuthenticationPrincipal Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -129,13 +129,15 @@ public class TaskController {
     }
 
     @GetMapping("/routine")
-    public ResponseEntity<ApiResponse<TaskListResponse<TaskSummaryResponse>>> getRoutines(
+    public ResponseEntity<ApiResponse<TaskListResponse<RoutineOccurrenceResponse>>> getRoutines(
             @AuthenticationPrincipal Long userId,
-            @RequestParam(value = "date", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        LocalDate targetDate = (date != null) ? date : LocalDate.now();
-
-        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId, targetDate)));
+        if (from == null && to == null) {
+            from = LocalDate.now();
+            to = LocalDate.now();
+        }
+        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId, from, to)));
     }
 }
