@@ -105,15 +105,14 @@
     <string name="birthday">생년월일</string>
     <string name="gender">성별</string>
     <string name="linked_account">연동 계정</string>
-    <string name="reauth_required">재인증 필요</string>
     <string name="logout">로그아웃</string>
-    <string name="withdraw">회원 탈퇴</string>
+    <string name="withdraw">회원탈퇴</string>
     <string name="detail_alarm_setting">세부 설정</string>
     <string name="all_plan">전체 플랜</string>
     <string name="my_page_title">마이 페이지</string>
     <string name="version">버전</string>
     <string name="modify_profile">프로필 수정</string>
-    <string name="modify_password">비밀번호 변경</string>
+    <string name="modify_password">비밀번호 수정</string>
     <string name="dark_mode">다크모드</string>
     <string name="show_plan_dday">플랜 디데이 표시</string>
     <string name="plan_sort">플랜 정렬</string>
