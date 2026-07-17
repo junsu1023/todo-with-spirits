@@ -61,6 +61,9 @@ public class Task extends BaseTimeEntity {
     @Column(name = "is_important", nullable = false)
     private boolean isImportant;
 
+    @Column(name="exclude_holiday", nullable = false)
+    private boolean excludeHoliday;
+
     // 반복
     @Enumerated(EnumType.STRING)
     @Column(name = "repeat_type", nullable = false)
@@ -138,7 +141,7 @@ public class Task extends BaseTimeEntity {
     public static Task createRoutine(User user, String title, String memo, CategoryType category,
                                      RepeatType repeatType, LocalDate repeatEndDate,
                                      Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                                     Integer notificationMinutes, boolean isPublic) {
+                                     Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
         Task task = new Task();
         task.user = user;
         task.taskType = TaskType.ROUTINE;
@@ -153,6 +156,7 @@ public class Task extends BaseTimeEntity {
         task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
         task.notificationMinutes = notificationMinutes;
         task.isPublic = isPublic;
+        task.excludeHoliday = excludeHoliday;
         return task;
     }
 

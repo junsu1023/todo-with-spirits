@@ -26,6 +26,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final HolidayRepository holidayRepository;
     private final RoutineCompletionRepository routineCompletionRepository;
 
     // =========================================================
@@ -68,7 +69,8 @@ public class TaskService {
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
                 resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                Boolean.TRUE.equals(request.getIsPublic()),
+                Boolean.TRUE.equals(request.getExcludeHoliday())
         );
         return RoutineCreateResponse.from(taskRepository.save(task));
     }
@@ -344,6 +346,21 @@ public class TaskService {
             }
             default -> List.of();
         };
+
+        // 2. [추가] "공휴일 제외" 옵션이 켜져 있는 경우 필터링
+        if (task.isExcludeHoliday() && !baseDates.isEmpty()) {
+            // 루프 돌면서 매번 쿼리를 날리지 않고, 전개된 기간(rangeStart ~ rangeEnd) 내의 공휴일을 한 번에 가져옴
+            Set<LocalDate> holidaysInRange = holidayRepository.findAllByHolidayDateBetween(rangeStart, rangeEnd)
+                    .stream()
+                    .map(Holiday::getHolidayDate)
+                    .collect(Collectors.toSet());
+
+            return baseDates.stream()
+                    .filter(date -> !holidaysInRange.contains(date)) // 고속 해시셋 매칭 (O(1))
+                    .toList();
+        }
+
+        return baseDates;
     }
 
     private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {

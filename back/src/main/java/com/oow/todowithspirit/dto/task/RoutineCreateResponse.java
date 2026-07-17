@@ -26,6 +26,7 @@ public class RoutineCreateResponse {
     private LocalDate repeatEndDate;
     private List<String> repeatDaysOfWeek;
     private List<Integer> repeatDaysOfMonth;
+    private Boolean excludeHoliday;
 
     // 공통
     private Integer notificationMinutes;
@@ -55,6 +56,7 @@ public class RoutineCreateResponse {
                 .repeatEndDate(task.getRepeatEndDate())
                 .repeatDaysOfWeek(task.getRepeatDaysOfWeek().stream().map(DayOfWeek::name).toList())
                 .repeatDaysOfMonth(List.copyOf(task.getRepeatDaysOfMonth()))
+                .excludeHoliday(task.isExcludeHoliday())
                 .notificationMinutes(task.getNotificationMinutes())
                 .notificationAt(task.getNotificationAt())
                 .isPublic(task.isPublic())

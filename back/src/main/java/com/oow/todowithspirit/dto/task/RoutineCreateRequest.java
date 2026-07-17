@@ -37,6 +37,8 @@ public class RoutineCreateRequest {
 
     private Boolean isPublic;
 
+    private Boolean excludeHoliday;
+
     @Size(max = 2000, message = "Memo must be 2000 characters or less")
     private String memo;
 }
