@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,7 +32,7 @@ fun DisplaySettingScreen(
     displaySettingViewModel: DisplaySettingViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
-    val uiState by displaySettingViewModel.uiState.collectAsState()
+    val uiState by displaySettingViewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier

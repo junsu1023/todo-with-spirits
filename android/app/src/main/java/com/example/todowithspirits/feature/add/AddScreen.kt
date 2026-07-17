@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +28,7 @@ fun AddScreen(
     addViewModel: AddViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val uiState by addViewModel.uiState.collectAsState()
+    val uiState by addViewModel.uiState.collectAsStateWithLifecycle()
 
     val todoText = stringResource(R.string.todo)
     val routineText = stringResource(R.string.routine)

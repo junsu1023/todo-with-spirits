@@ -24,7 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 private data class MonthBarData(val month: Int, val value: Int?)
@@ -101,6 +103,7 @@ fun MonthlyBarChart() {
         ) {
             monthBarDummyData.forEach { month ->
                 val fraction = if (month.value == null || maxValue == 0) 0.05f else month.value.toFloat() / maxValue
+                val animatedFraction by rememberAnimatedProgress(fraction, label = "monthBarFraction${month.month}")
 
                 Column(
                     modifier = Modifier
@@ -112,7 +115,7 @@ fun MonthlyBarChart() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
-                            .fillMaxHeight(fraction.coerceAtLeast(0.01f))
+                            .fillMaxHeight(animatedFraction.coerceAtLeast(0.01f))
                             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                             .background(SpiritTodoTheme.color.systemArea)
                     )

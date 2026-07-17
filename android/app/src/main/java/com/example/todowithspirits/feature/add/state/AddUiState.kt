@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.add.state
 
+import androidx.compose.runtime.Immutable
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
@@ -8,6 +9,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
+@Immutable
 data class AddUiState(
     val title: String = "",
     val isImportant: Boolean = false,

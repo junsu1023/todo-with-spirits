@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,7 +26,7 @@ fun AlarmSettingScreen(
     alarmSettingViewModel: AlarmSettingViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val uiState by alarmSettingViewModel.uiState.collectAsState()
+    val uiState by alarmSettingViewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier.fillMaxSize()
