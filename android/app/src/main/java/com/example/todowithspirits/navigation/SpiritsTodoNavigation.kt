@@ -16,6 +16,7 @@ import com.example.todowithspirits.feature.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.record.RecordScreen
+import com.example.todowithspirits.feature.setting.EditProfileScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
 @Composable
@@ -28,6 +29,7 @@ fun SpiritsTodoNavigation(
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
+    val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
     }
@@ -95,7 +97,14 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.AccountSetting.route) {
-            AccountSettingScreen(onBack = onBack)
+            AccountSettingScreen(
+                onBack = onBack,
+                onNicknameClick = navigateToNicknameEdit
+            )
+        }
+
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(onBack = onBack)
         }
 
         composable(Screen.DisplaySetting.route) {
