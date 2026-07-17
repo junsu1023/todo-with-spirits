@@ -2,6 +2,7 @@ package com.example.data.api
 
 import com.example.data.constant.URLConstant
 import com.example.data.request.CreateRoutineRequest
+import com.example.data.request.CreateTodoRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
@@ -21,6 +22,9 @@ interface TaskApi {
         @Query("from") from: String?,
         @Query("to") to: String?
     ): Response<ApiResponse<TaskCalendarResponse>>
+
+    @POST(URLConstant.TASK.TASK_SCHEDULE)
+    suspend fun createTodo(@Body request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>>
 
     @POST(URLConstant.TASK.TASK_ROUTINE)
     suspend fun createRoutine(@Body request: CreateRoutineRequest): Response<ApiResponse<TaskDetailResponse>>

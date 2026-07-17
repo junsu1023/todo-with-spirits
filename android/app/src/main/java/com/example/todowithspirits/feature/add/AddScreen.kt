@@ -74,7 +74,11 @@ fun AddScreen(
                     onAlarmOptionChange = { addViewModel.setAlarmOption(it) },
                     onCategoryOptionChange = { addViewModel.setCategoryOption(it) },
                     onPublicOptionChange = { addViewModel.setPublicOption(it) },
-                    onMemoChange = { addViewModel.setMemo(it) }
+                    onMemoChange = { addViewModel.setMemo(it) },
+                    onRegisterClick = {
+                        addViewModel.registerTodo()
+                        onBack()
+                    }
                 )
                 else -> RoutineForm(
                     uiState = uiState,

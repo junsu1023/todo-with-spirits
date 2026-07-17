@@ -1,13 +1,16 @@
 package com.example.data.mapper
 
 import com.example.data.request.CreateRoutineRequest
+import com.example.data.request.CreateTodoRequest
 import com.example.data.response.LoginResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
 import com.example.domain.model.AlarmOption
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
+import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskSummary
@@ -83,6 +86,17 @@ fun TaskListItemResponse.toDomain(): TaskSummary = TaskSummary(
     updatedAt = LocalDateTime.parse(updatedAt)
 )
 
+fun NewTodo.toRequest(): CreateTodoRequest = CreateTodoRequest(
+    title = title,
+    isAllDay = isAllDay,
+    endDateTime = endDateTime,
+    isImportant = isImportant,
+    notificationType = notificationType.toApiValue(),
+    category = category.toApiValue(),
+    isPublic = isPublic,
+    memo = memo
+)
+
 fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
     title = title,
     repeatType = repeatType.name,
@@ -94,9 +108,6 @@ fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
     memo = memo
 )
 
-private fun AlarmOption.toApiValue(): String? = when (this) {
-    AlarmOption.NONE -> null
-    AlarmOption.TEN_MIN_BEFORE -> "TEN_MINUTES"
-    AlarmOption.THIRTY_MIN_BEFORE -> "THIRTY_MINUTES"
-    AlarmOption.ONE_HOUR_BEFORE -> "ONE_HOUR"
-}
+private fun AlarmOption.toApiValue(): String = this.toString()
+
+private fun CategoryOption.toApiValue(): String = this.toString()

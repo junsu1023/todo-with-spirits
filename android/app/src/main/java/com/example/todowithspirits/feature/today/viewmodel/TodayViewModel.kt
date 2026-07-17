@@ -60,10 +60,10 @@ class TodayViewModel @Inject constructor(
 
                     state.copy(
                         todos = calendar.items
-                            .filter { it.taskType == TaskType.TODO.type }
+                            .filter { it.taskType == TaskType.SCHEDULE.type }
                             .map { it.toTodoItem() },
                         routines = calendar.items
-                            .filter { it.taskType == TaskType.HABIT.type }
+                            .filter { it.taskType == TaskType.ROUTINE.type }
                             .map { it.toRoutineItem() }
                     )
                 }
@@ -81,12 +81,18 @@ class TodayViewModel @Inject constructor(
             val weekEnd = weekStart.plusDays(6)
 
             getTaskCalendarUseCase(weekStart, weekEnd).onSuccess { calendar ->
-                val events = calendar.items
-                    .filter { it.taskType == TaskType.HABIT.type }
+                val routineEvents = calendar.items
+                    .filter { it.taskType == TaskType.ROUTINE.type }
                     .distinctBy { it.taskId }
                     .flatMap { routine ->
                         routine.routineOccurrences(weekStart, weekEnd).map { date -> date to PlanType.ROUTINE }
                     }
+
+                val scheduleEvents = calendar.items
+                    .filter { it.taskType == TaskType.SCHEDULE.type }
+                    .map { it.startDate to PlanType.TODO }
+
+                val events = (routineEvents + scheduleEvents)
                     .groupBy({ it.first }, { it.second })
 
                 _uiState.update { it.copy(weekEvents = events) }

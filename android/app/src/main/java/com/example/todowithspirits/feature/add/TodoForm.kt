@@ -49,7 +49,8 @@ fun TodoForm(
     onAlarmOptionChange: (AlarmOption) -> Unit,
     onCategoryOptionChange: (CategoryOption) -> Unit,
     onPublicOptionChange: (PublicStateOption) -> Unit,
-    onMemoChange: (String) -> Unit
+    onMemoChange: (String) -> Unit,
+    onRegisterClick: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
@@ -166,10 +167,9 @@ fun TodoForm(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Todo 생성 API가 아직 없어 등록 동작은 연동하지 않는다
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.register),
-            onClick = { }
+            onClick = onRegisterClick
         )
     }
 }
