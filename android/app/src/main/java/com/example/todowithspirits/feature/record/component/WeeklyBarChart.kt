@@ -3,12 +3,8 @@ package com.example.todowithspirits.feature.record.component
 import android.graphics.BlurMaskFilter
 import android.graphics.Color.argb
 import android.graphics.Paint
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,10 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 enum class WeekDayStatus { COMPLETED, FAILED, EMPTY }
@@ -80,11 +76,6 @@ fun WeeklyBarChart() {
     val maxValue = if (validValues.isEmpty()) 1 else validValues.max().coerceAtLeast(1)
     val maxIndex = data.indexOfFirst { it.value != null && it.value == validValues.max() }
     var selectedBarIndex by remember { mutableIntStateOf(-1) }
-    var animationStarted by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        animationStarted = true
-    }
 
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth()) {
@@ -145,20 +136,13 @@ fun WeeklyBarChart() {
             Row(Modifier.fillMaxWidth().fillMaxHeight()) {
                 data.forEachIndexed { index, day ->
                     val fraction = if (day.value == null || maxValue == 0) 0f else day.value.toFloat() / maxValue
-                    val animatedFraction by animateFloatAsState(
-                        targetValue = if (animationStarted) fraction else 0f,
-                        animationSpec = tween(durationMillis = 1000),
-                        label = "barFraction$index"
-                    )
+                    val animatedFraction by rememberAnimatedProgress(fraction, label = "barFraction$index")
 
                     Column(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
+                            .noRippleClickable {
                                 selectedBarIndex = if(selectedBarIndex == index) -1 else index
                             },
                         verticalArrangement = Arrangement.Bottom,

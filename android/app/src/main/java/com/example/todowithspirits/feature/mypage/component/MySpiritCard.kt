@@ -1,11 +1,7 @@
 package com.example.todowithspirits.feature.mypage.component
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,11 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlin.math.roundToInt
@@ -44,18 +38,7 @@ fun MySpiritCard(
     expMax: Int = 1000
 ) {
     val expProgress = if (expMax == 0) 0f else expCurrent.toFloat() / expMax
-
-    var animationStarted by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        animationStarted = true
-    }
-
-    val animatedExpProgress by animateFloatAsState(
-        targetValue = if (animationStarted) expProgress.coerceIn(0f, 1f) else 0f,
-        animationSpec = tween(durationMillis = 1000),
-        label = "expProgress"
-    )
+    val animatedExpProgress by rememberAnimatedProgress(expProgress, label = "expProgress")
 
     Column(
         modifier = Modifier
@@ -180,11 +163,7 @@ fun MySpiritCard(
                     .weight(1f)
                     .fillMaxHeight()
                     .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = { }
-                    ),
+                    .noRippleClickable { },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -199,11 +178,7 @@ fun MySpiritCard(
                     .weight(1f)
                     .fillMaxHeight()
                     .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = { }
-                    ),
+                    .noRippleClickable { },
                 contentAlignment = Alignment.Center
             ) {
                 Text(

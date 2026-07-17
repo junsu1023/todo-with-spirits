@@ -2,8 +2,6 @@ package com.example.todowithspirits.feature.plan
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +34,7 @@ import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanListItem
 import com.example.todowithspirits.feature.plan.component.PlanSearchArea
@@ -166,10 +165,7 @@ fun PlanScreen(
                     text = stringResource(R.string.hide_completion),
                     color = if (uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { planViewModel.setHiddenState(!uiState.isHidden) }
+                    modifier = Modifier.noRippleClickable { planViewModel.setHiddenState(!uiState.isHidden) }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -190,11 +186,7 @@ fun PlanScreen(
                 ) { expand ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            onClick = { expand() }
-                        )
+                        modifier = Modifier.noRippleClickable { expand() }
                     ) {
                         Text(
                             text = uiState.sortOption.displayName,

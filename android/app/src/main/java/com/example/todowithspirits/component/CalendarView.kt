@@ -3,7 +3,6 @@ package com.example.todowithspirits.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -148,18 +147,14 @@ fun CalendarView(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .clickable(
-                                onClick = {
-                                    onDateSelected(date)
-                                    val month = YearMonth.from(date)
-                                    if (month != currentMonth) {
-                                        currentMonth = month
-                                        onMonthChanged(month)
-                                    }
-                                },
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
+                            .noRippleClickable {
+                                onDateSelected(date)
+                                val month = YearMonth.from(date)
+                                if (month != currentMonth) {
+                                    currentMonth = month
+                                    onMonthChanged(month)
+                                }
+                            },
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Box(

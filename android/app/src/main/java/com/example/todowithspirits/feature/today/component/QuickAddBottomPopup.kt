@@ -9,7 +9,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +51,7 @@ import androidx.core.content.ContextCompat.getString
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
@@ -61,11 +61,10 @@ import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
 import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 private val routineRepeatOptions = listOf(
     RepeatOption.DAILY.displayName,
@@ -88,7 +87,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
     var repeatOption by remember { mutableStateOf(RepeatOption.DAILY) }
     var selectedWeekDays by remember { mutableStateOf(setOf<DayOfWeek>()) }
     var selectedMonthDays by remember { mutableStateOf(setOf<Int>()) }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (E)", Locale.KOREAN) }
+    val dateFormatter = KoreanDateWithDayFormatter
 
     Popup(
         onDismissRequest = onDismiss,
@@ -107,10 +106,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                 .fillMaxSize()
                 .navigationBarsPadding()
                 .padding(bottom = BottomBarHeight)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
+                .noRippleClickable {
                     if (isTitleFocused) {
                         keyboardController?.hide()
                         focusManager.clearFocus(force = true)
@@ -124,10 +120,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
+                    .noRippleClickable {
                         if (isTitleFocused) {
                             keyboardController?.hide()
                             focusManager.clearFocus(force = true)
@@ -163,11 +156,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                         Image(
                             modifier = Modifier
                                 .size(26.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = { isImportant = !isImportant }
-                                ),
+                                .noRippleClickable { isImportant = !isImportant },
                             painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
                             contentDescription = null,
                         )
@@ -209,10 +198,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                         painter = painterResource(R.drawable.todo_clock),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) {
+                                            .noRippleClickable {
                                                 isScheduleSectionVisible = !isScheduleSectionVisible
 
                                                 if (!isScheduleSectionVisible) {
@@ -248,10 +234,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .background(SpiritTodoTheme.color.surfaceColor4, RoundedCornerShape(8.dp))
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) {
+                                            .noRippleClickable {
                                                 isDateExpanded = !isDateExpanded
                                                 if (isDateExpanded) isTimeEnabled = false
                                             }
@@ -414,10 +397,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                             tint = SpiritTodoTheme.color.systemGrey,
                             modifier = Modifier
                                 .rotate(45f)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) { onDismiss() }
+                                .noRippleClickable { onDismiss() }
                         )
 
                         Image(

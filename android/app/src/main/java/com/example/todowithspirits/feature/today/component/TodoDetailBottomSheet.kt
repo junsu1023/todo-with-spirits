@@ -3,8 +3,6 @@ package com.example.todowithspirits.feature.today.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +34,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
@@ -87,10 +86,7 @@ fun TodoDetailBottomSheet(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(SpiritTodoTheme.color.dimColor)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onDismiss() }
+                    .noRippleClickable { onDismiss() }
             )
 
             Surface(
@@ -160,10 +156,7 @@ fun TodoDetailBottomSheet(
                             modifier = Modifier
                                 .size(12.dp)
                                 .align(Alignment.TopEnd)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) { onDismiss() }
+                                .noRippleClickable { onDismiss() }
                         )
                     }
 
@@ -236,10 +229,7 @@ private fun DetailActionButton(
     Column(
         modifier = modifier
             .border(1.dp, color, RoundedCornerShape(6.dp))
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() }
+            .noRippleClickable { onClick() }
             .padding(vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

@@ -3,7 +3,6 @@ package com.example.todowithspirits.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -118,12 +117,9 @@ fun MonthlyCalendarView(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .clickable(
-                                enabled = day != null,
-                                onClick = { day?.let { onDayToggled(it) } },
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
+                            .noRippleClickable(enabled = day != null) {
+                                day?.let { onDayToggled(it) }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         if (day != null) {
