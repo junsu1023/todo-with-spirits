@@ -51,6 +51,10 @@ import com.example.todowithspirits.feature.record.component.MonthlyReportCard
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
 import com.example.todowithspirits.feature.record.component.WeeklyReportCard
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
@@ -173,6 +177,10 @@ private fun DailyTabContent() {
 @Composable
 private fun WeeklyTabContent() {
     var isWeekExpanded by remember { mutableStateOf(false) }
+    var weekStart by remember { mutableStateOf(LocalDate.now().with(DayOfWeek.MONDAY)) }
+    val weekEnd = weekStart.plusDays(6)
+    val weekOfMonth = (weekStart.dayOfMonth - 1) / 7 + 1
+    val weekDateFormatter = remember { DateTimeFormatter.ofPattern("yy년 M월 d일", Locale.KOREAN) }
 
     Row(
         modifier = Modifier
@@ -186,7 +194,7 @@ private fun WeeklyTabContent() {
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = stringResource(R.string.week_header_format, 6, 1),
+            text = stringResource(R.string.week_header_format, weekStart.monthValue, weekOfMonth),
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = SpiritTodoTheme.color.todoTextMain
@@ -215,11 +223,16 @@ private fun WeeklyTabContent() {
             Image(
                 painter = painterResource(R.drawable.fi_rr_angle_small_left),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { weekStart = weekStart.minusWeeks(1) }
             )
 
             Text(
-                text = "26년 6월 1일 ~ 26년 6월 7일",
+                text = "${weekStart.format(weekDateFormatter)} ~ ${weekEnd.format(weekDateFormatter)}",
                 fontSize = 16.sp,
                 color = SpiritTodoTheme.color.todoTextMain,
                 textAlign = TextAlign.Center,
@@ -230,7 +243,12 @@ private fun WeeklyTabContent() {
                 painter = painterResource(R.drawable.fi_rr_angle_small_right),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = SpiritTodoTheme.color.todoTextMain),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { weekStart = weekStart.plusWeeks(1) }
             )
         }
     }
