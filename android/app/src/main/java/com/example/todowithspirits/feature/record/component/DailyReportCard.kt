@@ -50,7 +50,7 @@ fun DailyReportCard(achievementRate: Float = 0.6f) {
     }
 
     val progress by animateFloatAsState(
-        targetValue = if (animationStarted) achievementRate.coerceIn(0f, 1f) else 0f,
+        targetValue = if(animationStarted) achievementRate.coerceIn(0f, 1f) else 0f,
         animationSpec = tween(durationMillis = 1000),
         label = "achievementRate"
     )
@@ -225,6 +225,18 @@ fun StatCard(
 ) {
     val trackColor = SpiritTodoTheme.color.systemBackground
 
+    var animationStarted by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        animationStarted = true
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = if(animationStarted) progress.coerceIn(0f, 1f) else 0f,
+        animationSpec = tween(durationMillis = 1000),
+        label = "statCardProgress"
+    )
+
     Column(
         modifier = modifier
             .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
@@ -245,7 +257,7 @@ fun StatCard(
             contentAlignment = Alignment.Center
         ) {
             CircularProgress(
-                progress = progress,
+                progress = animatedProgress,
                 color = progressColor,
                 trackColor = trackColor,
                 strokeWidth = 4.dp,
@@ -253,7 +265,7 @@ fun StatCard(
             )
 
             Text(
-                text = "100%",
+                text = "${(animatedProgress * 100).roundToInt()}%",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = progressColor
