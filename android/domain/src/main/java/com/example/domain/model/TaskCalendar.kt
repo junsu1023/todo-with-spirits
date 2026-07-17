@@ -38,6 +38,6 @@ data class TaskSummary(
 )
 
 enum class TaskType(val type: String) {
-    TODO("TODO"), // 할 일
-    HABIT("HABIT") // 루틴
+    SCHEDULE("SCHEDULE"),
+    ROUTINE("ROUTINE")
 }

@@ -7,9 +7,11 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.NewRoutine
+import com.example.domain.model.NewTodo
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
 import com.example.domain.usecase.CreateRoutineUseCase
+import com.example.domain.usecase.CreateTodoUseCase
 import com.example.todowithspirits.feature.add.state.AddUiState
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
+    private val createTodoUseCase: CreateTodoUseCase,
     private val createRoutineUseCase: CreateRoutineUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
@@ -120,6 +123,36 @@ class AddViewModel @Inject constructor(
         }
     }
 
+    fun registerTodo() {
+        viewModelScope.launchWithLoading {
+            val state = _uiState.value
+
+            val todo = NewTodo(
+                title = state.title,
+                isAllDay = !state.isTimeEnabled,
+                endDateTime = Pair(state.date, state.dueTime).concatenating(),
+                isImportant = state.isImportant,
+                notificationType = state.alarmOption,
+                category = state.categoryOption,
+                isPublic = state.publicOption == PublicStateOption.PUBLIC,
+                memo = state.memo.ifBlank { null }
+            )
+
+            println("test-kjs: endDateTime = ${todo.endDateTime}")
+
+            createTodoUseCase(todo)
+                .onSuccess {
+                    Log.d(TAG, "registerTodo success = $it")
+                    _uiState.update { AddUiState() }
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    Log.e(TAG, "registerTodo, failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "Todo 생성에 실패했습니다")
+                }
+        }
+    }
+
     fun registerRoutine() {
         viewModelScope.launchWithLoading {
             val state = _uiState.value
@@ -147,3 +180,6 @@ class AddViewModel @Inject constructor(
         }
     }
 }
+
+fun Pair<LocalDate, LocalTime>.concatenating(): String =
+    "%sT%02d:%02d:%02d".format(first, second.hour, second.minute, second.second)

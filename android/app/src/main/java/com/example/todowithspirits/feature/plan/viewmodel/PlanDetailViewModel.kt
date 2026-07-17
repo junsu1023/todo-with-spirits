@@ -39,7 +39,7 @@ class PlanDetailViewModel @Inject constructor(
 private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     id = taskId.toInt(),
     title = title,
-    type = if (taskType == TaskType.HABIT.type) PlanType.ROUTINE else PlanType.TODO,
+    type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
     dueDate = startDate,

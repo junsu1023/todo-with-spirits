@@ -7,6 +7,7 @@ import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
 import com.example.domain.model.AlarmOption
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
@@ -91,7 +92,7 @@ fun NewTodo.toRequest(): CreateTodoRequest = CreateTodoRequest(
     endDateTime = endDateTime,
     isImportant = isImportant,
     notificationType = notificationType.toApiValue(),
-    category = category,
+    category = category.toApiValue(),
     isPublic = isPublic,
     memo = memo
 )
@@ -107,9 +108,6 @@ fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
     memo = memo
 )
 
-private fun AlarmOption.toApiValue(): String = when (this) {
-    AlarmOption.NONE -> "NONE"
-    AlarmOption.TEN_MIN_BEFORE -> "TEN_MINUTES"
-    AlarmOption.THIRTY_MIN_BEFORE -> "THIRTY_MINUTES"
-    AlarmOption.ONE_HOUR_BEFORE -> "ONE_HOUR"
-}
+private fun AlarmOption.toApiValue(): String = this.toString()
+
+private fun CategoryOption.toApiValue(): String = this.toString()

@@ -17,9 +17,9 @@ enum class RepeatOption(val displayName: String) {
 
 enum class AlarmOption(val displayName: String) {
     NONE("안 함"),
-    TEN_MIN_BEFORE("10분 전"),
-    THIRTY_MIN_BEFORE("30분 전"),
-    ONE_HOUR_BEFORE("1시간 전");
+    TEN_MINUTES("10분 전"),
+    THIRTY_MINUTES("30분 전"),
+    ONE_HOUR("1시간 전");
 
     companion object {
         fun fromDisplayName(name: String): AlarmOption {
@@ -31,10 +31,14 @@ enum class AlarmOption(val displayName: String) {
 
 enum class CategoryOption(val displayName: String) {
     NONE("미정"),
+    WORK_STUDY("업무/학업/커리어/공부"),
+    HEALTH("건강"),
+    LIFE("생활"),
     RELATIONSHIP("인간관계/약속"),
-    SELF_DEVELOPMENT("자기계발"),
-    WORK("업무"),
-    HOBBY("취미");
+    GROWTH("자기계발"),
+    HOBBY("취미"),
+    REST("휴식/마인드"),
+    FINANCE("자산/경제");
 
     companion object {
         fun fromDisplayName(name: String): CategoryOption {

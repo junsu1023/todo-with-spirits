@@ -15,7 +15,7 @@ data class AddUiState(
     // Todo 전용 (Todo 생성 API 연동 전까지는 값만 보관)
     val date: LocalDate = LocalDate.now(),
     val isTimeEnabled: Boolean = false,
-    val dueTime: LocalTime = LocalTime.of(0, 0),
+    val dueTime: LocalTime = LocalTime.of(0, 0, 0),
 
     // 루틴 전용
     val repeatOption: RepeatOption = RepeatOption.DAILY,

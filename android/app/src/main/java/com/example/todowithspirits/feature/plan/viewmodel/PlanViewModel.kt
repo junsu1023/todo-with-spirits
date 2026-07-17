@@ -102,7 +102,7 @@ class PlanViewModel @Inject constructor(
             getTaskCalendarUseCase(monthStart, monthEnd)
                 .onSuccess { calendar ->
                     val events = calendar.items
-                        .filter { it.taskType == TaskType.HABIT.type }
+                        .filter { it.taskType == TaskType.ROUTINE.type }
                         .distinctBy { it.taskId }
                         .flatMap { routine ->
                             routine.routineOccurrences(monthStart, monthEnd).map { date -> date to routine }
@@ -127,7 +127,7 @@ class PlanViewModel @Inject constructor(
 private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     id = taskId.toInt(),
     title = title,
-    type = if (taskType == TaskType.HABIT.type) PlanType.ROUTINE else PlanType.TODO,
+    type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
     dueDate = startDate,
