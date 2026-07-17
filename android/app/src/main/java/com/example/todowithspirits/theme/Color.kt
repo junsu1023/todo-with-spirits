@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.Color
 
 val spiritsLightColor = SpiritColor(
     surfaceColor1 = Color(0xFFFFFFFF),
-    surfaceColor3 = Color(0xFFD7BFFF),
     surfaceColor4 = Color(0xFFF6F6F6),
     surfaceColor5 = Color(0xFF353534),
     surfaceColor6 = Color(0xB3F3E8FF),
@@ -36,12 +35,12 @@ val spiritsLightColor = SpiritColor(
     keyRoutine = Color(0xFFB2F042),
     systemBackground = Color(0xFFFAFAFA),
     mainTextAndStroke = Color(0xFFB286FD),
-    systemArea = Color(0xFFECECEC)
+    systemArea = Color(0xFFECECEC),
+    mainArea = Color(0xFFD7BFFF)
 )
 
 class SpiritColor(
     surfaceColor1: Color,
-    surfaceColor3: Color,
     surfaceColor4: Color,
     surfaceColor5: Color,
     surfaceColor6: Color,
@@ -70,12 +69,10 @@ class SpiritColor(
     keyRoutine: Color,
     systemBackground: Color,
     mainTextAndStroke: Color,
-    systemArea: Color
+    systemArea: Color,
+    mainArea: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
-        private set
-
-    var surfaceColor3 by mutableStateOf(surfaceColor3)
         private set
 
     var surfaceColor4 by mutableStateOf(surfaceColor4)
@@ -162,5 +159,8 @@ class SpiritColor(
         private set
 
     var systemArea by mutableStateOf(systemArea)
+        private set
+
+    var mainArea by mutableStateOf(mainArea)
         private set
 }

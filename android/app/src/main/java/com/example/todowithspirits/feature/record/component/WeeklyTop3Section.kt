@@ -24,7 +24,7 @@ import com.example.todowithspirits.R
 
 @Composable
 fun WeeklyTop3Section() {
-    val trackColor = SpiritTodoTheme.color.surfaceColor3
+    val trackColor = SpiritTodoTheme.color.mainArea
     val items = listOf(
         Triple(trackColor, "학업/커리어", "15회"),
         Triple(trackColor, "인간관계/약속", "8회"),

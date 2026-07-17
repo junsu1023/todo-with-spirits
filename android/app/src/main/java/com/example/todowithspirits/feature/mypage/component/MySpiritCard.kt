@@ -1,5 +1,7 @@
 package com.example.todowithspirits.feature.mypage.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +20,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,9 +36,27 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.HexagonShape
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlin.math.roundToInt
 
 @Composable
-fun MySpiritCard() {
+fun MySpiritCard(
+    expCurrent: Int = 999,
+    expMax: Int = 1000
+) {
+    val expProgress = if (expMax == 0) 0f else expCurrent.toFloat() / expMax
+
+    var animationStarted by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        animationStarted = true
+    }
+
+    val animatedExpProgress by animateFloatAsState(
+        targetValue = if (animationStarted) expProgress.coerceIn(0f, 1f) else 0f,
+        animationSpec = tween(durationMillis = 1000),
+        label = "expProgress"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +114,7 @@ fun MySpiritCard() {
                     Box(
                         modifier = Modifier
                             .size(16.dp)
-                            .background(SpiritTodoTheme.color.surfaceColor3, HexagonShape),
+                            .background(SpiritTodoTheme.color.mainArea, HexagonShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -110,16 +134,16 @@ fun MySpiritCard() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.exp_format, 999, 1000),
+                        text = stringResource(R.string.exp_format, expCurrent, expMax),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Light,
                         color = SpiritTodoTheme.color.todoTextMain
                     )
                     Text(
-                        text = "100%",
+                        text = "${(animatedExpProgress * 100).roundToInt()}%",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.color.surfaceColor3
+                        color = SpiritTodoTheme.color.mainArea
                     )
                 }
 
@@ -129,15 +153,15 @@ fun MySpiritCard() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
-                        .clip(RoundedCornerShape(3.dp))
+                        .clip(RoundedCornerShape(9999.dp))
                         .background(SpiritTodoTheme.color.surfaceColor5)
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.999f)
+                            .fillMaxWidth(animatedExpProgress.coerceAtLeast(0.01f))
                             .fillMaxHeight()
                             .clip(RoundedCornerShape(9999.dp))
-                            .background(SpiritTodoTheme.color.surfaceColor3)
+                            .background(SpiritTodoTheme.color.mainArea)
                     )
                 }
             }

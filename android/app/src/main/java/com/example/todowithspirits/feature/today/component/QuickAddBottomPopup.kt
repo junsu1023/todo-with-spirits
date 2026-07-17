@@ -221,7 +221,7 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
                                                 }
                                             },
                                         colorFilter = ColorFilter.tint(
-                                            if(isScheduleSectionVisible) SpiritTodoTheme.color.surfaceColor3
+                                            if(isScheduleSectionVisible) SpiritTodoTheme.color.mainArea
                                             else SpiritTodoTheme.color.systemGrey
                                         )
                                     )

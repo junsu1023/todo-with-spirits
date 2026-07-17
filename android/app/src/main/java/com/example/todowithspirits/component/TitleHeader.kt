@@ -122,7 +122,7 @@ fun AlarmIconSection(
                 .offset(x = 10.dp, y = -5.dp)
                 .widthIn(24.dp)
                 .heightIn(13.dp)
-                .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(14.dp))
+                .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(14.dp))
                 .padding(2.dp),
             contentAlignment = Alignment.Center
         ) {

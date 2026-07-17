@@ -1,5 +1,7 @@
 package com.example.todowithspirits.feature.record.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +20,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,9 +39,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlin.math.roundToInt
 
 @Composable
-fun DailyReportCard() {
+fun DailyReportCard(achievementRate: Float = 0.6f) {
+    var animationStarted by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        animationStarted = true
+    }
+
+    val progress by animateFloatAsState(
+        targetValue = if(animationStarted) achievementRate.coerceIn(0f, 1f) else 0f,
+        animationSpec = tween(durationMillis = 1000),
+        label = "achievementRate"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +104,7 @@ fun DailyReportCard() {
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "60%",
+                            text = "${(progress * 100).roundToInt()}%",
                             fontSize = 12.sp,
                             color = SpiritTodoTheme.color.onSurfaceColor3,
                             fontWeight = FontWeight.SemiBold
@@ -111,10 +131,10 @@ fun DailyReportCard() {
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
+                        .fillMaxWidth(progress)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(169.dp))
-                        .background(SpiritTodoTheme.color.surfaceColor3)
+                        .background(SpiritTodoTheme.color.mainArea)
                 )
             }
         }
@@ -205,6 +225,18 @@ fun StatCard(
 ) {
     val trackColor = SpiritTodoTheme.color.systemBackground
 
+    var animationStarted by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        animationStarted = true
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = if(animationStarted) progress.coerceIn(0f, 1f) else 0f,
+        animationSpec = tween(durationMillis = 1000),
+        label = "statCardProgress"
+    )
+
     Column(
         modifier = modifier
             .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
@@ -225,7 +257,7 @@ fun StatCard(
             contentAlignment = Alignment.Center
         ) {
             CircularProgress(
-                progress = progress,
+                progress = animatedProgress,
                 color = progressColor,
                 trackColor = trackColor,
                 strokeWidth = 4.dp,
@@ -233,7 +265,7 @@ fun StatCard(
             )
 
             Text(
-                text = "100%",
+                text = "${(animatedProgress * 100).roundToInt()}%",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = progressColor

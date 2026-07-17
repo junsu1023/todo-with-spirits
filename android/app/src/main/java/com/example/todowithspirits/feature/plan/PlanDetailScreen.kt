@@ -256,7 +256,7 @@ fun PlanDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 20.dp)
-                .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(6.dp))
+                .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(6.dp))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
