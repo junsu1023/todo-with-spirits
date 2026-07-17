@@ -134,7 +134,7 @@ fun DailyReportCard(achievementRate: Float = 0.6f) {
                         .fillMaxWidth(progress)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(169.dp))
-                        .background(SpiritTodoTheme.color.surfaceColor3)
+                        .background(SpiritTodoTheme.color.mainArea)
                 )
             }
         }

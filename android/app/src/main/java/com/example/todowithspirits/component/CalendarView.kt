@@ -170,7 +170,7 @@ fun CalendarView(
                                 Box(
                                     modifier = Modifier
                                         .size(18.dp)
-                                        .background(SpiritTodoTheme.color.surfaceColor3, CircleShape)
+                                        .background(SpiritTodoTheme.color.mainArea, CircleShape)
                                 )
                             }
 

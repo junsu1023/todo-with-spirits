@@ -102,7 +102,7 @@ fun SpiritsTodoPrimaryButton(
             .height(44.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = SpiritTodoTheme.color.surfaceColor3
+            containerColor = SpiritTodoTheme.color.mainArea
         )
     ) {
         Text(

@@ -30,7 +30,7 @@ fun AddPlanButton(navigateToAdd: () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .height(42.dp)
-            .background(SpiritTodoTheme.color.surfaceColor3, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(6.dp))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }

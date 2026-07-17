@@ -90,7 +90,7 @@ fun MySpiritCard() {
                     Box(
                         modifier = Modifier
                             .size(16.dp)
-                            .background(SpiritTodoTheme.color.surfaceColor3, HexagonShape),
+                            .background(SpiritTodoTheme.color.mainArea, HexagonShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -119,7 +119,7 @@ fun MySpiritCard() {
                         text = "100%",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.color.surfaceColor3
+                        color = SpiritTodoTheme.color.mainArea
                     )
                 }
 
@@ -129,7 +129,7 @@ fun MySpiritCard() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
-                        .clip(RoundedCornerShape(3.dp))
+                        .clip(RoundedCornerShape(9999.dp))
                         .background(SpiritTodoTheme.color.surfaceColor5)
                 ) {
                     Box(
@@ -137,7 +137,7 @@ fun MySpiritCard() {
                             .fillMaxWidth(0.999f)
                             .fillMaxHeight()
                             .clip(RoundedCornerShape(9999.dp))
-                            .background(SpiritTodoTheme.color.surfaceColor3)
+                            .background(SpiritTodoTheme.color.mainArea)
                     )
                 }
             }
