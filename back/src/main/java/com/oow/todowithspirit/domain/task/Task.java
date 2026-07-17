@@ -116,7 +116,7 @@ public class Task extends BaseTimeEntity {
         LocalDate date = endDateTime.toLocalDate();
         Task task = new Task();
         task.user = user;
-        task.taskType = TaskType.SCHEDULE;
+        task.taskType = TaskType.TODO;
         task.title = title;
         task.memo = memo;
         CategoryType resolvedCategory = category != null ? category : CategoryType.NONE;
@@ -141,7 +141,7 @@ public class Task extends BaseTimeEntity {
                                      Integer notificationMinutes, boolean isPublic) {
         Task task = new Task();
         task.user = user;
-        task.taskType = TaskType.ROUTINE;
+        task.taskType = TaskType.HABIT;
         task.title = title;
         task.memo = memo;
         task.category = category != null ? category : CategoryType.NONE;

@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private static final EnumSet<RepeatType> ROUTINE_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
+    private static final EnumSet<RepeatType> HABIT_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -51,9 +51,9 @@ public class TaskService {
 
     @Transactional
     public RoutineCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
-        if (!ROUTINE_ALLOWED_REPEAT.contains(request.getRepeatType())) {
+        if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
-                    "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
+                    "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
         }
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
@@ -75,18 +75,18 @@ public class TaskService {
 
     @Transactional
     public RoutineCreateResponse updateRoutine(Long userId, Long taskId, RoutineUpdateRequest request) {
-        if (!ROUTINE_ALLOWED_REPEAT.contains(request.getRepeatType())) {
+        if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
-                    "Routine repeat type must be DAILY, WEEKLY, or MONTHLY");
+                    "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
         }
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() != TaskType.ROUTINE) {
+        if (task.getTaskType() != TaskType.HABIT) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
-                    "Task is not a routine");
+                    "Task is not a habit");
         }
 
         task.updateRoutine(
@@ -109,7 +109,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() != TaskType.SCHEDULE) {
+        if (task.getTaskType() != TaskType.TODO) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
                     "Task is not a schedule");
         }
@@ -240,7 +240,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        if (task.getTaskType() == TaskType.HABIT) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
                 throw new ApiException(ErrorCode.ALREADY_COMPLETED,
@@ -257,7 +257,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        if (task.getTaskType() == TaskType.HABIT) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
