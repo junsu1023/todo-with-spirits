@@ -33,6 +33,7 @@ fun TodayScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(SpiritTodoTheme.color.surfaceColor4)
             .verticalScroll(rememberScrollState())
     ) {
         TitleHeader(
@@ -45,7 +46,6 @@ fun TodayScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.color.surfaceColor4)
                 .padding(horizontal = 16.dp)
         ) {
             SpiritSection(uiState.spiritInfo)
