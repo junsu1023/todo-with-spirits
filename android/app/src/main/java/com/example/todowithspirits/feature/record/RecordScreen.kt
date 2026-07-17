@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -132,10 +133,16 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
             }
         }
 
+        val scrollState = rememberScrollState()
+
+        LaunchedEffect(selectedTab) {
+            scrollState.scrollTo(0)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(horizontal = 18.dp)
         ) {
             Spacer(Modifier.height(20.dp))
