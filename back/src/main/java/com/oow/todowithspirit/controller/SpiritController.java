@@ -1,6 +1,7 @@
 package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
+import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
 import com.oow.todowithspirit.dto.spirit.SpiritResponse;
 import com.oow.todowithspirit.service.SpiritService;
 import lombok.RequiredArgsConstructor;
@@ -25,4 +26,14 @@ public class SpiritController {
         List<SpiritResponse> response = spiritService.getUserSpirits(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @GetMapping("/current")
+    public ResponseEntity<ApiResponse<RepresentativeSpiritResponse>> getRepresentativeSpirit(
+            @AuthenticationPrincipal Long userId) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(spiritService.getRepresentativeSpirit(userId))
+        );
+    }
+
 }

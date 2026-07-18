@@ -39,6 +39,27 @@ public class SpiritService {
         // 3. 대표 정령 여부를 판별하며 DTO 맵핑
         return spirits.stream()
                 .map(spirit -> SpiritResponse.of(spirit, repSpiritId))
-                .collect(Collectors.toList());
+                .toList();
     }
+
+    @Transactional(readOnly = true)
+    public RepresentativeSpiritResponse getRepresentativeSpirit(Long userId) {
+        // 1. 유저 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+
+        Long repSpiritId = user.getRepresentativeSpiritId();
+
+        // 2. 대표 정령이 설정되어 있지 않은 경우 예외 처리
+        if (repSpiritId == null) {
+            throw new ApiException(ErrorCode.NOT_FOUND, "Representative spirit is not set");
+        }
+
+        // 3. 대표 정령 상세 정보 조회 및 반환
+        Spirit spirit = spiritRepository.findById(repSpiritId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
+
+        return RepresentativeSpiritResponse.from(spirit);
+    }
+
 }
