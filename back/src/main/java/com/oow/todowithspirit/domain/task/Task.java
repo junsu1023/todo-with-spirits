@@ -61,7 +61,7 @@ public class Task extends BaseTimeEntity {
     @Column(name = "is_important", nullable = false)
     private boolean isImportant;
 
-    @Column(name="exclude_holiday", nullable = false)
+    @Column(name = "exclude_holiday", nullable = false)
     private boolean excludeHoliday;
 
     // 반복
@@ -157,13 +157,14 @@ public class Task extends BaseTimeEntity {
         task.notificationMinutes = notificationMinutes;
         task.isPublic = isPublic;
         task.excludeHoliday = excludeHoliday;
+        task.endTime = LocalTime.of(23, 59, 0);
         return task;
     }
 
     public void updateRoutine(String title, String memo, LocalDate startDate,
                               RepeatType repeatType, LocalDate repeatEndDate,
                               Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                              Integer notificationMinutes, boolean isPublic) {
+                              Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
         this.title = title;
         this.memo = memo;
         if (startDate != null) this.startDate = startDate;
@@ -173,6 +174,8 @@ public class Task extends BaseTimeEntity {
         this.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
         this.notificationMinutes = notificationMinutes;
         this.isPublic = isPublic;
+        this.excludeHoliday = excludeHoliday;
+        this.endTime = LocalTime.of(23, 59, 0);
     }
 
     public void updateSchedule(String title, String memo, CategoryType category,

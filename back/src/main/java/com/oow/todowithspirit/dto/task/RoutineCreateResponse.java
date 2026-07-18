@@ -46,6 +46,12 @@ public class RoutineCreateResponse {
     private LocalDateTime updatedAt;
 
     public static RoutineCreateResponse from(Task task) {
+        LocalDateTime calculatedNotificationAt = null;
+        if (task.getNotificationMinutes() != null && task.getEndTime() != null) {
+            calculatedNotificationAt = LocalDateTime.of(LocalDate.now(), task.getEndTime())
+                    .minusMinutes(task.getNotificationMinutes());
+        }
+
         return RoutineCreateResponse.builder()
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
@@ -58,7 +64,7 @@ public class RoutineCreateResponse {
                 .repeatDaysOfMonth(List.copyOf(task.getRepeatDaysOfMonth()))
                 .excludeHoliday(task.isExcludeHoliday())
                 .notificationMinutes(task.getNotificationMinutes())
-                .notificationAt(task.getNotificationAt())
+                .notificationAt(calculatedNotificationAt)
                 .isPublic(task.isPublic())
                 .growthValue(task.getGrowthValue())
                 .growthType(task.getGrowthType() != null ? task.getGrowthType().name() : null)

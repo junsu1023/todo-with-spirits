@@ -33,7 +33,7 @@ public abstract class TaskOccurrenceResponse {
     private final Boolean isImportant;
     private final Boolean isPublic;
     private final Integer notificationMinutes;
-    private final LocalDateTime notificationAt;
+    protected LocalDateTime notificationAt;
 
     // 성장 및 완료
     private final Integer growthValue;

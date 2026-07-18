@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -26,6 +27,10 @@ public class RoutineOccurrenceResponse extends TaskOccurrenceResponse {
                 completion != null,
                 completion != null ? completion.getCompletedAt() : null // 혹은 별도 완료일시 매핑
         );
+        if (task.getNotificationMinutes() != null && task.getEndTime() != null) {
+            this.notificationAt = LocalDateTime.of(occurrenceDate, task.getEndTime())
+                    .minusMinutes(task.getNotificationMinutes());
+        }
         this.excludeHoliday = task.isExcludeHoliday();
         this.repeatType = task.getRepeatType().name();
         this.repeatEndDate = task.getRepeatEndDate();
