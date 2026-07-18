@@ -47,7 +47,7 @@ public class TaskController {
     // ==============================================
 
     @PatchMapping("/schedule/{taskId}")
-    public ResponseEntity<ApiResponse<RoutineCreateResponse>> updateSchedule(
+    public ResponseEntity<ApiResponse<ScheduleCreateResponse>> updateSchedule(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @Valid @RequestBody ScheduleUpdateRequest request) {

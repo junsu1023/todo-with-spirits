@@ -53,8 +53,7 @@ public class TaskService {
     @Transactional
     public RoutineCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
         if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
-                    "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
         }
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
@@ -78,8 +77,7 @@ public class TaskService {
     @Transactional
     public RoutineCreateResponse updateRoutine(Long userId, Long taskId, RoutineUpdateRequest request) {
         if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType",
-                    "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
         }
         validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
 
@@ -87,33 +85,32 @@ public class TaskService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
         if (task.getTaskType() != TaskType.ROUTINE) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
-                    "Task is not a routine");
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId", "Task is not a routine");
         }
 
         task.updateRoutine(
                 request.getTitle(),
+                request.getCategory(),
                 request.getMemo(),
-                request.getStartDate(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
-                resolveNotificationMinutes(request.getNotification()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                resolveNotificationMinutes(request.getNotificationType()),
+                Boolean.TRUE.equals(request.getIsPublic()),
+                Boolean.TRUE.equals(request.getExcludeHoliday())
         );
 
         return RoutineCreateResponse.from(task);
     }
 
     @Transactional
-    public RoutineCreateResponse updateSchedule(Long userId, Long taskId, ScheduleUpdateRequest request) {
+    public ScheduleCreateResponse updateSchedule(Long userId, Long taskId, ScheduleUpdateRequest request) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
         if (task.getTaskType() != TaskType.SCHEDULE) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId",
-                    "Task is not a schedule");
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId", "Task is not a schedule");
         }
 
         task.updateSchedule(
@@ -123,11 +120,11 @@ public class TaskService {
                 request.getEndDateTime(),
                 Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotification()),
+                resolveNotificationMinutes(request.getNotificationType()),
                 Boolean.TRUE.equals(request.getIsPublic())
         );
 
-        return RoutineCreateResponse.from(task);
+        return ScheduleCreateResponse.from(task);
     }
 
     // =========================================================

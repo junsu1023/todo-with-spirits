@@ -161,13 +161,13 @@ public class Task extends BaseTimeEntity {
         return task;
     }
 
-    public void updateRoutine(String title, String memo, LocalDate startDate,
+    public void updateRoutine(String title, CategoryType category, String memo,
                               RepeatType repeatType, LocalDate repeatEndDate,
                               Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
                               Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
         this.title = title;
+        this.category = category != null ? category : this.category;
         this.memo = memo;
-        if (startDate != null) this.startDate = startDate;
         this.repeatType = repeatType;
         this.repeatEndDate = repeatEndDate;
         this.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
