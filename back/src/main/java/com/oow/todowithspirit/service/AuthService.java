@@ -4,20 +4,16 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.auth.RefreshToken;
 import com.oow.todowithspirit.domain.auth.RefreshTokenRepository;
+import com.oow.todowithspirit.domain.spirit.Spirit;
+import com.oow.todowithspirit.domain.spirit.SpiritRepository;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
-import com.oow.todowithspirit.dto.auth.LoginRequest;
-import com.oow.todowithspirit.dto.auth.LoginResponse;
-import com.oow.todowithspirit.dto.auth.SignupRequest;
-import com.oow.todowithspirit.dto.auth.SignupResponse;
-import com.oow.todowithspirit.dto.auth.TokenRefreshRequest;
-import com.oow.todowithspirit.dto.auth.TokenRefreshResponse;
+import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -29,6 +25,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final SpiritRepository spiritRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -44,7 +41,16 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.ofLocalSignup(request.getEmail(), encodedPassword, nickname);
-        return SignupResponse.from(userRepository.save(user));
+        userRepository.save(user);
+
+        // 2. 기본 정령 생성 및 저장
+        String defaultImageUrl = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치
+        Spirit defaultSpirit = new Spirit(user, defaultImageUrl);
+        spiritRepository.save(defaultSpirit);
+
+        user.setRepresentativeSpiritId(defaultSpirit.getId());
+
+        return SignupResponse.from(user);
     }
 
     @Transactional
