@@ -18,8 +18,6 @@ public class TaskSummaryResponse {
     private String title;
     private String category;
 
-    private LocalDate startDate;
-    private LocalTime startTime;
     private LocalDate endDate;
     private LocalTime endTime;
     private Boolean isAllDay;
@@ -40,8 +38,6 @@ public class TaskSummaryResponse {
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
-                .startDate(task.getStartDate())
-                .startTime(task.getStartTime())
                 .endDate(task.getEndDate())
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())
@@ -62,8 +58,6 @@ public class TaskSummaryResponse {
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
-                .startDate(targetDate) // 조회 날짜
-                .startTime(task.getStartTime()) // 루틴에 수행 시각이 설정되어 있다면 내려감
                 .endDate(targetDate)
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())

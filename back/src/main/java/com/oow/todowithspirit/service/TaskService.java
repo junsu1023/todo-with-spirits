@@ -187,45 +187,54 @@ public class TaskService {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of calendar data.");
         }
 
-        // 일정과 루틴 데이터를 한 번에 조회 (기존에 작성하신 쿼리 사용)
+        // 1. 일정과 루틴 데이터를 통합 조회 (JPQL 사용)
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
 
-        List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
+        List<Task> schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.SCHEDULE).toList();
         List<Task> routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
 
-        // 1. 일정 Occurrence 변환 (일정 전용 응답 적용)
+        // 루틴 전개 전 ElementCollection 지연로딩 Batch 초기화 (N+1 방지)
+        if (!routines.isEmpty()) {
+            routines.forEach(r -> {
+                if (r.getRepeatDaysOfWeek() != null) r.getRepeatDaysOfWeek().size();
+                if (r.getRepeatDaysOfMonth() != null) r.getRepeatDaysOfMonth().size();
+            });
+        }
+
+        // 2. 일정 Occurrence 변환 (생성 결과 필드 완벽 동기화)
         List<ScheduleOccurrenceResponse> scheduleOccurrences = schedules.stream()
                 .map(ScheduleOccurrenceResponse::new)
                 .toList();
 
-        // 2. 루틴 Occurrence 변환 (시간 정보가 완전히 제거된 루틴 전용 응답 적용)
+        // 3. 루틴 캘린더 일자별 전개 및 완료 상태 매핑
         List<Long> routineIds = routines.stream().map(Task::getId).toList();
         Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, from, to);
 
         List<RoutineOccurrenceResponse> routineOccurrences = routines.stream()
                 .flatMap(task -> expandOccurrences(task, from, to).stream()
-                        .map(date -> new RoutineOccurrenceResponse(
-                                task,
-                                date,
-                                completionMap.getOrDefault(task.getId(), Map.of()).get(date)
-                        )))
+                        .map(date -> {
+                            RoutineCompletion completion = completionMap
+                                    .getOrDefault(task.getId(), Collections.emptyMap())
+                                    .get(date);
+
+                            // 생성 결과와 완벽히 동일한 모든 루틴 속성을 들고 인스턴스 생성
+                            return new RoutineOccurrenceResponse(task, date, completion);
+                        }))
                 .toList();
 
-        // 3. 두 응답 리스트를 공통 부모 타입(TaskOccurrenceResponse)으로 병합 및 정렬
+        // 4. 두 다형성 응답 리스트를 하나의 공통 부모 타입 목록으로 병합 및 타임라인 정렬
         List<TaskOccurrenceResponse> allOccurrences = Stream.concat(
                         scheduleOccurrences.stream(),
                         routineOccurrences.stream()
                 )
                 .sorted(Comparator.comparing(TaskOccurrenceResponse::getOccurrenceDate)
-                        // 정렬 규칙:
-                        // 1) 날짜 순 정렬
-                        // 2) 날짜가 같다면 일정을 위에(시간 순 정렬), 루틴(시간 없음)을 아래에 배치
                         .thenComparing(res -> {
                             if (res instanceof ScheduleOccurrenceResponse schedule) {
-                                return schedule.getStartTime(); // 일정은 세팅된 시작 시간 기준 정렬
+                                return schedule.getEndTime();
                             }
-                            return null; // 루틴은 시간을 null로 취급하여 정렬 순위에서 뒤로 미룸
-                        }, Comparator.nullsLast(Comparator.naturalOrder())))
+                            return null; // 루틴은 endTime이 없으므로 가장 하단으로 미룸
+                        }, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(TaskOccurrenceResponse::getTaskType))
                 .toList();
 
         return TaskListResponse.of(allOccurrences);
