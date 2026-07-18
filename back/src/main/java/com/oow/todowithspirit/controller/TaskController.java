@@ -65,9 +65,8 @@ public class TaskController {
     // ==============================================
     // 완료 / 완료 취소
     // ==============================================
-
     @PostMapping("/{taskId}/complete")
-    public ResponseEntity<ApiResponse<Void>> completeTask(
+    public ResponseEntity<ApiResponse<Void>> completeRoutine(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -76,7 +75,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}/complete")
-    public ResponseEntity<ApiResponse<Void>> undoCompleteTask(
+    public ResponseEntity<ApiResponse<Void>> inCompleteRoutine(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {

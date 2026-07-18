@@ -282,8 +282,7 @@ public class TaskService {
         if (task.getTaskType() == TaskType.ROUTINE) {
             LocalDate completionDate = date != null ? date : LocalDate.now();
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
-                throw new ApiException(ErrorCode.ALREADY_COMPLETED,
-                        "Routine already completed on " + completionDate);
+                throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Routine already completed on " + completionDate);
             }
             routineCompletionRepository.save(RoutineCompletion.of(task, completionDate));
         } else {
@@ -411,5 +410,42 @@ public class TaskService {
     private Integer resolveNotificationMinutes(NotificationType option) {
         if (option == null || option == NotificationType.NONE) return null;
         return option.getMinutes();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoutineOccurrenceResponse> getRoutineOccurrences(Long userId, LocalDate startDate, LocalDate endDate) {
+        // 1. 기간 내의 모든 루틴(Task) 가져오기
+        List<Task> routines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
+
+        // 2. [핵심] 해당 기간 동안 유저가 완료한 모든 루틴 기록을 한 번에 IN 쿼리로 조회
+        List<RoutineCompletion> completions = routineCompletionRepository
+                .findAllByTaskInAndCompletionDateBetween(routines, startDate, endDate);
+
+        // 3. 빠른 조회를 위해 "TaskId_날짜"를 Key로 가지는 Set 또는 Map으로 변환
+        Set<String> completedKeySet = completions.stream()
+                .map(c -> c.getTask().getId() + "_" + c.getCompletionDate())
+                .collect(Collectors.toSet());
+
+        List<RoutineOccurrenceResponse> responses = new ArrayList<>();
+
+        for (Task routine : routines) {
+            // 4. 루틴의 반복 조건에 따라 기간 내의 날짜들을 순회 (전개 로직)
+            List<LocalDate> occurrenceDates = expandOccurrences(routine, startDate, endDate);
+
+            for (LocalDate date : occurrenceDates) {
+                // 5. 생성해 둔 Key가 존재하는지 판별하여 완료 여부(isCompleted) 확인!
+                boolean isCompleted = completedKeySet.contains(routine.getId() + "_" + date);
+
+                RoutineCompletion matchingCompletion = completions.stream()
+                        .filter(c -> c.getTask().getId().equals(routine.getId()) && c.getCompletionDate().equals(date))
+                        .findFirst()
+                        .orElse(null);
+
+                // 6. 지난 번 에러를 해결했던 DTO 생성자를 호출하여 리스트에 담기
+                responses.add(new RoutineOccurrenceResponse(routine, date, matchingCompletion));
+            }
+        }
+
+        return responses;
     }
 }

@@ -184,7 +184,7 @@ public class Task extends BaseTimeEntity {
         LocalDate date = endDateTime.toLocalDate();
         this.title = title;
         this.memo = memo;
-        this.category = category != null ? category : CategoryType.NONE;
+        this.category = category != null ? category : this.category;
         this.startDate = date;
         this.endDate = date;
         this.startTime = null;
