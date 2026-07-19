@@ -213,7 +213,7 @@ fun PlanScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
                         item = item,
-                        onDelete = {},
+                        onDelete = { planViewModel.deleteTask(item.id.toLong()) },
                         onEdit = {},
                         onPostpone = {},
                         navigateToDetail = { navigateToDetail(item.id) }
