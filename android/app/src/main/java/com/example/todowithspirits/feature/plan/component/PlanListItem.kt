@@ -221,7 +221,7 @@ fun PlanListItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
                                 Checkbox(
                                     checked = item.isDone,
