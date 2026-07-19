@@ -23,8 +23,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -62,6 +64,7 @@ fun PlanListItem(
     onDelete: () -> Unit,
     onEdit: () -> Unit,
     onPostpone: () -> Unit,
+    onToggleComplete: () -> Unit,
     navigateToDetail: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -204,88 +207,97 @@ fun PlanListItem(
                 Box(
                     modifier = Modifier
                         .width(4.dp)
-                        .height(124.dp)
+                        .height(130.dp)
                         .background(typeColor)
                 )
-
-                Box(modifier = Modifier.padding(top = 14.dp, start = 14.dp, end = 12.dp)) {
-                    Checkbox(
-                        checked = item.isDone,
-                        onCheckedChange = null,
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = typeColor,
-                            uncheckedColor = SpiritTodoTheme.color.onSurfaceColor8
-                        )
-                    )
-                }
 
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 14.dp, bottom = 8.dp, end = 8.dp)
+                        .padding(14.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = item.title,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = SpiritTodoTheme.color.onSurfaceColor5,
-                            textDecoration = if(item.isDone) TextDecoration.LineThrough else TextDecoration.None
-                        )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row {
+                            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                                Checkbox(
+                                    checked = item.isDone,
+                                    onCheckedChange = { onToggleComplete() },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = typeColor,
+                                        uncheckedColor = SpiritTodoTheme.color.onSurfaceColor8
+                                    )
+                                )
+                            }
 
-                        if (item.isImportant) {
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
 
-                            Image(
-                                painter = painterResource(R.drawable.fi_rr_color_star),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp)
+                            Text(
+                                text = item.title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = SpiritTodoTheme.color.onSurfaceColor5,
+                                textDecoration = if(item.isDone) TextDecoration.LineThrough else TextDecoration.None
                             )
-                        }
 
-                        Spacer(modifier = Modifier.weight(1f))
+                            if (item.isImportant) {
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Image(
+                                    painter = painterResource(R.drawable.fi_rr_color_star),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                        }
 
                         if (dDayText != null && item.type != PlanType.ROUTINE) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                                Text(
+                                    text = dDayText,
+                                    fontSize = 18.sp,
+                                    color = if(dDayText == "D-Day") SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.todoTextMain,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    Column(modifier = Modifier.padding(start = 34.dp)) {
+                        val dateTimeText = buildString {
+                            item.dueDate?.let { date ->
+                                val time = item.dueTime ?: LocalTime.of(0, 0)
+                                append(LocalDateTime.of(date, time).format(dateFormatter))
+                            }
+                        }
+                        if (dateTimeText.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+
                             Text(
-                                text = dDayText,
-                                fontSize = 16.sp,
-                                color = if(dDayText == "D-Day") SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.todoTextMain,
-                                fontWeight = FontWeight.SemiBold
+                                text = dateTimeText,
+                                fontSize = 12.sp,
+                                color = SpiritTodoTheme.color.todoTextMain,
+                                fontWeight = FontWeight.Light
                             )
                         }
-                    }
 
-                    val dateTimeText = buildString {
-                        item.dueDate?.let { date ->
-                            val time = item.dueTime ?: LocalTime.of(0, 0)
-                            append(LocalDateTime.of(date, time).format(dateFormatter))
-                        }
-                    }
-                    if (dateTimeText.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = dateTimeText,
-                            fontSize = 12.sp,
-                            color = SpiritTodoTheme.color.todoTextMain,
-                            fontWeight = FontWeight.Light
+                            text = "(${item.memo.ifEmpty { "메모 없음" }})",
+                            fontSize = 14.sp,
+                            color = SpiritTodoTheme.color.onSurfaceColor8
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        if (item.category != null || item.repeatInfo != null) {
+                            Spacer(modifier = Modifier.height(10.dp))
 
-                    Text(
-                        text = "(${item.memo.ifEmpty { "메모 없음" }})",
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.onSurfaceColor8
-                    )
-
-                    if (item.category != null || item.repeatInfo != null) {
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            item.category?.let { TagChip(it) }
-                            item.repeatInfo?.let { TagChip(it) }
+                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                                item.category?.let { TagChip(it) }
+                                item.repeatInfo?.let { TagChip(it) }
+                            }
                         }
                     }
                 }
