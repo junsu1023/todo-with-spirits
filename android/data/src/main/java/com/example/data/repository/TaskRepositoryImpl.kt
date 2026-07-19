@@ -17,19 +17,19 @@ class TaskRepositoryImpl @Inject constructor(
     private val taskRemoteDataSource: TaskRemoteDataSource
 ) : TaskRepository {
     override suspend fun getTask(taskId: Long): Result<Task> {
-        return taskRemoteDataSource.getTask(taskId).map { it.toDomain() }
+        return taskRemoteDataSource.getTask(taskId).mapCatching { it.toDomain() }
     }
 
     override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> {
-        return taskRemoteDataSource.getTaskCalendar(from?.toString(), to?.toString()).map { it.toDomain() }
+        return taskRemoteDataSource.getTaskCalendar(from?.toString(), to?.toString()).mapCatching { it.toDomain() }
     }
 
     override suspend fun createTodo(todo: NewTodo): Result<Task> {
-        return taskRemoteDataSource.createTodo(todo.toRequest()).map { it.toDomain() }
+        return taskRemoteDataSource.createTodo(todo.toRequest()).mapCatching { it.toDomain() }
     }
 
     override suspend fun createRoutine(routine: NewRoutine): Result<Task> {
-        return taskRemoteDataSource.createRoutine(routine.toRequest()).map { it.toDomain() }
+        return taskRemoteDataSource.createRoutine(routine.toRequest()).mapCatching { it.toDomain() }
     }
 
     override suspend fun completeTask(taskId: Long, date: LocalDate?): Result<Unit> {
@@ -41,10 +41,10 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> {
-        return taskRemoteDataSource.deleteTasks(DeleteTaskRequest(taskIds)).map { it.deletedCount }
+        return taskRemoteDataSource.deleteTasks(DeleteTaskRequest(taskIds)).mapCatching { it.deletedCount }
     }
 
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
-        return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).map { it.toDomain() }
+        return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).mapCatching { it.toDomain() }
     }
 }

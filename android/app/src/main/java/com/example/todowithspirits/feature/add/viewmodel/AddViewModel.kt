@@ -123,7 +123,7 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    fun registerTodo() {
+    fun registerTodo(onSuccess: () -> Unit = {}) {
         viewModelScope.launchWithLoading {
             val state = _uiState.value
 
@@ -138,13 +138,12 @@ class AddViewModel @Inject constructor(
                 memo = state.memo.ifBlank { null }
             )
 
-            println("test-kjs: endDateTime = ${todo.endDateTime}")
-
             createTodoUseCase(todo)
                 .onSuccess {
                     Log.d(TAG, "registerTodo success = $it")
                     _uiState.update { AddUiState() }
                     taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
                 }
                 .onFailure {
                     Log.e(TAG, "registerTodo, failed!", it)
@@ -153,7 +152,7 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    fun registerRoutine() {
+    fun registerRoutine(onSuccess: () -> Unit = {}) {
         viewModelScope.launchWithLoading {
             val state = _uiState.value
 
@@ -172,6 +171,7 @@ class AddViewModel @Inject constructor(
                     Log.d(TAG, "registerRoutine success = $it")
                     _uiState.update { AddUiState() }
                     taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
                 }
                 .onFailure {
                     Log.e(TAG, "registerRoutine failed!", it)

@@ -76,8 +76,7 @@ fun AddScreen(
                     onPublicOptionChange = { addViewModel.setPublicOption(it) },
                     onMemoChange = { addViewModel.setMemo(it) },
                     onRegisterClick = {
-                        addViewModel.registerTodo()
-                        onBack()
+                        addViewModel.registerTodo(onSuccess = onBack)
                     }
                 )
                 else -> RoutineForm(
@@ -91,8 +90,7 @@ fun AddScreen(
                     onPublicOptionChange = { addViewModel.setPublicOption(it) },
                     onMemoChange = { addViewModel.setMemo(it) },
                     onRegisterClick = {
-                        addViewModel.registerRoutine()
-                        onBack()
+                        addViewModel.registerRoutine(onSuccess = onBack)
                     }
                 )
             }
