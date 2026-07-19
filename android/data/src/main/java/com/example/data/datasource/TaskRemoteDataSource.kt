@@ -6,6 +6,8 @@ import com.example.data.network.apiCallUnit
 import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
+import com.example.data.request.DeleteTaskRequest
+import com.example.data.response.DeleteTaskResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import javax.inject.Inject
@@ -29,4 +31,7 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun cancelTaskCompletion(taskId: Long, request: CompleteTaskRequest): Result<Unit> =
         apiCallUnit { taskApi.cancelTaskCompletion(taskId, request) }
+
+    suspend fun deleteTasks(request: DeleteTaskRequest): Result<DeleteTaskResponse> =
+        apiCall { taskApi.deleteTasks(request) }
 }

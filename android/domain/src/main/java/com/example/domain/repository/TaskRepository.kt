@@ -18,4 +18,6 @@ interface TaskRepository {
     suspend fun completeTask(taskId: Long, date: LocalDate? = null): Result<Unit>
 
     suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate? = null): Result<Unit>
+
+    suspend fun deleteTasks(taskIds: List<Long>): Result<Int>
 }
