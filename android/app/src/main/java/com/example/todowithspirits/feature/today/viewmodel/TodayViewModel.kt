@@ -6,6 +6,7 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
+import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TodayViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
+    private val completeTaskUseCase: CompleteTaskUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
@@ -70,6 +72,19 @@ class TodayViewModel @Inject constructor(
                 Log.e(TAG, "loadToday failed!", it)
                 emitErrorMsg(it.localizedMessage ?: "오늘의 일정을 불러오지 못했습니다")
             }
+        }
+    }
+
+    fun completeTask(taskId: Long, date: LocalDate?) {
+        viewModelScope.launchWithLoading {
+            completeTaskUseCase(taskId, date)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    Log.e(TAG, "completeTask failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "완료 처리에 실패했습니다")
+                }
         }
     }
 
