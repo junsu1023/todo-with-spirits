@@ -90,7 +90,7 @@ fun PlanListItem(
         PlanType.TODO -> SpiritTodoTheme.color.surfaceColor8
         PlanType.ROUTINE -> SpiritTodoTheme.color.surfaceColor9
     }
-    val dDay = item.dueDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
+    val dDay = item.endDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
     val dDayText = when {
         dDay == null -> null
         dDay == 0 -> "D-Day"
@@ -268,8 +268,8 @@ fun PlanListItem(
 
                     Column(modifier = Modifier.padding(start = 34.dp)) {
                         val dateTimeText = buildString {
-                            item.dueDate?.let { date ->
-                                val time = item.dueTime ?: LocalTime.of(0, 0)
+                            item.endDate?.let { date ->
+                                val time = item.endTime ?: LocalTime.of(0, 0)
                                 append(LocalDateTime.of(date, time).format(dateFormatter))
                             }
                         }

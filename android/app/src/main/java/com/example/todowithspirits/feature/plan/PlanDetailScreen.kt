@@ -115,10 +115,10 @@ fun PlanDetailScreen(
 
     val dateFormatter = KoreanDateWithDayFormatter
     val dateText = buildString {
-        item.dueDate?.let { date ->
+        item.endDate?.let { date ->
             append(date.format(dateFormatter))
-            if(item.dueTime != null) {
-                append(" " + item.dueTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+            if(item.endTime != null) {
+                append(" " + item.endTime.format(DateTimeFormatter.ofPattern("HH:mm")))
             } else {
                 append(" 하루 종일")
             }

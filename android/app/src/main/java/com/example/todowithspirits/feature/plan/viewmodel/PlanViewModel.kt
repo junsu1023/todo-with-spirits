@@ -168,8 +168,8 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = occurrenceDate,
-    dueTime = endTime,
+    endDate = occurrenceDate,
+    endTime = endTime,
     memo = memo ?: "",
     category = CategoryOption.entries.find { it.name == category }
         ?.takeIf { it != CategoryOption.NONE }

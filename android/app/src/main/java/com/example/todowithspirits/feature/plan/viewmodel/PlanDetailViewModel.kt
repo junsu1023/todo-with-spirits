@@ -31,6 +31,7 @@ class PlanDetailViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getTaskUseCase(taskId)
                 .onSuccess { task ->
+                    println("test-kjs: task = $task")
                     _plan.value = task.toPlanItemData()
                 }
                 .onFailure {
@@ -61,8 +62,8 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = endDate,
-    dueTime = endTime,
+    endDate = endDate,
+    endTime = endTime,
     memo = memo,
     category = CategoryOption.entries.find { it.name == category }
         ?.takeIf { it != CategoryOption.NONE }
