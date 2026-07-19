@@ -8,7 +8,12 @@ import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
+import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
+import com.example.domain.usecase.GetTaskUseCase
+import com.example.domain.usecase.UpdateTodoUseCase
+import com.example.todowithspirits.feature.add.viewmodel.concatenating
+import com.example.todowithspirits.feature.add.viewmodel.toNewTodo
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.SpiritInfo
@@ -23,6 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +36,9 @@ class TodayViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
+    private val getTaskUseCase: GetTaskUseCase,
+    private val updateTodoUseCase: UpdateTodoUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
@@ -99,6 +108,46 @@ class TodayViewModel @Inject constructor(
                 .onFailure {
                     Log.e(TAG, "cancelTaskCompletion failed!", it)
                     emitErrorMsg(it.localizedMessage ?: "완료 취소에 실패했습니다")
+                }
+        }
+    }
+
+    fun deleteTask(taskId: Long, onSuccess: () -> Unit = {}) {
+        viewModelScope.launchWithLoading {
+            deleteTasksUseCase(listOf(taskId))
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
+                }
+                .onFailure {
+                    Log.e(TAG, "deleteTask failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "삭제에 실패했습니다")
+                }
+        }
+    }
+
+    fun postponeTodo(taskId: Long, onSuccess: () -> Unit = {}) {
+        viewModelScope.launchWithLoading {
+            getTaskUseCase(taskId)
+                .onSuccess { task ->
+                    val postponedEndDateTime = Pair(
+                        (task.endDate ?: LocalDate.now()).plusDays(1),
+                        task.endTime ?: LocalTime.of(0, 0, 0)
+                    ).concatenating()
+
+                    updateTodoUseCase(taskId, task.toNewTodo(postponedEndDateTime))
+                        .onSuccess {
+                            taskRefreshBus.notifyTaskChanged()
+                            onSuccess()
+                        }
+                        .onFailure {
+                            Log.e(TAG, "postponeTodo update failed!", it)
+                            emitErrorMsg(it.localizedMessage ?: "미루기에 실패했습니다")
+                        }
+                }
+                .onFailure {
+                    Log.e(TAG, "postponeTodo load failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "플랜 정보를 불러오지 못했습니다")
                 }
         }
     }

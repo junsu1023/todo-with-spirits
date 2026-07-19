@@ -57,7 +57,10 @@ fun TodayPlanSection(
     routines: List<RoutineItem>,
     weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
     onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
-    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit
+    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onDeleteTask: (taskId: Long) -> Unit,
+    onEditTask: (taskId: Long) -> Unit,
+    onPostponeTodo: (taskId: Long) -> Unit
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -217,9 +220,18 @@ fun TodayPlanSection(
             dueTime = todo.dueTime,
             memo = todo.memo,
             onDismiss = { selectedTodo = null },
-            onDelete = { selectedTodo = null },
-            onPostpone = { selectedTodo = null },
-            onEdit = { selectedTodo = null }
+            onDelete = {
+                onDeleteTask(todo.taskId)
+                selectedTodo = null
+            },
+            onPostpone = {
+                onPostponeTodo(todo.taskId)
+                selectedTodo = null
+            },
+            onEdit = {
+                onEditTask(todo.taskId)
+                selectedTodo = null
+            }
         )
     }
 
@@ -231,9 +243,15 @@ fun TodayPlanSection(
             dueTime = routine.dueTime,
             memo = routine.memo,
             onDismiss = { selectedRoutine = null },
-            onDelete = { selectedRoutine = null },
+            onDelete = {
+                onDeleteTask(routine.taskId)
+                selectedRoutine = null
+            },
             onPostpone = { selectedRoutine = null },
-            onEdit = { selectedRoutine = null }
+            onEdit = {
+                onEditTask(routine.taskId)
+                selectedRoutine = null
+            }
         )
     }
 }

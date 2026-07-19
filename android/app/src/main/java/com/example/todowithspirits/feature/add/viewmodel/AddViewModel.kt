@@ -10,6 +10,7 @@ import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
+import com.example.domain.model.Task
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.CreateRoutineUseCase
 import com.example.domain.usecase.CreateTodoUseCase
@@ -282,9 +283,20 @@ class AddViewModel @Inject constructor(
 fun Pair<LocalDate, LocalTime>.concatenating(): String =
     "%sT%02d:%02d:%02d".format(first, second.hour, second.minute, second.second)
 
-private fun Int?.toAlarmOption(): AlarmOption = when (this) {
+fun Int?.toAlarmOption(): AlarmOption = when (this) {
     10 -> AlarmOption.TEN_MINUTES
     30 -> AlarmOption.THIRTY_MINUTES
     60 -> AlarmOption.ONE_HOUR
     else -> AlarmOption.NONE
 }
+
+fun Task.toNewTodo(endDateTime: String): NewTodo = NewTodo(
+    title = title,
+    isAllDay = isAllDay,
+    endDateTime = endDateTime,
+    isImportant = isImportant,
+    notificationType = notificationMinutes.toAlarmOption(),
+    category = CategoryOption.entries.find { it.name == category } ?: CategoryOption.NONE,
+    isPublic = isPublic,
+    memo = memo.ifBlank { null }
+)
