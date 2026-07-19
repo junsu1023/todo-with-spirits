@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -134,7 +136,11 @@ fun TodayPlanSection(
         } else {
             Spacer(Modifier.height(19.dp))
 
-            Column(modifier = Modifier.padding(horizontal = 2.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 if (todos.isNotEmpty()) {
                     SectionHeader(title = stringResource(R.string.todo))
 
@@ -334,7 +340,8 @@ private fun TodayListItem(
 
             Image(
                 painter = painterResource(R.drawable.todo_important),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
             )
         }
     }

@@ -13,7 +13,6 @@ import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.feature.today.state.TodayUiState
 import com.example.todowithspirits.feature.today.state.TodoItem
 import com.example.todowithspirits.util.TaskRefreshBus
-import com.example.todowithspirits.util.routineOccurrences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,18 +80,11 @@ class TodayViewModel @Inject constructor(
             val weekEnd = weekStart.plusDays(6)
 
             getTaskCalendarUseCase(weekStart, weekEnd).onSuccess { calendar ->
-                val routineEvents = calendar.items
-                    .filter { it.taskType == TaskType.ROUTINE.type }
-                    .distinctBy { it.taskId }
-                    .flatMap { routine ->
-                        routine.routineOccurrences(weekStart, weekEnd).map { date -> date to PlanType.ROUTINE }
+                val events = calendar.items
+                    .map { item ->
+                        val type = if (item.taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO
+                        item.occurrenceDate to type
                     }
-
-                val scheduleEvents = calendar.items
-                    .filter { it.taskType == TaskType.SCHEDULE.type }
-                    .map { it.startDate to PlanType.TODO }
-
-                val events = (routineEvents + scheduleEvents)
                     .groupBy({ it.first }, { it.second })
 
                 _uiState.update { it.copy(weekEvents = events) }
@@ -109,8 +101,8 @@ private fun TaskSummary.toTodoItem() = TodoItem(
     title = title,
     isDone = isCompleted,
     isImportant = isImportant,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = occurrenceDate,
+    dueTime = endTime,
     memo = memo ?: ""
 )
 
@@ -118,7 +110,7 @@ private fun TaskSummary.toRoutineItem() = RoutineItem(
     taskId = taskId,
     title = title,
     isDone = isCompleted,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = occurrenceDate,
+    dueTime = endTime,
     memo = memo ?: ""
 )

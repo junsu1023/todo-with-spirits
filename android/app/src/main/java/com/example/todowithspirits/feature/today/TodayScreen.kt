@@ -58,6 +58,7 @@ fun TodayScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .background(SpiritTodoTheme.color.surfaceColor1)
                 .padding(horizontal = 16.dp)
         ) {
