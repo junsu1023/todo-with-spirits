@@ -26,4 +26,7 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun completeTask(taskId: Long, request: CompleteTaskRequest): Result<Unit> =
         apiCallUnit { taskApi.completeTask(taskId, request) }
+
+    suspend fun cancelTaskCompletion(taskId: Long, request: CompleteTaskRequest): Result<Unit> =
+        apiCallUnit { taskApi.cancelTaskCompletion(taskId, request) }
 }

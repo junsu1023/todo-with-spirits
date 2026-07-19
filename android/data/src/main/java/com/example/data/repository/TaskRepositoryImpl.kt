@@ -34,4 +34,8 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun completeTask(taskId: Long, date: LocalDate?): Result<Unit> {
         return taskRemoteDataSource.completeTask(taskId, CompleteTaskRequest(date = date?.toString()))
     }
+
+    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate?): Result<Unit> {
+        return taskRemoteDataSource.cancelTaskCompletion(taskId, CompleteTaskRequest(date = date?.toString()))
+    }
 }
