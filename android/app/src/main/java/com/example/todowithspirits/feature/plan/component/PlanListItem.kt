@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.CategoryOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.model.PlanItemData
@@ -291,13 +292,12 @@ fun PlanListItem(
                             color = SpiritTodoTheme.color.onSurfaceColor8
                         )
 
-                        if (item.category != null || item.repeatInfo != null) {
-                            Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                                item.category?.let { TagChip(it) }
-                                item.repeatInfo?.let { TagChip(it) }
-                            }
+                        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                            TagChip(item.category ?: CategoryOption.NONE.displayName)
+
+                            item.repeatInfo?.let { TagChip(it) }
                         }
                     }
                 }
