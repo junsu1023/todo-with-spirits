@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.plan.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
@@ -170,5 +171,7 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     dueDate = occurrenceDate,
     dueTime = endTime,
     memo = memo ?: "",
-    category = category.takeIf { it.isNotBlank() && it != "NONE" }
+    category = CategoryOption.entries.find { it.name == category }
+        ?.takeIf { it != CategoryOption.NONE }
+        ?.displayName
 )

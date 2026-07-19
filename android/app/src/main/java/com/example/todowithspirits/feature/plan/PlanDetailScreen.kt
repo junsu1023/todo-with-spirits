@@ -40,9 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.domain.model.CategoryOption
+import com.example.domain.model.PublicStateOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.add.viewmodel.toAlarmOption
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.viewmodel.PlanDetailViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -64,7 +67,7 @@ fun PlanDetailScreen(
     val isLoading by planDetailViewModel.isLoading.collectAsStateWithLifecycle()
     val item = planState
 
-    if (isLoading) {
+    if(isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,6 +84,7 @@ fun PlanDetailScreen(
                 ),
                 label = "angle"
             )
+
             Image(
                 painter = painterResource(R.drawable.loading_gray),
                 contentDescription = null,
@@ -92,7 +96,7 @@ fun PlanDetailScreen(
         return
     }
 
-    if (item == null) {
+    if(item == null) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,7 +117,7 @@ fun PlanDetailScreen(
     val dateText = buildString {
         item.dueDate?.let { date ->
             append(date.format(dateFormatter))
-            if (item.dueTime != null) {
+            if(item.dueTime != null) {
                 append(" " + item.dueTime.format(DateTimeFormatter.ofPattern("HH:mm")))
             } else {
                 append(" 하루 종일")
@@ -166,7 +170,7 @@ fun PlanDetailScreen(
                     .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = if (item.type == PlanType.TODO) stringResource(R.string.todo) else stringResource(R.string.routine),
+                    text = if(item.type == PlanType.TODO) stringResource(R.string.todo) else stringResource(R.string.routine),
                     color = SpiritTodoTheme.color.mainTextAndStroke,
                     fontSize = 16.sp
                 )
@@ -183,7 +187,7 @@ fun PlanDetailScreen(
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
-                if (item.isImportant) {
+                if(item.isImportant) {
                     Spacer(Modifier.width(4.dp))
 
                     Image(
@@ -194,7 +198,7 @@ fun PlanDetailScreen(
                 }
             }
 
-            if (dateText.isNotEmpty()) {
+            if(dateText.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
 
                 Text(
@@ -215,21 +219,21 @@ fun PlanDetailScreen(
 
             DetailInfoRow(
                 iconRes = R.drawable.todo_alarm,
-                text = "10분 전"
+                text = item.notificationMinutes.toAlarmOption().displayName
             )
 
             Spacer(Modifier.height(26.dp))
 
             DetailInfoRow(
                 iconRes = R.drawable.todo_category,
-                text = item.category ?: "-"
+                text = item.category ?: CategoryOption.NONE.displayName
             )
 
             Spacer(Modifier.height(26.dp))
 
             DetailInfoRow(
                 iconRes = R.drawable.todo_private,
-                text = "비공개"
+                text = if(item.isPublic) PublicStateOption.PUBLIC.displayName else PublicStateOption.PRIVATE.displayName
             )
 
             Spacer(Modifier.height(40.dp))

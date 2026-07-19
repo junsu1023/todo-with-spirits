@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.Task
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.DeleteTasksUseCase
@@ -63,5 +64,9 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     dueDate = endDate,
     dueTime = endTime,
     memo = memo,
-    category = category.takeIf { it.isNotBlank() && it != "NONE" }
+    category = CategoryOption.entries.find { it.name == category }
+        ?.takeIf { it != CategoryOption.NONE }
+        ?.displayName,
+    isPublic = isPublic,
+    notificationMinutes = notificationMinutes
 )

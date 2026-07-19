@@ -15,5 +15,7 @@ data class PlanItemData(
     val dueTime: LocalTime?,
     val memo: String = "",
     val category: String? = null,
-    val repeatInfo: String? = null
+    val repeatInfo: String? = null,
+    val isPublic: Boolean = false,
+    val notificationMinutes: Int? = null
 )
