@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.plan.PlanItemData
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate

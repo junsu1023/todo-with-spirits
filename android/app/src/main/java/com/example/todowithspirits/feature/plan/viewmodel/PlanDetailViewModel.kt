@@ -7,8 +7,8 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.Task
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.GetTaskUseCase
-import com.example.todowithspirits.feature.plan.PlanItemData
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -2,8 +2,8 @@ package com.example.todowithspirits.feature.plan.state
 
 import androidx.compose.runtime.Immutable
 import com.example.domain.model.PlanSortOption
-import com.example.todowithspirits.feature.plan.PlanItemData
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
 import java.time.LocalDate
 import java.time.YearMonth
 

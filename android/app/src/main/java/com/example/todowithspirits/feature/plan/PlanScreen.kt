@@ -38,26 +38,9 @@ import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanListItem
 import com.example.todowithspirits.feature.plan.component.PlanSearchArea
 import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
-import java.time.LocalDate
-import java.time.LocalTime
-
-enum class PlanType { TODO, ROUTINE }
-
-data class PlanItemData(
-    val id: Int,
-    val title: String,
-    val type: PlanType,
-    val isImportant: Boolean,
-    val isDone: Boolean,
-    val dueDate: LocalDate?,
-    val dueTime: LocalTime?,
-    val memo: String = "",
-    val category: String? = null,
-    val repeatInfo: String? = null
-)
-
 @Composable
 fun PlanScreen(
     planViewModel: PlanViewModel = hiltViewModel(),

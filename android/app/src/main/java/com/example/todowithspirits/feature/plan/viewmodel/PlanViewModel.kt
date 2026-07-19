@@ -6,8 +6,8 @@ import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.todowithspirits.feature.plan.PlanItemData
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.state.DayPlanEvents
 import com.example.todowithspirits.feature.plan.state.PlanUiState
 import com.example.todowithspirits.util.TaskRefreshBus
