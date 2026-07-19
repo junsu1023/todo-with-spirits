@@ -19,10 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 
 private data class CalendarDay(
     val date: LocalDate,
@@ -45,10 +44,11 @@ fun CalendarView(
     onMonthChanged: (YearMonth) -> Unit = {}
 ) {
     var currentMonth by remember(selectedDate) { mutableStateOf(YearMonth.from(selectedDate)) }
-    val headerDate = remember(currentMonth, selectedDate) {
-        currentMonth.atDay(selectedDate.dayOfMonth.coerceAtMost(currentMonth.lengthOfMonth()))
+    val today = remember { LocalDate.now() }
+    val headerDate = remember(currentMonth, today) {
+        if (currentMonth == YearMonth.from(today)) today else currentMonth.atDay(1)
     }
-    val selectedDateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM.", Locale.KOREAN) }
+    val selectedDateFormatter = KoreanDateWithDayFormatter
 
     val calendarDays = remember(currentMonth) {
         val firstDayOfMonth = currentMonth.atDay(1)
