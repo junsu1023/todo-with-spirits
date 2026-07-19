@@ -88,7 +88,7 @@ public class TaskController {
     // ==============================================
 
     @GetMapping("/calendar")
-    public ResponseEntity<ApiResponse<TaskListResponse<TaskOccurrenceResponse>>> getCalendarTasks(
+    public ResponseEntity<ApiResponse<CalendarTasksResponse>> getCalendarTasks(
             @AuthenticationPrincipal Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
