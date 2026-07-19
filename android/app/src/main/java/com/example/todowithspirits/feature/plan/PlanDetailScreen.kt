@@ -143,7 +143,11 @@ fun PlanDetailScreen(
                         painter = painterResource(R.drawable.todo_trash),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .noRippleClickable {
+                                planDetailViewModel.deleteTask(item.id.toLong(), onSuccess = onBack)
+                            }
                     )
                 }
             }
