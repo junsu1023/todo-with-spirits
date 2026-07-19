@@ -42,6 +42,7 @@ import java.time.LocalTime
 @Composable
 fun TodoForm(
     uiState: AddUiState,
+    isEditMode: Boolean = false,
     onImportantChange: (Boolean) -> Unit,
     onDateChange: (LocalDate) -> Unit,
     onTimeEnabledChange: (Boolean) -> Unit,
@@ -168,7 +169,7 @@ fun TodoForm(
         Spacer(modifier = Modifier.height(28.dp))
 
         SpiritsTodoPrimaryButton(
-            text = stringResource(R.string.register),
+            text = stringResource(if (isEditMode) R.string.modify_register else R.string.register),
             onClick = onRegisterClick
         )
     }

@@ -46,6 +46,7 @@ fun PlanScreen(
     planViewModel: PlanViewModel = hiltViewModel(),
     navigateToAdd: () -> Unit,
     navigateToDetail: (Int) -> Unit,
+    navigateToEditTask: (Long) -> Unit,
     navigateToAlarm: () -> Unit
 ) {
     val uiState by planViewModel.uiState.collectAsStateWithLifecycle()
@@ -214,7 +215,7 @@ fun PlanScreen(
                     PlanListItem(
                         item = item,
                         onDelete = { planViewModel.deleteTask(item.id.toLong()) },
-                        onEdit = {},
+                        onEdit = { navigateToEditTask(item.id.toLong()) },
                         onPostpone = {},
                         navigateToDetail = { navigateToDetail(item.id) }
                     )

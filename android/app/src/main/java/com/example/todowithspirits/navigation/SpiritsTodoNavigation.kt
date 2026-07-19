@@ -27,6 +27,9 @@ fun SpiritsTodoNavigation(
     modifier: Modifier
 ) {
     val navigateToAdd: () -> Unit = { navController.navigate(Screen.Add.route) }
+    val navigateToEditTask: (Long) -> Unit = { taskId ->
+        navController.navigate("${Screen.Add.route}?taskId=$taskId")
+    }
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
@@ -61,6 +64,7 @@ fun SpiritsTodoNavigation(
             PlanScreen(
                 navigateToAdd = navigateToAdd,
                 navigateToDetail = navigateToDetail,
+                navigateToEditTask = navigateToEditTask,
                 navigateToAlarm = navigateToAlarm
             )
         }
@@ -74,7 +78,7 @@ fun SpiritsTodoNavigation(
             PlanDetailScreen(
                 itemId = itemId,
                 onBack = { navController.popBackStack() },
-                navigateToAdd = navigateToAdd
+                navigateToAdd = { navigateToEditTask(itemId.toLong()) }
             )
         }
 
@@ -86,8 +90,13 @@ fun SpiritsTodoNavigation(
             RecordScreen(navigateToAlarm = navigateToAlarm)
         }
 
-        composable(Screen.Add.route) {
-            AddScreen(onBack = onBack)
+        composable(
+            route = "${Screen.Add.route}?taskId={taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.LongType; defaultValue = -1L })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getLong("taskId")?.takeIf { it != -1L }
+
+            AddScreen(taskId = taskId, onBack = onBack)
         }
 
         composable(Screen.Alarm.route) {

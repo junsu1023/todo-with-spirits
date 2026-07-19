@@ -10,8 +10,12 @@ import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
+import com.example.domain.model.TaskType
 import com.example.domain.usecase.CreateRoutineUseCase
 import com.example.domain.usecase.CreateTodoUseCase
+import com.example.domain.usecase.GetTaskUseCase
+import com.example.domain.usecase.UpdateRoutineUseCase
+import com.example.domain.usecase.UpdateTodoUseCase
 import com.example.todowithspirits.feature.add.state.AddUiState
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +32,9 @@ import javax.inject.Inject
 class AddViewModel @Inject constructor(
     private val createTodoUseCase: CreateTodoUseCase,
     private val createRoutineUseCase: CreateRoutineUseCase,
+    private val getTaskUseCase: GetTaskUseCase,
+    private val updateTodoUseCase: UpdateTodoUseCase,
+    private val updateRoutineUseCase: UpdateRoutineUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(AddUiState())
@@ -123,6 +130,36 @@ class AddViewModel @Inject constructor(
         }
     }
 
+    fun loadTaskForEdit(taskId: Long) {
+        viewModelScope.launchWithLoading {
+            getTaskUseCase(taskId)
+                .onSuccess { task ->
+                    println("test-kjs: task = $task")
+                    val taskType = if(task.taskType == TaskType.ROUTINE.type) TaskType.ROUTINE else TaskType.SCHEDULE
+
+                    _uiState.update {
+                        it.copy(
+                            editingTaskId = taskId,
+                            editingTaskType = taskType,
+                            title = task.title,
+                            isImportant = task.isImportant,
+                            date = task.endDate ?: it.date,
+                            isTimeEnabled = task.endTime != null,
+                            dueTime = task.endTime ?: it.dueTime,
+                            alarmOption = task.notificationMinutes.toAlarmOption(),
+                            categoryOption = CategoryOption.entries.find { option -> option.name == task.category } ?: CategoryOption.NONE,
+                            publicOption = if (task.isPublic) PublicStateOption.PUBLIC else PublicStateOption.PRIVATE,
+                            memo = task.memo
+                        )
+                    }
+                }
+                .onFailure {
+                    Log.e(TAG, "loadTaskForEdit failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "플랜 정보를 불러오지 못했습니다")
+                }
+        }
+    }
+
     fun registerTodo(onSuccess: () -> Unit = {}) {
         viewModelScope.launchWithLoading {
             val state = _uiState.value
@@ -179,7 +216,75 @@ class AddViewModel @Inject constructor(
                 }
         }
     }
+
+    fun updateTodo(onSuccess: () -> Unit = {}) {
+        viewModelScope.launchWithLoading {
+            val state = _uiState.value
+            val taskId = state.editingTaskId ?: return@launchWithLoading
+
+            val todo = NewTodo(
+                title = state.title,
+                isAllDay = !state.isTimeEnabled,
+                endDateTime = Pair(state.date, state.dueTime).concatenating(),
+                isImportant = state.isImportant,
+                notificationType = state.alarmOption,
+                category = state.categoryOption,
+                isPublic = state.publicOption == PublicStateOption.PUBLIC,
+                memo = state.memo.ifBlank { null }
+            )
+
+            updateTodoUseCase(taskId, todo)
+                .onSuccess {
+                    Log.d(TAG, "updateTodo success = $it")
+                    _uiState.update { AddUiState() }
+                    taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
+                }
+                .onFailure {
+                    Log.e(TAG, "updateTodo failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "Todo 수정에 실패했습니다")
+                }
+        }
+    }
+
+    fun updateRoutine(onSuccess: () -> Unit = {}) {
+        viewModelScope.launchWithLoading {
+            val state = _uiState.value
+            val taskId = state.editingTaskId ?: return@launchWithLoading
+
+            val routine = NewRoutine(
+                title = state.title,
+                repeatType = state.repeatOption,
+                category = state.categoryOption,
+                repeatDaysOfWeek = state.selectedWeekDays.toList(),
+                repeatDaysOfMonth = state.selectedMonthDays.toList(),
+                notification = state.alarmOption,
+                isPublic = state.publicOption == PublicStateOption.PUBLIC,
+                excludeHoliday = state.excludeHolidays,
+                memo = state.memo.ifBlank { null }
+            )
+
+            updateRoutineUseCase(taskId, routine)
+                .onSuccess {
+                    Log.d(TAG, "updateRoutine success = $it")
+                    _uiState.update { AddUiState() }
+                    taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
+                }
+                .onFailure {
+                    Log.e(TAG, "updateRoutine failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "루틴 수정에 실패했습니다")
+                }
+        }
+    }
 }
 
 fun Pair<LocalDate, LocalTime>.concatenating(): String =
     "%sT%02d:%02d:%02d".format(first, second.hour, second.minute, second.second)
+
+private fun Int?.toAlarmOption(): AlarmOption = when (this) {
+    10 -> AlarmOption.TEN_MINUTES
+    30 -> AlarmOption.THIRTY_MINUTES
+    60 -> AlarmOption.ONE_HOUR
+    else -> AlarmOption.NONE
+}
