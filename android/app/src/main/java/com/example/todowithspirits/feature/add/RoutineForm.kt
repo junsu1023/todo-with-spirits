@@ -45,6 +45,7 @@ private val routineRepeatOptions = listOf(
 @Composable
 fun RoutineForm(
     uiState: AddUiState,
+    isEditMode: Boolean = false,
     onRepeatOptionChange: (RepeatOption) -> Unit,
     onWeekDayToggled: (DayOfWeek) -> Unit,
     onMonthDayToggled: (Int) -> Unit,
@@ -161,7 +162,7 @@ fun RoutineForm(
         Spacer(modifier = Modifier.height(38.dp))
 
         SpiritsTodoPrimaryButton(
-            text = stringResource(R.string.register),
+            text = stringResource(if (isEditMode) R.string.modify_register else R.string.register),
             onClick = onRegisterClick
         )
     }

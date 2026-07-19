@@ -42,9 +42,8 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = endDate,
+    dueTime = endTime,
     memo = memo,
-    category = category.takeIf { it.isNotBlank() && it != "NONE" },
-    repeatInfo = repeatType?.takeIf { it != "NONE" }
+    category = category.takeIf { it.isNotBlank() && it != "NONE" }
 )

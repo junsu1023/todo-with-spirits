@@ -5,12 +5,16 @@ import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.domain.model.RepeatOption
+import com.example.domain.model.TaskType
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Immutable
 data class AddUiState(
+    val editingTaskId: Long? = null,
+    val editingTaskType: TaskType? = null,
+
     val title: String = "",
     val isImportant: Boolean = false,
 

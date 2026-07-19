@@ -18,6 +18,7 @@
     <string name="public_state">공개 상태</string>
     <string name="month">%s월</string>
     <string name="register">등록 하기</string>
+    <string name="modify_register">수정 하기</string>
     <string name="time">시간</string>
     <string name="exclude_holidays">공휴일 제외</string>
     <string name="growth_badge">성장 뱃지</string>
