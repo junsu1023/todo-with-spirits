@@ -5,9 +5,10 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
+import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.todowithspirits.feature.plan.PlanItemData
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.state.DayPlanEvents
 import com.example.todowithspirits.feature.plan.state.PlanUiState
 import com.example.todowithspirits.util.TaskRefreshBus
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlanViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(PlanUiState())
@@ -88,6 +90,18 @@ class PlanViewModel @Inject constructor(
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "플랜을 불러오지 못했습니다")
+                }
+        }
+    }
+
+    fun deleteTask(taskId: Long) {
+        viewModelScope.launchWithLoading {
+            deleteTasksUseCase(listOf(taskId))
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "삭제하지 못했습니다")
                 }
         }
     }

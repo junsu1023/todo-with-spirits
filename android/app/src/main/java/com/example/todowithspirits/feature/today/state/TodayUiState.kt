@@ -1,7 +1,7 @@
 package com.example.todowithspirits.feature.today.state
 
 import androidx.compose.runtime.Immutable
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanType
 import java.time.LocalDate
 import java.time.LocalTime
 

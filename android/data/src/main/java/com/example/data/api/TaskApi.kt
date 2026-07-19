@@ -4,7 +4,9 @@ import com.example.data.constant.URLConstant
 import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
+import com.example.data.request.DeleteTaskRequest
 import com.example.data.response.ApiResponse
+import com.example.data.response.DeleteTaskResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import retrofit2.Response
@@ -42,4 +44,7 @@ interface TaskApi {
         @Path("taskId") taskId: Long,
         @Body request: CompleteTaskRequest
     ): Response<ApiResponse<Unit?>>
+
+    @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_DELETE, hasBody = true)
+    suspend fun deleteTasks(@Body request: DeleteTaskRequest): Response<ApiResponse<DeleteTaskResponse>>
 }

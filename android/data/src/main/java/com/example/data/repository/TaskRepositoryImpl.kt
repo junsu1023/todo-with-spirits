@@ -4,6 +4,7 @@ import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
 import com.example.data.mapper.toRequest
 import com.example.data.request.CompleteTaskRequest
+import com.example.data.request.DeleteTaskRequest
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
@@ -37,5 +38,9 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate?): Result<Unit> {
         return taskRemoteDataSource.cancelTaskCompletion(taskId, CompleteTaskRequest(date = date?.toString()))
+    }
+
+    override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> {
+        return taskRemoteDataSource.deleteTasks(DeleteTaskRequest(taskIds)).map { it.deletedCount }
     }
 }

@@ -9,7 +9,7 @@ import com.example.domain.model.TaskType
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.todowithspirits.feature.plan.PlanType
+import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.feature.today.state.TodayUiState
