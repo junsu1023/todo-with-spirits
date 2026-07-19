@@ -1,6 +1,7 @@
 package com.example.data.api
 
 import com.example.data.constant.URLConstant
+import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.response.ApiResponse
@@ -9,6 +10,7 @@ import com.example.data.response.TaskDetailResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -28,4 +30,16 @@ interface TaskApi {
 
     @POST(URLConstant.TASK.TASK_ROUTINE)
     suspend fun createRoutine(@Body request: CreateRoutineRequest): Response<ApiResponse<TaskDetailResponse>>
+
+    @POST(URLConstant.TASK.TASK_COMPLETE)
+    suspend fun completeTask(
+        @Path("taskId") taskId: Long,
+        @Body request: CompleteTaskRequest
+    ): Response<ApiResponse<Unit?>>
+
+    @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_COMPLETE, hasBody = true)
+    suspend fun cancelTaskCompletion(
+        @Path("taskId") taskId: Long,
+        @Body request: CompleteTaskRequest
+    ): Response<ApiResponse<Unit?>>
 }

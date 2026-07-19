@@ -43,6 +43,32 @@ suspend fun <T> apiCall(request: suspend () -> Response<ApiResponse<T>>): Result
     }
 }
 
+// detail이 null인 것 자체가 정상 성공 응답인 API(예: 완료 처리)를 위한 변형
+suspend fun apiCallUnit(request: suspend () -> Response<ApiResponse<Unit?>>): Result<Unit> {
+    return try {
+        val response = request()
+        val requestLine = response.raw().request.let { "${it.method} ${it.url.encodedPath}" }
+
+        if (response.isSuccessful) {
+            Log.d(TAG, "$requestLine 성공 (${response.code()})")
+            Result.success(Unit)
+        } else {
+            val exception = response.toApiException()
+            val errorDescription = exception.fieldErrors
+                .joinToString { "${it.field}: ${it.message}" }
+                .ifEmpty { exception.message.orEmpty() }
+
+            Log.e(TAG, "$requestLine 실패 (${exception.httpStatus}): ${exception.errorCode.code} - $errorDescription")
+            Result.failure(exception)
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.e(TAG, "API 호출 예외: ${e.javaClass.simpleName} - ${e.message}", e)
+        Result.failure(e)
+    }
+}
+
 private fun Response<*>.toApiException(): ApiException {
     val errorDetail = errorBody()?.string()?.let {
         runCatching { errorBodyGson.fromJson(it, ApiErrorResponse::class.java) }.getOrNull()

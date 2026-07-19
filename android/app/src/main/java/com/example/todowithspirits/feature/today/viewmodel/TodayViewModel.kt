@@ -6,6 +6,8 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
+import com.example.domain.usecase.CancelTaskCompletionUseCase
+import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
@@ -13,7 +15,6 @@ import com.example.todowithspirits.feature.today.state.SpiritInfo
 import com.example.todowithspirits.feature.today.state.TodayUiState
 import com.example.todowithspirits.feature.today.state.TodoItem
 import com.example.todowithspirits.util.TaskRefreshBus
-import com.example.todowithspirits.util.routineOccurrences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TodayViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
+    private val completeTaskUseCase: CompleteTaskUseCase,
+    private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
@@ -74,6 +77,32 @@ class TodayViewModel @Inject constructor(
         }
     }
 
+    fun completeTask(taskId: Long, date: LocalDate?) {
+        viewModelScope.launchWithLoading {
+            completeTaskUseCase(taskId, date)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    Log.e(TAG, "completeTask failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "완료 처리에 실패했습니다")
+                }
+        }
+    }
+
+    fun cancelTaskCompletion(taskId: Long, date: LocalDate?) {
+        viewModelScope.launchWithLoading {
+            cancelTaskCompletionUseCase(taskId, date)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    Log.e(TAG, "cancelTaskCompletion failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "완료 취소에 실패했습니다")
+                }
+        }
+    }
+
     fun loadWeekEvents() {
         viewModelScope.launchWithLoading {
             val selectedDate = _uiState.value.selectedDate
@@ -81,18 +110,11 @@ class TodayViewModel @Inject constructor(
             val weekEnd = weekStart.plusDays(6)
 
             getTaskCalendarUseCase(weekStart, weekEnd).onSuccess { calendar ->
-                val routineEvents = calendar.items
-                    .filter { it.taskType == TaskType.ROUTINE.type }
-                    .distinctBy { it.taskId }
-                    .flatMap { routine ->
-                        routine.routineOccurrences(weekStart, weekEnd).map { date -> date to PlanType.ROUTINE }
+                val events = calendar.items
+                    .map { item ->
+                        val type = if (item.taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO
+                        item.occurrenceDate to type
                     }
-
-                val scheduleEvents = calendar.items
-                    .filter { it.taskType == TaskType.SCHEDULE.type }
-                    .map { it.startDate to PlanType.TODO }
-
-                val events = (routineEvents + scheduleEvents)
                     .groupBy({ it.first }, { it.second })
 
                 _uiState.update { it.copy(weekEvents = events) }
@@ -109,8 +131,8 @@ private fun TaskSummary.toTodoItem() = TodoItem(
     title = title,
     isDone = isCompleted,
     isImportant = isImportant,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = occurrenceDate,
+    dueTime = endTime,
     memo = memo ?: ""
 )
 
@@ -118,7 +140,7 @@ private fun TaskSummary.toRoutineItem() = RoutineItem(
     taskId = taskId,
     title = title,
     isDone = isCompleted,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = occurrenceDate,
+    dueTime = endTime,
     memo = memo ?: ""
 )

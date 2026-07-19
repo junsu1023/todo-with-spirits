@@ -14,4 +14,8 @@ interface TaskRepository {
     suspend fun createTodo(todo: NewTodo): Result<Task>
 
     suspend fun createRoutine(routine: NewRoutine): Result<Task>
+
+    suspend fun completeTask(taskId: Long, date: LocalDate? = null): Result<Unit>
+
+    suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate? = null): Result<Unit>
 }

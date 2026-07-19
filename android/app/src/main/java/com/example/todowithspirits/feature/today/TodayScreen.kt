@@ -33,6 +33,7 @@ fun TodayScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(SpiritTodoTheme.color.surfaceColor4)
             .verticalScroll(rememberScrollState())
     ) {
         TitleHeader(
@@ -45,7 +46,6 @@ fun TodayScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SpiritTodoTheme.color.surfaceColor4)
                 .padding(horizontal = 16.dp)
         ) {
             SpiritSection(uiState.spiritInfo)
@@ -58,6 +58,7 @@ fun TodayScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .background(SpiritTodoTheme.color.surfaceColor1)
                 .padding(horizontal = 16.dp)
         ) {
@@ -66,7 +67,9 @@ fun TodayScreen(
                 onDateSelected = { todayViewModel.setSelectedDate(it) },
                 todos = uiState.todos,
                 routines = uiState.routines,
-                weekEvents = uiState.weekEvents
+                weekEvents = uiState.weekEvents,
+                onCompleteTask = { taskId, date -> todayViewModel.completeTask(taskId, date) },
+                onCancelCompleteTask = { taskId, date -> todayViewModel.cancelTaskCompletion(taskId, date) }
             )
         }
     }

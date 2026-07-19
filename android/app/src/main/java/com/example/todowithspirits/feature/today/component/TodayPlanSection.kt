@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +55,9 @@ fun TodayPlanSection(
     onDateSelected: (LocalDate) -> Unit,
     todos: List<TodoItem>,
     routines: List<RoutineItem>,
-    weekEvents: Map<LocalDate, List<PlanType>> = emptyMap()
+    weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
+    onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -134,7 +138,11 @@ fun TodayPlanSection(
         } else {
             Spacer(Modifier.height(19.dp))
 
-            Column(modifier = Modifier.padding(horizontal = 2.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 if (todos.isNotEmpty()) {
                     SectionHeader(title = stringResource(R.string.todo))
 
@@ -145,7 +153,14 @@ fun TodayPlanSection(
                             title = item.title,
                             isDone = item.isDone,
                             isImportant = item.isImportant,
-                            onClick = { selectedTodo = item }
+                            onClick = { selectedTodo = item },
+                            onCheckClick = {
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
+                            }
                         )
 
                         if (index != todos.lastIndex) Spacer(modifier = Modifier.height(16.dp))
@@ -173,7 +188,14 @@ fun TodayPlanSection(
                             title = item.title,
                             isDone = item.isDone,
                             isTodo = false,
-                            onClick = { selectedRoutine = item }
+                            onClick = { selectedRoutine = item },
+                            onCheckClick = {
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
+                            }
                         )
 
                         if (index != routines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
@@ -302,7 +324,8 @@ private fun TodayListItem(
     isDone: Boolean,
     isTodo: Boolean = true,
     isImportant: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onCheckClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -316,7 +339,8 @@ private fun TodayListItem(
                 isDone ->painterResource(R.drawable.todo_icon_check_gn)
                 else -> painterResource(R.drawable.todo_icon_check_bl)
             },
-            contentDescription = null
+            contentDescription = null,
+            modifier = Modifier.noRippleClickable { onCheckClick() }
         )
 
         Spacer(Modifier.width(10.dp))
@@ -334,7 +358,8 @@ private fun TodayListItem(
 
             Image(
                 painter = painterResource(R.drawable.todo_important),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
             )
         }
     }

@@ -3,6 +3,7 @@ package com.example.data.repository
 import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
 import com.example.data.mapper.toRequest
+import com.example.data.request.CompleteTaskRequest
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
@@ -28,5 +29,13 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun createRoutine(routine: NewRoutine): Result<Task> {
         return taskRemoteDataSource.createRoutine(routine.toRequest()).map { it.toDomain() }
+    }
+
+    override suspend fun completeTask(taskId: Long, date: LocalDate?): Result<Unit> {
+        return taskRemoteDataSource.completeTask(taskId, CompleteTaskRequest(date = date?.toString()))
+    }
+
+    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate?): Result<Unit> {
+        return taskRemoteDataSource.cancelTaskCompletion(taskId, CompleteTaskRequest(date = date?.toString()))
     }
 }

@@ -11,7 +11,6 @@ import com.example.todowithspirits.feature.plan.PlanType
 import com.example.todowithspirits.feature.plan.state.DayPlanEvents
 import com.example.todowithspirits.feature.plan.state.PlanUiState
 import com.example.todowithspirits.util.TaskRefreshBus
-import com.example.todowithspirits.util.routineOccurrences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -103,11 +102,7 @@ class PlanViewModel @Inject constructor(
                 .onSuccess { calendar ->
                     val events = calendar.items
                         .filter { it.taskType == TaskType.ROUTINE.type }
-                        .distinctBy { it.taskId }
-                        .flatMap { routine ->
-                            routine.routineOccurrences(monthStart, monthEnd).map { date -> date to routine }
-                        }
-                        .groupBy({ it.first }, { it.second })
+                        .groupBy { it.occurrenceDate }
                         .mapValues { (_, routines) ->
                             DayPlanEvents(
                                 types = routines.map { PlanType.ROUTINE },
@@ -130,9 +125,8 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = startDate,
-    dueTime = startTime,
+    dueDate = occurrenceDate,
+    dueTime = endTime,
     memo = memo ?: "",
-    category = category.takeIf { it.isNotBlank() && it != "NONE" },
-    repeatInfo = repeatType?.takeIf { it != "NONE" }
+    category = category.takeIf { it.isNotBlank() && it != "NONE" }
 )

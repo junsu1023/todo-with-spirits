@@ -16,6 +16,7 @@ object URLConstant {
         const val TASK_CALENDAR = "$TASK/calendar"
         const val TASK_ROUTINE = "$TASK/routine"
         const val TASK_SCHEDULE = "$TASK/schedule"
+        const val TASK_COMPLETE = "$TASK/{taskId}/complete"
     }
 
     object LOGIN {
