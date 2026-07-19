@@ -2,6 +2,8 @@ package com.example.data.datasource
 
 import com.example.data.api.TaskApi
 import com.example.data.network.apiCall
+import com.example.data.network.apiCallUnit
+import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.response.TaskCalendarResponse
@@ -21,4 +23,7 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun createRoutine(request: CreateRoutineRequest): Result<TaskDetailResponse> =
         apiCall { taskApi.createRoutine(request) }
+
+    suspend fun completeTask(taskId: Long, request: CompleteTaskRequest): Result<Unit> =
+        apiCallUnit { taskApi.completeTask(taskId, request) }
 }
