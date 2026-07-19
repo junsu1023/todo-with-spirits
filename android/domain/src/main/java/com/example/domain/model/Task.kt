@@ -1,5 +1,6 @@
 package com.example.domain.model
 
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -17,8 +18,13 @@ data class Task(
     val isImportant: Boolean,
     val isPublic: Boolean,
     val memo: String,
-    val notificationAt: LocalDateTime?,
     val notificationMinutes: Int?,
+    val repeatDaysOfMonth: List<Int>,
+    val repeatDaysOfWeek: List<DayOfWeek>,
+    val repeatEndDate: LocalDate?,
+    val repeatType: String?,
+    val startDate: LocalDate?,
+    val startTime: LocalTime?,
     val taskId: Long,
     val taskType: String,
     val title: String,

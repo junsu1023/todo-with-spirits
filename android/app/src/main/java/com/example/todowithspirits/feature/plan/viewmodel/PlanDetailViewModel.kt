@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.Task
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.DeleteTasksUseCase
@@ -30,6 +31,7 @@ class PlanDetailViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getTaskUseCase(taskId)
                 .onSuccess { task ->
+                    println("test-kjs: task = $task")
                     _plan.value = task.toPlanItemData()
                 }
                 .onFailure {
@@ -60,8 +62,12 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = endDate,
-    dueTime = endTime,
+    endDate = endDate,
+    endTime = endTime,
     memo = memo,
-    category = category.takeIf { it.isNotBlank() && it != "NONE" }
+    category = CategoryOption.entries.find { it.name == category }
+        ?.takeIf { it != CategoryOption.NONE }
+        ?.displayName,
+    isPublic = isPublic,
+    notificationMinutes = notificationMinutes
 )

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.CategoryOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.plan.model.PlanItemData
@@ -89,7 +90,7 @@ fun PlanListItem(
         PlanType.TODO -> SpiritTodoTheme.color.surfaceColor8
         PlanType.ROUTINE -> SpiritTodoTheme.color.surfaceColor9
     }
-    val dDay = item.dueDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
+    val dDay = item.endDate?.let { ChronoUnit.DAYS.between(LocalDate.now(), it).toInt() }
     val dDayText = when {
         dDay == null -> null
         dDay == 0 -> "D-Day"
@@ -220,7 +221,7 @@ fun PlanListItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
                                 Checkbox(
                                     checked = item.isDone,
@@ -267,8 +268,8 @@ fun PlanListItem(
 
                     Column(modifier = Modifier.padding(start = 34.dp)) {
                         val dateTimeText = buildString {
-                            item.dueDate?.let { date ->
-                                val time = item.dueTime ?: LocalTime.of(0, 0)
+                            item.endDate?.let { date ->
+                                val time = item.endTime ?: LocalTime.of(0, 0)
                                 append(LocalDateTime.of(date, time).format(dateFormatter))
                             }
                         }
@@ -291,13 +292,12 @@ fun PlanListItem(
                             color = SpiritTodoTheme.color.onSurfaceColor8
                         )
 
-                        if (item.category != null || item.repeatInfo != null) {
-                            Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                                item.category?.let { TagChip(it) }
-                                item.repeatInfo?.let { TagChip(it) }
-                            }
+                        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                            TagChip(item.category ?: CategoryOption.NONE.displayName)
+
+                            item.repeatInfo?.let { TagChip(it) }
                         }
                     }
                 }

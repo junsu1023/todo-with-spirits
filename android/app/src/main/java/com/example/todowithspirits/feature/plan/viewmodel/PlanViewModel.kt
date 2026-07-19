@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.plan.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.CategoryOption
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
@@ -167,8 +168,10 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    dueDate = occurrenceDate,
-    dueTime = endTime,
+    endDate = occurrenceDate,
+    endTime = endTime,
     memo = memo ?: "",
-    category = category.takeIf { it.isNotBlank() && it != "NONE" }
+    category = CategoryOption.entries.find { it.name == category }
+        ?.takeIf { it != CategoryOption.NONE }
+        ?.displayName
 )
