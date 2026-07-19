@@ -5,8 +5,10 @@ import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
+import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.DeleteTaskResponse
+import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import retrofit2.Response
@@ -54,4 +56,10 @@ interface TaskApi {
         @Path("taskId") taskId: Long,
         @Body request: CreateTodoRequest
     ): Response<ApiResponse<TaskDetailResponse>>
+
+    @PATCH(URLConstant.TASK.TASK_ROUTINE_DETAIL)
+    suspend fun updateRoutine(
+        @Path("taskId") taskId: Long,
+        @Body request: UpdateRoutineRequest
+    ): Response<ApiResponse<RoutineDetailResponse>>
 }

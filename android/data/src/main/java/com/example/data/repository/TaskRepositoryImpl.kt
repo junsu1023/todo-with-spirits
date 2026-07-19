@@ -3,10 +3,12 @@ package com.example.data.repository
 import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
 import com.example.data.mapper.toRequest
+import com.example.data.mapper.toUpdateRequest
 import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.Routine
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.repository.TaskRepository
@@ -46,5 +48,9 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
         return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).mapCatching { it.toDomain() }
+    }
+
+    override suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Routine> {
+        return taskRemoteDataSource.updateRoutine(taskId, routine.toUpdateRequest()).mapCatching { it.toDomain() }
     }
 }

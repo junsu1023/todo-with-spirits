@@ -2,7 +2,9 @@ package com.example.data.mapper
 
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
+import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.LoginResponse
+import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
@@ -11,9 +13,11 @@ import com.example.domain.model.CategoryOption
 import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.Routine
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskSummary
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -101,6 +105,41 @@ fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
     notification = notification.toApiValue(),
     isPublic = isPublic,
     memo = memo
+)
+
+fun NewRoutine.toUpdateRequest(): UpdateRoutineRequest = UpdateRoutineRequest(
+    title = title,
+    repeatType = repeatType.name,
+    category = category.toApiValue(),
+    repeatEndDate = repeatEndDate?.toString(),
+    repeatDaysOfWeek = repeatDaysOfWeek.map { it.name }.ifEmpty { null },
+    repeatDaysOfMonth = repeatDaysOfMonth.ifEmpty { null },
+    notificationType = notification.toApiValue(),
+    isPublic = isPublic,
+    excludeHoliday = excludeHoliday,
+    memo = memo
+)
+
+fun RoutineDetailResponse.toDomain(): Routine = Routine(
+    category = category,
+    completedAt = completedAt?.let { LocalDateTime.parse(it) },
+    createdAt = LocalDateTime.parse(createdAt),
+    excludeHoliday = excludeHoliday,
+    growthType = growthType,
+    growthValue = growthValue,
+    isCompleted = isCompleted,
+    isPublic = isPublic,
+    memo = memo ?: "",
+    notificationAt = notificationAt?.let { LocalDateTime.parse(it) },
+    notificationMinutes = notificationMinutes,
+    repeatDaysOfMonth = repeatDaysOfMonth,
+    repeatDaysOfWeek = repeatDaysOfWeek.map { DayOfWeek.valueOf(it) },
+    repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
+    repeatType = repeatType,
+    taskId = taskId,
+    taskType = taskType,
+    title = title,
+    updatedAt = LocalDateTime.parse(updatedAt)
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()
