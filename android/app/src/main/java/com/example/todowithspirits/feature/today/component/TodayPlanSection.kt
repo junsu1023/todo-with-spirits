@@ -154,7 +154,7 @@ fun TodayPlanSection(
                             isImportant = item.isImportant,
                             onClick = { selectedTodo = item },
                             onCheckClick = {
-                                if (!item.isDone) onCompleteTask(item.taskId, item.dueDate)
+                                if(!item.isDone) onCompleteTask(item.taskId, selectedDate)
                             }
                         )
 
@@ -185,7 +185,7 @@ fun TodayPlanSection(
                             isTodo = false,
                             onClick = { selectedRoutine = item },
                             onCheckClick = {
-                                if (!item.isDone) onCompleteTask(item.taskId, item.dueDate)
+                                if (!item.isDone) onCompleteTask(item.taskId, selectedDate)
                             }
                         )
 
