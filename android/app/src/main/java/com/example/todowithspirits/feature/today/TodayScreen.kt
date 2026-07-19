@@ -51,7 +51,7 @@ fun TodayScreen(
         ) {
             SpiritSection(uiState.spiritInfo)
 
-            BadgeAndAchievementRow()
+            BadgeAndAchievementRow(achievementRate = uiState.todayAchievementRate)
 
             Spacer(Modifier.height(18.dp))
         }

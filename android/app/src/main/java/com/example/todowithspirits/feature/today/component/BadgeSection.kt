@@ -31,20 +31,19 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CircularProgressArc
 import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
-import kotlin.math.roundToInt
-
-// dummy data
-private const val ACHIEVEMENT_RATE = 0.7f
 
 @Composable
-fun BadgeAndAchievementRow() {
+fun BadgeAndAchievementRow(achievementRate: Int = 0) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         BadgeCard(modifier = Modifier.weight(2.5f))
 
-        AchievementCard(modifier = Modifier.weight(1f))
+        AchievementCard(
+            modifier = Modifier.weight(1f),
+            achievementRate = achievementRate
+        )
     }
 }
 
@@ -113,7 +112,7 @@ private fun BadgePlaceholder(label: String) {
 }
 
 @Composable
-private fun AchievementCard(modifier: Modifier = Modifier) {
+private fun AchievementCard(modifier: Modifier = Modifier, achievementRate: Int) {
     Surface(
         modifier = modifier,
         color = SpiritTodoTheme.color.surfaceColor1,
@@ -141,19 +140,18 @@ private fun AchievementCard(modifier: Modifier = Modifier) {
             Spacer(Modifier.height(12.dp))
 
             CircularProgressIndicator(
-                progress = ACHIEVEMENT_RATE
+                percentage = achievementRate
             )
         }
     }
 }
 
 @Composable
-private fun CircularProgressIndicator(progress: Float) {
+private fun CircularProgressIndicator(percentage: Int) {
     val todoTextMain = SpiritTodoTheme.color.mainTextAndStroke
     val trackColor = SpiritTodoTheme.color.surfaceColor7
 
-    val animatedProgress by rememberAnimatedProgress(progress, label = "achievementRateProgress")
-    val percentage = (animatedProgress * 100).roundToInt()
+    val animatedProgress by rememberAnimatedProgress(percentage / 100f, label = "achievementRateProgress")
 
     Box(
         modifier = Modifier.size(72.dp),

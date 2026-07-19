@@ -47,11 +47,13 @@ class TodayViewModel @Inject constructor(
     init {
         loadTask()
         loadWeekEvents()
+        loadTodayAchievement()
 
         taskRefreshBus.events
             .onEach {
                 loadTask()
                 loadWeekEvents()
+                loadTodayAchievement()
             }
             .launchIn(viewModelScope)
     }
@@ -149,6 +151,26 @@ class TodayViewModel @Inject constructor(
                     Log.e(TAG, "postponeTodo load failed!", it)
                     emitErrorMsg(it.localizedMessage ?: "플랜 정보를 불러오지 못했습니다")
                 }
+        }
+    }
+
+    fun loadTodayAchievement() {
+        viewModelScope.launchWithLoading {
+            val today = LocalDate.now()
+
+            getTaskCalendarUseCase(today, today).onSuccess { calendar ->
+                val todayItems = calendar.items.filter {
+                    it.taskType == TaskType.SCHEDULE.type || it.taskType == TaskType.ROUTINE.type
+                }
+                val totalCount = todayItems.size
+                val completedCount = todayItems.count { it.isCompleted }
+                val rate = if (totalCount == 0) 0 else completedCount * 100 / totalCount
+
+                _uiState.update { it.copy(todayAchievementRate = rate) }
+            }.onFailure {
+                Log.e(TAG, "loadTodayAchievement failed!", it)
+                emitErrorMsg(it.localizedMessage ?: "오늘의 달성률을 불러오지 못했습니다")
+            }
         }
     }
 

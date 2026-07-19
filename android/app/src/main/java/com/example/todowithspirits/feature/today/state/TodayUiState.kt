@@ -11,7 +11,8 @@ data class TodayUiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val todos: List<TodoItem> = emptyList(),
     val routines: List<RoutineItem> = emptyList(),
-    val weekEvents: Map<LocalDate, List<PlanType>> = emptyMap()
+    val weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
+    val todayAchievementRate: Int = 0
 )
 
 @Immutable
