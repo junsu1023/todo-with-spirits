@@ -269,6 +269,7 @@ fun DayOfWeekSelector(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(bottom = 16.dp)
             .pointerInput(Unit) {
                 val currentSelected = BooleanArray(weekDays.size)
                 var lastIndex = -1

@@ -113,7 +113,7 @@ fun QuickAddBottomPopup(
                 .navigationBarsPadding()
                 .padding(bottom = BottomBarHeight)
                 .noRippleClickable {
-                    if (isTitleFocused) {
+                    if(isTitleFocused) {
                         keyboardController?.hide()
                         focusManager.clearFocus(force = true)
                     } else {
@@ -127,7 +127,7 @@ fun QuickAddBottomPopup(
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp)
                     .noRippleClickable {
-                        if (isTitleFocused) {
+                        if(isTitleFocused) {
                             keyboardController?.hide()
                             focusManager.clearFocus(force = true)
                         }
@@ -199,7 +199,7 @@ fun QuickAddBottomPopup(
                                     innerTextField()
                                 }
 
-                                if (selectedTab == stringResource(R.string.todo)) {
+                                if(selectedTab == stringResource(R.string.todo)) {
                                     Image(
                                         painter = painterResource(R.drawable.todo_clock),
                                         contentDescription = null,
@@ -207,7 +207,7 @@ fun QuickAddBottomPopup(
                                             .noRippleClickable {
                                                 isScheduleSectionVisible = !isScheduleSectionVisible
 
-                                                if (!isScheduleSectionVisible) {
+                                                if(!isScheduleSectionVisible) {
                                                     isDateExpanded = false
                                                     isTimeEnabled = false
                                                 }
@@ -228,7 +228,7 @@ fun QuickAddBottomPopup(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    when (selectedTab) {
+                    when(selectedTab) {
                         stringResource(R.string.todo) -> {
                             AnimatedVisibility(
                                 visible = isScheduleSectionVisible,
