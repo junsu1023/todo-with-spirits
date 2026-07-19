@@ -13,6 +13,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -47,4 +48,10 @@ interface TaskApi {
 
     @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_DELETE, hasBody = true)
     suspend fun deleteTasks(@Body request: DeleteTaskRequest): Response<ApiResponse<DeleteTaskResponse>>
+
+    @PATCH(URLConstant.TASK.TASK_SCHEDULE_DETAIL)
+    suspend fun updateTodo(
+        @Path("taskId") taskId: Long,
+        @Body request: CreateTodoRequest
+    ): Response<ApiResponse<TaskDetailResponse>>
 }

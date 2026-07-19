@@ -43,4 +43,8 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> {
         return taskRemoteDataSource.deleteTasks(DeleteTaskRequest(taskIds)).map { it.deletedCount }
     }
+
+    override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
+        return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).map { it.toDomain() }
+    }
 }

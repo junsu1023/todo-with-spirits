@@ -34,4 +34,7 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun deleteTasks(request: DeleteTaskRequest): Result<DeleteTaskResponse> =
         apiCall { taskApi.deleteTasks(request) }
+
+    suspend fun updateTodo(taskId: Long, request: CreateTodoRequest): Result<TaskDetailResponse> =
+        apiCall { taskApi.updateTodo(taskId, request) }
 }
