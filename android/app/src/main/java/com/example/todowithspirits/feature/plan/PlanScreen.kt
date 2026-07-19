@@ -217,6 +217,13 @@ fun PlanScreen(
                         onDelete = { planViewModel.deleteTask(item.id.toLong()) },
                         onEdit = { navigateToEditTask(item.id.toLong()) },
                         onPostpone = {},
+                        onToggleComplete = {
+                            if(item.isDone) {
+                                planViewModel.cancelTaskCompletion(item.id.toLong(), uiState.selectedDate)
+                            } else {
+                                planViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
+                            }
+                        },
                         navigateToDetail = { navigateToDetail(item.id) }
                     )
 

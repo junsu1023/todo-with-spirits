@@ -57,7 +57,10 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Today.route) {
-            TodayScreen(navigateToAlarm = navigateToAlarm)
+            TodayScreen(
+                navigateToAlarm = navigateToAlarm,
+                navigateToEditTask = navigateToEditTask
+            )
         }
 
         composable(Screen.Plan.route) {

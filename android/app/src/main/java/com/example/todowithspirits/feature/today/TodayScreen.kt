@@ -26,7 +26,8 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 @Composable
 fun TodayScreen(
     todayViewModel: TodayViewModel = hiltViewModel(),
-    navigateToAlarm: () -> Unit
+    navigateToAlarm: () -> Unit,
+    navigateToEditTask: (Long) -> Unit
 ) {
     val uiState by todayViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -50,7 +51,7 @@ fun TodayScreen(
         ) {
             SpiritSection(uiState.spiritInfo)
 
-            BadgeAndAchievementRow()
+            BadgeAndAchievementRow(achievementRate = uiState.todayAchievementRate)
 
             Spacer(Modifier.height(18.dp))
         }
@@ -69,7 +70,10 @@ fun TodayScreen(
                 routines = uiState.routines,
                 weekEvents = uiState.weekEvents,
                 onCompleteTask = { taskId, date -> todayViewModel.completeTask(taskId, date) },
-                onCancelCompleteTask = { taskId, date -> todayViewModel.cancelTaskCompletion(taskId, date) }
+                onCancelCompleteTask = { taskId, date -> todayViewModel.cancelTaskCompletion(taskId, date) },
+                onDeleteTask = { taskId -> todayViewModel.deleteTask(taskId) },
+                onEditTask = navigateToEditTask,
+                onPostponeTodo = { taskId -> todayViewModel.postponeTodo(taskId) }
             )
         }
     }

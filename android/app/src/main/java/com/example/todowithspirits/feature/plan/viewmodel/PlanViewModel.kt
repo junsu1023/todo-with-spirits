@@ -5,6 +5,8 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
+import com.example.domain.usecase.CancelTaskCompletionUseCase
+import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.plan.model.PlanItemData
@@ -27,6 +29,8 @@ import javax.inject.Inject
 class PlanViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
     private val deleteTasksUseCase: DeleteTasksUseCase,
+    private val completeTaskUseCase: CompleteTaskUseCase,
+    private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(PlanUiState())
@@ -102,6 +106,30 @@ class PlanViewModel @Inject constructor(
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "삭제하지 못했습니다")
+                }
+        }
+    }
+
+    fun completeTask(taskId: Long, date: LocalDate?) {
+        viewModelScope.launchWithLoading {
+            completeTaskUseCase(taskId, date)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "완료 처리에 실패했습니다")
+                }
+        }
+    }
+
+    fun cancelTaskCompletion(taskId: Long, date: LocalDate?) {
+        viewModelScope.launchWithLoading {
+            cancelTaskCompletionUseCase(taskId, date)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "완료 취소에 실패했습니다")
                 }
         }
     }
