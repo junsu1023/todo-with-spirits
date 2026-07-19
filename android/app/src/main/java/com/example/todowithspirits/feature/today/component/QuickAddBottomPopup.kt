@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.core.content.ContextCompat.getString
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
@@ -60,6 +61,7 @@ import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.feature.add.component.DayOfWeekSelector
 import com.example.todowithspirits.component.MonthlyCalendarView
 import com.example.todowithspirits.component.TimeWheelPicker
+import com.example.todowithspirits.feature.today.viewmodel.QuickAddViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.DayOfWeek
@@ -73,8 +75,12 @@ private val routineRepeatOptions = listOf(
 )
 
 @Composable
-fun QuickAddBottomPopup(onDismiss: () -> Unit) {
+fun QuickAddBottomPopup(
+    quickAddViewModel: QuickAddViewModel = hiltViewModel(),
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
+    val routineText = stringResource(R.string.routine)
     var isTitleFocused by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(getString(context, R.string.todo)) }
     var title by remember { mutableStateOf("") }
@@ -402,7 +408,29 @@ fun QuickAddBottomPopup(onDismiss: () -> Unit) {
 
                         Image(
                             painter = painterResource(R.drawable.fi_rr_plus),
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.noRippleClickable {
+                                if(title.isNotBlank()) {
+                                    if(selectedTab == routineText) {
+                                        quickAddViewModel.createRoutine(
+                                            title = title,
+                                            repeatOption = repeatOption,
+                                            selectedWeekDays = selectedWeekDays,
+                                            selectedMonthDays = selectedMonthDays,
+                                            onSuccess = onDismiss
+                                        )
+                                    } else {
+                                        quickAddViewModel.createTodo(
+                                            title = title,
+                                            isImportant = isImportant,
+                                            date = selectedDate ?: LocalDate.now(),
+                                            isTimeEnabled = isTimeEnabled,
+                                            dueTime = selectedTime,
+                                            onSuccess = onDismiss
+                                        )
+                                    }
+                                }
+                            }
                         )
                     }
                 }
