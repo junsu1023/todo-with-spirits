@@ -56,7 +56,8 @@ fun TodayPlanSection(
     todos: List<TodoItem>,
     routines: List<RoutineItem>,
     weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
-    onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit = { _, _ -> }
+    onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -154,7 +155,11 @@ fun TodayPlanSection(
                             isImportant = item.isImportant,
                             onClick = { selectedTodo = item },
                             onCheckClick = {
-                                if(!item.isDone) onCompleteTask(item.taskId, selectedDate)
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
                             }
                         )
 
@@ -185,7 +190,11 @@ fun TodayPlanSection(
                             isTodo = false,
                             onClick = { selectedRoutine = item },
                             onCheckClick = {
-                                if (!item.isDone) onCompleteTask(item.taskId, selectedDate)
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
                             }
                         )
 

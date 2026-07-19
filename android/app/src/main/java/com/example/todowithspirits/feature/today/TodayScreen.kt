@@ -68,7 +68,8 @@ fun TodayScreen(
                 todos = uiState.todos,
                 routines = uiState.routines,
                 weekEvents = uiState.weekEvents,
-                onCompleteTask = { taskId, date -> todayViewModel.completeTask(taskId, date) }
+                onCompleteTask = { taskId, date -> todayViewModel.completeTask(taskId, date) },
+                onCancelCompleteTask = { taskId, date -> todayViewModel.cancelTaskCompletion(taskId, date) }
             )
         }
     }
