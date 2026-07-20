@@ -1,6 +1,7 @@
 package com.example.data.di.network
 
 import com.example.core.qualifier.Auth
+import com.example.data.api.AuthApi
 import com.example.data.api.TaskApi
 import com.example.data.constant.URLConstant
 import com.example.data.network.AuthInterceptor
@@ -63,4 +64,10 @@ object AuthNetworkModule {
     fun provideTaskApi(
         @Auth retrofit: Retrofit
     ): TaskApi = retrofit.create(TaskApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(
+        @Auth retrofit: Retrofit
+    ): AuthApi = retrofit.create(AuthApi::class.java)
 }

@@ -100,6 +100,9 @@ fun PlanListItem(
     val dateFormatter = remember {
         DateTimeFormatter.ofPattern("yy. MM. dd (E) a hh:mm", Locale.KOREAN)
     }
+    val allDayDateFormatter = remember {
+        DateTimeFormatter.ofPattern("yy. MM. dd (E)", Locale.KOREAN)
+    }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Box(
@@ -269,8 +272,13 @@ fun PlanListItem(
                     Column(modifier = Modifier.padding(start = 34.dp)) {
                         val dateTimeText = buildString {
                             item.endDate?.let { date ->
-                                val time = item.endTime ?: LocalTime.of(0, 0)
-                                append(LocalDateTime.of(date, time).format(dateFormatter))
+                                if (item.isAllDay) {
+                                    append(date.format(allDayDateFormatter))
+                                    append(" 하루 종일")
+                                } else {
+                                    val time = item.endTime ?: LocalTime.of(0, 0)
+                                    append(LocalDateTime.of(date, time).format(dateFormatter))
+                                }
                             }
                         }
                         if (dateTimeText.isNotEmpty()) {

@@ -64,6 +64,7 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     isDone = isCompleted,
     endDate = endDate,
     endTime = endTime,
+    isAllDay = isAllDay,
     memo = memo,
     category = CategoryOption.entries.find { it.name == category }
         ?.takeIf { it != CategoryOption.NONE }

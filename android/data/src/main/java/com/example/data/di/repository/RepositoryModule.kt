@@ -1,5 +1,6 @@
 package com.example.data.di.repository
 
+import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.datasource.CheckSystemHealthRemoteDataSource
 import com.example.data.datasource.LoginRemoteDataSource
 import com.example.data.datasource.TaskRemoteDataSource
@@ -33,6 +34,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        loginRemoteDataSource: LoginRemoteDataSource
-    ): LoginRepository = LoginRepositoryImpl(loginRemoteDataSource)
+        loginRemoteDataSource: LoginRemoteDataSource,
+        authRemoteDataSource: AuthRemoteDataSource
+    ): LoginRepository = LoginRepositoryImpl(loginRemoteDataSource, authRemoteDataSource)
 }

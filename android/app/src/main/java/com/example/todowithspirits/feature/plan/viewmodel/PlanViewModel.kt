@@ -72,7 +72,13 @@ class PlanViewModel @Inject constructor(
     fun setHiddenState(hidden: Boolean) {
         viewModelScope.launchWithLoading {
             _uiState.update {
-                it.copy(isHidden = hidden)
+                val sortOption = if (hidden && it.sortOption == PlanSortOption.COMPLETE) {
+                    PlanSortOption.DEADLINE
+                } else {
+                    it.sortOption
+                }
+
+                it.copy(isHidden = hidden, sortOption = sortOption)
             }
         }
     }
@@ -144,12 +150,13 @@ class PlanViewModel @Inject constructor(
             getTaskCalendarUseCase(monthStart, monthEnd)
                 .onSuccess { calendar ->
                     val events = calendar.items
-                        .filter { it.taskType == TaskType.ROUTINE.type }
                         .groupBy { it.occurrenceDate }
-                        .mapValues { (_, routines) ->
+                        .mapValues { (_, items) ->
                             DayPlanEvents(
-                                types = routines.map { PlanType.ROUTINE },
-                                importantCount = routines.count { it.isImportant }
+                                types = items.map {
+                                    if (it.taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO
+                                },
+                                importantCount = items.count { it.isImportant }
                             )
                         }
 
@@ -170,6 +177,7 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     isDone = isCompleted,
     endDate = occurrenceDate,
     endTime = endTime,
+    isAllDay = isAllDay,
     memo = memo ?: "",
     category = CategoryOption.entries.find { it.name == category }
         ?.takeIf { it != CategoryOption.NONE }

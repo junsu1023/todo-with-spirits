@@ -38,9 +38,13 @@ import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanListItem
 import com.example.todowithspirits.feature.plan.component.PlanSearchArea
 import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.plan.model.PlanItemData
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
+import java.time.LocalTime
+
 @Composable
 fun PlanScreen(
     planViewModel: PlanViewModel = hiltViewModel(),
@@ -58,11 +62,9 @@ fun PlanScreen(
     val calendarEventData = remember(uiState.calendarEvents, todoColor, routineColor) {
         uiState.calendarEvents.mapValues { (_, events) ->
             CalendarDayEvent(
-                dotColors = events.types.map { type ->
-                    when (type) {
-                        PlanType.TODO -> todoColor
-                        PlanType.ROUTINE -> routineColor
-                    }
+                dotColors = buildList {
+                    if (events.types.contains(PlanType.TODO)) add(todoColor)
+                    if (events.types.contains(PlanType.ROUTINE)) add(routineColor)
                 },
                 label = events.importantCount
                     .takeIf { it > 0 }
@@ -74,6 +76,12 @@ fun PlanScreen(
     val todoLabel = stringResource(R.string.todo)
     val routineLabel = stringResource(R.string.routine)
 
+    val sortOptions = remember(uiState.isHidden) {
+        PlanSortOption.entries
+            .filter { !(uiState.isHidden && it == PlanSortOption.COMPLETE) }
+            .map { it.displayName }
+    }
+
     val filteredPlans = remember(uiState.plans, uiState.isHidden, uiState.selectedTab, todoLabel, routineLabel) {
         uiState.plans.filter { item ->
             val doneFilter = !uiState.isHidden || !item.isDone
@@ -83,6 +91,24 @@ fun PlanScreen(
                 else -> true
             }
             doneFilter && tabFilter
+        }
+    }
+
+    val sortedPlans = remember(filteredPlans, uiState.sortOption) {
+        when (uiState.sortOption) {
+            PlanSortOption.DEADLINE -> filteredPlans.sortedWith(
+                compareBy<PlanItemData> { it.endDate == null && it.endTime == null && it.isAllDay }
+                    .thenBy { it.endDate ?: LocalDate.MAX }
+                    .thenBy { it.endTime ?: LocalTime.MAX }
+            )
+            PlanSortOption.IMPORTANT -> filteredPlans.sortedWith(
+                compareByDescending<PlanItemData> { it.isImportant }
+                    .thenBy { it.title }
+            )
+            PlanSortOption.COMPLETE -> filteredPlans.sortedWith(
+                compareByDescending<PlanItemData> { it.isDone }
+                    .thenBy { it.title }
+            )
         }
     }
 
@@ -132,7 +158,7 @@ fun PlanScreen(
             }
         }
 
-        if (filteredPlans.isEmpty()) {
+        if (sortedPlans.isEmpty()) {
             item {
                 Column(
                     modifier = Modifier
@@ -173,7 +199,7 @@ fun PlanScreen(
 
                         SpiritsTodoDropdown(
                             value = uiState.sortOption.displayName,
-                            options = PlanSortOption.getAllDisplayNames(),
+                            options = sortOptions,
                             onOptionSelected = {
                                 planViewModel.setSortOption(
                                     PlanSortOption.fromDisplayName(
@@ -210,7 +236,7 @@ fun PlanScreen(
                 }
             }
 
-            items(filteredPlans, key = { it.id }) { item ->
+            items(sortedPlans, key = { it.id }) { item ->
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
                         item = item,
