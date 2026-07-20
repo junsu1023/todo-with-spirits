@@ -171,6 +171,7 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     isDone = isCompleted,
     endDate = occurrenceDate,
     endTime = endTime,
+    isAllDay = isAllDay,
     memo = memo ?: "",
     category = CategoryOption.entries.find { it.name == category }
         ?.takeIf { it != CategoryOption.NONE }

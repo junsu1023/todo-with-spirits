@@ -38,9 +38,13 @@ import com.example.todowithspirits.feature.plan.component.AddPlanButton
 import com.example.todowithspirits.feature.plan.component.PlanListItem
 import com.example.todowithspirits.feature.plan.component.PlanSearchArea
 import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.plan.model.PlanItemData
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
+import java.time.LocalTime
+
 @Composable
 fun PlanScreen(
     planViewModel: PlanViewModel = hiltViewModel(),
@@ -81,6 +85,24 @@ fun PlanScreen(
                 else -> true
             }
             doneFilter && tabFilter
+        }
+    }
+
+    val sortedPlans = remember(filteredPlans, uiState.sortOption) {
+        when (uiState.sortOption) {
+            PlanSortOption.DEADLINE -> filteredPlans.sortedWith(
+                compareBy<PlanItemData> { it.endDate == null && it.endTime == null && it.isAllDay }
+                    .thenBy { it.endDate ?: LocalDate.MAX }
+                    .thenBy { it.endTime ?: LocalTime.MAX }
+            )
+            PlanSortOption.IMPORTANT -> filteredPlans.sortedWith(
+                compareByDescending<PlanItemData> { it.isImportant }
+                    .thenBy { it.title }
+            )
+            PlanSortOption.COMPLETE -> filteredPlans.sortedWith(
+                compareByDescending<PlanItemData> { it.isDone }
+                    .thenBy { it.title }
+            )
         }
     }
 
@@ -130,7 +152,7 @@ fun PlanScreen(
             }
         }
 
-        if (filteredPlans.isEmpty()) {
+        if (sortedPlans.isEmpty()) {
             item {
                 Column(
                     modifier = Modifier
@@ -208,7 +230,7 @@ fun PlanScreen(
                 }
             }
 
-            items(filteredPlans, key = { it.id }) { item ->
+            items(sortedPlans, key = { it.id }) { item ->
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
                         item = item,
