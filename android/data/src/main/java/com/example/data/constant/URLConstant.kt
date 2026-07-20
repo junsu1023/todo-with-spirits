@@ -25,5 +25,6 @@ object URLConstant {
     object LOGIN {
         private const val AUTH = "$API/auth"
         const val LOGIN = "$AUTH/login"
+        const val LOGOUT = "$AUTH/logout"
     }
 }
