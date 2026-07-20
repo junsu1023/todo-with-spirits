@@ -58,11 +58,9 @@ fun PlanScreen(
     val calendarEventData = remember(uiState.calendarEvents, todoColor, routineColor) {
         uiState.calendarEvents.mapValues { (_, events) ->
             CalendarDayEvent(
-                dotColors = events.types.map { type ->
-                    when (type) {
-                        PlanType.TODO -> todoColor
-                        PlanType.ROUTINE -> routineColor
-                    }
+                dotColors = buildList {
+                    if (events.types.contains(PlanType.TODO)) add(todoColor)
+                    if (events.types.contains(PlanType.ROUTINE)) add(routineColor)
                 },
                 label = events.importantCount
                     .takeIf { it > 0 }

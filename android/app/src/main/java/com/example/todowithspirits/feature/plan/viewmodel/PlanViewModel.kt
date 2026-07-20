@@ -144,12 +144,13 @@ class PlanViewModel @Inject constructor(
             getTaskCalendarUseCase(monthStart, monthEnd)
                 .onSuccess { calendar ->
                     val events = calendar.items
-                        .filter { it.taskType == TaskType.ROUTINE.type }
                         .groupBy { it.occurrenceDate }
-                        .mapValues { (_, routines) ->
+                        .mapValues { (_, items) ->
                             DayPlanEvents(
-                                types = routines.map { PlanType.ROUTINE },
-                                importantCount = routines.count { it.isImportant }
+                                types = items.map {
+                                    if (it.taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO
+                                },
+                                importantCount = items.count { it.isImportant }
                             )
                         }
 
