@@ -19,12 +19,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.mypage.component.MySpiritCard
 import com.example.todowithspirits.feature.mypage.component.ProfileSection
 import com.example.todowithspirits.feature.mypage.component.SettingRow
 import com.example.todowithspirits.feature.mypage.component.StatusRow
+import com.example.todowithspirits.feature.mypage.viewmodel.MyPageViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 data class SettingItem(
@@ -43,9 +46,11 @@ val settingItems = listOf(
 
 @Composable
 fun MyPageScreen(
+    myPageViewModel: MyPageViewModel = hiltViewModel(),
     navigateToAccountSetting: () -> Unit = {},
     navigateToAlarmSetting: () -> Unit = {},
-    navigateToDisplaySetting: () -> Unit = {}
+    navigateToDisplaySetting: () -> Unit = {},
+    navigateToLogout: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -105,7 +110,10 @@ fun MyPageScreen(
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        SettingRow2(title = stringResource(R.string.logout))
+        SettingRow2(
+            title = stringResource(R.string.logout),
+            onClick = { myPageViewModel.logout(onSuccess = navigateToLogout) }
+        )
 
         Spacer(modifier = Modifier.height(26.dp))
     }
@@ -114,12 +122,14 @@ fun MyPageScreen(
 @Composable
 fun SettingRow2(
     title: String,
-    desc: String? = null
+    desc: String? = null,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp),
+            .padding(horizontal = 24.dp)
+            .noRippleClickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(

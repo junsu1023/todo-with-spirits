@@ -39,6 +39,11 @@ fun SpiritsTodoNavigation(
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
     }
+    val navigateToLogout: () -> Unit = {
+        navController.navigate(Screen.Splash.route) { // 차후 로그인 화면으로 이동되도록 수정해야함
+            popUpTo(0) { inclusive = true }
+        }
+    }
     val onBack: () -> Unit = { navController.popBackStack() }
 
     NavHost(
@@ -117,7 +122,8 @@ fun SpiritsTodoNavigation(
             MyPageScreen(
                 navigateToAccountSetting = navigateToAccountSetting,
                 navigateToAlarmSetting = navigateToAlarmSetting,
-                navigateToDisplaySetting = navigateToDisplaySetting
+                navigateToDisplaySetting = navigateToDisplaySetting,
+                navigateToLogout = navigateToLogout
             )
         }
 

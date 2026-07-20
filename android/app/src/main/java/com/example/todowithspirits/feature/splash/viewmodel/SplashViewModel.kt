@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.splash
+package com.example.todowithspirits.feature.splash.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.auth.TokenHolder
