@@ -76,6 +76,12 @@ fun PlanScreen(
     val todoLabel = stringResource(R.string.todo)
     val routineLabel = stringResource(R.string.routine)
 
+    val sortOptions = remember(uiState.isHidden) {
+        PlanSortOption.entries
+            .filter { !(uiState.isHidden && it == PlanSortOption.COMPLETE) }
+            .map { it.displayName }
+    }
+
     val filteredPlans = remember(uiState.plans, uiState.isHidden, uiState.selectedTab, todoLabel, routineLabel) {
         uiState.plans.filter { item ->
             val doneFilter = !uiState.isHidden || !item.isDone
@@ -193,7 +199,7 @@ fun PlanScreen(
 
                         SpiritsTodoDropdown(
                             value = uiState.sortOption.displayName,
-                            options = PlanSortOption.getAllDisplayNames(),
+                            options = sortOptions,
                             onOptionSelected = {
                                 planViewModel.setSortOption(
                                     PlanSortOption.fromDisplayName(

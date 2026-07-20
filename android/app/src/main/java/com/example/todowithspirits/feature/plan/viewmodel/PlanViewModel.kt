@@ -72,7 +72,13 @@ class PlanViewModel @Inject constructor(
     fun setHiddenState(hidden: Boolean) {
         viewModelScope.launchWithLoading {
             _uiState.update {
-                it.copy(isHidden = hidden)
+                val sortOption = if (hidden && it.sortOption == PlanSortOption.COMPLETE) {
+                    PlanSortOption.DEADLINE
+                } else {
+                    it.sortOption
+                }
+
+                it.copy(isHidden = hidden, sortOption = sortOption)
             }
         }
     }
