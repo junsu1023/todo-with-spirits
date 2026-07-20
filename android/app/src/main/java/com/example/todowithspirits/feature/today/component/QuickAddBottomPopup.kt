@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.feature.today.viewmodel.QuickAddViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanDateWithDayFormatter
+import com.example.todowithspirits.util.ToastUtil
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -94,6 +96,12 @@ fun QuickAddBottomPopup(
     var selectedWeekDays by remember { mutableStateOf(setOf<DayOfWeek>()) }
     var selectedMonthDays by remember { mutableStateOf(setOf<Int>()) }
     val dateFormatter = KoreanDateWithDayFormatter
+
+    LaunchedEffect(quickAddViewModel) {
+        quickAddViewModel.errorMsg.collect { message ->
+            ToastUtil.show(context, message)
+        }
+    }
 
     Popup(
         onDismissRequest = onDismiss,
@@ -419,7 +427,10 @@ fun QuickAddBottomPopup(
                                             repeatOption = repeatOption,
                                             selectedWeekDays = selectedWeekDays,
                                             selectedMonthDays = selectedMonthDays,
-                                            onSuccess = onDismiss
+                                            onSuccess = {
+                                                ToastUtil.show(context, "루틴 추가 성공!")
+                                                onDismiss()
+                                            }
                                         )
                                     } else {
                                         quickAddViewModel.createTodo(
@@ -428,7 +439,10 @@ fun QuickAddBottomPopup(
                                             date = selectedDate ?: LocalDate.now(),
                                             isTimeEnabled = isTimeEnabled,
                                             dueTime = selectedTime,
-                                            onSuccess = onDismiss
+                                            onSuccess = {
+                                                ToastUtil.show(context, "Todo 추가 성공!")
+                                                onDismiss()
+                                            }
                                         )
                                     }
                                 }
