@@ -159,13 +159,15 @@ fun QuickAddBottomPopup(
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Image(
-                            modifier = Modifier
-                                .size(26.dp)
-                                .noRippleClickable { isImportant = !isImportant },
-                            painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
-                            contentDescription = null,
-                        )
+                        if(selectedTab != routineText) {
+                            Image(
+                                modifier = Modifier
+                                    .size(26.dp)
+                                    .noRippleClickable { isImportant = !isImportant },
+                                painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
+                                contentDescription = null,
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
