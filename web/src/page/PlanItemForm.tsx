@@ -1,9 +1,24 @@
-import { Calendar, Clock, LayoutList, Lock, RefreshCw, Star, X } from 'lucide-react'
+import {
+  Calendar,
+  Clock,
+  LayoutList,
+  Lock,
+  RefreshCw,
+  Star,
+  X,
+} from 'lucide-react'
 import { useState } from 'react'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import type { PlanItem, ItemType } from './PlanPage'
 
-const CATEGORY_OPTIONS = ['없음', '업무/커리어', '인간관계/약속', '자기계발', '건강', '취미']
+const CATEGORY_OPTIONS = [
+  '없음',
+  '업무/커리어',
+  '인간관계/약속',
+  '자기계발',
+  '건강',
+  '취미',
+]
 const PUBLIC_OPTIONS = ['비공개', '공개']
 const REPEAT_OPTIONS = ['매일', '매주', '매월']
 
@@ -32,7 +47,13 @@ function calcDday(date: string): number {
   return Math.max(0, Math.ceil((target.getTime() - today.getTime()) / 86400000))
 }
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+function Toggle({
+  checked,
+  onChange,
+}: {
+  checked: boolean
+  onChange: () => void
+}) {
   return (
     <button
       type="button"
@@ -53,7 +74,15 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
   )
 }
 
-function Checkbox({ checked, onChange, small }: { checked: boolean; onChange: () => void; small?: boolean }) {
+function Checkbox({
+  checked,
+  onChange,
+  small,
+}: {
+  checked: boolean
+  onChange: () => void
+  small?: boolean
+}) {
   return (
     <button
       type="button"
@@ -63,7 +92,12 @@ function Checkbox({ checked, onChange, small }: { checked: boolean; onChange: ()
       } ${checked ? 'bg-[#B286FD]' : 'border-2 border-gray-300 bg-white'}`}
     >
       {checked && (
-        <svg viewBox="0 0 10 8" fill="none" className={small ? 'h-3 w-3' : 'h-3.5 w-3.5'} aria-hidden="true">
+        <svg
+          viewBox="0 0 10 8"
+          fill="none"
+          className={small ? 'h-3 w-3' : 'h-3.5 w-3.5'}
+          aria-hidden="true"
+        >
           <title>checked</title>
           <path
             d="M1 4L3.5 6.5L9 1"
@@ -111,7 +145,12 @@ interface PlanItemFormProps {
   mode?: 'create' | 'edit'
 }
 
-export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItemFormProps) {
+export function PlanItemForm({
+  item,
+  onSave,
+  onCancel,
+  mode = 'edit',
+}: PlanItemFormProps) {
   const [title, setTitle] = useState(item.title)
   const [type, setType] = useState<ItemType>(item.type)
   const [starred, setStarred] = useState(item.starred)
@@ -119,7 +158,9 @@ export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItem
   const [timeEnabled, setTimeEnabled] = useState(!!item.time)
   const [time, setTime] = useState(item.time ?? '')
   const [repeat, setRepeat] = useState<string>(item.repeat ?? '매일')
-  const [excludeHolidays, setExcludeHolidays] = useState(item.excludeHolidays ?? false)
+  const [excludeHolidays, setExcludeHolidays] = useState(
+    item.excludeHolidays ?? false,
+  )
   const [category, setCategory] = useState(item.category ?? '없음')
   const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
   const [memo, setMemo] = useState(item.memo ?? '')
@@ -134,9 +175,12 @@ export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItem
       title,
       type,
       starred,
-      date: isRoutine ? undefined : (date || undefined),
+      date: isRoutine ? undefined : date || undefined,
       time: isRoutine ? undefined : resolvedTime,
-      dateLabel: !isRoutine && date ? formatDateLabel(date, resolvedTime) : item.dateLabel,
+      dateLabel:
+        !isRoutine && date
+          ? formatDateLabel(date, resolvedTime)
+          : item.dateLabel,
       dday: !isRoutine && date ? calcDday(date) : item.dday,
       repeat: isRoutine ? (repeat as '매일' | '매주' | '매월') : undefined,
       excludeHolidays: isRoutine ? excludeHolidays : undefined,
@@ -158,7 +202,9 @@ export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItem
         >
           <X size={18} />
         </button>
-        <span className="text-base font-semibold text-gray-800">{mode === 'create' ? '플랜 추가' : '플랜 수정'}</span>
+        <span className="text-base font-semibold text-gray-800">
+          {mode === 'create' ? '플랜 추가' : '플랜 수정'}
+        </span>
         <div className="w-8" />
       </div>
 
@@ -231,7 +277,10 @@ export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItem
         ) : (
           <>
             <FormRow icon={<Star size={16} />} label="중요">
-              <Checkbox checked={starred} onChange={() => setStarred((s) => !s)} />
+              <Checkbox
+                checked={starred}
+                onChange={() => setStarred((s) => !s)}
+              />
             </FormRow>
 
             <FormRow icon={<Calendar size={16} />} label="날짜">
@@ -253,7 +302,10 @@ export function PlanItemForm({ item, onSave, onCancel, mode = 'edit' }: PlanItem
                     className="bg-transparent text-sm text-gray-500 outline-none"
                   />
                 )}
-                <Toggle checked={timeEnabled} onChange={() => setTimeEnabled((t) => !t)} />
+                <Toggle
+                  checked={timeEnabled}
+                  onChange={() => setTimeEnabled((t) => !t)}
+                />
               </div>
             </FormRow>
 

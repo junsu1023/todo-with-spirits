@@ -27,15 +27,39 @@ const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
 const MOCK_TODOS: TodoItem[] = [
   { id: 1, text: '성과 보고서 제출 마감', completed: true, starred: true },
-  { id: 2, text: '26년도 하반기 KPI 목표 설정', completed: true, starred: true },
-  { id: 3, text: '민지랑 저녁', completed: true, starred: false, date: '2026-07-08', time: '19:00' },
-  { id: 4, text: '월세 내기', completed: false, starred: false, date: '2026-07-10' },
+  {
+    id: 2,
+    text: '26년도 하반기 KPI 목표 설정',
+    completed: true,
+    starred: true,
+  },
+  {
+    id: 3,
+    text: '민지랑 저녁',
+    completed: true,
+    starred: false,
+    date: '2026-07-08',
+    time: '19:00',
+  },
+  {
+    id: 4,
+    text: '월세 내기',
+    completed: false,
+    starred: false,
+    date: '2026-07-10',
+  },
   { id: 5, text: '비행기 티켓 끊기', completed: false, starred: false },
 ]
 
 const MOCK_ROUTINES: RoutineItem[] = [
   { id: 1, text: '영어 단어 100개 외우기', completed: true, repeat: '매일' },
-  { id: 2, text: '책 20 페이지 읽기', completed: true, repeat: '매주', repeatDays: [1, 3, 5] },
+  {
+    id: 2,
+    text: '책 20 페이지 읽기',
+    completed: true,
+    repeat: '매주',
+    repeatDays: [1, 3, 5],
+  },
 ]
 
 type MainTab = 'todo' | 'completed'
@@ -56,9 +80,7 @@ function formatRepeat(routine: RoutineItem) {
     return days ? `매주 ${days}` : '매주'
   }
   if (routine.repeat === '매월') {
-    const dates = (routine.repeatDates ?? [])
-      .sort((a, b) => a - b)
-      .join(', ')
+    const dates = (routine.repeatDates ?? []).sort((a, b) => a - b).join(', ')
     return dates ? `매월 ${dates}일` : '매월'
   }
   return ''
@@ -87,7 +109,13 @@ function CheckButton({
   )
 }
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+function Toggle({
+  checked,
+  onChange,
+}: {
+  checked: boolean
+  onChange: () => void
+}) {
   return (
     <button
       type="button"
@@ -238,7 +266,9 @@ export function TodayTodoCard() {
               <div className="flex flex-1 flex-col">
                 <span
                   className={`text-base ${
-                    todo.completed ? 'text-gray-400 line-through' : 'text-gray-800'
+                    todo.completed
+                      ? 'text-gray-400 line-through'
+                      : 'text-gray-800'
                   }`}
                 >
                   {todo.text}
@@ -253,7 +283,9 @@ export function TodayTodoCard() {
                 <Star
                   size={16}
                   className={
-                    todo.starred ? 'fill-[#B286FD] text-[#B286FD]' : 'text-gray-200'
+                    todo.starred
+                      ? 'fill-[#B286FD] text-[#B286FD]'
+                      : 'text-gray-200'
                   }
                 />
               </button>
@@ -276,12 +308,16 @@ export function TodayTodoCard() {
                 <div className="flex flex-1 flex-col">
                   <span
                     className={`text-base ${
-                      routine.completed ? 'text-gray-400 line-through' : 'text-gray-800'
+                      routine.completed
+                        ? 'text-gray-400 line-through'
+                        : 'text-gray-800'
                     }`}
                   >
                     {routine.text}
                   </span>
-                  <span className="text-xs text-[#B2A042]">{formatRepeat(routine)}</span>
+                  <span className="text-xs text-[#B2A042]">
+                    {formatRepeat(routine)}
+                  </span>
                 </div>
               </div>
             ))}
@@ -317,7 +353,9 @@ export function TodayTodoCard() {
             <button type="button" onClick={() => setIsStarred((s) => !s)}>
               <Star
                 size={18}
-                className={isStarred ? 'fill-[#B286FD] text-[#B286FD]' : 'text-gray-300'}
+                className={
+                  isStarred ? 'fill-[#B286FD] text-[#B286FD]' : 'text-gray-300'
+                }
               />
             </button>
           )}
@@ -328,7 +366,9 @@ export function TodayTodoCard() {
           <input
             type="text"
             placeholder={
-              inputTab === '루틴' ? '루틴 이름을 입력하세요...' : '새로운 할 일을 입력하세요...'
+              inputTab === '루틴'
+                ? '루틴 이름을 입력하세요...'
+                : '새로운 할 일을 입력하세요...'
             }
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -339,8 +379,15 @@ export function TodayTodoCard() {
           {/* 날짜 뱃지 (할 일만) */}
           {inputTab === '할 일' && hasDateTime && (
             <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#F4ECFF] px-2.5 py-1 text-xs text-[#B286FD]">
-              {formatDateBadge(selectedDate, timeEnabled ? selectedTime : undefined)}
-              <button type="button" onClick={clearDateTime} className="hover:opacity-60">
+              {formatDateBadge(
+                selectedDate,
+                timeEnabled ? selectedTime : undefined,
+              )}
+              <button
+                type="button"
+                onClick={clearDateTime}
+                className="hover:opacity-60"
+              >
                 <X size={10} />
               </button>
             </span>
@@ -349,7 +396,10 @@ export function TodayTodoCard() {
           {/* 날짜/시간 Popover (할 일만) */}
           {inputTab === '할 일' && (
             <Popover>
-              <PopoverTrigger className="shrink-0 hover:opacity-70" aria-label="날짜 및 시간 설정">
+              <PopoverTrigger
+                className="shrink-0 hover:opacity-70"
+                aria-label="날짜 및 시간 설정"
+              >
                 <Clock
                   size={17}
                   className={hasDateTime ? 'text-[#B286FD]' : 'text-gray-300'}
