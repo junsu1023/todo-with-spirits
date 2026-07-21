@@ -40,7 +40,9 @@ export function DropdownSelect({
                 setOpen(false)
               }}
               className={`w-full px-4 py-2.5 text-center text-sm transition-colors hover:bg-gray-50 ${
-                option === value ? 'text-[#B286FD] font-medium' : 'text-gray-500'
+                option === value
+                  ? 'text-[#B286FD] font-medium'
+                  : 'text-gray-500'
               }`}
             >
               {option}

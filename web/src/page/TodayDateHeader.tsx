@@ -2,7 +2,15 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-const WEEKDAYS_KO = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
+const WEEKDAYS_KO = [
+  '일요일',
+  '월요일',
+  '화요일',
+  '수요일',
+  '목요일',
+  '금요일',
+  '토요일',
+]
 
 // Mock dot data keyed by day-of-week index (0=Sun) for demo
 const MOCK_DOT_MAP: Record<number, string[]> = {
@@ -54,7 +62,9 @@ export function TodayDateHeader() {
           onClick={() => setIsExpanded((e) => !e)}
           className="flex items-center gap-2 hover:opacity-70"
         >
-          <span className="text-xl font-bold">{formatHeader(selectedDate)}</span>
+          <span className="text-xl font-bold">
+            {formatHeader(selectedDate)}
+          </span>
           {isExpanded ? (
             <ChevronUp size={20} className="text-gray-500" />
           ) : (

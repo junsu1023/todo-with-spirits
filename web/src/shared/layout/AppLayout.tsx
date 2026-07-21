@@ -1,16 +1,14 @@
-import type { ReactNode } from "react";
-import { SidebarInset, SidebarProvider } from "@/shared/ui/sidebar";
-import { AppSidebar } from "./AppSidebar";
+import { Outlet } from 'react-router-dom'
+import { SidebarInset, SidebarProvider } from '@/shared/ui/sidebar'
+import { AppSidebar } from './AppSidebar'
 
-interface AppLayoutProps {
-	children: ReactNode;
-}
-
-export function AppLayout({ children }: AppLayoutProps) {
-	return (
-		<SidebarProvider>
-			<AppSidebar />
-			<SidebarInset>{children}</SidebarInset>
-		</SidebarProvider>
-	);
+export function AppLayout() {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
