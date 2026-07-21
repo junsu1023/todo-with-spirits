@@ -60,7 +60,7 @@ fun DisplaySelectorRow(
             value = value,
             options = options,
             onOptionSelected = onOptionSelected,
-            dropdownWidth = 140.dp,
+            dropdownWidth = 96.dp,
             dropdownGap = 3.dp,
             itemVerticalPadding = 14.dp,
             unselectedOptionColor = SpiritTodoTheme.color.systemGrey
