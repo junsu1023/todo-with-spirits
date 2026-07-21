@@ -7,6 +7,7 @@ type NullableAuth = { [K in keyof loginResponse]: loginResponse[K] | null }
 
 interface AuthState extends NullableAuth {
   setAuth: (payload: loginResponse) => void
+  setTokens: (tokens: Pick<loginResponse, 'accessToken' | 'refreshToken' | 'tokenType'>) => void
   clearAuth: () => void
 }
 
@@ -25,6 +26,7 @@ export const useAuthStore = create<AuthState>()(
       ...initialState,
 
       setAuth: (payload) => set(payload),
+      setTokens: (tokens) => set(tokens),
       clearAuth: () => set(initialState),
     }),
     {
