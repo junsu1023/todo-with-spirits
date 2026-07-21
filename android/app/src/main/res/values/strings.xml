@@ -97,6 +97,9 @@
     <string name="display_setting_desc">다크모드, 플랜 표시, 언어</string>
     <string name="data_setting">데이터 설정</string>
     <string name="data_setting_desc">백업, 동기화, 데이터 내보내기</string>
+    <string name="backup">백업</string>
+    <string name="sync">동기화</string>
+    <string name="export_data">데이터 내보내기</string>
     <string name="customer_support">고객 지원</string>
     <string name="customer_support_desc">공지사항, 이용안내, FAQ, 약관 및 정책</string>
     <string name="exp_format">EXP %1$d / %2$d</string>
