@@ -21,11 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SettingActionRow
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.mypage.component.MySpiritCard
 import com.example.todowithspirits.feature.mypage.component.ProfileSection
-import com.example.todowithspirits.feature.mypage.component.SettingRow
 import com.example.todowithspirits.feature.mypage.component.StatusRow
 import com.example.todowithspirits.feature.mypage.viewmodel.MyPageViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -50,6 +50,8 @@ fun MyPageScreen(
     navigateToAccountSetting: () -> Unit = {},
     navigateToAlarmSetting: () -> Unit = {},
     navigateToDisplaySetting: () -> Unit = {},
+    navigateToDataSetting: () -> Unit = {},
+    navigateToCustomerSupport: () -> Unit = {},
     navigateToLogout: () -> Unit = {}
 ) {
     Column(
@@ -85,12 +87,17 @@ fun MyPageScreen(
                 .padding(horizontal = 16.dp, vertical = 5.dp)
         ) {
             settingItems.forEachIndexed { index, item ->
-                SettingRow(
-                    item = item,
+                SettingActionRow(
+                    label = stringResource(item.titleRes),
+                    modifier = Modifier.padding(vertical = 15.dp),
+                    iconRes = item.iconRes,
+                    description = stringResource(item.descRes),
                     onClick = when (index) {
                         0 -> navigateToAccountSetting
                         1 -> navigateToAlarmSetting
                         2 -> navigateToDisplaySetting
+                        3 -> navigateToDataSetting
+                        4 -> navigateToCustomerSupport
                         else -> ({})
                     }
                 )

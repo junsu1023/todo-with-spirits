@@ -67,20 +67,6 @@ fun DisplaySettingScreen(
             )
 
             DisplaySelectorRow(
-                label = stringResource(R.string.plan_sort),
-                value = uiState.planSortOption,
-                options = PlanSortOptions,
-                onOptionSelected = { displaySettingViewModel.setPlanSortOption(it) }
-            )
-
-            DisplaySelectorRow(
-                label = stringResource(R.string.theme),
-                value = uiState.themeOption,
-                options = ThemeOptions,
-                onOptionSelected = { displaySettingViewModel.setThemeOption(it) }
-            )
-
-            DisplaySelectorRow(
                 label = stringResource(R.string.language),
                 value = uiState.languageOption,
                 options = LanguageOptions,

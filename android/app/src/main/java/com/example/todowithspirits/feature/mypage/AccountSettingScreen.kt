@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SettingActionRow
 import com.example.todowithspirits.component.SettingsRow
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -70,15 +71,23 @@ fun AccountSettingScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ActionRow(
+        SettingActionRow(
             label = stringResource(R.string.modify_password),
+            modifier = Modifier.padding(horizontal = 18.dp),
+            labelColor = SpiritTodoTheme.color.systemGrey,
+            trailingIconRes = R.drawable.todo_arrow2_20,
+            trailingIconTint = null,
             onClick = onModifyPasswordClick
         )
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        ActionRow(
+        SettingActionRow(
             label = stringResource(R.string.withdraw),
+            modifier = Modifier.padding(horizontal = 18.dp),
+            labelColor = SpiritTodoTheme.color.systemGrey,
+            trailingIconRes = R.drawable.todo_arrow2_20,
+            trailingIconTint = null,
             onClick = onWithdrawClick
         )
 
@@ -119,25 +128,5 @@ fun InfoRow(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ActionRow(label: String, onClick: () -> Unit) {
-    SettingsRow(
-        modifier = Modifier.padding(horizontal = 18.dp),
-        onClick = onClick
-    ) {
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.color.systemGrey
-        )
-
-        Image(
-            painter = painterResource(R.drawable.todo_arrow2_20),
-            contentDescription = null
-        )
     }
 }

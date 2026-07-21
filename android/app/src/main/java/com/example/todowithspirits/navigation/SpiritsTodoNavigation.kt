@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
+import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
@@ -17,7 +18,10 @@ import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
+import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
+import com.example.todowithspirits.feature.login.LoginScreen
+import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.today.TodayScreen
 
@@ -34,13 +38,15 @@ fun SpiritsTodoNavigation(
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
+    val navigateToDataSetting: () -> Unit = { navController.navigate(Screen.DataSetting.route) }
+    val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
     val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToChangePassword: () -> Unit = { navController.navigate(Screen.ChangePassword.route) }
     val navigateToDetail: (Int) -> Unit = { itemId ->
         navController.navigate("${Screen.PlanDetail.route}/$itemId")
     }
     val navigateToLogout: () -> Unit = {
-        navController.navigate(Screen.Splash.route) { // 차후 로그인 화면으로 이동되도록 수정해야함
+        navController.navigate(Screen.Login.route) {
             popUpTo(0) { inclusive = true }
         }
     }
@@ -53,11 +59,28 @@ fun SpiritsTodoNavigation(
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
-                onLoginCompleted = {
-                    navController.navigate(Screen.Today.route) {
+                onSplashFinished = {
+                    navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
+            )
+        }
+
+        composable(Screen.SignUp.route) {
+            SignUpScreen(
+                onBack = onBack
             )
         }
 
@@ -123,6 +146,8 @@ fun SpiritsTodoNavigation(
                 navigateToAccountSetting = navigateToAccountSetting,
                 navigateToAlarmSetting = navigateToAlarmSetting,
                 navigateToDisplaySetting = navigateToDisplaySetting,
+                navigateToDataSetting = navigateToDataSetting,
+                navigateToCustomerSupport = navigateToCustomerSupport,
                 navigateToLogout = navigateToLogout
             )
         }
@@ -145,6 +170,14 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.DisplaySetting.route) {
             DisplaySettingScreen(onBack = onBack)
+        }
+
+        composable(Screen.DataSetting.route) {
+            DataSettingScreen(onBack = onBack)
+        }
+
+        composable(Screen.CustomerSupport.route) {
+            CustomerSupportScreen(onBack = onBack)
         }
     }
 }
