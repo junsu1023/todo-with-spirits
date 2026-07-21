@@ -6,29 +6,29 @@ import type { loginResponse } from './type'
 type NullableAuth = { [K in keyof loginResponse]: loginResponse[K] | null }
 
 interface AuthState extends NullableAuth {
-	setAuth: (payload: loginResponse) => void
-	clearAuth: () => void
+  setAuth: (payload: loginResponse) => void
+  clearAuth: () => void
 }
 
 const initialState: NullableAuth = {
-	userId: null,
-	email: null,
-	nickname: null,
-	accessToken: null,
-	refreshToken: null,
-	tokenType: null,
+  userId: null,
+  email: null,
+  nickname: null,
+  accessToken: null,
+  refreshToken: null,
+  tokenType: null,
 }
 
 export const useAuthStore = create<AuthState>()(
-	persist(
-		(set) => ({
-			...initialState,
+  persist(
+    (set) => ({
+      ...initialState,
 
-			setAuth: (payload) => set(payload),
-			clearAuth: () => set(initialState),
-		}),
-		{
-			name: 'auth',
-		},
-	),
+      setAuth: (payload) => set(payload),
+      clearAuth: () => set(initialState),
+    }),
+    {
+      name: 'auth',
+    },
+  ),
 )

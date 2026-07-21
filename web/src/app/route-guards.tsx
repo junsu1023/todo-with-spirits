@@ -1,14 +1,21 @@
 import type { ReactElement, ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useAuthStore } from '@/feature/auth/model/authStore'
 import { ROUTES } from '@/shared/routes'
 
-// TODO: auth store 연결 후 실제 인증 상태로 교체
-// const status = useAuthStore((state) => state.status)
+function useIsAuthenticated() {
+  const accessToken = useAuthStore((state) => state.accessToken)
+  const refreshToken = useAuthStore((state) => state.refreshToken)
+  return accessToken !== null && refreshToken !== null
+}
 
 export function RootRedirect(): ReactElement {
-  // TODO: 인증 상태에 따라 분기
-  // if (status === 'authenticated') return <Navigate to={ROUTES.TODAY} replace />
-  return <Navigate to={ROUTES.LOGIN} replace />
+  const isAuthenticated = useIsAuthenticated()
+  return isAuthenticated ? (
+    <Navigate to={ROUTES.TODAY} replace />
+  ) : (
+    <Navigate to={ROUTES.LOGIN} replace />
+  )
 }
 
 interface GuestOnlyRouteProps {
@@ -18,8 +25,8 @@ interface GuestOnlyRouteProps {
 export function GuestOnlyRoute({
   children,
 }: GuestOnlyRouteProps): ReactElement {
-  // TODO: 로그인 상태면 TODAY로 리다이렉트
-  // if (status === 'authenticated') return <Navigate to={ROUTES.TODAY} replace />
+  const isAuthenticated = useIsAuthenticated()
+  if (isAuthenticated) return <Navigate to={ROUTES.TODAY} replace />
   return <>{children}</>
 }
 
@@ -30,9 +37,9 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({
   children,
-  redirectTo: _redirectTo = ROUTES.LOGIN,
+  redirectTo = ROUTES.LOGIN,
 }: ProtectedRouteProps): ReactElement {
-  // TODO: 미인증 상태면 로그인으로 리다이렉트
-  // if (status === 'unauthenticated') return <Navigate to={_redirectTo} replace />
+  const isAuthenticated = useIsAuthenticated()
+  if (!isAuthenticated) return <Navigate to={redirectTo} replace />
   return <>{children}</>
 }
