@@ -1,14 +1,18 @@
 package com.example.todowithspirits.feature.setting
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,15 +25,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -121,30 +128,48 @@ private fun PasswordField(
     fontSize: Int
 ) {
     var isFocused by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(false) }
 
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        visualTransformation = PasswordVisualTransformation(),
+        visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         textStyle = TextStyle(
             fontSize = 16.sp,
             color = SpiritTodoTheme.color.todoTextMain
         ),
         decorationBox = { innerTextField ->
-            Box(contentAlignment = Alignment.CenterStart) {
-                if (value.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        style = TextStyle(
-                            fontSize = fontSize.sp,
-                            color = SpiritTodoTheme.color.systemGrey
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (value.isEmpty()) {
+                        Text(
+                            text = placeholder,
+                            style = TextStyle(
+                                fontSize = fontSize.sp,
+                                color = SpiritTodoTheme.color.systemGrey
+                            )
                         )
-                    )
+                    }
+
+                    innerTextField()
                 }
 
-                innerTextField()
+                if (value.isNotEmpty()) {
+                    Spacer(Modifier.width(8.dp))
+
+                    Image(
+                        painter = painterResource(if (isVisible) R.drawable.todo_unshow else R.drawable.todo_show),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .noRippleClickable { isVisible = !isVisible }
+                    )
+                }
             }
         },
         modifier = Modifier
