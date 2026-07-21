@@ -51,6 +51,7 @@ fun MyPageScreen(
     navigateToAlarmSetting: () -> Unit = {},
     navigateToDisplaySetting: () -> Unit = {},
     navigateToDataSetting: () -> Unit = {},
+    navigateToCustomerSupport: () -> Unit = {},
     navigateToLogout: () -> Unit = {}
 ) {
     Column(
@@ -96,6 +97,7 @@ fun MyPageScreen(
                         1 -> navigateToAlarmSetting
                         2 -> navigateToDisplaySetting
                         3 -> navigateToDataSetting
+                        4 -> navigateToCustomerSupport
                         else -> ({})
                     }
                 )

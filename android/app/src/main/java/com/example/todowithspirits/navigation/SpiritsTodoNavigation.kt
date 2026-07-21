@@ -18,6 +18,7 @@ import com.example.todowithspirits.feature.plan.PlanDetailScreen
 import com.example.todowithspirits.feature.plan.PlanScreen
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
+import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.today.TodayScreen
@@ -36,6 +37,7 @@ fun SpiritsTodoNavigation(
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
     val navigateToDataSetting: () -> Unit = { navController.navigate(Screen.DataSetting.route) }
+    val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
     val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToChangePassword: () -> Unit = { navController.navigate(Screen.ChangePassword.route) }
     val navigateToDetail: (Int) -> Unit = { itemId ->
@@ -126,6 +128,7 @@ fun SpiritsTodoNavigation(
                 navigateToAlarmSetting = navigateToAlarmSetting,
                 navigateToDisplaySetting = navigateToDisplaySetting,
                 navigateToDataSetting = navigateToDataSetting,
+                navigateToCustomerSupport = navigateToCustomerSupport,
                 navigateToLogout = navigateToLogout
             )
         }
@@ -152,6 +155,10 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.DataSetting.route) {
             DataSettingScreen(onBack = onBack)
+        }
+
+        composable(Screen.CustomerSupport.route) {
+            CustomerSupportScreen(onBack = onBack)
         }
     }
 }

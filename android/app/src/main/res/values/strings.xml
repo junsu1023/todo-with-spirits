@@ -100,6 +100,12 @@
     <string name="backup">백업</string>
     <string name="sync">동기화</string>
     <string name="export_data">데이터 내보내기</string>
+    <string name="notice">공지사항</string>
+    <string name="usage_guide">이용안내</string>
+    <string name="faq">자주묻는질문</string>
+    <string name="inquiry">문의하기</string>
+    <string name="terms_and_policy">약관 및 정책</string>
+    <string name="open_source_license">오픈소스 라이선스</string>
     <string name="customer_support">고객 지원</string>
     <string name="customer_support_desc">공지사항, 이용안내, FAQ, 약관 및 정책</string>
     <string name="exp_format">EXP %1$d / %2$d</string>
