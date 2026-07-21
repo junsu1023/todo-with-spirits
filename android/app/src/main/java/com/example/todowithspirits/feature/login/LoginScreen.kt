@@ -22,27 +22,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -51,6 +44,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PasswordField
+import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
@@ -148,10 +142,11 @@ fun LoginScreen(
 
             Spacer(Modifier.height(4.dp))
 
-            EmailField(
+            PlainTextField(
                 value = email,
                 onValueChange = { loginViewModel.setEmail(it) },
-                placeholder = stringResource(R.string.email_placeholder)
+                placeholder = stringResource(R.string.email_placeholder),
+                keyboardType = KeyboardType.Email
             )
 
             Spacer(Modifier.height(16.dp))
@@ -259,51 +254,6 @@ fun LoginScreen(
             }
         }
     }
-}
-
-@Composable
-private fun EmailField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String
-) {
-    var isFocused by remember { mutableStateOf(false) }
-
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        textStyle = TextStyle(
-            fontSize = 16.sp,
-            color = SpiritTodoTheme.color.todoTextMain
-        ),
-        decorationBox = { innerTextField ->
-            Box(contentAlignment = Alignment.CenterStart) {
-                if (value.isEmpty()) {
-                    Text(
-                        text = placeholder,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = SpiritTodoTheme.color.systemGrey
-                        )
-                    )
-                }
-
-                innerTextField()
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .onFocusChanged { isFocused = it.isFocused }
-            .border(
-                width = 1.dp,
-                color = if (isFocused) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemArea,
-                shape = RoundedCornerShape(6.dp)
-            )
-            .padding(horizontal = 14.dp)
-            .padding(top = 15.dp, bottom = 12.dp)
-    )
 }
 
 @Composable

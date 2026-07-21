@@ -9,6 +9,15 @@
     <string name="or_divider">또는</string>
     <string name="login_with_kakao">카카오로 로그인</string>
     <string name="login_with_google">Google로 로그인</string>
+    <string name="password_confirm">비밀번호 확인</string>
+    <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
+    <string name="nickname_optional">닉네임 (선택)</string>
+    <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
+    <string name="nickname_auto_generate_hint">입력하지 않으면 정령유저_1234 형식으로 자동 생성돼요</string>
+    <string name="sign_up_button">가입하기</string>
+    <string name="required_field_error">필수 입력 항목입니다</string>
+    <string name="password_mismatch_error">비밀번호가 일치하지 않습니다</string>
+    <string name="already_have_account">이미 계정이 있으신가요?</string>
     <string name="today">Today</string>
     <string name="plan">Plan</string>
     <string name="forest">Forest</string>
@@ -135,7 +144,7 @@
     <string name="change_password">비밀번호 변경</string>
     <string name="current_password">기존 비밀번호</string>
     <string name="new_password">새로운 비밀번호</string>
-    <string name="new_password_placeholder">비밀번호 (영문, 숫자, 특수문자를 포함한 20자 내)</string>
+    <string name="new_password_placeholder">(영문, 숫자, 특수문자를 포함한 20자 내)</string>
     <string name="confirm_password_placeholder">비밀번호 확인</string>
     <string name="dark_mode">다크모드</string>
     <string name="show_plan_dday">플랜 디데이 표시</string>
