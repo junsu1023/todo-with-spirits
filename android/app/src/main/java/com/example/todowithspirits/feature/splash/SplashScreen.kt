@@ -32,13 +32,13 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel = hiltViewModel(),
-    onLoginCompleted: () -> Unit
+    onSplashFinished: () -> Unit
 ) {
-    val loginCompleted by splashViewModel.loginCompleted.collectAsStateWithLifecycle()
+    val bootstrapCompleted by splashViewModel.bootstrapCompleted.collectAsStateWithLifecycle()
 
-    LaunchedEffect(loginCompleted) {
-        if (loginCompleted) {
-            onLoginCompleted()
+    LaunchedEffect(bootstrapCompleted) {
+        if (bootstrapCompleted) {
+            onSplashFinished()
         }
     }
 

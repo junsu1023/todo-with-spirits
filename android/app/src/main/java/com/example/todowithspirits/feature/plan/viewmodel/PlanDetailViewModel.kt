@@ -31,7 +31,6 @@ class PlanDetailViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getTaskUseCase(taskId)
                 .onSuccess { task ->
-                    println("test-kjs: task = $task")
                     _plan.value = task.toPlanItemData()
                 }
                 .onFailure {

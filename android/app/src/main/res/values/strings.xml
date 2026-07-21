@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">TodoWithSpirits</string>
+    <string name="email">이메일</string>
+    <string name="email_placeholder">이메일을 입력해주세요</string>
+    <string name="password">비밀번호</string>
+    <string name="password_placeholder">비밀번호를 입력해주세요</string>
+    <string name="login">로그인</string>
+    <string name="sign_up">회원가입</string>
+    <string name="or_divider">또는</string>
+    <string name="login_with_kakao">카카오로 로그인</string>
+    <string name="login_with_google">Google로 로그인</string>
     <string name="today">Today</string>
     <string name="plan">Plan</string>
     <string name="forest">Forest</string>
