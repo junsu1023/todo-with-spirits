@@ -1,12 +1,15 @@
 package com.example.todowithspirits.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.core.auth.SessionExpiredNotifier
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
@@ -24,6 +27,7 @@ import com.example.todowithspirits.feature.login.LoginScreen
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.today.TodayScreen
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun SpiritsTodoNavigation(
@@ -52,6 +56,15 @@ fun SpiritsTodoNavigation(
     }
     val onBack: () -> Unit = { navController.popBackStack() }
 
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        SessionExpiredNotifier.events.collect {
+            ToastUtil.show(context, "세션이 만료되었습니다. 다시 로그인해주세요")
+            navigateToLogout()
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
@@ -59,8 +72,9 @@ fun SpiritsTodoNavigation(
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
-                onSplashFinished = {
-                    navController.navigate(Screen.Login.route) {
+                onSplashFinished = { isLoggedIn ->
+                    val destination = if (isLoggedIn) Screen.Today.route else Screen.Login.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }

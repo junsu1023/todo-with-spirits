@@ -1,5 +1,6 @@
 package com.example.data.di.repository
 
+import com.example.core.auth.TokenStorage
 import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.datasource.CheckSystemHealthRemoteDataSource
 import com.example.data.datasource.TaskRemoteDataSource
@@ -33,6 +34,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authRemoteDataSource: AuthRemoteDataSource
-    ): AuthRepository = AuthRepositoryImpl(authRemoteDataSource)
+        authRemoteDataSource: AuthRemoteDataSource,
+        tokenStorage: TokenStorage
+    ): AuthRepository = AuthRepositoryImpl(authRemoteDataSource, tokenStorage)
 }

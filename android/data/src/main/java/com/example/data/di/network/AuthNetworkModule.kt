@@ -5,6 +5,7 @@ import com.example.data.api.AuthApi
 import com.example.data.api.TaskApi
 import com.example.data.constant.URLConstant
 import com.example.data.network.AuthInterceptor
+import com.example.data.network.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,11 +35,13 @@ object AuthNetworkModule {
     @Singleton
     fun provideAuthOkHttpClient(
         authInterceptor: AuthInterceptor,
-        httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(httpLoggingInterceptor)
+            .authenticator(tokenAuthenticator)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
