@@ -1,66 +1,27 @@
+import { useQuery } from '@tanstack/react-query'
 import { Check, Clock, Star, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getRoutineList, getTaskSchedule } from '@/entity/task/api/query'
+import type { RepeatType, TaskItem } from '@/entity/task/model/type'
 import { Card } from '@/shared/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 
-type RepeatType = '매일' | '매주' | '매월'
-
-interface TodoItem {
-  id: number
-  text: string
-  completed: boolean
-  starred: boolean
-  date?: string
-  time?: string
-}
-
-interface RoutineItem {
-  id: number
-  text: string
-  completed: boolean
-  repeat: RepeatType
-  repeatDays?: number[]
-  repeatDates?: number[]
-}
+type DisplayRepeatType = '매일' | '매주' | '매월'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
-const MOCK_TODOS: TodoItem[] = [
-  { id: 1, text: '성과 보고서 제출 마감', completed: true, starred: true },
-  {
-    id: 2,
-    text: '26년도 하반기 KPI 목표 설정',
-    completed: true,
-    starred: true,
-  },
-  {
-    id: 3,
-    text: '민지랑 저녁',
-    completed: true,
-    starred: false,
-    date: '2026-07-08',
-    time: '19:00',
-  },
-  {
-    id: 4,
-    text: '월세 내기',
-    completed: false,
-    starred: false,
-    date: '2026-07-10',
-  },
-  { id: 5, text: '비행기 티켓 끊기', completed: false, starred: false },
-]
+const REPEAT_MAP: Record<RepeatType, DisplayRepeatType | null> = {
+  DAILY: '매일',
+  WEEKLY: '매주',
+  MONTHLY: '매월',
+  YEARLY: null,
+}
 
-const MOCK_ROUTINES: RoutineItem[] = [
-  { id: 1, text: '영어 단어 100개 외우기', completed: true, repeat: '매일' },
-  {
-    id: 2,
-    text: '책 20 페이지 읽기',
-    completed: true,
-    repeat: '매주',
-    repeatDays: [1, 3, 5],
-  },
-]
+const REPEAT_REVERSE_MAP: Record<DisplayRepeatType, RepeatType> = {
+  매일: 'DAILY',
+  매주: 'WEEKLY',
+  매월: 'MONTHLY',
+}
 
 type MainTab = 'todo' | 'completed'
 type InputTab = '할 일' | '루틴'
@@ -73,17 +34,9 @@ function formatDateBadge(date: string, time?: string) {
   return time ? `${label} ${time}` : label
 }
 
-function formatRepeat(routine: RoutineItem) {
-  if (routine.repeat === '매일') return '매일'
-  if (routine.repeat === '매주') {
-    const days = (routine.repeatDays ?? []).map((d) => DAYS[d]).join(' ')
-    return days ? `매주 ${days}` : '매주'
-  }
-  if (routine.repeat === '매월') {
-    const dates = (routine.repeatDates ?? []).sort((a, b) => a - b).join(', ')
-    return dates ? `매월 ${dates}일` : '매월'
-  }
-  return ''
+function formatRepeat(repeatType: RepeatType | undefined) {
+  if (!repeatType) return ''
+  return REPEAT_MAP[repeatType] ?? ''
 }
 
 function CheckButton({
@@ -136,32 +89,102 @@ function Toggle({
   )
 }
 
-export function TodayTodoCard() {
+interface TodayTodoCardProps {
+  selectedDate: Date
+}
+
+function toDateString(date: Date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
+  const dateStr = toDateString(selectedDate)
+
+  const { data: todoList } = useQuery({
+    queryKey: ['task', 'schedule', dateStr],
+    queryFn: () => getTaskSchedule({ from: dateStr, to: dateStr }),
+  })
+  const { data: routineList } = useQuery({
+    queryKey: ['task', 'routine', dateStr],
+    queryFn: () => getRoutineList({ from: dateStr, to: dateStr }),
+  })
+
   const [mainTab, setMainTab] = useState<MainTab>('todo')
-  const [todos, setTodos] = useState<TodoItem[]>(MOCK_TODOS)
-  const [routines, setRoutines] = useState<RoutineItem[]>(MOCK_ROUTINES)
+
+  // toggle 오버레이 (API 아이템 XOR)
+  const [completedTodoIds, setCompletedTodoIds] = useState<Set<number>>(
+    new Set(),
+  )
+  const [starredTodoIds, setStarredTodoIds] = useState<Set<number>>(new Set())
+  const [completedRoutineIds, setCompletedRoutineIds] = useState<Set<number>>(
+    new Set(),
+  )
+
+  // add API 연동 전 로컬 임시 아이템
+  const [localTodos, setLocalTodos] = useState<TaskItem[]>([])
+  const [localRoutines, setLocalRoutines] = useState<TaskItem[]>([])
+
+  // 날짜 변경 시 로컬 상태 초기화
+  useEffect(() => {
+    setCompletedTodoIds(new Set())
+    setStarredTodoIds(new Set())
+    setCompletedRoutineIds(new Set())
+    setLocalTodos([])
+    setLocalRoutines([])
+  }, [dateStr])
+
+  // API 결과 직접 파생
+  const apiTodos: TaskItem[] =
+    todoList?.result === 'success' ? todoList.detail.items : []
+  const apiRoutines: TaskItem[] =
+    routineList?.result === 'success' ? routineList.detail.items : []
+
+  const allTodos = [...apiTodos, ...localTodos]
+  const allRoutines = [...apiRoutines, ...localRoutines]
+
+  // 오버레이 적용
+  const todosWithOverlay = allTodos.map((t) => ({
+    ...t,
+    isCompleted: completedTodoIds.has(t.taskId)
+      ? !t.isCompleted
+      : t.isCompleted,
+    isImportant: starredTodoIds.has(t.taskId) ? !t.isImportant : t.isImportant,
+  }))
+  const routinesWithOverlay = allRoutines.map((r) => ({
+    ...r,
+    isCompleted: completedRoutineIds.has(r.taskId)
+      ? !r.isCompleted
+      : r.isCompleted,
+  }))
+
+  const displayedTodos =
+    mainTab === 'todo'
+      ? todosWithOverlay
+      : todosWithOverlay.filter((t) => t.isCompleted)
+  const displayedRoutines =
+    mainTab === 'todo'
+      ? routinesWithOverlay
+      : routinesWithOverlay.filter((r) => r.isCompleted)
+
+  // 입력 state
   const [inputText, setInputText] = useState('')
   const [inputTab, setInputTab] = useState<InputTab>('할 일')
-
-  // 할 일 입력 state
   const [isStarred, setIsStarred] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
-  const [selectedTime, setSelectedTime] = useState('')
+  const [inputDate, setInputDate] = useState('')
+  const [inputTime, setInputTime] = useState('')
   const [timeEnabled, setTimeEnabled] = useState(false)
-
-  // 루틴 입력 state
-  const [repeatType, setRepeatType] = useState<RepeatType>('매일')
+  const [repeatType, setRepeatType] = useState<DisplayRepeatType>('매일')
   const [repeatDays, setRepeatDays] = useState<number[]>([])
   const [repeatDates, setRepeatDates] = useState<number[]>([])
 
-  const displayedTodos =
-    mainTab === 'todo' ? todos : todos.filter((t) => t.completed)
-
-  const hasDateTime = selectedDate !== ''
+  const hasDateTime = inputDate !== ''
 
   const clearDateTime = () => {
-    setSelectedDate('')
-    setSelectedTime('')
+    setInputDate('')
+    setInputTime('')
     setTimeEnabled(false)
   }
 
@@ -171,20 +194,47 @@ export function TodayTodoCard() {
     setRepeatDates([])
   }
 
-  const toggleTodo = (id: number) =>
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    )
+  const flipSet = (prev: Set<number>, id: number): Set<number> => {
+    const next = new Set(prev)
+    next.has(id) ? next.delete(id) : next.add(id)
+    return next
+  }
 
-  const toggleStar = (id: number) =>
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, starred: !t.starred } : t)),
-    )
+  const toggleTodo = (id: number) => {
+    if (localTodos.some((t) => t.taskId === id)) {
+      setLocalTodos((prev) =>
+        prev.map((t) =>
+          t.taskId === id ? { ...t, isCompleted: !t.isCompleted } : t,
+        ),
+      )
+    } else {
+      setCompletedTodoIds((prev) => flipSet(prev, id))
+    }
+  }
 
-  const toggleRoutine = (id: number) =>
-    setRoutines((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, completed: !r.completed } : r)),
-    )
+  const toggleStar = (id: number) => {
+    if (localTodos.some((t) => t.taskId === id)) {
+      setLocalTodos((prev) =>
+        prev.map((t) =>
+          t.taskId === id ? { ...t, isImportant: !t.isImportant } : t,
+        ),
+      )
+    } else {
+      setStarredTodoIds((prev) => flipSet(prev, id))
+    }
+  }
+
+  const toggleRoutine = (id: number) => {
+    if (localRoutines.some((r) => r.taskId === id)) {
+      setLocalRoutines((prev) =>
+        prev.map((r) =>
+          r.taskId === id ? { ...r, isCompleted: !r.isCompleted } : r,
+        ),
+      )
+    } else {
+      setCompletedRoutineIds((prev) => flipSet(prev, id))
+    }
+  }
 
   const toggleRepeatDay = (day: number) =>
     setRepeatDays((prev) =>
@@ -198,29 +248,39 @@ export function TodayTodoCard() {
 
   const addItem = () => {
     if (!inputText.trim()) return
+    const now = Date.now()
     if (inputTab === '루틴') {
-      setRoutines((prev) => [
+      setLocalRoutines((prev) => [
         ...prev,
         {
-          id: Date.now(),
-          text: inputText,
-          completed: false,
-          repeat: repeatType,
-          repeatDays: repeatType === '매주' ? repeatDays : undefined,
-          repeatDates: repeatType === '매월' ? repeatDates : undefined,
+          taskId: now,
+          taskType: 'HABIT',
+          title: inputText,
+          category: null,
+          memo: null,
+          isAllDay: false,
+          isCompleted: false,
+          isImportant: false,
+          isPublic: false,
+          repeatType: REPEAT_REVERSE_MAP[repeatType],
         },
       ])
       resetRoutineInput()
     } else {
-      setTodos((prev) => [
+      setLocalTodos((prev) => [
         ...prev,
         {
-          id: Date.now(),
-          text: inputText,
-          completed: false,
-          starred: isStarred,
-          date: selectedDate || undefined,
-          time: timeEnabled && selectedTime ? selectedTime : undefined,
+          taskId: now,
+          taskType: 'SCHEDULE',
+          title: inputText,
+          category: null,
+          memo: null,
+          isAllDay: false,
+          isCompleted: false,
+          isImportant: isStarred,
+          isPublic: false,
+          endDate: inputDate || undefined,
+          endTime: timeEnabled && inputTime ? inputTime : undefined,
         },
       ])
       setIsStarred(false)
@@ -230,10 +290,10 @@ export function TodayTodoCard() {
   }
 
   return (
-    <Card className="flex min-h-0 flex-1 flex-col gap-5 p-6 overflow-hidden">
+    <Card className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden p-6">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">할 일</h2>
+        <h2 className="text-xl font-bold">Plan</h2>
         <div className="flex rounded-full bg-gray-100 p-1">
           {(['todo', 'completed'] as MainTab[]).map((tab) => (
             <button
@@ -252,38 +312,46 @@ export function TodayTodoCard() {
         </div>
       </div>
 
-      {/* To do + 루틴 2열 — 내부만 스크롤 */}
+      {/* To do + 루틴 2열 */}
       <div className="flex min-h-0 flex-1 gap-6 overflow-y-auto">
+        {/* 할 일 */}
         <div className="flex flex-1 flex-col gap-4">
           <p className="font-semibold text-gray-700">To do</p>
+          {displayedTodos.length === 0 && (
+            <p className="text-sm text-gray-400">
+              {mainTab === 'todo'
+                ? '아직 등록된 할 일이 없습니다'
+                : '완료된 할 일이 없습니다'}
+            </p>
+          )}
           {displayedTodos.map((todo) => (
-            <div key={todo.id} className="flex items-center gap-3">
+            <div key={todo.taskId} className="flex items-center gap-3">
               <CheckButton
-                checked={todo.completed}
+                checked={todo.isCompleted}
                 color="#48CAD9"
-                onToggle={() => toggleTodo(todo.id)}
+                onToggle={() => toggleTodo(todo.taskId)}
               />
               <div className="flex flex-1 flex-col">
                 <span
                   className={`text-base ${
-                    todo.completed
+                    todo.isCompleted
                       ? 'text-gray-400 line-through'
                       : 'text-gray-800'
                   }`}
                 >
-                  {todo.text}
+                  {todo.title}
                 </span>
-                {todo.date && (
+                {todo.endDate && (
                   <span className="text-xs text-[#B286FD]">
-                    {formatDateBadge(todo.date, todo.time)}
+                    {formatDateBadge(todo.endDate, todo.endTime?.slice(0, 5))}
                   </span>
                 )}
               </div>
-              <button type="button" onClick={() => toggleStar(todo.id)}>
+              <button type="button" onClick={() => toggleStar(todo.taskId)}>
                 <Star
                   size={16}
                   className={
-                    todo.starred
+                    todo.isImportant
                       ? 'fill-[#B286FD] text-[#B286FD]'
                       : 'text-gray-200'
                   }
@@ -293,36 +361,42 @@ export function TodayTodoCard() {
           ))}
         </div>
 
-        {mainTab === 'todo' && <div className="w-px bg-gray-100" />}
+        <div className="w-px bg-gray-100" />
 
-        {mainTab === 'todo' && (
-          <div className="flex flex-1 flex-col gap-4">
-            <p className="font-semibold text-gray-700">루틴</p>
-            {routines.map((routine) => (
-              <div key={routine.id} className="flex items-center gap-3">
-                <CheckButton
-                  checked={routine.completed}
-                  color="#B2F042"
-                  onToggle={() => toggleRoutine(routine.id)}
-                />
-                <div className="flex flex-1 flex-col">
-                  <span
-                    className={`text-base ${
-                      routine.completed
-                        ? 'text-gray-400 line-through'
-                        : 'text-gray-800'
-                    }`}
-                  >
-                    {routine.text}
-                  </span>
-                  <span className="text-xs text-[#B2A042]">
-                    {formatRepeat(routine)}
-                  </span>
-                </div>
+        {/* 루틴 */}
+        <div className="flex flex-1 flex-col gap-4">
+          <p className="font-semibold text-gray-700">루틴</p>
+          {displayedRoutines.length === 0 && (
+            <p className="text-sm text-gray-400">
+              {mainTab === 'todo'
+                ? '아직 등록된 루틴이 없습니다'
+                : '완료한 루틴이 없습니다'}
+            </p>
+          )}
+          {displayedRoutines.map((routine) => (
+            <div key={routine.taskId} className="flex items-center gap-3">
+              <CheckButton
+                checked={routine.isCompleted}
+                color="#B2F042"
+                onToggle={() => toggleRoutine(routine.taskId)}
+              />
+              <div className="flex flex-1 flex-col">
+                <span
+                  className={`text-base ${
+                    routine.isCompleted
+                      ? 'text-gray-400 line-through'
+                      : 'text-gray-800'
+                  }`}
+                >
+                  {routine.title}
+                </span>
+                <span className="text-xs text-[#B2A042]">
+                  {formatRepeat(routine.repeatType)}
+                </span>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 입력 도크 */}
@@ -376,13 +450,9 @@ export function TodayTodoCard() {
             className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-300"
           />
 
-          {/* 날짜 뱃지 (할 일만) */}
           {inputTab === '할 일' && hasDateTime && (
             <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#F4ECFF] px-2.5 py-1 text-xs text-[#B286FD]">
-              {formatDateBadge(
-                selectedDate,
-                timeEnabled ? selectedTime : undefined,
-              )}
+              {formatDateBadge(inputDate, timeEnabled ? inputTime : undefined)}
               <button
                 type="button"
                 onClick={clearDateTime}
@@ -393,7 +463,6 @@ export function TodayTodoCard() {
             </span>
           )}
 
-          {/* 날짜/시간 Popover (할 일만) */}
           {inputTab === '할 일' && (
             <Popover>
               <PopoverTrigger
@@ -411,8 +480,8 @@ export function TodayTodoCard() {
                     <span className="shrink-0 text-sm text-gray-500">날짜</span>
                     <input
                       type="date"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
+                      value={inputDate}
+                      onChange={(e) => setInputDate(e.target.value)}
                       className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-[#B286FD]"
                     />
                   </div>
@@ -426,8 +495,8 @@ export function TodayTodoCard() {
                   {timeEnabled && (
                     <input
                       type="time"
-                      value={selectedTime}
-                      onChange={(e) => setSelectedTime(e.target.value)}
+                      value={inputTime}
+                      onChange={(e) => setInputTime(e.target.value)}
                       className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-[#B286FD]"
                     />
                   )}
@@ -448,28 +517,28 @@ export function TodayTodoCard() {
         {/* 루틴 반복 설정 */}
         {inputTab === '루틴' && (
           <div className="flex flex-col gap-3 rounded-xl bg-white px-4 py-3">
-            {/* 반복 타입 */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">반복</span>
               <div className="flex gap-1.5">
-                {(['매일', '매주', '매월'] as RepeatType[]).map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setRepeatType(type)}
-                    className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-                      repeatType === type
-                        ? 'bg-[#B286FD] text-white'
-                        : 'border border-gray-200 text-gray-500 hover:border-[#B286FD] hover:text-[#B286FD]'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
+                {(['매일', '매주', '매월'] as DisplayRepeatType[]).map(
+                  (type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setRepeatType(type)}
+                      className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                        repeatType === type
+                          ? 'bg-[#B286FD] text-white'
+                          : 'border border-gray-200 text-gray-500 hover:border-[#B286FD] hover:text-[#B286FD]'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ),
+                )}
               </div>
             </div>
 
-            {/* 매주: 요일 칩 */}
             {repeatType === '매주' && (
               <div className="flex gap-2">
                 {DAYS.map((day, i) => (
@@ -489,7 +558,6 @@ export function TodayTodoCard() {
               </div>
             )}
 
-            {/* 매월: 날짜 그리드 */}
             {repeatType === '매월' && (
               <div className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 31 }, (_, i) => i + 1).map((date) => (
