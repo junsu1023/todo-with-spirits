@@ -5,6 +5,7 @@ import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.LoginResponse
 import com.example.data.response.RoutineDetailResponse
+import com.example.data.response.SignUpResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
@@ -14,6 +15,7 @@ import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Routine
+import com.example.domain.model.SignUpResult
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskSummary
@@ -29,6 +31,12 @@ fun LoginResponse.toDomain(): LoginSession = LoginSession(
     accessToken = accessToken,
     refreshToken = refreshToken,
     tokenType = tokenType
+)
+
+fun SignUpResponse.toDomain(): SignUpResult = SignUpResult(
+    email = email,
+    nickname = nickname,
+    userId = userId
 )
 
 fun TaskDetailResponse.toDomain(): Task = Task(

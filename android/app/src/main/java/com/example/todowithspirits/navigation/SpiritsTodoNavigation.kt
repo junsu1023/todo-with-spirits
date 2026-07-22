@@ -80,7 +80,8 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
-                onBack = onBack
+                onBack = onBack,
+                onSignUpSuccess = onBack
             )
         }
 

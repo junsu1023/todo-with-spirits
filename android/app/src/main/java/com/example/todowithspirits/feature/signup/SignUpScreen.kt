@@ -1,5 +1,11 @@
 package com.example.todowithspirits.feature.signup
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,24 +31,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun SignUpScreen(
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    onSignUpClick: (email: String, password: String, nickname: String?) -> Unit = { _, _, _ -> }
+    onSignUpSuccess: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val fieldErrors by signUpViewModel.fieldErrors.collectAsStateWithLifecycle()
+    val isLoading by signUpViewModel.isLoading.collectAsStateWithLifecycle()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -52,6 +70,24 @@ fun SignUpScreen(
     val isPasswordBlank = password.isBlank()
     val isConfirmPasswordBlank = confirmPassword.isBlank()
     val isPasswordMismatch = !isConfirmPasswordBlank && password != confirmPassword
+
+    val emailError = if (showValidationErrors && isEmailBlank) {
+        stringResource(R.string.required_field_error)
+    } else {
+        fieldErrors["email"]
+    }
+
+    val passwordError = if (showValidationErrors && isPasswordBlank) {
+        stringResource(R.string.required_field_error)
+    } else {
+        fieldErrors["password"]
+    }
+
+    LaunchedEffect(signUpViewModel) {
+        signUpViewModel.errorMsg.collect { message ->
+            ToastUtil.show(context, message)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -126,8 +162,8 @@ fun SignUpScreen(
                     keyboardType = KeyboardType.Email
                 )
 
-                if (showValidationErrors && isEmailBlank) {
-                    FieldErrorText(stringResource(R.string.required_field_error))
+                if (emailError != null) {
+                    FieldErrorText(emailError)
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -147,8 +183,8 @@ fun SignUpScreen(
                     placeholder = stringResource(R.string.new_password_placeholder)
                 )
 
-                if (showValidationErrors && isPasswordBlank) {
-                    FieldErrorText(stringResource(R.string.required_field_error))
+                if (passwordError != null) {
+                    FieldErrorText(passwordError)
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -191,6 +227,10 @@ fun SignUpScreen(
                     placeholder = stringResource(R.string.nickname_optional_placeholder)
                 )
 
+                if (fieldErrors["nickname"] != null) {
+                    FieldErrorText(fieldErrors.getValue("nickname"))
+                }
+
                 Spacer(Modifier.height(6.dp))
 
                 Text(
@@ -207,12 +247,48 @@ fun SignUpScreen(
                         showValidationErrors = true
 
                         if (!isEmailBlank && !isPasswordBlank && !isConfirmPasswordBlank && !isPasswordMismatch) {
-                            onSignUpClick(email, password, nickname.ifBlank { null })
+                            signUpViewModel.signUp(
+                                email = email,
+                                password = password,
+                                nickname = nickname.ifBlank { null },
+                                onSuccess = {
+                                    ToastUtil.show(context, "회원가입이 완료되었습니다")
+                                    onSignUpSuccess()
+                                }
+                            )
                         }
                     }
                 )
 
                 Spacer(Modifier.height(40.dp))
+            }
+        }
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(SpiritTodoTheme.color.dimColor),
+                contentAlignment = Alignment.Center
+            ) {
+                val infiniteTransition = rememberInfiniteTransition(label = "loading")
+                val angle by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "angle"
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.loading_gray),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .graphicsLayer { rotationZ = angle }
+                )
             }
         }
     }

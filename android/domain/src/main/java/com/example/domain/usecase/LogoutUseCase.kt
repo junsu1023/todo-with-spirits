@@ -1,10 +1,10 @@
 package com.example.domain.usecase
 
-import com.example.domain.repository.LoginRepository
+import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class LogoutUseCase @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(): Result<Unit> = loginRepository.logout()
+    suspend operator fun invoke(): Result<Unit> = authRepository.logout()
 }

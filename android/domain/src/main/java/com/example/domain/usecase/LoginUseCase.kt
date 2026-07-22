@@ -1,12 +1,12 @@
 package com.example.domain.usecase
 
 import com.example.domain.model.LoginSession
-import com.example.domain.repository.LoginRepository
+import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(email: String, password: String): Result<LoginSession> =
-        loginRepository.login(email, password)
+        authRepository.login(email, password)
 }
