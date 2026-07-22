@@ -52,7 +52,6 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -272,12 +271,11 @@ fun PlanListItem(
                     Column(modifier = Modifier.padding(start = 34.dp)) {
                         val dateTimeText = buildString {
                             item.endDate?.let { date ->
-                                if (item.isAllDay) {
+                                if (item.isAllDay || item.endTime == null) {
                                     append(date.format(allDayDateFormatter))
                                     append(" 하루 종일")
                                 } else {
-                                    val time = item.endTime ?: LocalTime.of(0, 0)
-                                    append(LocalDateTime.of(date, time).format(dateFormatter))
+                                    append(LocalDateTime.of(date, item.endTime).format(dateFormatter))
                                 }
                             }
                         }
