@@ -15,3 +15,25 @@ export const createRoutine = (body: CreateRoutineRequest) =>
 	apiClient
 		.post('api/task/routine', { json: body })
 		.json<ApiResponse<RoutineDetail>>()
+
+export const completeTask = ({
+	taskId,
+	date,
+}: {
+	taskId: number
+	date?: string
+}) =>
+	apiClient
+		.post(`api/task/${taskId}/complete`, { json: date ? { date } : {} })
+		.json<ApiResponse<null>>()
+
+export const uncompleteTask = ({
+	taskId,
+	date,
+}: {
+	taskId: number
+	date?: string
+}) =>
+	apiClient
+		.delete(`api/task/${taskId}/complete`, { json: date ? { date } : {} })
+		.json<ApiResponse<null>>()

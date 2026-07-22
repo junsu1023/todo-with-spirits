@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
 import { useState } from 'react'
 import { getRoutineList, getTaskSchedule } from '@/entity/task/api/query'
 import type { RepeatType } from '@/entity/task/model/type'
+import { completeTask, uncompleteTask } from '@/feature/task/api/mutate'
 import { TaskInputDock } from '@/feature/task/ui/TaskInputDock'
 import { Card } from '@/shared/ui/card'
 
@@ -83,61 +84,41 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 		queryFn: () => getRoutineList({ from: dateStr, to: dateStr }),
 	})
 
+	const queryClient = useQueryClient()
 	const [mainTab, setMainTab] = useState<MainTab>('todo')
 
-	// toggle 오버레이 (API 아이템 XOR)
-	const [completedTodoIds, setCompletedTodoIds] = useState<Set<number>>(
-		new Set(),
-	)
-	const [starredTodoIds, setStarredTodoIds] = useState<Set<number>>(new Set())
-	const [completedRoutineIds, setCompletedRoutineIds] = useState<Set<number>>(
-		new Set(),
-	)
-
-	// API 결과 직접 파생
-	const apiTodos =
-		todoList?.result === 'success' ? todoList.detail.items : []
-	const allRoutines =
+	const apiTodos = todoList?.result === 'success' ? todoList.detail.items : []
+	const apiRoutines =
 		routineList?.result === 'success' ? routineList.detail.items : []
 
-	// 오버레이 적용
-	const todosWithOverlay = apiTodos.map((t) => ({
-		...t,
-		isCompleted: completedTodoIds.has(t.taskId)
-			? !t.isCompleted
-			: t.isCompleted,
-		isImportant: starredTodoIds.has(t.taskId) ? !t.isImportant : t.isImportant,
-	}))
-	const routinesWithOverlay = allRoutines.map((r) => ({
-		...r,
-		isCompleted: completedRoutineIds.has(r.taskId)
-			? !r.isCompleted
-			: r.isCompleted,
-	}))
-
 	const displayedTodos =
-		mainTab === 'todo'
-			? todosWithOverlay
-			: todosWithOverlay.filter((t) => t.isCompleted)
+		mainTab === 'todo' ? apiTodos : apiTodos.filter((t) => t.isCompleted)
 	const displayedRoutines =
 		mainTab === 'todo'
-			? routinesWithOverlay
-			: routinesWithOverlay.filter((r) => r.isCompleted)
+			? apiRoutines
+			: apiRoutines.filter((r) => r.isCompleted)
 
-	const flipSet = (prev: Set<number>, id: number): Set<number> => {
-		const next = new Set(prev)
-		next.has(id) ? next.delete(id) : next.add(id)
-		return next
-	}
+	const invalidateSchedule = () =>
+		queryClient.invalidateQueries({ queryKey: ['task', 'schedule', dateStr] })
+	const invalidateRoutine = () =>
+		queryClient.invalidateQueries({ queryKey: ['task', 'routine', dateStr] })
 
-	const toggleTodo = (id: number) =>
-		setCompletedTodoIds((prev) => flipSet(prev, id))
-
-	const toggleStar = (id: number) =>
-		setStarredTodoIds((prev) => flipSet(prev, id))
-
-	const toggleRoutine = (id: number) =>
-		setCompletedRoutineIds((prev) => flipSet(prev, id))
+	const { mutate: completeTodo } = useMutation({
+		mutationFn: completeTask,
+		onSuccess: (res) => { if (res.result === 'success') invalidateSchedule() },
+	})
+	const { mutate: uncompleteTodo } = useMutation({
+		mutationFn: uncompleteTask,
+		onSuccess: (res) => { if (res.result === 'success') invalidateSchedule() },
+	})
+	const { mutate: completeRoutine } = useMutation({
+		mutationFn: completeTask,
+		onSuccess: (res) => { if (res.result === 'success') invalidateRoutine() },
+	})
+	const { mutate: uncompleteRoutine } = useMutation({
+		mutationFn: uncompleteTask,
+		onSuccess: (res) => { if (res.result === 'success') invalidateRoutine() },
+	})
 
 	return (
 		<Card className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden p-6">
@@ -179,7 +160,11 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 							<CheckButton
 								checked={todo.isCompleted}
 								color="#48CAD9"
-								onToggle={() => toggleTodo(todo.taskId)}
+								onToggle={() =>
+									todo.isCompleted
+										? uncompleteTodo({ taskId: todo.taskId })
+										: completeTodo({ taskId: todo.taskId })
+								}
 							/>
 							<div className="flex flex-1 flex-col">
 								<span
@@ -197,16 +182,14 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 									</span>
 								)}
 							</div>
-							<button type="button" onClick={() => toggleStar(todo.taskId)}>
-								<Star
-									size={16}
-									className={
-										todo.isImportant
-											? 'fill-[#B286FD] text-[#B286FD]'
-											: 'text-gray-200'
-									}
-								/>
-							</button>
+							<Star
+								size={16}
+								className={
+									todo.isImportant
+										? 'fill-[#B286FD] text-[#B286FD]'
+										: 'text-gray-200'
+								}
+							/>
 						</div>
 					))}
 				</div>
@@ -228,7 +211,11 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 							<CheckButton
 								checked={routine.isCompleted}
 								color="#B2F042"
-								onToggle={() => toggleRoutine(routine.taskId)}
+								onToggle={() =>
+									routine.isCompleted
+										? uncompleteRoutine({ taskId: routine.taskId, date: dateStr })
+										: completeRoutine({ taskId: routine.taskId, date: dateStr })
+								}
 							/>
 							<div className="flex flex-1 flex-col">
 								<span
