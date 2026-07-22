@@ -2,13 +2,12 @@ package com.example.data.di.repository
 
 import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.datasource.CheckSystemHealthRemoteDataSource
-import com.example.data.datasource.LoginRemoteDataSource
 import com.example.data.datasource.TaskRemoteDataSource
+import com.example.data.repository.AuthRepositoryImpl
 import com.example.data.repository.CheckSystemHealthRepositoryImpl
-import com.example.data.repository.LoginRepositoryImpl
 import com.example.data.repository.TaskRepositoryImpl
+import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.CheckSystemHealthRepository
-import com.example.domain.repository.LoginRepository
 import com.example.domain.repository.TaskRepository
 import dagger.Module
 import dagger.Provides
@@ -34,7 +33,6 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        loginRemoteDataSource: LoginRemoteDataSource,
         authRemoteDataSource: AuthRemoteDataSource
-    ): LoginRepository = LoginRepositoryImpl(loginRemoteDataSource, authRemoteDataSource)
+    ): AuthRepository = AuthRepositoryImpl(authRemoteDataSource)
 }
