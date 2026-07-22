@@ -1,5 +1,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '@/shared/routes'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 const WEEKDAYS_KO = [
@@ -60,6 +62,8 @@ export function TodayDateHeader({
 	const selectedKey = toKey(selectedDate)
 	const weekDates = getWeekDates(selectedDate)
 
+	const navigate = useNavigate()
+
 	return (
 		<div className="flex flex-col gap-3">
 			{/* 헤더 행 */}
@@ -81,6 +85,7 @@ export function TodayDateHeader({
 				<button
 					type="button"
 					className="text-sm text-gray-400 hover:text-[#B286FD] transition-colors"
+					onClick={() => navigate(ROUTES.PLAN)}
 				>
 					플랜 전체 보기
 				</button>

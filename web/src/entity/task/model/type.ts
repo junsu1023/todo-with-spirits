@@ -1,4 +1,4 @@
-export type TaskType = 'SCHEDULE' | 'HABIT'
+export type TaskType = 'SCHEDULE' | 'HABIT' | 'ROUTINE'
 
 export type RepeatType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
 
