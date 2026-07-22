@@ -59,8 +59,9 @@ fun SpiritsTodoNavigation(
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
-                onSplashFinished = {
-                    navController.navigate(Screen.Login.route) {
+                onSplashFinished = { isLoggedIn ->
+                    val destination = if (isLoggedIn) Screen.Today.route else Screen.Login.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }

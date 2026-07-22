@@ -1,6 +1,7 @@
 package com.example.data.repository
 
 import com.example.core.auth.TokenHolder
+import com.example.core.auth.TokenStorage
 import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.error.ApiException
 import com.example.data.mapper.toDomain
@@ -11,23 +12,40 @@ import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val authRemoteDataSource: AuthRemoteDataSource
+    private val authRemoteDataSource: AuthRemoteDataSource,
+    private val tokenStorage: TokenStorage
 ) : AuthRepository {
     override suspend fun login(email: String, password: String): Result<LoginSession> {
         return authRemoteDataSource.login(email, password)
             .map { it.toDomain() }
-            .onSuccess { session -> TokenHolder.accessToken = session.accessToken }
+            .onSuccess { session -> persistSession(session) }
     }
 
     override suspend fun logout(): Result<Unit> {
         return authRemoteDataSource.logout()
-            .onSuccess { TokenHolder.accessToken = null }
+            .onSuccess { clearSession() }
     }
 
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> {
         return authRemoteDataSource.signUp(email, password, nickname)
             .mapCatching { it.toDomain() }
             .recoverFieldValidationErrors()
+    }
+
+    override suspend fun restoreSession(): Boolean {
+        val accessToken = tokenStorage.getAccessToken() ?: return false
+        TokenHolder.accessToken = accessToken
+        return true
+    }
+
+    private fun persistSession(session: LoginSession) {
+        TokenHolder.accessToken = session.accessToken
+        tokenStorage.saveTokens(session.accessToken, session.refreshToken)
+    }
+
+    private fun clearSession() {
+        TokenHolder.accessToken = null
+        tokenStorage.clear()
     }
 
     private fun <T> Result<T>.recoverFieldValidationErrors(): Result<T> {
