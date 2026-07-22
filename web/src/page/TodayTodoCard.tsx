@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Check, Clock, Star, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { getRoutineList, getTaskSchedule } from '@/entity/task/api/query'
 import type { RepeatType, TaskItem } from '@/entity/task/model/type'
 import { Card } from '@/shared/ui/card'
@@ -126,15 +126,6 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
   // add API 연동 전 로컬 임시 아이템
   const [localTodos, setLocalTodos] = useState<TaskItem[]>([])
   const [localRoutines, setLocalRoutines] = useState<TaskItem[]>([])
-
-  // 날짜 변경 시 로컬 상태 초기화
-  useEffect(() => {
-    setCompletedTodoIds(new Set())
-    setStarredTodoIds(new Set())
-    setCompletedRoutineIds(new Set())
-    setLocalTodos([])
-    setLocalRoutines([])
-  }, [dateStr])
 
   // API 결과 직접 파생
   const apiTodos: TaskItem[] =

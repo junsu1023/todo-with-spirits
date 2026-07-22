@@ -4,8 +4,16 @@ import { TodayAchievementCard } from './TodayAchievementCard'
 import { TodayDateHeader } from './TodayDateHeader'
 import { TodayTodoCard } from './TodayTodoCard'
 
+function toDateString(date: Date) {
+	const y = date.getFullYear()
+	const m = String(date.getMonth() + 1).padStart(2, '0')
+	const d = String(date.getDate()).padStart(2, '0')
+	return `${y}-${m}-${d}`
+}
+
 export function TodayPage() {
 	const [selectedDate, setSelectedDate] = useState(() => new Date())
+	const dateStr = toDateString(selectedDate)
 
 	return (
 		<main className="flex h-screen flex-col overflow-hidden p-6">
@@ -40,7 +48,7 @@ export function TodayPage() {
 						selectedDate={selectedDate}
 						onDateChange={setSelectedDate}
 					/>
-					<TodayTodoCard selectedDate={selectedDate} />
+					<TodayTodoCard key={dateStr} selectedDate={selectedDate} />
 				</div>
 			</div>
 		</main>
