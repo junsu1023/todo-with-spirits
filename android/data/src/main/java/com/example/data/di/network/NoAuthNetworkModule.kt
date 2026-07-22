@@ -2,6 +2,7 @@ package com.example.data.di.network
 
 import com.example.core.qualifier.NoAuth
 import com.example.data.api.HealthApi
+import com.example.data.api.ReissueApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,4 +48,10 @@ object NoAuthNetworkModule {
     fun provideHealthApi(
         @NoAuth retrofit: Retrofit
     ): HealthApi = retrofit.create(HealthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideReissueApi(
+        @NoAuth retrofit: Retrofit
+    ): ReissueApi = retrofit.create(ReissueApi::class.java)
 }
