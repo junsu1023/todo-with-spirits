@@ -4,7 +4,6 @@ import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.mapper.toDomain
 import com.example.data.mapper.toRequest
 import com.example.data.mapper.toUpdateRequest
-import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
@@ -34,12 +33,12 @@ class TaskRepositoryImpl @Inject constructor(
         return taskRemoteDataSource.createRoutine(routine.toRequest()).mapCatching { it.toDomain() }
     }
 
-    override suspend fun completeTask(taskId: Long, date: LocalDate?): Result<Unit> {
-        return taskRemoteDataSource.completeTask(taskId, CompleteTaskRequest(date = date?.toString()))
+    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<Unit> {
+        return taskRemoteDataSource.completeTask(taskId, date.toString())
     }
 
-    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate?): Result<Unit> {
-        return taskRemoteDataSource.cancelTaskCompletion(taskId, CompleteTaskRequest(date = date?.toString()))
+    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit> {
+        return taskRemoteDataSource.cancelTaskCompletion(taskId, date.toString())
     }
 
     override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> {

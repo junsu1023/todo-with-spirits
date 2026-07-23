@@ -117,7 +117,7 @@ class PlanViewModel @Inject constructor(
         }
     }
 
-    fun completeTask(taskId: Long, date: LocalDate?) {
+    fun completeTask(taskId: Long, date: LocalDate) {
         viewModelScope.launchWithLoading {
             completeTaskUseCase(taskId, date)
                 .onSuccess {
@@ -129,7 +129,7 @@ class PlanViewModel @Inject constructor(
         }
     }
 
-    fun cancelTaskCompletion(taskId: Long, date: LocalDate?) {
+    fun cancelTaskCompletion(taskId: Long, date: LocalDate) {
         viewModelScope.launchWithLoading {
             cancelTaskCompletionUseCase(taskId, date)
                 .onSuccess {

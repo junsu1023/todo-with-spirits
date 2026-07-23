@@ -7,6 +7,6 @@ import javax.inject.Inject
 class CompleteTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
-    suspend operator fun invoke(taskId: Long, date: LocalDate? = null): Result<Unit> =
+    suspend operator fun invoke(taskId: Long, date: LocalDate): Result<Unit> =
         taskRepository.completeTask(taskId, date)
 }
