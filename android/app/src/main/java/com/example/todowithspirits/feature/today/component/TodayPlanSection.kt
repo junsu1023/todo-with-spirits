@@ -1,0 +1,384 @@
+package com.example.todowithspirits.feature.today.component
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.todowithspirits.R
+import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.plan.model.PlanType
+import com.example.todowithspirits.feature.today.state.RoutineItem
+import com.example.todowithspirits.feature.today.state.TodoItem
+import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+@Composable
+fun TodayPlanSection(
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    todos: List<TodoItem>,
+    routines: List<RoutineItem>,
+    weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
+    onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onDeleteTask: (taskId: Long) -> Unit,
+    onEditTask: (taskId: Long) -> Unit,
+    onPostponeTodo: (taskId: Long) -> Unit
+) {
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
+    var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
+    var selectedRoutine by remember { mutableStateOf<RoutineItem?>(null) }
+    var isWeekExpanded by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Spacer(Modifier.height(26.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = selectedDate.format(dateFormatter),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = SpiritTodoTheme.color.onSurfaceColor5
+                )
+
+                Spacer(Modifier.width(2.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.todo_arrow1),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .noRippleClickable { isWeekExpanded = !isWeekExpanded }
+                        .rotate(if(isWeekExpanded) 180f else 0f)
+                )
+            }
+
+            Text(
+                text = stringResource(R.string.see_all_plan),
+                fontSize = 12.sp,
+                color = SpiritTodoTheme.color.systemGrey
+            )
+        }
+
+        AnimatedVisibility(
+            visible = isWeekExpanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                Spacer(Modifier.height(12.dp))
+
+                WeeklyCalendarStrip(
+                    selectedDate = selectedDate,
+                    onDateSelected = onDateSelected,
+                    weekEvents = weekEvents,
+                    todoColor = SpiritTodoTheme.color.surfaceColor8,
+                    routineColor = SpiritTodoTheme.color.surfaceColor9
+                )
+            }
+        }
+
+        if(todos.isEmpty() && routines.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.todo_empty),
+                    contentDescription = null
+                )
+
+                Text(
+                    text = stringResource(R.string.empty_plans),
+                    fontSize = 14.sp,
+                    color = SpiritTodoTheme.color.systemGrey
+                )
+            }
+        } else {
+            Spacer(Modifier.height(19.dp))
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 2.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (todos.isNotEmpty()) {
+                    SectionHeader(title = stringResource(R.string.todo))
+
+                    Spacer(Modifier.height(18.dp))
+
+                    todos.forEachIndexed { index, item ->
+                        TodayListItem(
+                            title = item.title,
+                            isDone = item.isDone,
+                            isImportant = item.isImportant,
+                            onClick = { selectedTodo = item },
+                            onCheckClick = {
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
+                            }
+                        )
+
+                        if (index != todos.lastIndex) Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
+                if (todos.isNotEmpty() && routines.isNotEmpty()) {
+                    Spacer(Modifier.height(24.dp))
+
+                    HorizontalDivider(
+                        color = SpiritTodoTheme.color.surfaceColor7,
+                        thickness = 1.dp
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+                }
+
+                if (routines.isNotEmpty()) {
+                    SectionHeader(title = stringResource(R.string.routine))
+
+                    Spacer(Modifier.height(18.dp))
+
+                    routines.forEachIndexed { index, item ->
+                        TodayListItem(
+                            title = item.title,
+                            isDone = item.isDone,
+                            isTodo = false,
+                            onClick = { selectedRoutine = item },
+                            onCheckClick = {
+                                if (item.isDone) {
+                                    onCancelCompleteTask(item.taskId, selectedDate)
+                                } else {
+                                    onCompleteTask(item.taskId, selectedDate)
+                                }
+                            }
+                        )
+
+                        if (index != routines.lastIndex) Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+
+                if (todos.isNotEmpty() || routines.isNotEmpty()) {
+                    Spacer(Modifier.height(24.dp))
+                }
+            }
+        }
+    }
+
+    selectedTodo?.let { todo ->
+        TodoDetailBottomSheet(
+            title = todo.title,
+            isImportant = todo.isImportant,
+            dueDate = todo.dueDate,
+            dueTime = todo.dueTime,
+            memo = todo.memo,
+            onDismiss = { selectedTodo = null },
+            onDelete = {
+                onDeleteTask(todo.taskId)
+                selectedTodo = null
+            },
+            onPostpone = {
+                onPostponeTodo(todo.taskId)
+                selectedTodo = null
+            },
+            onEdit = {
+                onEditTask(todo.taskId)
+                selectedTodo = null
+            }
+        )
+    }
+
+    selectedRoutine?.let { routine ->
+        TodoDetailBottomSheet(
+            title = routine.title,
+            isImportant = false,
+            dueDate = routine.dueDate,
+            dueTime = routine.dueTime,
+            memo = routine.memo,
+            onDismiss = { selectedRoutine = null },
+            onDelete = {
+                onDeleteTask(routine.taskId)
+                selectedRoutine = null
+            },
+            onPostpone = { selectedRoutine = null },
+            onEdit = {
+                onEditTask(routine.taskId)
+                selectedRoutine = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun WeeklyCalendarStrip(
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    weekEvents: Map<LocalDate, List<PlanType>>,
+    todoColor: Color,
+    routineColor: Color
+) {
+    val weekStart = selectedDate.minusDays((selectedDate.dayOfWeek.value % 7).toLong())
+    val dayLabels = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        (0..6).forEach { offset ->
+            val date = weekStart.plusDays(offset.toLong())
+            val isSelected = date == selectedDate
+            val eventTypes = weekEvents[date].orEmpty()
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .border(
+                        width = 1.dp,
+                        color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.surfaceColor4,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .noRippleClickable { onDateSelected(date) }
+                    .padding(vertical = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = date.dayOfMonth.toString(),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor5
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = dayLabels[offset],
+                    fontSize = 10.sp,
+                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor5
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    eventTypes.take(2).forEach { type ->
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(
+                                    color = if(type == PlanType.TODO) todoColor else routineColor,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+
+                    if (eventTypes.isEmpty()) {
+                        Spacer(Modifier.size(6.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = SpiritTodoTheme.color.onSurfaceColor5
+    )
+}
+
+@Composable
+private fun TodayListItem(
+    title: String,
+    isDone: Boolean,
+    isTodo: Boolean = true,
+    isImportant: Boolean = false,
+    onClick: () -> Unit = {},
+    onCheckClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .noRippleClickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = when {
+                isDone && isTodo -> painterResource(R.drawable.todo_icon_check_pp)
+                isDone ->painterResource(R.drawable.todo_icon_check_gn)
+                else -> painterResource(R.drawable.todo_icon_check_bl)
+            },
+            contentDescription = null,
+            modifier = Modifier.noRippleClickable { onCheckClick() }
+        )
+
+        Spacer(Modifier.width(10.dp))
+
+        Text(
+            text = title,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = SpiritTodoTheme.color.onSurfaceColor5,
+            textDecoration = if(isDone) TextDecoration.LineThrough else TextDecoration.None
+        )
+
+        if (isImportant) {
+            Spacer(Modifier.width(4.dp))
+
+            Image(
+                painter = painterResource(R.drawable.todo_important),
+                contentDescription = null,
+                modifier = Modifier.size(14.dp)
+            )
+        }
+    }
+}

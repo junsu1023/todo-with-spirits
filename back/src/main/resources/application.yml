@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/local_db}
+    username: ${DB_USERNAME:username}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 3
+  jpa:
+    hibernate:
+      ddl-auto: update # DB table auto update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+jwt:
+  secret: ${JWT_SECRET:jwt_secret} # 36byte base64 encoded data
+  access-token-expiration: 3600000      # 1hour (ms)
+  refresh-token-expiration: 604800000   # 7days (ms)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: always

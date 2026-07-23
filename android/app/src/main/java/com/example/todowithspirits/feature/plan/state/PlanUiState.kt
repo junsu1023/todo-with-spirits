@@ -1,0 +1,25 @@
+package com.example.todowithspirits.feature.plan.state
+
+import androidx.compose.runtime.Immutable
+import com.example.domain.model.PlanSortOption
+import com.example.todowithspirits.feature.plan.model.PlanItemData
+import com.example.todowithspirits.feature.plan.model.PlanType
+import java.time.LocalDate
+import java.time.YearMonth
+
+@Immutable
+data class PlanUiState(
+    val selectedTab: String = "전체",
+    val isHidden: Boolean = false,
+    val selectedDate: LocalDate = LocalDate.now(),
+    val calendarMonth: YearMonth = YearMonth.now(),
+    val calendarEvents: Map<LocalDate, DayPlanEvents> = emptyMap(),
+    val sortOption: PlanSortOption = PlanSortOption.fromDisplayName("마감 임박 순"),
+    val plans: List<PlanItemData> = emptyList()
+)
+
+@Immutable
+data class DayPlanEvents(
+    val types: List<PlanType> = emptyList(),
+    val importantCount: Int = 0
+)
