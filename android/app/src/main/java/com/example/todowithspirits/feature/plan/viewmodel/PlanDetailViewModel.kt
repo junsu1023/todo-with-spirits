@@ -61,7 +61,7 @@ private fun Task.toPlanItemData(): PlanItemData = PlanItemData(
     type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
-    endDate = endDate,
+    endDate = if(taskType == TaskType.ROUTINE.type) completedAt?.toLocalDate() else endDate,
     endTime = endTime,
     isAllDay = isAllDay,
     memo = memo,
