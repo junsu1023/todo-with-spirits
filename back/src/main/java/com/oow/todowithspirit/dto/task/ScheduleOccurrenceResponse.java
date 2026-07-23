@@ -22,12 +22,4 @@ public class ScheduleOccurrenceResponse extends TaskOccurrenceResponse {
         this.endDate = task.getEndDate();
         this.endTime = task.getEndTime();
     }
-
-    // 오버로딩: 명시적 날짜 지정이 필요한 경우 대비
-    public ScheduleOccurrenceResponse(Task task, LocalDate occurrenceDate) {
-        super(task, occurrenceDate, task.isCompleted(), task.getCompletedAt());
-        this.isAllDay = task.isAllDay();
-        this.endDate = task.getEndDate();
-        this.endTime = task.getEndTime();
-    }
 }

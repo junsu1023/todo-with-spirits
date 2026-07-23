@@ -36,10 +36,13 @@ public class TaskController {
     // ==============================================
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<ApiResponse<RoutineCreateResponse>> getTask(
+    public ResponseEntity<ApiResponse<TaskOccurrenceResponse>> getTask(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long taskId) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getTaskDetail(userId, taskId)));
+            @PathVariable Long taskId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        LocalDate targetDate = (date != null) ? date : LocalDate.now();
+        return ResponseEntity.ok(ApiResponse.success(taskService.getTaskDetail(userId, taskId, targetDate)));
     }
 
     // ==============================================

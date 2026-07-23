@@ -259,10 +259,53 @@ public class TaskService {
     // =========================================================
 
     @Transactional(readOnly = true)
-    public RoutineCreateResponse getTaskDetail(Long userId, Long taskId) {
+    public TaskOccurrenceResponse getTaskDetail(Long userId, Long taskId, LocalDate targetDate) {
+        // Task 존재 및 권한 확인
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
-        return RoutineCreateResponse.from(task);
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+
+        // SCHEDULE 처리
+        if (task.getTaskType() == TaskType.SCHEDULE) {
+            return new ScheduleOccurrenceResponse(task);
+        }
+
+        // ROUTINE(루틴) 처리
+        if (!isOccurrenceDate(task, targetDate)) {
+            return null;
+        }
+
+        // 해당 날짜의 완료 기록 조회
+        RoutineCompletion completion = routineCompletionRepository
+                .findByTaskIdAndCompletionDate(taskId, targetDate)
+                .orElse(null);
+
+        return new RoutineOccurrenceResponse(task, targetDate, completion);
+    }
+
+    /**
+     * 단 하루가 루틴 수행일인지 판단
+     */
+    private boolean isOccurrenceDate(Task task, LocalDate targetDate) {
+        // 기간 체크
+        if (targetDate.isBefore(task.getStartDate())) return false;
+        if (task.getRepeatEndDate() != null && targetDate.isAfter(task.getRepeatEndDate())) return false;
+
+        // 반복 주기 및 요일/일자 조건 검증
+        boolean isBaseMatch = switch (task.getRepeatType()) {
+            case DAILY -> true;
+            case WEEKLY -> task.getRepeatDaysOfWeek() != null && task.getRepeatDaysOfWeek().contains(targetDate.getDayOfWeek());
+            case MONTHLY -> task.getRepeatDaysOfMonth() != null && task.getRepeatDaysOfMonth().contains(targetDate.getDayOfMonth());
+            default -> false;
+        };
+
+        if (!isBaseMatch) return false;
+
+        // 공휴일 제외 옵션이 켜져 있을 때 단건 DB 조회
+        if (task.isExcludeHoliday()) {
+            return !holidayRepository.existsByHolidayDate(targetDate);
+        }
+
+        return true;
     }
 
     // =========================================================
