@@ -8,6 +8,7 @@
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
 [Rr]ecordings/
+.utmp/
 
 # Unity generated project files
 *.csproj
