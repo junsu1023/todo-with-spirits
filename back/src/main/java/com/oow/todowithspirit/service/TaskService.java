@@ -293,8 +293,10 @@ public class TaskService {
         // 반복 주기 및 요일/일자 조건 검증
         boolean isBaseMatch = switch (task.getRepeatType()) {
             case DAILY -> true;
-            case WEEKLY -> task.getRepeatDaysOfWeek() != null && task.getRepeatDaysOfWeek().contains(targetDate.getDayOfWeek());
-            case MONTHLY -> task.getRepeatDaysOfMonth() != null && task.getRepeatDaysOfMonth().contains(targetDate.getDayOfMonth());
+            case WEEKLY ->
+                    task.getRepeatDaysOfWeek() != null && task.getRepeatDaysOfWeek().contains(targetDate.getDayOfWeek());
+            case MONTHLY ->
+                    task.getRepeatDaysOfMonth() != null && task.getRepeatDaysOfMonth().contains(targetDate.getDayOfMonth());
             default -> false;
         };
 
@@ -313,12 +315,13 @@ public class TaskService {
     // =========================================================
 
     @Transactional
-    public void completeTask(Long userId, Long taskId, LocalDate date) {
+    public void completeTask(Long userId, Long taskId, LocalDate completionDate) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+
+        validateTaskDate(task, completionDate);
 
         if (task.getTaskType() == TaskType.ROUTINE) {
-            LocalDate completionDate = date != null ? date : LocalDate.now();
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
                 throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Routine already completed on " + completionDate);
             }
@@ -329,18 +332,43 @@ public class TaskService {
     }
 
     @Transactional
-    public void undoCompleteTask(Long userId, Long taskId, LocalDate date) {
+    public void undoCompleteTask(Long userId, Long taskId, LocalDate completionDate) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
         if (task.getTaskType() == TaskType.ROUTINE) {
-            LocalDate completionDate = date != null ? date : LocalDate.now();
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
             routineCompletionRepository.delete(completion);
         } else {
             task.undoCompleteTask();
+        }
+    }
+
+    /**
+     * Task 타입별 날짜 정합성 검증
+     */
+    private void validateTaskDate(Task task, LocalDate targetDate) {
+        if (task.getTaskType() == TaskType.SCHEDULE) {
+            // targetDate가 시작일 - 종료일 기간 내에 포함되는지 확인
+            LocalDate startDate = task.getStartDate();
+            LocalDate endDate = (task.getEndDate() != null) ? task.getEndDate() : startDate;
+
+            if (targetDate.isBefore(startDate) || targetDate.isAfter(endDate)) {
+                throw new ApiException(
+                        ErrorCode.INVALID_PARAMETER,
+                        String.format("Invalid schedule date. Target date (%s) is out of schedule range (%s ~ %s)", targetDate, startDate, endDate)
+                );
+            }
+        } else if (task.getTaskType() == TaskType.ROUTINE) {
+            // targetDate가 실제로 루틴이 수행되는 날짜인지 검증
+            if (!isOccurrenceDate(task, targetDate)) {
+                throw new ApiException(
+                        ErrorCode.INVALID_PARAMETER,
+                        String.format("Invalid routine date. %s is not an occurrence date for this routine.", targetDate)
+                );
+            }
         }
     }
 

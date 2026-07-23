@@ -72,7 +72,7 @@ public class TaskController {
     public ResponseEntity<ApiResponse<Void>> completeRoutine(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         taskService.completeTask(userId, taskId, date);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -81,7 +81,7 @@ public class TaskController {
     public ResponseEntity<ApiResponse<Void>> inCompleteRoutine(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         taskService.undoCompleteTask(userId, taskId, date);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
