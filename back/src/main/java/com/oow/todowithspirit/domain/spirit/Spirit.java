@@ -63,8 +63,8 @@ public class Spirit {
         this.exp += amount;
         switch (type) {
             case FOCUS -> this.focusExp += amount;
-            case VITALITY -> this.energyExp += amount;
-            case PERSISTENCE -> this.consistencyExp += amount;
+            case ENERGY -> this.energyExp += amount;
+            case CONSISTENCY -> this.consistencyExp += amount;
             case CREATIVITY -> this.creativityExp += amount;
         }
         // 예시 만렙 경험치가 100일 때 진화 시스템 로직

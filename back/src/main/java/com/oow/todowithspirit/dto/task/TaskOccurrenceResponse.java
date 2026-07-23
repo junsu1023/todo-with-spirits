@@ -57,7 +57,7 @@ public abstract class TaskOccurrenceResponse {
         this.notificationMinutes = task.getNotificationMinutes();
         this.notificationAt = task.getNotificationAt();
         this.growthValue = task.getGrowthValue();
-        this.growthType = task.getGrowthType() != null ? task.getGrowthType().name() : null;
+        this.growthType = task.getGrowthType().name();
         this.isCompleted = isCompleted;
         this.completedAt = completedAt;
         this.createdAt = task.getCreatedAt();

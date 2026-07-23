@@ -122,9 +122,7 @@ public class Task extends BaseTimeEntity {
         task.taskType = TaskType.SCHEDULE;
         task.title = title;
         task.memo = memo;
-        CategoryType resolvedCategory = category != null ? category : CategoryType.NONE;
-        task.category = resolvedCategory;
-        task.growthType = resolveGrowthTypeByCategory(resolvedCategory);
+        task.applyCategoryAndGrowthType(category);
         task.startDate = date;
         task.startTime = null;
         task.endDate = date;
@@ -147,8 +145,7 @@ public class Task extends BaseTimeEntity {
         task.taskType = TaskType.ROUTINE;
         task.title = title;
         task.memo = memo;
-        task.category = category != null ? category : CategoryType.NONE;
-        task.growthType = null;
+        task.applyCategoryAndGrowthType(category);
         task.startDate = LocalDate.now();
         task.repeatType = repeatType;
         task.repeatEndDate = repeatEndDate;
@@ -166,7 +163,7 @@ public class Task extends BaseTimeEntity {
                               Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
                               Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
         this.title = title;
-        this.category = category != null ? category : this.category;
+        applyCategoryAndGrowthType(category);
         this.memo = memo;
         this.repeatType = repeatType;
         this.repeatEndDate = repeatEndDate;
@@ -184,7 +181,7 @@ public class Task extends BaseTimeEntity {
         LocalDate date = endDateTime.toLocalDate();
         this.title = title;
         this.memo = memo;
-        this.category = category != null ? category : this.category;
+        applyCategoryAndGrowthType(category);
         this.startDate = date;
         this.endDate = date;
         this.startTime = null;
@@ -212,14 +209,8 @@ public class Task extends BaseTimeEntity {
         return base.minusMinutes(notificationMinutes);
     }
 
-    private static GrowthType resolveGrowthTypeByCategory(CategoryType category) {
-        if (category == null) return null;
-        return switch (category) {
-            case WORK_STUDY -> GrowthType.FOCUS;         // 집중
-            case HEALTH, LIFE -> GrowthType.VITALITY;    // 활력
-            case RELATIONSHIP -> GrowthType.PERSISTENCE; // 꾸준함
-            case HOBBY, GROWTH -> GrowthType.CREATIVITY; // 창의
-            default -> null; // 해당 안 되는 카테고리는 경험치 지급 제외 등 자유롭게 설계
-        };
+    private void applyCategoryAndGrowthType(CategoryType category) {
+        this.category = category != null ? category : CategoryType.NONE;
+        this.growthType = this.category.getDefaultGrowthType();
     }
 }

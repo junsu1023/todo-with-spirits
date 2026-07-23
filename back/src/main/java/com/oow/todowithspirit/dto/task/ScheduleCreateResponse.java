@@ -57,7 +57,7 @@ public class ScheduleCreateResponse {
                 .notificationAt(task.getNotificationAt())
                 .isPublic(task.isPublic())
                 .growthValue(task.getGrowthValue())
-                .growthType(task.getGrowthType() != null ? task.getGrowthType().name() : null)
+                .growthType(task.getGrowthType().name())
                 .isCompleted(task.isCompleted())
                 .completedAt(task.getCompletedAt())
                 .createdAt(task.getCreatedAt())
