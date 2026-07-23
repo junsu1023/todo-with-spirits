@@ -56,8 +56,8 @@ fun TodayPlanSection(
     todos: List<TodoItem>,
     routines: List<RoutineItem>,
     weekEvents: Map<LocalDate, List<PlanType>> = emptyMap(),
-    onCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
-    onCancelCompleteTask: (taskId: Long, date: LocalDate?) -> Unit,
+    onCompleteTask: (taskId: Long, date: LocalDate) -> Unit,
+    onCancelCompleteTask: (taskId: Long, date: LocalDate) -> Unit,
     onDeleteTask: (taskId: Long) -> Unit,
     onEditTask: (taskId: Long) -> Unit,
     onPostponeTodo: (taskId: Long) -> Unit
