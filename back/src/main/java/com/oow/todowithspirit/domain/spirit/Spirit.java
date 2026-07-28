@@ -58,7 +58,7 @@ public class Spirit {
         this.imageUrl = imageUrl;
     }
 
-    // 경험치 획득 및 진화 비즈니스 로직 추가 영역
+    // 경험치 획득 및 진화
     public void addExp(int amount, GrowthType type) {
         this.exp += amount;
         switch (type) {
@@ -67,10 +67,26 @@ public class Spirit {
             case CONSISTENCY -> this.consistencyExp += amount;
             case CREATIVITY -> this.creativityExp += amount;
         }
-        // 예시 만렙 경험치가 100일 때 진화 시스템 로직
+        // 만렙 경험치가 100일 때 진화
         if (this.exp >= this.stage * 100) {
             this.stage++;
         }
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 완료 취소 시 경험치 감소
+    public void decreaseExp(int amount, GrowthType type) {
+        this.exp = Math.max(0, this.exp - amount);
+        switch (type) {
+            case FOCUS -> this.focusExp = Math.max(0, this.focusExp - amount);
+            case ENERGY -> this.energyExp = Math.max(0, this.energyExp - amount);
+            case CONSISTENCY -> this.consistencyExp = Math.max(0, this.consistencyExp - amount);
+            case CREATIVITY -> this.creativityExp = Math.max(0, this.creativityExp - amount);
+        }
+
+        // (선택) 만약 경험치가 깎여서 이전 레벨로 강등(Level Down)되는 로직이 필요하다면 여기에 추가
+        // 일반적으로 게임 기획상 레벨 강등은 스트레스를 주어 구현하지 않는 경우가 많습니다.
+
         this.updatedAt = LocalDateTime.now();
     }
 }

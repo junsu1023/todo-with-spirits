@@ -80,4 +80,30 @@ public class SpiritService {
 
         user.setRepresentativeSpiritId(targetSpirit.getId());
     }
+
+    /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */
+    public Spirit getOrCreateRepresentativeSpirit(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+
+        if (user.getRepresentativeSpiritId() != null) {
+            return spiritRepository.findById(user.getRepresentativeSpiritId())
+                    .orElseGet(() -> createDefaultSpirit(user)); // ID는 있으나 데이터가 지워진 경우 대비
+        } else {
+            return createDefaultSpirit(user); // 과거 계정용 자동 생성
+        }
+    }
+
+    /**
+     * 기본 정령 생성 헬퍼 로직
+     */
+    public Spirit createDefaultSpirit(User user) {
+        String defaultImageUrl = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치 변경
+        Spirit defaultSpirit = new Spirit(user, defaultImageUrl);
+        spiritRepository.save(defaultSpirit);
+
+        user.setRepresentativeSpiritId(defaultSpirit.getId());
+
+        return defaultSpirit;
+    }
 }

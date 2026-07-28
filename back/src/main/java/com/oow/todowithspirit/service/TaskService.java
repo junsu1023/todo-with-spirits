@@ -2,6 +2,7 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
+import com.oow.todowithspirit.domain.spirit.Spirit;
 import com.oow.todowithspirit.domain.task.*;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
@@ -28,6 +29,7 @@ public class TaskService {
     private final UserRepository userRepository;
     private final HolidayRepository holidayRepository;
     private final RoutineCompletionRepository routineCompletionRepository;
+    private final SpiritService spiritService;
 
     // =========================================================
     // 생성
@@ -321,6 +323,7 @@ public class TaskService {
 
         validateTaskDate(task, completionDate);
 
+        // 완료 처리
         if (task.getTaskType() == TaskType.ROUTINE) {
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
                 throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Routine already completed on " + completionDate);
@@ -329,6 +332,10 @@ public class TaskService {
         } else {
             task.completeTask();
         }
+
+        // 대표 정령 경험치 증가 (없으면 자동 생성)
+        Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
+        spirit.addExp(task.getGrowthValue(), task.getGrowthType());
     }
 
     @Transactional
@@ -336,6 +343,7 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
+        // 완료 취소
         if (task.getTaskType() == TaskType.ROUTINE) {
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
@@ -344,6 +352,10 @@ public class TaskService {
         } else {
             task.undoCompleteTask();
         }
+
+        // 대표 정령 경험치 차감 (없으면 자동 생성 후 차감)
+        Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
+        spirit.decreaseExp(task.getGrowthValue(), task.getGrowthType());
     }
 
     /**

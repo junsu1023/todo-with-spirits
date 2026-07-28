@@ -26,6 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final SpiritRepository spiritRepository;
+    private final SpiritService spiritService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -44,11 +45,7 @@ public class AuthService {
         userRepository.save(user);
 
         // 2. 기본 정령 생성 및 저장
-        String defaultImageUrl = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치
-        Spirit defaultSpirit = new Spirit(user, defaultImageUrl);
-        spiritRepository.save(defaultSpirit);
-
-        user.setRepresentativeSpiritId(defaultSpirit.getId());
+        spiritService.createDefaultSpirit(user);
 
         return SignupResponse.from(user);
     }
