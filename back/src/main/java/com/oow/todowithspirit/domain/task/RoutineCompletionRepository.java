@@ -19,6 +19,9 @@ public interface RoutineCompletionRepository extends JpaRepository<RoutineComple
             @Param("to") LocalDate to
     );
 
+    @Query("SELECT rc FROM RoutineCompletion rc JOIN rc.task t WHERE t.user.id = :userId AND rc.completionDate = :date")
+    List<RoutineCompletion> findAllByUserIdAndCompletionDate(@Param("userId") Long userId, @Param("date") LocalDate date);
+
     Optional<RoutineCompletion> findByTaskIdAndCompletionDate(Long taskId, LocalDate completionDate);
 
     List<RoutineCompletion> findAllByTaskInAndCompletionDateBetween(List<Task> routines, LocalDate startDate, LocalDate endDate);
