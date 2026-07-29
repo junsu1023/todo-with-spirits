@@ -45,4 +45,20 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
     List<Task> findByUserIdAndEndDate(Long userId, LocalDate date);
+
+    @Query("""
+            SELECT t FROM Task t
+            WHERE t.user.id = :userId
+              AND (
+                (t.taskType = 'SCHEDULE' AND t.endDate = :date)
+                OR (t.taskType = 'ROUTINE'
+                    AND t.startDate <= :date
+                    AND (t.repeatEndDate IS NULL OR t.repeatEndDate >= :date))
+              )
+            ORDER BY t.startDate ASC
+            """)
+    List<Task> findDailyTasks(
+            @Param("userId") Long userId,
+            @Param("date") LocalDate date
+    );
 }

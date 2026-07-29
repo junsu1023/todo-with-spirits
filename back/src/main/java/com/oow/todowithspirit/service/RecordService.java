@@ -2,7 +2,6 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.spirit.Spirit;
 import com.oow.todowithspirit.domain.spirit.SpiritRepository;
 import com.oow.todowithspirit.domain.task.*;
 import com.oow.todowithspirit.domain.user.User;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,18 +38,20 @@ public class RecordService {
             throw new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found");
         }
 
-        Spirit spirit = spiritRepository.findById(user.getRepresentativeSpiritId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
+//        Spirit spirit = spiritRepository.findById(user.getRepresentativeSpiritId())
+//                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
 
         // 2. 해당 유저의 특정 날짜(오늘) Task 목록 조회
-        List<Task> tasks = taskRepository.findByUserIdAndEndDate(userId, date);
+        List<Task> tasks = taskRepository.findDailyTasks(userId, date);
 
         // 해당 날짜에 완료된 유저의 루틴 ID 목록 조회
+//        Set<Long> completedRoutineIds = routineCompletionRepository
+//                .findAllByUserIdAndCompletionDate(userId, date)
+//                .stream()
+//                .map(rc -> rc.getTask().getId())
+//                .collect(Collectors.toSet());
         Set<Long> completedRoutineIds = routineCompletionRepository
-                .findAllByUserIdAndCompletionDate(userId, date)
-                .stream()
-                .map(rc -> rc.getTask().getId())
-                .collect(Collectors.toSet());
+                .findCompletedTaskIdsByUserIdAndDate(userId, date);
 
         int totalCount = tasks.size();
         int completedCount = (int) tasks.stream().filter(task -> isTaskCompleted(task, completedRoutineIds)).count();
@@ -71,7 +71,7 @@ public class RecordService {
             String krGrowthType = getKoreanGrowthType(task.getGrowthType().name());
             boolean completed = isTaskCompleted(task, completedRoutineIds);
 
-            String interpretation = task.isCompleted()
+            String interpretation = completed
                     ? "꾸준함이 정령의 " + krGrowthType + "으(로) 전달됐어요."
                     : "완료하면 정령의 " + krGrowthType + "이(가) 성장해요.";
 
