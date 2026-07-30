@@ -7,11 +7,15 @@ import com.oow.todowithspirit.domain.task.*;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.record.DailyRecordResponse;
+import com.oow.todowithspirit.dto.record.WeeklyRecordResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
@@ -104,6 +108,133 @@ public class RecordService {
                 .items(items)
                 .todayRewards(todayRewards)
 //                .spiritGrowthSummary(new DailyRecordResponse.SpiritGrowthSummary(spirit.getId(), spirit.getSpiritName(), earnedGrowthPower))
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public WeeklyRecordResponse getWeeklyRecord(Long userId, LocalDate date) {
+        if (userId == null) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "Invalid userId");
+        }
+
+        // 1. 해당 날짜가 속한 주의 일요일 ~ 토요일 범위 계산
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        // 2. 주차 정보 계산 (예: "6월 1주 리포트")
+        int month = date.getMonthValue();
+        int weekOfMonth = date.get(WeekFields.of(Locale.KOREA).weekOfMonth());
+
+        // 3. 해당 주간의 전체 Task 및 완료된 루틴 ID 조회
+        List<Task> weeklyTasks = taskRepository.findByUserIdAndDateRange(userId, startOfWeek, endOfWeek);
+        Set<Long> completedRoutineIds = routineCompletionRepository
+                .findCompletedTaskIdsByUserIdAndDateRange(userId, startOfWeek, endOfWeek);
+
+        // 4. 일별 차트 및 주간 기록 아이콘 계산
+        List<WeeklyRecordResponse.DailyBarChartItem> dailyCharts = new ArrayList<>();
+        List<WeeklyRecordResponse.DailyStatusItem> weeklyStatuses = new ArrayList<>();
+
+        int totalPlanCount = 0;
+        int completedPlanCount = 0;
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate current = startOfWeek.plusDays(i);
+            boolean isFuture = current.isAfter(LocalDate.now());
+
+            // 해당 날짜 Task 필터링
+            List<Task> dayTasks = weeklyTasks.stream()
+                    .filter(t -> t.getEndDate() != null && t.getEndDate().equals(current))
+                    .toList();
+
+            int scheduleTotal = (int) dayTasks.stream().filter(t -> t.getTaskType() != TaskType.ROUTINE).count();
+            int scheduleCompleted = (int) dayTasks.stream()
+                    .filter(t -> t.getTaskType() != TaskType.ROUTINE && t.isCompleted())
+                    .count();
+
+            int routineTotal = (int) dayTasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).count();
+            int routineCompleted = (int) dayTasks.stream()
+                    .filter(t -> t.getTaskType() == TaskType.ROUTINE && completedRoutineIds.contains(t.getId()))
+                    .count();
+
+            int dayTotal = scheduleTotal + routineTotal;
+            int dayCompleted = scheduleCompleted + routineCompleted;
+
+            totalPlanCount += dayTotal;
+            completedPlanCount += dayCompleted;
+
+            // 성장력/경험치 계산
+            int growthPower = isFuture ? 0 : dayTasks.stream()
+                    .filter(task -> isTaskCompleted(task, completedRoutineIds))
+                    .mapToInt(Task::getGrowthValue)
+                    .sum();
+
+            dailyCharts.add(WeeklyRecordResponse.DailyBarChartItem.builder()
+                    .date(current)
+                    .dayOfWeek(current.getDayOfWeek().name().substring(0, 3))
+                    .growthPower(growthPower)
+                    .scheduleCompleted(scheduleCompleted)
+                    .scheduleTotal(scheduleTotal)
+                    .routineCompleted(routineCompleted)
+                    .routineTotal(routineTotal)
+                    .build());
+
+            // 주간 기록 아이콘 상태 (SUCCESS / FAILED / EMPTY)
+            String status = "EMPTY";
+            if (!isFuture && dayTotal > 0) {
+                status = (dayCompleted == dayTotal) ? "SUCCESS" : "FAILED";
+            }
+            weeklyStatuses.add(WeeklyRecordResponse.DailyStatusItem.builder()
+                    .dayIndex(i + 1)
+                    .status(status)
+                    .build());
+        }
+
+        double averageCompletionRate = totalPlanCount == 0 ? 0.0 :
+                Math.round(((double) completedPlanCount / totalPlanCount) * 1000) / 10.0;
+
+        // 5. 유형별 비율 (To do, 루틴, 미루기)
+        WeeklyRecordResponse.TypeRatioAnalysis typeAnalysis = WeeklyRecordResponse.TypeRatioAnalysis.builder()
+                .scheduleRatio(45.0)
+                .routineRatio(35.0)
+                .delayedRatio(20.0)
+                .build();
+
+        // 6. 주간 실천 Top 3 카테고리 통계
+        List<WeeklyRecordResponse.CategoryStatItem> topCategories = List.of(
+                WeeklyRecordResponse.CategoryStatItem.builder()
+                        .rank(1).categoryType(CategoryType.WORK_STUDY).categoryLabel("학업/커리어").count(15).build(),
+                WeeklyRecordResponse.CategoryStatItem.builder()
+                        .rank(2).categoryType(CategoryType.RELATIONSHIP).categoryLabel("인간관계/약속").count(8).build(),
+                WeeklyRecordResponse.CategoryStatItem.builder()
+                        .rank(3).categoryType(CategoryType.HOBBY).categoryLabel("취미").count(5).build()
+        );
+
+        // 7. 자주 놓친 분야
+        WeeklyRecordResponse.CategoryStatItem mostMissedCategory = WeeklyRecordResponse.CategoryStatItem.builder()
+                .categoryType(CategoryType.HEALTH)
+                .categoryLabel("건강")
+                .count(15)
+                .build();
+
+        // 8. 하단 피드백 문구
+        WeeklyRecordResponse.FeedbackMessage feedback = WeeklyRecordResponse.FeedbackMessage.builder()
+                .mainMessage("커리어와 미래를 향해 멋지게 질주한 한 주!")
+                .subMessage("다음 주에는 미뤄둔 건강도 챙기며 일과 삶의 균형을 맞춰볼까요?")
+                .build();
+
+        return WeeklyRecordResponse.builder()
+                .week(date.get(WeekFields.of(Locale.KOREA).weekOfMonth()))
+                .titleMessage("버티면 승리에요")
+                .subtitleMessage("이번주도 너무 잘하고 있어요!")
+                .dailyCharts(dailyCharts)
+                .completedTaskCount(completedPlanCount)
+                .totalTaskCount(totalPlanCount)
+                .averageCompletionRate(averageCompletionRate)
+                .weeklyStatuses(weeklyStatuses)
+                .typeAnalysis(typeAnalysis)
+                .topCategories(topCategories)
+                .mostMissedCategory(mostMissedCategory)
+                .feedback(feedback)
                 .build();
     }
 

@@ -26,4 +26,8 @@ public interface RoutineCompletionRepository extends JpaRepository<RoutineComple
     Optional<RoutineCompletion> findByTaskIdAndCompletionDate(Long taskId, LocalDate completionDate);
 
     List<RoutineCompletion> findAllByTaskInAndCompletionDateBetween(List<Task> routines, LocalDate startDate, LocalDate endDate);
+
+    // 특정 기간 동안 완료된 루틴의 Task ID Set 조회
+    @Query("SELECT rc.task.id FROM RoutineCompletion rc WHERE rc.task.user.id = :userId AND rc.completionDate BETWEEN :startDate AND :endDate")
+    Set<Long> findCompletedTaskIdsByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate);
 }
