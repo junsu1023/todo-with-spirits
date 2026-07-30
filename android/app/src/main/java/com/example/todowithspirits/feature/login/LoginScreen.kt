@@ -1,256 +1,142 @@
 package com.example.todowithspirits.feature.login
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.PasswordField
-import com.example.todowithspirits.component.PlainTextField
-import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit = {},
     onKakaoLoginClick: () -> Unit = {},
-    onGoogleLoginClick: () -> Unit = {}
+    onGoogleLoginClick: () -> Unit = {},
+    onEmailLoginClick: () -> Unit = {}
 ) {
-    val email by loginViewModel.email.collectAsStateWithLifecycle()
-    val password by loginViewModel.password.collectAsStateWithLifecycle()
-    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        SpiritTodoTheme.color.surfaceColor6,
-                        SpiritTodoTheme.color.surfaceColor1
-                    )
-                )
-            )
+            .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        Image(
-            painter = painterResource(R.drawable.temp_spirit),
-            contentDescription = null,
-            modifier = Modifier
-                .size(90.dp)
-                .align(Alignment.TopStart)
-                .offset(x = (-24).dp, y = 36.dp)
-                .rotate(-18f)
-                .alpha(0.35f)
-        )
-
-        Image(
-            painter = painterResource(R.drawable.temp_spirit),
-            contentDescription = null,
-            modifier = Modifier
-                .size(64.dp)
-                .align(Alignment.TopEnd)
-                .offset(x = 20.dp, y = 110.dp)
-                .rotate(22f)
-                .alpha(0.25f)
-        )
-
-        Image(
-            painter = painterResource(R.drawable.temp_spirit),
-            contentDescription = null,
-            modifier = Modifier
-                .size(120.dp)
-                .align(Alignment.BottomStart)
-                .offset(x = (-30).dp, y = 40.dp)
-                .rotate(12f)
-                .alpha(0.2f)
-        )
-
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(72.dp))
-
-            Image(
-                painter = painterResource(R.drawable.temp_spirit),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp)
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text(
-                text = stringResource(R.string.app_name),
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = SpiritTodoTheme.color.mainTextAndStroke
-            )
-
-            Spacer(Modifier.height(48.dp))
-
-            Text(
-                text = stringResource(R.string.email),
-                fontSize = 14.sp,
-                color = SpiritTodoTheme.color.systemGrey,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            PlainTextField(
-                value = email,
-                onValueChange = { loginViewModel.setEmail(it) },
-                placeholder = stringResource(R.string.email_placeholder),
-                keyboardType = KeyboardType.Email
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.password),
-                fontSize = 14.sp,
-                color = SpiritTodoTheme.color.systemGrey,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            PasswordField(
-                value = password,
-                onValueChange = { loginViewModel.setPassword(it) },
-                placeholder = stringResource(R.string.password_placeholder)
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            SpiritsTodoPrimaryButton(
-                text = stringResource(R.string.login),
-                onClick = { loginViewModel.login(onSuccess = onLoginSuccess) }
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.sign_up),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.mainTextAndStroke,
-                modifier = Modifier.noRippleClickable { onSignUpClick() }
-            )
-
-            Spacer(Modifier.height(32.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.4f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                HorizontalDivider(modifier = Modifier.weight(1f), color = SpiritTodoTheme.color.systemArea)
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .background(SpiritTodoTheme.color.surfaceColor15),
+                    contentAlignment = Alignment.Center
+                ) { }
+
+                Spacer(Modifier.height(15.dp))
 
                 Text(
-                    text = stringResource(R.string.or_divider),
-                    fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    text = stringResource(R.string.app_name),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = SpiritTodoTheme.color.mainTextAndStroke
                 )
-
-                HorizontalDivider(modifier = Modifier.weight(1f), color = SpiritTodoTheme.color.systemArea)
             }
 
-            Spacer(Modifier.height(24.dp))
-
-            SocialLoginButton(
-                text = stringResource(R.string.login_with_kakao),
-                iconRes = R.drawable.ic_kakao_logo,
-                backgroundColor = Color(0xFFFEE500),
-                textColor = Color(0xFF191600),
-                borderColor = null,
-                onClick = onKakaoLoginClick
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            SocialLoginButton(
-                text = stringResource(R.string.login_with_google),
-                iconRes = R.drawable.ic_google_logo,
-                backgroundColor = Color.White,
-                textColor = Color(0xFF1F1F1F),
-                borderColor = Color(0xFFDADCE0),
-                onClick = onGoogleLoginClick
-            )
-
-            Spacer(Modifier.height(40.dp))
-        }
-
-        if (isLoading) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(SpiritTodoTheme.color.dimColor),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .weight(0.6f)
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 94.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val infiniteTransition = rememberInfiniteTransition(label = "loading")
-                val angle by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "angle"
+                SocialLoginButton(
+                    text = stringResource(R.string.login_with_kakao),
+                    iconRes = R.drawable.todo_kakao,
+                    backgroundColor = SpiritTodoTheme.color.kakaoBg,
+                    textColor = SpiritTodoTheme.color.kakaoText,
+                    borderColor = null,
+                    onClick = onKakaoLoginClick
                 )
 
-                Image(
-                    painter = painterResource(R.drawable.loading_gray),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .graphicsLayer { rotationZ = angle }
+                Spacer(modifier = Modifier.height(14.dp))
+
+                SocialLoginButton(
+                    text = stringResource(R.string.login_with_google),
+                    iconRes = R.drawable.todo_google,
+                    backgroundColor = SpiritTodoTheme.color.surfaceColor1,
+                    textColor = SpiritTodoTheme.color.googleText,
+                    borderColor = SpiritTodoTheme.color.systemGrey,
+                    onClick = onGoogleLoginClick
                 )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                SocialLoginButton(
+                    text = stringResource(R.string.login_with_email),
+                    iconRes = R.drawable.todo_email,
+                    backgroundColor = SpiritTodoTheme.color.mainArea,
+                    textColor = SpiritTodoTheme.color.surfaceColor1,
+                    borderColor = null,
+                    onClick = onEmailLoginClick
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = stringResource(R.string.no_account_question),
+                    fontSize = 13.sp,
+                    color = SpiritTodoTheme.color.systemGrey
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .background(
+                            color = SpiritTodoTheme.color.systemBackground,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .noRippleClickable(onClick = onSignUpClick),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.sign_up_with_email),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = SpiritTodoTheme.color.systemGrey
+                    )
+                }
             }
         }
     }
@@ -268,8 +154,10 @@ private fun SocialLoginButton(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
-            .background(backgroundColor, RoundedCornerShape(6.dp))
+            .height(44.dp)
+            .background(
+                color = backgroundColor,
+                shape = RoundedCornerShape(6.dp))
             .then(
                 if (borderColor != null) {
                     Modifier.border(1.dp, borderColor, RoundedCornerShape(6.dp))
@@ -283,15 +171,14 @@ private fun SocialLoginButton(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                contentDescription = null
             )
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(if(iconRes == R.drawable.todo_google) 10.dp else 8.dp))
 
             Text(
                 text = text,
-                fontSize = 15.sp,
+                fontSize = if(iconRes == R.drawable.todo_google) 14.sp else 15.sp,
                 fontWeight = FontWeight.Medium,
                 color = textColor
             )

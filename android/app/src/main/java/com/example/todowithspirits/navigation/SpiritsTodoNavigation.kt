@@ -83,11 +83,6 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Screen.Today.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
                 onSignUpClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
