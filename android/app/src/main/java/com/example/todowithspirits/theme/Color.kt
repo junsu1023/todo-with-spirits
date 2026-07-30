@@ -36,7 +36,10 @@ val spiritsLightColor = SpiritColor(
     systemBackground = Color(0xFFFAFAFA),
     mainTextAndStroke = Color(0xFFB286FD),
     systemArea = Color(0xFFECECEC),
-    mainArea = Color(0xFFD7BFFF)
+    mainArea = Color(0xFFD7BFFF),
+    kakaoBg = Color(0xFFFEE500),
+    kakaoText = Color(0xD9000000),
+    googleText = Color(0xFF1F1F1F)
 )
 
 class SpiritColor(
@@ -70,7 +73,10 @@ class SpiritColor(
     systemBackground: Color,
     mainTextAndStroke: Color,
     systemArea: Color,
-    mainArea: Color
+    mainArea: Color,
+    kakaoBg: Color,
+    kakaoText: Color,
+    googleText: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -162,5 +168,14 @@ class SpiritColor(
         private set
 
     var mainArea by mutableStateOf(mainArea)
+        private set
+
+    var kakaoBg by mutableStateOf(kakaoBg)
+        private set
+
+    var kakaoText by mutableStateOf(kakaoText)
+        private set
+
+    var googleText by mutableStateOf(googleText)
         private set
 }

@@ -4,11 +4,12 @@
     <string name="email_placeholder">이메일을 입력해주세요</string>
     <string name="password">비밀번호</string>
     <string name="password_placeholder">비밀번호를 입력해주세요</string>
-    <string name="login">로그인</string>
     <string name="sign_up">회원가입</string>
-    <string name="or_divider">또는</string>
-    <string name="login_with_kakao">카카오로 로그인</string>
+    <string name="login_with_kakao">카카오 로그인</string>
     <string name="login_with_google">Google로 로그인</string>
+    <string name="login_with_email">이메일로 로그인</string>
+    <string name="no_account_question">아직 계정이 없으신가요?</string>
+    <string name="sign_up_with_email">이메일로 회원가입</string>
     <string name="password_confirm">비밀번호 확인</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional">닉네임 (선택)</string>

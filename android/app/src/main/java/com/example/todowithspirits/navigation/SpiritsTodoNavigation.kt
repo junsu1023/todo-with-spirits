@@ -1,5 +1,7 @@
 package com.example.todowithspirits.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -68,7 +70,11 @@ fun SpiritsTodoNavigation(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None }
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
@@ -83,11 +89,6 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Screen.Today.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
                 onSignUpClick = { navController.navigate(Screen.SignUp.route) }
             )
         }
