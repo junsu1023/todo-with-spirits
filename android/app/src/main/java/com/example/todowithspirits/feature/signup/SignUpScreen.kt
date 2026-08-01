@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.signup
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -14,25 +15,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,9 +40,12 @@ import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.feature.signup.component.SignUpUiState
 import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
+
+enum class SignUpStep { CREDENTIALS, NICKNAME }
 
 @Composable
 fun SignUpScreen(
@@ -57,211 +54,45 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val fieldErrors by signUpViewModel.fieldErrors.collectAsStateWithLifecycle()
+    val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by signUpViewModel.isLoading.collectAsStateWithLifecycle()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var nickname by remember { mutableStateOf("") }
-    var showValidationErrors by remember { mutableStateOf(false) }
-
-    val isEmailBlank = email.isBlank()
-    val isPasswordBlank = password.isBlank()
-    val isConfirmPasswordBlank = confirmPassword.isBlank()
-    val isPasswordMismatch = !isConfirmPasswordBlank && password != confirmPassword
-
-    val emailError = if (showValidationErrors && isEmailBlank) {
-        stringResource(R.string.required_field_error)
-    } else {
-        fieldErrors["email"]
-    }
-
-    val passwordError = if (showValidationErrors && isPasswordBlank) {
-        stringResource(R.string.required_field_error)
-    } else {
-        fieldErrors["password"]
-    }
-
     LaunchedEffect(signUpViewModel) {
-        signUpViewModel.errorMsg.collect { message ->
-            ToastUtil.show(context, message)
-        }
+        signUpViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
+
+    BackHandler(enabled = uiState.step == SignUpStep.NICKNAME) {
+        signUpViewModel.goBackToCredentials()
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        SpiritTodoTheme.color.surfaceColor6,
-                        SpiritTodoTheme.color.surfaceColor1
-                    )
-                )
-            )
+            .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        Image(
-            painter = painterResource(R.drawable.temp_spirit),
-            contentDescription = null,
-            modifier = Modifier
-                .size(72.dp)
-                .align(Alignment.TopEnd)
-                .offset(x = 16.dp, y = 90.dp)
-                .rotate(16f)
-                .alpha(0.25f)
-        )
-
-        Image(
-            painter = painterResource(R.drawable.temp_spirit),
-            contentDescription = null,
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.BottomStart)
-                .offset(x = (-26).dp, y = 30.dp)
-                .rotate(-10f)
-                .alpha(0.2f)
-        )
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            TitleHeader(
-                leftIconRes = R.drawable.todo_back1,
-                onLeftIconClick = onBack
+        when(uiState.step) {
+            SignUpStep.CREDENTIALS -> CredentialsStep(
+                uiState = uiState,
+                onEmailChange = signUpViewModel::setEmail,
+                onPasswordChange = signUpViewModel::setPassword,
+                onConfirmPasswordChange = signUpViewModel::setConfirmPassword,
+                onBack = onBack,
+                onNext = signUpViewModel::validateCredentials
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-            ) {
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.sign_up),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = SpiritTodoTheme.color.mainTextAndStroke
-                )
-
-                Spacer(Modifier.height(36.dp))
-
-                Text(
-                    text = stringResource(R.string.email),
-                    fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(4.dp))
-
-                PlainTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    placeholder = stringResource(R.string.email_placeholder),
-                    keyboardType = KeyboardType.Email
-                )
-
-                if (emailError != null) {
-                    FieldErrorText(emailError)
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.password),
-                    fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(4.dp))
-
-                PasswordField(
-                    value = password,
-                    onValueChange = { password = it },
-                    placeholder = stringResource(R.string.new_password_placeholder)
-                )
-
-                if (passwordError != null) {
-                    FieldErrorText(passwordError)
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.password_confirm),
-                    fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(4.dp))
-
-                PasswordField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    placeholder = stringResource(R.string.password_confirm_placeholder)
-                )
-
-                if (showValidationErrors && isConfirmPasswordBlank) {
-                    FieldErrorText(stringResource(R.string.required_field_error))
-                } else if (isPasswordMismatch) {
-                    FieldErrorText(stringResource(R.string.password_mismatch_error))
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.nickname_optional),
-                    fontSize = 14.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(Modifier.height(4.dp))
-
-                PlainTextField(
-                    value = nickname,
-                    onValueChange = { nickname = it },
-                    placeholder = stringResource(R.string.nickname_optional_placeholder)
-                )
-
-                if (fieldErrors["nickname"] != null) {
-                    FieldErrorText(fieldErrors.getValue("nickname"))
-                }
-
-                Spacer(Modifier.height(6.dp))
-
-                Text(
-                    text = stringResource(R.string.nickname_auto_generate_hint),
-                    fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.systemGrey
-                )
-
-                Spacer(Modifier.height(32.dp))
-
-                SpiritsTodoPrimaryButton(
-                    text = stringResource(R.string.sign_up_button),
-                    onClick = {
-                        showValidationErrors = true
-
-                        if (!isEmailBlank && !isPasswordBlank && !isConfirmPasswordBlank && !isPasswordMismatch) {
-                            signUpViewModel.signUp(
-                                email = email,
-                                password = password,
-                                nickname = nickname.ifBlank { null },
-                                onSuccess = {
-                                    ToastUtil.show(context, "회원가입이 완료되었습니다")
-                                    onSignUpSuccess()
-                                }
-                            )
+            SignUpStep.NICKNAME -> NicknameStep(
+                uiState = uiState,
+                onNicknameChange = signUpViewModel::setNickname,
+                onBack = signUpViewModel::goBackToCredentials,
+                onSignUpClick = {
+                    signUpViewModel.signUp(
+                        onSuccess = {
+                            ToastUtil.show(context, "회원가입이 완료되었습니다")
+                            onSignUpSuccess()
                         }
-                    }
-                )
-
-                Spacer(Modifier.height(40.dp))
-            }
+                    )
+                }
+            )
         }
 
         if (isLoading) {
@@ -295,12 +126,189 @@ fun SignUpScreen(
 }
 
 @Composable
-private fun FieldErrorText(message: String) {
-    Spacer(Modifier.height(4.dp))
+private fun CredentialsStep(
+    uiState: SignUpUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onNext: () -> Unit
+) {
+    val canProceed = uiState.email.isNotBlank() &&
+        uiState.password.isNotBlank() &&
+        uiState.confirmPassword.isNotBlank() &&
+        uiState.fieldErrors.isEmpty()
+
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
+        TitleHeader(
+            leftIconRes = R.drawable.todo_back1,
+            onLeftIconClick = onBack,
+            title = stringResource(R.string.sign_up)
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 34.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.email),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.systemGrey,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 2.dp)
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            PlainTextField(
+                value = uiState.email,
+                onValueChange = onEmailChange,
+                placeholder = "example@email.com",
+                keyboardType = KeyboardType.Email,
+                isError = uiState.fieldErrors["email"] != null
+            )
+
+            uiState.fieldErrors["email"]?.let { FieldHintText(text = it, isError = true) }
+
+            Spacer(Modifier.height(if(uiState.fieldErrors["email"] != null) 46.dp else 26.dp))
+
+            Text(
+                text = stringResource(R.string.password),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.systemGrey,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            PasswordField(
+                value = uiState.password,
+                onValueChange = onPasswordChange,
+                placeholder = stringResource(R.string.password_simple_placeholder),
+                isError = uiState.fieldErrors["password"] != null
+            )
+
+            FieldHintText(
+                text = uiState.fieldErrors["password"] ?: stringResource(R.string.password_format_hint),
+                isError = uiState.fieldErrors["password"] != null
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            PasswordField(
+                value = uiState.confirmPassword,
+                onValueChange = onConfirmPasswordChange,
+                placeholder = stringResource(R.string.password_confirm_placeholder),
+                isError = uiState.fieldErrors["confirmPassword"] != null
+            )
+
+            uiState.fieldErrors["confirmPassword"]?.let { FieldHintText(text = it, isError = true) }
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp)
+        ) {
+            SpiritsTodoPrimaryButton(
+                text = stringResource(R.string.next),
+                enabled = canProceed,
+                onClick = {
+                    focusManager.clearFocus()
+                    onNext()
+                }
+            )
+
+            Spacer(Modifier.height(60.dp))
+        }
+    }
+}
+
+@Composable
+private fun NicknameStep(
+    uiState: SignUpUiState,
+    onNicknameChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onSignUpClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
+        TitleHeader(
+            leftIconRes = R.drawable.todo_back1,
+            onLeftIconClick = onBack,
+            title = stringResource(R.string.sign_up)
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp)
+                .padding(top = 34.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.nickname_optional),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.systemGrey,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            PlainTextField(
+                value = uiState.nickname,
+                onValueChange = onNicknameChange,
+                placeholder = stringResource(R.string.nickname_optional_placeholder),
+                isError = uiState.fieldErrors["nickname"] != null
+            )
+
+            FieldHintText(
+                text = uiState.fieldErrors["nickname"] ?: stringResource(R.string.nickname_auto_generate_hint),
+                isError = uiState.fieldErrors["nickname"] != null
+            )
+        }
+
+        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp)
+        ) {
+            SpiritsTodoPrimaryButton(
+                text = stringResource(R.string.check),
+                onClick = onSignUpClick
+            )
+
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun FieldHintText(text: String, isError: Boolean) {
+    Spacer(Modifier.height(6.dp))
 
     Text(
-        text = message,
+        text = text,
         fontSize = 12.sp,
-        color = SpiritTodoTheme.color.onSurfaceColor7
+        color = if(isError) SpiritTodoTheme.color.onSurfaceColor7 else SpiritTodoTheme.color.systemGrey
     )
 }

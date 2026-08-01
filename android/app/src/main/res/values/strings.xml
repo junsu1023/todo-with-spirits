@@ -4,6 +4,10 @@
     <string name="email_placeholder">이메일을 입력해주세요</string>
     <string name="password">비밀번호</string>
     <string name="password_placeholder">비밀번호를 입력해주세요</string>
+    <string name="password_simple_placeholder">비밀번호</string>
+    <string name="password_format_hint">8자 이상 영문/숫자/특수문자 중 2가지 포함</string>
+    <string name="invalid_email_error">유효한 이메일을 입력해주세요.</string>
+    <string name="next">다음</string>
     <string name="login">로그인</string>
     <string name="sign_up">회원가입</string>
     <string name="login_with_kakao">카카오 로그인</string>
@@ -18,9 +22,8 @@
     <string name="nickname_optional">닉네임 (선택)</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
     <string name="nickname_auto_generate_hint">입력하지 않으면 정령유저_1234 형식으로 자동 생성돼요</string>
-    <string name="sign_up_button">가입하기</string>
     <string name="required_field_error">필수 입력 항목입니다</string>
-    <string name="password_mismatch_error">비밀번호가 일치하지 않습니다</string>
+    <string name="password_mismatch_error">비밀번호가 일치하지 않습니다.</string>
     <string name="already_have_account">이미 계정이 있으신가요?</string>
     <string name="today">Today</string>
     <string name="plan">Plan</string>

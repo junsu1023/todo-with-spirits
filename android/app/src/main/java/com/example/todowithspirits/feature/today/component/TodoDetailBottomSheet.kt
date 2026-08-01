@@ -192,7 +192,7 @@ fun TodoDetailBottomSheet(
                             modifier = Modifier.weight(1f),
                             iconRes = R.drawable.todo_trash,
                             label = stringResource(R.string.delete),
-                            color = SpiritTodoTheme.color.surfaceColor11,
+                            color = SpiritTodoTheme.color.systemRed,
                             onClick = onDelete
                         )
 

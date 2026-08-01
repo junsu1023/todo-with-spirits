@@ -43,7 +43,8 @@ fun PlainTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isError: Boolean = false
 ) {
     val textFieldState = rememberTextFieldState(value)
     var isFocused by remember { mutableStateOf(false) }
@@ -66,7 +67,11 @@ fun PlainTextField(
             .height(45.dp)
             .border(
                 width = 1.dp,
-                color = if(isFocused) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemArea,
+                color = when {
+                    isFocused -> SpiritTodoTheme.color.mainTextAndStroke
+                    isError -> SpiritTodoTheme.color.onSurfaceColor7
+                    else -> SpiritTodoTheme.color.systemArea
+                },
                 shape = RoundedCornerShape(6.dp)
             )
             .padding(horizontal = 14.dp),

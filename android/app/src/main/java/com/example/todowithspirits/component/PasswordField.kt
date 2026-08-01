@@ -43,7 +43,8 @@ fun PasswordField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    fontSize: Int = 14
+    fontSize: Int = 14,
+    isError: Boolean = false
 ) {
     val textFieldState = rememberTextFieldState(value)
     var isFocused by remember { mutableStateOf(false) }
@@ -67,7 +68,11 @@ fun PasswordField(
             .height(52.dp)
             .border(
                 width = 1.dp,
-                color = if (isFocused) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemArea,
+                color = when {
+                    isFocused -> SpiritTodoTheme.color.mainTextAndStroke
+                    isError -> SpiritTodoTheme.color.onSurfaceColor7
+                    else -> SpiritTodoTheme.color.systemArea
+                },
                 shape = RoundedCornerShape(6.dp)
             )
             .padding(horizontal = 14.dp),
@@ -105,7 +110,7 @@ fun PasswordField(
             Spacer(Modifier.width(8.dp))
 
             Image(
-                painter = painterResource(if (isVisible) R.drawable.todo_unshow else R.drawable.todo_show),
+                painter = painterResource(if (isVisible) R.drawable.todo_show else R.drawable.todo_unshow),
                 contentDescription = null,
                 modifier = Modifier
                     .size(20.dp)
