@@ -44,8 +44,6 @@ import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.component.LoginFailureDialog
 import com.example.todowithspirits.feature.login.viewmodel.EmailLoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun EmailLoginScreen(
@@ -64,11 +62,6 @@ fun EmailLoginScreen(
 
     LaunchedEffect(emailLoginViewModel) {
         emailLoginViewModel.errorMsg.collect { message -> loginErrorMessage = message }
-    }
-
-    LaunchedEffect(Unit) {
-        delay(50L.milliseconds)
-        loginErrorMessage = "test"
     }
 
     Box(
