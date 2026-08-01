@@ -2,6 +2,7 @@ package com.example.todowithspirits.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,6 +44,7 @@ fun PasswordField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(false) }
+    val currentOnValueChange by rememberUpdatedState(onValueChange)
 
     BasicTextField(
         value = value,
@@ -81,6 +85,20 @@ fun PasswordField(
                             .size(20.dp)
                             .noRippleClickable { isVisible = !isVisible }
                     )
+
+                    if (isFocused) {
+                        Spacer(Modifier.width(8.dp))
+
+                        Image(
+                            painter = painterResource(R.drawable.todo_cross),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { currentOnValueChange("") })
+                                }
+                        )
+                    }
                 }
             }
         },
