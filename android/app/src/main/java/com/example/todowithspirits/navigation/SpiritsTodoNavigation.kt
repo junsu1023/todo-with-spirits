@@ -25,6 +25,7 @@ import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
+import com.example.todowithspirits.feature.login.EmailLoginScreen
 import com.example.todowithspirits.feature.login.LoginScreen
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
@@ -89,14 +90,30 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Login.route) {
             LoginScreen(
-                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
+                onSignUpClick = { navController.navigate(Screen.SignUp.route) },
+                onEmailLoginClick = { navController.navigate(Screen.EmailLogin.route) }
+            )
+        }
+
+        composable(Screen.EmailLogin.route) {
+            EmailLoginScreen(
+                onBack = onBack,
+                onLoginSuccess = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onBack = onBack,
-                onSignUpSuccess = onBack
+                onSignUpSuccess = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
 

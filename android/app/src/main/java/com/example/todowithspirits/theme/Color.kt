@@ -14,7 +14,6 @@ val spiritsLightColor = SpiritColor(
     surfaceColor8 = Color(0xFF8DE4FF),
     surfaceColor9 = Color(0xFFB2F042),
     surfaceColor10 = Color(0xFFFAFAFA),
-    surfaceColor11 = Color(0xFFF49191),
     surfaceColor12 = Color(0xFFFBFBFB),
     surfaceColor13 = Color(0xFFF4ECFC),
     surfaceColor14 = Color(0xFFF3E8FF),
@@ -37,6 +36,7 @@ val spiritsLightColor = SpiritColor(
     mainTextAndStroke = Color(0xFFB286FD),
     systemArea = Color(0xFFECECEC),
     mainArea = Color(0xFFD7BFFF),
+    systemRed = Color(0xFFF49191),
     kakaoBg = Color(0xFFFEE500),
     kakaoText = Color(0xD9000000),
     googleText = Color(0xFF1F1F1F)
@@ -51,7 +51,6 @@ class SpiritColor(
     surfaceColor8: Color,
     surfaceColor9: Color,
     surfaceColor10: Color,
-    surfaceColor11: Color,
     surfaceColor12: Color,
     surfaceColor13: Color,
     surfaceColor14: Color,
@@ -74,6 +73,7 @@ class SpiritColor(
     mainTextAndStroke: Color,
     systemArea: Color,
     mainArea: Color,
+    systemRed: Color,
     kakaoBg: Color,
     kakaoText: Color,
     googleText: Color
@@ -100,9 +100,6 @@ class SpiritColor(
         private set
 
     var surfaceColor10 by mutableStateOf(surfaceColor10)
-        private set
-
-    var surfaceColor11 by mutableStateOf(surfaceColor11)
         private set
 
     var surfaceColor12 by mutableStateOf(surfaceColor12)
@@ -168,6 +165,9 @@ class SpiritColor(
         private set
 
     var mainArea by mutableStateOf(mainArea)
+        private set
+
+    var systemRed by mutableStateOf(systemRed)
         private set
 
     var kakaoBg by mutableStateOf(kakaoBg)

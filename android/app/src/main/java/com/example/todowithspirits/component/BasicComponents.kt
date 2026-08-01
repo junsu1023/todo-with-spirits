@@ -88,21 +88,25 @@ fun SpiritsTodoCheckbox(
 fun SpiritsTodoPrimaryButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = SpiritTodoTheme.color.mainArea
+            containerColor = SpiritTodoTheme.color.mainArea,
+            disabledContainerColor = SpiritTodoTheme.color.systemArea,
+            disabledContentColor = SpiritTodoTheme.color.systemGrey
         )
     ) {
         Text(
             text = text,
-            color = SpiritTodoTheme.color.surfaceColor1,
+            color = if(enabled) SpiritTodoTheme.color.surfaceColor1 else SpiritTodoTheme.color.systemGrey,
             fontSize = 16.sp
         )
     }

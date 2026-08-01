@@ -3,6 +3,7 @@ package com.example.todowithspirits.navigation
 sealed class Screen(val route: String) {
     data object Splash: Screen("splash")
     data object Login: Screen("login")
+    data object EmailLogin: Screen("emailLogin")
     data object SignUp: Screen("signUp")
     data object Today: Screen("today")
     data object Plan: Screen("plan")
