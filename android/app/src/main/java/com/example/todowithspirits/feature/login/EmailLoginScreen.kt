@@ -19,7 +19,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -37,8 +41,11 @@ import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.login.component.LoginFailureDialog
 import com.example.todowithspirits.feature.login.viewmodel.EmailLoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun EmailLoginScreen(
@@ -49,6 +56,20 @@ fun EmailLoginScreen(
 ) {
     val uiState by emailLoginViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by emailLoginViewModel.isLoading.collectAsStateWithLifecycle()
+    var loginErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(emailLoginViewModel.errorMsg) {
+
+    }
+
+    LaunchedEffect(emailLoginViewModel) {
+        emailLoginViewModel.errorMsg.collect { message -> loginErrorMessage = message }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(50L.milliseconds)
+        loginErrorMessage = "test"
+    }
 
     Box(
         modifier = Modifier
@@ -162,6 +183,13 @@ fun EmailLoginScreen(
                         .graphicsLayer { rotationZ = angle }
                 )
             }
+        }
+
+        loginErrorMessage?.let { message ->
+            LoginFailureDialog(
+                message = message,
+                onConfirm = { loginErrorMessage = null }
+            )
         }
     }
 }
