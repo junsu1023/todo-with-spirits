@@ -1,10 +1,14 @@
 package com.example.todowithspirits
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -23,6 +27,8 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isBottomSheetVisible by mainViewModel.isBottomSheetVisible.collectAsStateWithLifecycle()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val navToRoute: (String) -> Unit = { route ->
         navController.navigate(route) {
@@ -35,6 +41,14 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
     }
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(
+                onPress = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
+            )
+        },
         containerColor = SpiritTodoTheme.color.surfaceColor1,
         bottomBar = {
             if(bottomNavItems.map { it.route }.contains(currentRoute)) {
