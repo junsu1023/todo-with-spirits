@@ -46,3 +46,41 @@ export interface TaskScheduleParams {
 	from?: string
 	to?: string
 }
+
+export interface CalendarItem {
+	taskId: number
+	taskType: TaskType
+	title: string
+	category: Category | null
+	memo: string | null
+	isAllDay?: boolean
+	isCompleted: boolean
+	isImportant: boolean
+	isPublic: boolean
+	occurrenceDate: string
+	endDate?: string | null
+	endTime?: string | null
+	repeatType?: RepeatType
+	repeatEndDate?: string | null
+	repeatDaysOfWeek?: string[]
+	repeatDaysOfMonth?: number[]
+	excludeHoliday?: boolean
+	growthType?: string | null
+	growthValue?: number | null
+	notificationAt?: string | null
+	notificationMinutes?: number | null
+	completedAt?: string | null
+	createdAt?: string
+	updatedAt?: string
+}
+
+export interface CalendarDetail {
+	totalCount: number
+	completedCount: number
+	completedRoutineCount: number
+	completedScheduleCount: number
+	inCompleteCount: number
+	routineCount: number
+	scheduleCount: number
+	items: CalendarItem[]
+}

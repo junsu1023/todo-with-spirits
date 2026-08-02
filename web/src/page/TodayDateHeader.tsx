@@ -1,6 +1,8 @@
+import { useQuery } from '@tanstack/react-query'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getTaskCalendar } from '@/entity/task'
 import { ROUTES } from '@/shared/routes'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
@@ -14,17 +16,6 @@ const WEEKDAYS_KO = [
 	'토요일',
 ]
 
-// Mock dot data keyed by day-of-week index (0=Sun) for demo
-const MOCK_DOT_MAP: Record<number, string[]> = {
-	0: ['#B2F042', '#B286FD'],
-	1: ['#B2F042', '#B286FD', '#48CAD9'],
-	2: ['#B286FD'],
-	3: ['#48CAD9', '#B286FD'],
-	4: ['#B286FD'],
-	5: ['#48CAD9', '#B286FD'],
-	6: [],
-}
-
 function getWeekDates(base: Date): Date[] {
 	const sunday = new Date(base)
 	sunday.setDate(base.getDate() - base.getDay())
@@ -33,6 +24,13 @@ function getWeekDates(base: Date): Date[] {
 		d.setDate(sunday.getDate() + i)
 		return d
 	})
+}
+
+function toDateString(date: Date) {
+	const y = date.getFullYear()
+	const m = String(date.getMonth() + 1).padStart(2, '0')
+	const d = String(date.getDate()).padStart(2, '0')
+	return `${y}-${m}-${d}`
 }
 
 function toKey(date: Date) {
@@ -55,12 +53,38 @@ export function TodayDateHeader({
 	selectedDate,
 	onDateChange,
 }: TodayDateHeaderProps) {
-	const [isExpanded, setIsExpanded] = useState(false)
+	const [isExpanded, setIsExpanded] = useState(true)
 
 	const today = new Date()
 	const todayKey = toKey(today)
 	const selectedKey = toKey(selectedDate)
 	const weekDates = getWeekDates(selectedDate)
+
+	const from = toDateString(weekDates[0])
+	const to = toDateString(weekDates[6])
+
+	const { data: calendarData } = useQuery({
+		queryKey: ['task', 'calendar', from, to],
+		queryFn: () => getTaskCalendar({ from, to }),
+		enabled: isExpanded,
+	})
+
+	const items =
+		calendarData?.result === 'success' ? calendarData.detail.items : []
+
+	const dotMap = items.reduce<
+		Record<string, { hasTodo: boolean; hasRoutine: boolean }>
+	>((acc, item) => {
+		const dateStr = item.occurrenceDate
+		if (!dateStr) return acc
+		if (!acc[dateStr]) acc[dateStr] = { hasTodo: false, hasRoutine: false }
+		if (item.taskType === 'ROUTINE') {
+			acc[dateStr].hasRoutine = true
+		} else {
+			acc[dateStr].hasTodo = true
+		}
+		return acc
+	}, {})
 
 	const navigate = useNavigate()
 
@@ -96,9 +120,10 @@ export function TodayDateHeader({
 				<div className="flex justify-between px-2">
 					{weekDates.map((date) => {
 						const key = toKey(date)
+						const dateStr = toDateString(date)
 						const isSelected = key === selectedKey
 						const isToday = key === todayKey
-						const dots = MOCK_DOT_MAP[date.getDay()] ?? []
+						const dayDots = dotMap[dateStr]
 
 						return (
 							<button
@@ -111,7 +136,7 @@ export function TodayDateHeader({
 									{WEEKDAYS[date.getDay()]}
 								</span>
 								<div
-									className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+									className={`flex h-10 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-colors ${
 										isSelected
 											? 'bg-[#B286FD] text-white'
 											: isToday
@@ -122,14 +147,18 @@ export function TodayDateHeader({
 									{date.getDate()}
 								</div>
 								<div className="flex gap-0.5">
-									{dots.map((color, i) => (
+									{dayDots?.hasTodo && (
 										<div
-											// biome-ignore lint/suspicious/noArrayIndexKey: static mock list
-											key={i}
-											style={{ backgroundColor: color }}
 											className="h-1.5 w-1.5 rounded-full"
+											style={{ backgroundColor: 'var(--sky)' }}
 										/>
-									))}
+									)}
+									{dayDots?.hasRoutine && (
+										<div
+											className="h-1.5 w-1.5 rounded-full"
+											style={{ backgroundColor: 'var(--lime)' }}
+										/>
+									)}
 								</div>
 							</button>
 						)
