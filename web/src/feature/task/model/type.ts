@@ -63,6 +63,20 @@ export interface UpdateScheduleRequest {
 	memo?: string
 }
 
+export interface UpdateRoutineRequest {
+	taskId: number
+	title: string
+	repeatType: Exclude<RepeatType, 'YEARLY'>
+	category?: Category
+	repeatEndDate?: string
+	repeatDaysOfWeek?: DayOfWeek[]
+	repeatDaysOfMonth?: number[]
+	notificationType?: NotificationType
+	isPublic?: boolean
+	excludeHoliday?: boolean
+	memo?: string
+}
+
 export interface CreateRoutineRequest {
 	title: string
 	repeatType: Exclude<RepeatType, 'YEARLY'>

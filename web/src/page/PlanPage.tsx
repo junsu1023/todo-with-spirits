@@ -16,8 +16,10 @@ import type { Category } from '@/entity/task/model/type'
 import {
 	completeTask,
 	uncompleteTask,
+	updateRoutine,
 	updateSchedule,
 } from '@/feature/task/api/mutate'
+import type { DayOfWeek } from '@/feature/task/model/type'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import { PlanItemForm } from './PlanItemForm'
@@ -39,7 +41,9 @@ export interface PlanItem {
 	time?: string
 	category?: string
 	isPublic?: boolean
-	repeat?: '매일' | '매주' | '매월'
+	repeatType?: 'DAILY' | 'WEEKLY' | 'MONTHLY'
+	repeatDaysOfWeek?: string[]
+	repeatDaysOfMonth?: number[]
 	excludeHolidays?: boolean
 	memo?: string
 	tags: string[]
@@ -95,6 +99,13 @@ function toPlanItem(item: CalendarItem): PlanItem {
 		: undefined
 	const tags = categoryLabel ? [categoryLabel] : []
 
+	const repeatType =
+		item.repeatType === 'DAILY' ||
+		item.repeatType === 'WEEKLY' ||
+		item.repeatType === 'MONTHLY'
+			? item.repeatType
+			: undefined
+
 	return {
 		id: item.taskId,
 		type: item.taskType === 'ROUTINE' ? 'routine' : 'todo',
@@ -105,6 +116,10 @@ function toPlanItem(item: CalendarItem): PlanItem {
 		dateLabel,
 		date: item.occurrenceDate,
 		category: categoryLabel,
+		repeatType,
+		repeatDaysOfWeek: item.repeatDaysOfWeek,
+		repeatDaysOfMonth: item.repeatDaysOfMonth,
+		excludeHolidays: item.excludeHoliday,
 		memo: item.memo ?? undefined,
 		tags,
 	}
@@ -540,6 +555,16 @@ export function PlanPage() {
 		},
 	})
 
+	const { mutate: updateRoutineMutate } = useMutation({
+		mutationFn: updateRoutine,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+				setEditingId(null)
+			}
+		},
+	})
+
 	const toggleCompleted = (id: number) => {
 		const item = items.find((i) => i.id === id)
 		if (!item) return
@@ -552,7 +577,13 @@ export function PlanPage() {
 		editingId !== null ? items.find((i) => i.id === editingId) : undefined
 
 	const handleSave = (updated: PlanItem) => {
-		if (editingId !== null && updated.type === 'todo' && updated.date) {
+		if (editingId === null) {
+			// 신규 생성 - phase 2
+			setIsAdding(false)
+			return
+		}
+
+		if (updated.type === 'todo' && updated.date) {
 			const endDateTime = updated.time
 				? `${updated.date}T${updated.time}`
 				: `${updated.date}T23:59:59`
@@ -570,7 +601,28 @@ export function PlanPage() {
 			})
 			return
 		}
-		// routine 수정 및 신규 생성 - phase 2
+
+		if (updated.type === 'routine' && updated.repeatType) {
+			updateRoutineMutate({
+				taskId: updated.id,
+				title: updated.title,
+				repeatType: updated.repeatType,
+				...(updated.repeatDaysOfWeek?.length && {
+					repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
+				}),
+				...(updated.repeatDaysOfMonth?.length && {
+					repeatDaysOfMonth: updated.repeatDaysOfMonth,
+				}),
+				category: updated.category
+					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					: 'NONE',
+				isPublic: updated.isPublic ?? false,
+				excludeHoliday: updated.excludeHolidays ?? false,
+				memo: updated.memo,
+			})
+			return
+		}
+
 		setEditingId(null)
 		setIsAdding(false)
 	}

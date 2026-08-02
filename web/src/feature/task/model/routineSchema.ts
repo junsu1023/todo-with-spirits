@@ -22,14 +22,14 @@ export const routineSchema = z
 	.superRefine((data, ctx) => {
 		if (data.repeatType === 'WEEKLY' && data.repeatDaysOfWeek.length === 0) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				path: ['repeatDaysOfWeek'],
 				message: '요일을 선택해주세요',
 			})
 		}
 		if (data.repeatType === 'MONTHLY' && data.repeatDaysOfMonth.length === 0) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				path: ['repeatDaysOfMonth'],
 				message: '날짜를 선택해주세요',
 			})
@@ -37,3 +37,34 @@ export const routineSchema = z
 	})
 
 export type RoutineFormValues = z.infer<typeof routineSchema>
+
+export const updateRoutineSchema = z
+	.object({
+		title: z.string().min(1, '제목을 입력해주세요').max(255),
+		repeatType: z.enum(['DAILY', 'WEEKLY', 'MONTHLY']),
+		repeatDaysOfWeek: z.array(z.enum(DAY_OF_WEEK_VALUES)),
+		repeatDaysOfMonth: z.array(z.number().int().min(1).max(31)),
+		repeatEndDate: z.string().optional(),
+		category: z.string().optional(),
+		isPublic: z.boolean().optional(),
+		excludeHoliday: z.boolean().optional(),
+		memo: z.string().max(2000).optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.repeatType === 'WEEKLY' && data.repeatDaysOfWeek.length === 0) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['repeatDaysOfWeek'],
+				message: '요일을 선택해주세요',
+			})
+		}
+		if (data.repeatType === 'MONTHLY' && data.repeatDaysOfMonth.length === 0) {
+			ctx.addIssue({
+				code: 'custom',
+				path: ['repeatDaysOfMonth'],
+				message: '날짜를 선택해주세요',
+			})
+		}
+	})
+
+export type UpdateRoutineFormValues = z.infer<typeof updateRoutineSchema>
