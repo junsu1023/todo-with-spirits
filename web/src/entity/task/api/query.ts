@@ -1,5 +1,5 @@
 import { type ApiResponse, apiClient } from '@/lib/api'
-import type { TaskScheduleDetail, TaskScheduleParams } from '../model/type'
+import type { CalendarDetail, TaskScheduleDetail, TaskScheduleParams } from '../model/type'
 
 function buildSearchParams(params?: TaskScheduleParams) {
 	const searchParams = new URLSearchParams()
@@ -17,3 +17,8 @@ export const getRoutineList = (params?: TaskScheduleParams) =>
 	apiClient
 		.get('api/task/routine', { searchParams: buildSearchParams(params) })
 		.json<ApiResponse<TaskScheduleDetail>>()
+
+export const getTaskCalendar = (params?: TaskScheduleParams) =>
+	apiClient
+		.get('api/task/calendar', { searchParams: buildSearchParams(params) })
+		.json<ApiResponse<CalendarDetail>>()
