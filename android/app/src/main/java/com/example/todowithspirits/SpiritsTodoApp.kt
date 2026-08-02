@@ -1,6 +1,8 @@
 package com.example.todowithspirits
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.todowithspirits.component.FloatingButton
 import com.example.todowithspirits.component.SpiritsTodoBottomBar
 import com.example.todowithspirits.component.bottomNavItems
+import com.example.todowithspirits.feature.today.component.QuickAddBottomPopup
 import com.example.todowithspirits.navigation.Screen
 import com.example.todowithspirits.navigation.SpiritsTodoNavigation
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -40,36 +43,41 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
         }
     }
 
-    Scaffold(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(
-                onPress = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
+                )
+            },
+            containerColor = SpiritTodoTheme.color.surfaceColor1,
+            bottomBar = {
+                if(bottomNavItems.map { it.route }.contains(currentRoute)) {
+                    SpiritsTodoBottomBar(
+                        currentRoute = currentRoute,
+                        onItemSelected = { route -> navToRoute(route) }
+                    )
                 }
+            },
+            floatingActionButton = {
+                if(currentRoute == Screen.Today.route) {
+                    FloatingButton(onClick = { mainViewModel.setSBottomSheetVisible(true) })
+                }
+            }
+        ) { innerPadding ->
+            SpiritsTodoNavigation(
+                navController = navController,
+                modifier = Modifier.padding(innerPadding)
             )
-        },
-        containerColor = SpiritTodoTheme.color.surfaceColor1,
-        bottomBar = {
-            if(bottomNavItems.map { it.route }.contains(currentRoute)) {
-                SpiritsTodoBottomBar(
-                    currentRoute = currentRoute,
-                    onItemSelected = { route -> navToRoute(route) }
-                )
-            }
-        },
-        floatingActionButton = {
-            if(currentRoute == Screen.Today.route) {
-                FloatingButton(
-                    isBottomSheetVisible = isBottomSheetVisible,
-                    setBottomSheetVisible = { visible -> mainViewModel.setSBottomSheetVisible(visible) }
-                )
-            }
         }
-    ) { innerPadding ->
-        SpiritsTodoNavigation(
-            navController = navController,
-            modifier = Modifier.padding(innerPadding)
-        )
+
+        // Rendered as a sibling of Scaffold, not from inside its floatingActionButton slot —
+        // see the comment on FloatingButton for why that placement squishes the popup.
+        if (currentRoute == Screen.Today.route && isBottomSheetVisible) {
+            QuickAddBottomPopup(onDismiss = { mainViewModel.setSBottomSheetVisible(false) })
+        }
     }
 }
