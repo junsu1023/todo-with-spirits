@@ -2,7 +2,6 @@
 package com.example.data.constant
 
 object URLConstant {
-    const val BASE_URL = "https://todo-with-spirits.onrender.com"
     const val API = "api"
 
     object HEALTH {
