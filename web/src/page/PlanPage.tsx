@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
 	CalendarClock,
 	ChevronLeft,
@@ -12,6 +12,7 @@ import {
 import { useState } from 'react'
 import type { CalendarItem } from '@/entity/task'
 import { getTaskCalendar } from '@/entity/task'
+import { completeTask, uncompleteTask } from '@/feature/task/api/mutate'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import { PlanItemForm } from './PlanItemForm'
@@ -485,6 +486,7 @@ export function PlanPage() {
 	const [isAdding, setIsAdding] = useState(false)
 
 	const dateStr = toDateString(selectedDate)
+	const queryClient = useQueryClient()
 
 	const { data: dayData } = useQuery({
 		queryKey: ['task', 'calendar', dateStr, dateStr],
@@ -493,6 +495,33 @@ export function PlanPage() {
 
 	const items =
 		dayData?.result === 'success' ? dayData.detail.items.map(toPlanItem) : []
+
+	const invalidateCalendar = () =>
+		queryClient.invalidateQueries({
+			queryKey: ['task', 'calendar', dateStr, dateStr],
+		})
+
+	const { mutate: complete } = useMutation({
+		mutationFn: completeTask,
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateCalendar()
+		},
+	})
+
+	const { mutate: uncomplete } = useMutation({
+		mutationFn: uncompleteTask,
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateCalendar()
+		},
+	})
+
+	const toggleCompleted = (id: number) => {
+		const item = items.find((i) => i.id === id)
+		if (!item) return
+		const vars = { taskId: id, date: item.date }
+		if (item.completed) uncomplete(vars)
+		else complete(vars)
+	}
 
 	const editingItem =
 		editingId !== null ? items.find((i) => i.id === editingId) : undefined
@@ -541,7 +570,7 @@ export function PlanPage() {
 					) : (
 						<PlanTaskList
 							items={items}
-							onToggle={() => {}}
+							onToggle={toggleCompleted}
 							onEdit={setEditingId}
 							onDelete={() => {}}
 							onPostpone={() => {}}
