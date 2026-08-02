@@ -169,6 +169,7 @@ export function PlanItemForm({
 
   const handleSave = () => {
     if (!title.trim()) return
+    if (!isRoutine && !date) return
     const resolvedTime = timeEnabled && time ? time : undefined
     onSave({
       ...item,

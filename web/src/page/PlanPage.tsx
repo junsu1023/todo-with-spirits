@@ -12,7 +12,12 @@ import {
 import { useState } from 'react'
 import type { CalendarItem } from '@/entity/task'
 import { getTaskCalendar } from '@/entity/task'
-import { completeTask, uncompleteTask } from '@/feature/task/api/mutate'
+import type { Category } from '@/entity/task/model/type'
+import {
+	completeTask,
+	uncompleteTask,
+	updateSchedule,
+} from '@/feature/task/api/mutate'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import { PlanItemForm } from './PlanItemForm'
@@ -57,6 +62,16 @@ const CATEGORY_LABEL: Partial<Record<string, string>> = {
 	RELATIONSHIP: '인간관계/약속',
 	WORK: '업무/커리어',
 	ETC: '기타',
+}
+
+const LABEL_TO_CATEGORY: Record<string, Category> = {
+	금융: 'FINANCE',
+	자기계발: 'GROWTH',
+	건강: 'HEALTH',
+	취미: 'HOBBY',
+	'인간관계/약속': 'RELATIONSHIP',
+	'업무/커리어': 'WORK',
+	기타: 'ETC',
 }
 
 function toPlanItem(item: CalendarItem): PlanItem {
@@ -515,6 +530,16 @@ export function PlanPage() {
 		},
 	})
 
+	const { mutate: updateScheduleMutate } = useMutation({
+		mutationFn: updateSchedule,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+				setEditingId(null)
+			}
+		},
+	})
+
 	const toggleCompleted = (id: number) => {
 		const item = items.find((i) => i.id === id)
 		if (!item) return
@@ -526,8 +551,26 @@ export function PlanPage() {
 	const editingItem =
 		editingId !== null ? items.find((i) => i.id === editingId) : undefined
 
-	const handleSave = (_updated: PlanItem) => {
-		// phase 2: wire to create/update API
+	const handleSave = (updated: PlanItem) => {
+		if (editingId !== null && updated.type === 'todo' && updated.date) {
+			const endDateTime = updated.time
+				? `${updated.date}T${updated.time}`
+				: `${updated.date}T23:59:59`
+			updateScheduleMutate({
+				taskId: updated.id,
+				title: updated.title,
+				endDateTime,
+				isAllDay: !updated.time,
+				isImportant: updated.starred,
+				category: updated.category
+					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					: 'NONE',
+				isPublic: updated.isPublic ?? false,
+				memo: updated.memo,
+			})
+			return
+		}
+		// routine 수정 및 신규 생성 - phase 2
 		setEditingId(null)
 		setIsAdding(false)
 	}
