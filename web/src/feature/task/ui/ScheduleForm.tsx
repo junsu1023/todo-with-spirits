@@ -46,6 +46,11 @@ interface ScheduleFormProps {
 	dateStr: string
 }
 
+function nowTimeStr() {
+	const d = new Date()
+	return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 	const queryClient = useQueryClient()
 
@@ -56,7 +61,7 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 				title: '',
 				endDate: '',
 				isAllDay: true,
-				endTime: '',
+				endTime: nowTimeStr(),
 				isImportant: false,
 			},
 		})
