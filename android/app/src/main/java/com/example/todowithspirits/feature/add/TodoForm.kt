@@ -56,7 +56,7 @@ fun TodoForm(
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingCheckboxItem(
-                icon = painterResource(R.drawable.todo_important2),
+                icon = painterResource(R.drawable.todo_important_20),
                 label = stringResource(R.string.important),
                 checked = uiState.isImportant,
                 onCheckedChange = onImportantChange
