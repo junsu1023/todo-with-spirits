@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -295,7 +296,9 @@ fun PlanListItem(
                         Text(
                             text = "(${item.memo.ifEmpty { "메모 없음" }})",
                             fontSize = 14.sp,
-                            color = SpiritTodoTheme.color.onSurfaceColor8
+                            color = SpiritTodoTheme.color.onSurfaceColor8,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
