@@ -36,7 +36,9 @@ export const completeTask = ({
 	date?: string
 }) =>
 	apiClient
-		.post(`api/task/${taskId}/complete`, { json: date ? { date } : {} })
+		.post(`api/task/${taskId}/complete`, {
+			searchParams: date ? { date } : {},
+		})
 		.json<ApiResponse<null>>()
 
 export const uncompleteTask = ({
@@ -47,5 +49,7 @@ export const uncompleteTask = ({
 	date?: string
 }) =>
 	apiClient
-		.delete(`api/task/${taskId}/complete`, { json: date ? { date } : {} })
+		.delete(`api/task/${taskId}/complete`, {
+			searchParams: date ? { date } : {},
+		})
 		.json<ApiResponse<null>>()
