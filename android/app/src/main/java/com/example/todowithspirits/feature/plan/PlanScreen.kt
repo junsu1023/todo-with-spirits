@@ -250,7 +250,8 @@ fun PlanScreen(
                                 planViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
                             }
                         },
-                        navigateToDetail = { navigateToDetail(item.id) }
+                        navigateToDetail = { navigateToDetail(item.id) },
+                        resetKey = uiState.selectedTab to uiState.sortOption
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
