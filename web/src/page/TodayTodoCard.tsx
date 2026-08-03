@@ -149,11 +149,12 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 				<div className="flex flex-1 flex-col gap-4">
 					<p className="font-semibold text-gray-700">To do</p>
 					{displayedTodos.length === 0 && (
-						<p className="text-sm text-gray-400">
-							{mainTab === 'todo'
-								? '아직 등록된 할 일이 없습니다'
-								: '완료된 할 일이 없습니다'}
-						</p>
+						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
+							<span className="text-2xl font-bold">미정</span>
+							<span className="text-xs">
+								{mainTab === 'todo' ? '이 날의 할 일이 없어요' : '완료된 할 일이 없어요'}
+							</span>
+						</div>
 					)}
 					{displayedTodos.map((todo) => (
 						<div key={todo.taskId} className="flex items-center gap-3">
@@ -200,11 +201,12 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 				<div className="flex flex-1 flex-col gap-4">
 					<p className="font-semibold text-gray-700">루틴</p>
 					{displayedRoutines.length === 0 && (
-						<p className="text-sm text-gray-400">
-							{mainTab === 'todo'
-								? '아직 등록된 루틴이 없습니다'
-								: '완료한 루틴이 없습니다'}
-						</p>
+						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
+							<span className="text-2xl font-bold">미정</span>
+							<span className="text-xs">
+								{mainTab === 'todo' ? '이 날의 루틴이 없어요' : '완료한 루틴이 없어요'}
+							</span>
+						</div>
 					)}
 					{displayedRoutines.map((routine) => (
 						<div key={routine.taskId} className="flex items-center gap-3">
