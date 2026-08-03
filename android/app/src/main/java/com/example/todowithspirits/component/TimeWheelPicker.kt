@@ -37,7 +37,7 @@ fun TimeWheelPicker(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(ITEM_HEIGHT * VISIBLE_ITEMS_COUNT),
         contentAlignment = Alignment.Center
     ) {
         Box(
