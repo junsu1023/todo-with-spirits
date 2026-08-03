@@ -171,7 +171,7 @@ fun QuickAddBottomPopup(
                             modifier = Modifier
                                 .size(26.dp)
                                 .noRippleClickable { isImportant = !isImportant },
-                            painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important2),
+                            painter = if(isImportant) painterResource(R.drawable.todo_important) else painterResource(R.drawable.todo_important_26),
                             contentDescription = null,
                         )
                     }

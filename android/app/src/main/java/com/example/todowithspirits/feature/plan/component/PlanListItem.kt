@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,7 +67,8 @@ fun PlanListItem(
     onEdit: () -> Unit,
     onPostpone: () -> Unit,
     onToggleComplete: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToDetail: () -> Unit,
+    resetKey: Any? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -74,6 +77,15 @@ fun PlanListItem(
     val maxReveal = remember(density) { with(density) { -rightPanelWidthDp.toPx() } }
     val maxPostpone = remember(density) { with(density) { leftPanelWidthDp.toPx() } }
     val offsetX = remember { Animatable(0f) }
+
+    // The item stays composed (same key) when the tab or sort dropdown just reorders/filters
+    // the list without removing it, so a revealed swipe offset would otherwise persist. Snap
+    // it back closed whenever the caller signals that surrounding context changed.
+    LaunchedEffect(resetKey) {
+        if (offsetX.value != 0f) {
+            offsetX.animateTo(0f, spring())
+        }
+    }
 
     /* 드래그가 시작된 시점의 앵커(닫힘/왼쪽 열림/오른쪽 열림)에 인접한 한 단계 범위로만
        이동을 제한한다. 예를 들어 왼쪽으로 열린 상태라면 [maxReveal, 0] 범위 안에서만
@@ -295,7 +307,9 @@ fun PlanListItem(
                         Text(
                             text = "(${item.memo.ifEmpty { "메모 없음" }})",
                             fontSize = 14.sp,
-                            color = SpiritTodoTheme.color.onSurfaceColor8
+                            color = SpiritTodoTheme.color.onSurfaceColor8,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
