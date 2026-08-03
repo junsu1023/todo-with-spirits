@@ -306,14 +306,19 @@ private fun WeeklyCalendarStrip(
                 Spacer(Modifier.height(6.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    eventTypes.take(2).forEach { type ->
+                    if (eventTypes.contains(PlanType.TODO)) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
-                                .background(
-                                    color = if(type == PlanType.TODO) todoColor else routineColor,
-                                    shape = CircleShape
-                                )
+                                .background(color = todoColor, shape = CircleShape)
+                        )
+                    }
+
+                    if (eventTypes.contains(PlanType.ROUTINE)) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(color = routineColor, shape = CircleShape)
                         )
                     }
 
