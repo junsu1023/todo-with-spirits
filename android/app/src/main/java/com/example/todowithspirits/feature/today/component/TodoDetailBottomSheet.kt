@@ -106,8 +106,7 @@ fun TodoDetailBottomSheet(
                             .padding(top = 16.dp)
                     ) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Row(
@@ -166,6 +165,7 @@ fun TodoDetailBottomSheet(
                         Text(
                             text = dDayText,
                             fontSize = 22.sp,
+                            fontWeight = FontWeight.Medium,
                             color = SpiritTodoTheme.color.mainTextAndStroke,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
@@ -174,13 +174,25 @@ fun TodoDetailBottomSheet(
                         Spacer(Modifier.height(12.dp))
                     }
 
-                    Text(
-                        text = memo.ifEmpty { "메모 없음" },
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.surfaceColor10,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(39.dp)
+                            .background(
+                                color = SpiritTodoTheme.color.systemBackground,
+                                shape = RoundedCornerShape(6.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = memo.ifEmpty { "메모 없음" },
+                            fontSize = 14.sp,
+                            color = SpiritTodoTheme.color.systemGrey,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            maxLines = 1
+                        )
+                    }
 
                     Spacer(Modifier.height(12.dp))
 
