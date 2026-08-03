@@ -155,18 +155,33 @@ interface PlanItemFormProps {
 	mode?: 'create' | 'edit'
 }
 
+function todayStr() {
+	const d = new Date()
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function nowTimeStr() {
+	const d = new Date()
+	return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export function PlanItemForm({
 	item,
 	onSave,
 	onCancel,
 	mode = 'edit',
 }: PlanItemFormProps) {
+	const isCreate = mode === 'create'
 	const [title, setTitle] = useState(item.title)
 	const [type, setType] = useState<ItemType>(item.type)
 	const [starred, setStarred] = useState(item.starred)
-	const [date, setDate] = useState(item.date ?? '')
+	const [date, setDate] = useState(
+		() => item.date ?? (isCreate ? todayStr() : ''),
+	)
 	const [timeEnabled, setTimeEnabled] = useState(!!item.time)
-	const [time, setTime] = useState(item.time ?? '')
+	const [time, setTime] = useState(
+		() => item.time ?? (isCreate ? nowTimeStr() : ''),
+	)
 	const [repeatType, setRepeatType] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>(
 		item.repeatType ?? 'DAILY',
 	)

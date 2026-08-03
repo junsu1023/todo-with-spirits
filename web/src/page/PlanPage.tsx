@@ -374,6 +374,18 @@ function PlanTaskList({
 
 			{/* Item list */}
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-1">
+				{filtered.length === 0 && (
+					<div className="flex flex-1 flex-col items-center justify-center gap-2 py-12 text-gray-300">
+						<span className="text-4xl font-bold">미정</span>
+						<span className="text-sm">
+							{tab === 'To do'
+								? '이 날의 할 일이 없어요'
+								: tab === '루틴'
+									? '이 날의 루틴이 없어요'
+									: '이 날의 일정이 없어요'}
+						</span>
+					</div>
+				)}
 				{filtered.map((item) => (
 					<div
 						key={item.id}
