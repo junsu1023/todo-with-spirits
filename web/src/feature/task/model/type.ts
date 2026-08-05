@@ -87,3 +87,11 @@ export interface CreateRoutineRequest {
 	isPublic?: boolean
 	memo?: string
 }
+
+export interface DeleteTaskRequest {
+	taskIds: number[]
+}
+
+export interface DeleteTaskResponse {
+	deletedCount: number
+}

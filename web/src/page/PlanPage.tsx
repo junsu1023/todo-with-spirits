@@ -15,6 +15,7 @@ import { getTaskCalendar } from '@/entity/task'
 import type { Category } from '@/entity/task/model/type'
 import {
 	completeTask,
+	deleteTasks,
 	uncompleteTask,
 	updateRoutine,
 	updateSchedule,
@@ -577,6 +578,19 @@ export function PlanPage() {
 		},
 	})
 
+	const { mutate: deleteTasksMutate } = useMutation({
+		mutationFn: deleteTasks,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+			}
+		},
+	})
+
+	const handleDelete = (id: number) => {
+		deleteTasksMutate({ taskIds: [id] })
+	}
+
 	const toggleCompleted = (id: number) => {
 		const item = items.find((i) => i.id === id)
 		if (!item) return
@@ -679,7 +693,7 @@ export function PlanPage() {
 							items={items}
 							onToggle={toggleCompleted}
 							onEdit={setEditingId}
-							onDelete={() => {}}
+							onDelete={handleDelete}
 							onPostpone={() => {}}
 							onAdd={() => setIsAdding(true)}
 						/>
