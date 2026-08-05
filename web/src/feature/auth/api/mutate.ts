@@ -6,3 +6,8 @@ export const loginApi = (body: LoginFormValues) =>
   apiClient
     .post('api/auth/login', { json: body })
     .json<ApiResponse<loginResponse>>()
+
+export const logoutApi = () =>
+  apiClient
+    .post('api/auth/logout')
+    .json<ApiResponse<null>>()
