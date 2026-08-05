@@ -27,21 +27,39 @@ class SignUpViewModel @Inject constructor(
     val uiState: StateFlow<SignUpUiState> get() = _uiState.asStateFlow()
 
     fun setEmail(email: String) {
-        _uiState.update { it.copy(email = email, fieldErrors = it.fieldErrors - "email") }
+        _uiState.update {
+            it.copy(
+                email = email,
+                fieldErrors = it.fieldErrors - "email"
+            )
+        }
     }
 
     fun setPassword(password: String) {
-        _uiState.update { it.copy(password = password, fieldErrors = it.fieldErrors - "password") }
+        _uiState.update {
+            it.copy(
+                password = password,
+                fieldErrors = it.fieldErrors - "password" - "confirmPassword"
+            )
+        }
     }
 
     fun setConfirmPassword(confirmPassword: String) {
         _uiState.update {
-            it.copy(confirmPassword = confirmPassword, fieldErrors = it.fieldErrors - "confirmPassword")
+            it.copy(
+                confirmPassword = confirmPassword,
+                fieldErrors = it.fieldErrors - "confirmPassword"
+            )
         }
     }
 
     fun setNickname(nickname: String) {
-        _uiState.update { it.copy(nickname = nickname, fieldErrors = it.fieldErrors - "nickname") }
+        _uiState.update {
+            it.copy(
+                nickname = nickname,
+                fieldErrors = it.fieldErrors - "nickname"
+            )
+        }
     }
 
     fun validateCredentials() {
