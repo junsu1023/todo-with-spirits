@@ -1,20 +1,27 @@
 package com.example.todowithspirits.feature.signup
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -141,10 +149,12 @@ private fun CredentialsStep(
 
     val focusManager = LocalFocusManager.current
 
+    val density = LocalDensity.current
+    val imeBottomDp = with(density) { WindowInsets.ime.getBottom(density).toDp() }
+    val bottomSpacerHeight = (60.dp - imeBottomDp).coerceAtLeast(1.dp)
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         TitleHeader(
             leftIconRes = R.drawable.todo_back1,
@@ -204,16 +214,34 @@ private fun CredentialsStep(
                 isError = uiState.fieldErrors["password"] != null
             )
 
-            Spacer(Modifier.height(16.dp))
+            AnimatedVisibility(
+                visible = uiState.password.length >= 8,
+                enter = fadeIn(animationSpec = tween(700)) +
+                    slideInVertically(
+                        animationSpec = tween(700),
+                        initialOffsetY = { -it / 2 }
+                    ),
+                exit = fadeOut(animationSpec = tween(700)) +
+                    slideOutVertically(
+                        animationSpec = tween(700),
+                        targetOffsetY = { -it / 2 }
+                    )
+            ) {
+                Column {
+                    Spacer(Modifier.height(16.dp))
 
-            PasswordField(
-                value = uiState.confirmPassword,
-                onValueChange = onConfirmPasswordChange,
-                placeholder = stringResource(R.string.password_confirm_placeholder),
-                isError = uiState.fieldErrors["confirmPassword"] != null
-            )
+                    PasswordField(
+                        value = uiState.confirmPassword,
+                        onValueChange = onConfirmPasswordChange,
+                        placeholder = stringResource(R.string.password_confirm_placeholder),
+                        isError = uiState.fieldErrors["confirmPassword"] != null
+                    )
 
-            uiState.fieldErrors["confirmPassword"]?.let { FieldHintText(text = it, isError = true) }
+                    uiState.fieldErrors["confirmPassword"]?.let { FieldHintText(text = it, isError = true) }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
         }
 
         Spacer(Modifier.weight(1f))
@@ -226,13 +254,14 @@ private fun CredentialsStep(
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.next),
                 enabled = canProceed,
+                modifier = Modifier.imePadding(),
                 onClick = {
                     focusManager.clearFocus()
                     onNext()
                 }
             )
 
-            Spacer(Modifier.height(60.dp))
+            Spacer(Modifier.height(bottomSpacerHeight))
         }
     }
 }
