@@ -158,28 +158,7 @@ fun PlanScreen(
             }
         }
 
-        if (sortedPlans.isEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.todo_empty),
-                        contentDescription = null
-                    )
-
-                    Text(
-                        text = stringResource(R.string.empty_plans),
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.systemGrey
-                    )
-                }
-            }
-        } else {
+        if(uiState.plans.isNotEmpty()) {
             item {
                 Column {
                     Row(
@@ -235,7 +214,30 @@ fun PlanScreen(
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
+        }
 
+        if (sortedPlans.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.todo_empty),
+                        contentDescription = null
+                    )
+
+                    Text(
+                        text = stringResource(R.string.empty_plans),
+                        fontSize = 14.sp,
+                        color = SpiritTodoTheme.color.systemGrey
+                    )
+                }
+            }
+        } else {
             items(sortedPlans, key = { it.id }) { item ->
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
