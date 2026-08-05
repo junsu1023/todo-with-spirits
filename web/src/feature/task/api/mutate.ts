@@ -3,6 +3,8 @@ import { type ApiResponse, apiClient } from '@/lib/api'
 import type {
 	CreateRoutineRequest,
 	CreateScheduleRequest,
+	DeleteTaskRequest,
+	DeleteTaskResponse,
 	RoutineDetail,
 	UpdateRoutineRequest,
 	UpdateScheduleRequest,
@@ -53,3 +55,8 @@ export const uncompleteTask = ({
 			searchParams: date ? { date } : {},
 		})
 		.json<ApiResponse<null>>()
+
+export const deleteTasks = (body: DeleteTaskRequest) =>
+	apiClient
+		.delete('api/task', { json: body })
+		.json<ApiResponse<DeleteTaskResponse>>()
