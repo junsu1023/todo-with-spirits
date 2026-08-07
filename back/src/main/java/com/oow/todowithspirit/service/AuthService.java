@@ -4,23 +4,25 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.auth.RefreshToken;
 import com.oow.todowithspirit.domain.auth.RefreshTokenRepository;
-import com.oow.todowithspirit.domain.spirit.Spirit;
 import com.oow.todowithspirit.domain.spirit.SpiritRepository;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -101,6 +103,28 @@ public class AuthService {
         refreshTokenRepository.deleteAllByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
+    public User findOrCreate(SocialLoginRequest request) {
+        String provider = request.getProvider().toLowerCase();
+        String providerUserId = request.getProviderUserId();
+
+        validateProvider(provider);
+        if (!StringUtils.hasText(providerUserId)) {
+            throw new BusinessException(ErrorCode.MISSING_PROVIDER_USER_ID, "providerUserId", ErrorCode.MISSING_PROVIDER_USER_ID.getMessage());
+        }
+
+        log.debug("[findOrCreate] Searching for exisiting user. provider = {}, providerUserId = {}", provider, providerUserId);
+        Users user = usersRepository.findByProviderAndProviderUserId(provider, providerUserId);
+
+        if (user == null) {
+            log.info("[findOrCreate] User not found. Create new user");
+            user = insertOne(request);
+        }
+        log.info("[findOrCreate] Proceeding to login. userId = {}", user.getUserId());
+        return user;
+    }
+
+
     private String generateDefaultNickname() {
         int suffix = ThreadLocalRandom.current().nextInt(1000, 9999);
         return "정령유저_" + suffix;
@@ -108,5 +132,28 @@ public class AuthService {
 
     private LocalDateTime refreshTokenExpiresAt() {
         return LocalDateTime.now().plusSeconds(jwtProvider.getRefreshTokenExpirationMs() / 1000);
+    }
+
+    private void validateProvider(String provider) {
+        if (!StringUtils.hasText(provider)) {
+            throw new ApiException(ErrorCode.MISSING_PROVIDER, "provider", ErrorCode.MISSING_PROVIDER.getMessage());
+        }
+
+        if (!provider.equals("google") && !provider.equals("kakao") && !provider.equals("apple")) {
+            log.warn("[validProvider] Invalid provider [{}]", provider);
+            throw new ApiException(ErrorCode.INVALID_PROVIDER, "provider", provider);
+        }
+    }
+
+    public void updateToken(UUID userId, String refreshToken) {
+        log.debug("[updateToken] Updating refresh token. userId = {}", userId);
+        UserToken userToken = tokenRepository.findByUserId(userId);
+        if (userToken != null) {
+            userToken.setRefreshToken(refreshToken);
+            userToken.setExpireDate(LocalDateTime.now().plusDays(7)); // 7-days
+            log.info("[updateToken] Tokens updated successfully. userId = {}", userId);
+        } else {
+            log.error("[updateToken] Failed to update tokens. UserToken record not found. userId = {}", userId);
+        }
     }
 }
