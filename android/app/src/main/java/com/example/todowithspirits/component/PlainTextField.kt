@@ -69,7 +69,7 @@ fun PlainTextField(
                 width = 1.dp,
                 color = when {
                     isFocused -> SpiritTodoTheme.color.mainTextAndStroke
-                    isError -> SpiritTodoTheme.color.onSurfaceColor7
+                    isError -> SpiritTodoTheme.color.systemRed
                     else -> SpiritTodoTheme.color.systemArea
                 },
                 shape = RoundedCornerShape(6.dp)

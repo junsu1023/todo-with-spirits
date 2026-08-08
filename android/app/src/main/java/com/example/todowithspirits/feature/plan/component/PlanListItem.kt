@@ -153,14 +153,14 @@ fun PlanListItem(
                         .weight(1f)
                         .fillMaxWidth()
                         .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
-                        .border(1.dp, SpiritTodoTheme.color.onSurfaceColor7, RoundedCornerShape(6.dp))
+                        .border(1.dp, SpiritTodoTheme.color.systemRed, RoundedCornerShape(6.dp))
                         .noRippleClickable(onClick = closeThen(onDelete)),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(R.drawable.fi_rr_trash),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.onSurfaceColor7)
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemRed)
                     )
                 }
 
