@@ -127,9 +127,8 @@ class SignUpViewModel @Inject constructor(
         }
 
         cancelVerificationTimer()
-        _uiState.update { it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME) }
 
-//        signUp()
+        signUp(onSuccess = { _uiState.update { it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME) } })
     }
 
     private fun startVerificationTimer() {
@@ -183,7 +182,7 @@ class SignUpViewModel @Inject constructor(
                     Log.d(TAG, "signUp success = $it")
 
                     loginUseCase(state.email, state.password)
-                        .onSuccess { _uiState.update { it.copy(step = SignUpStep.NICKNAME) } }
+                        .onSuccess { onSuccess() }
                         .onFailure { error ->
                             Log.e(TAG, "auto login after signUp failed!", error)
                             emitErrorMsg("회원가입은 완료되었지만 자동 로그인에 실패했습니다. 다시 로그인해주세요")

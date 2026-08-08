@@ -34,8 +34,6 @@ import com.example.todowithspirits.util.ToastUtil
 
 enum class SignUpStep { CREDENTIALS, EMAIL_VERIFICATION, NICKNAME }
 
-
-
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel(),
@@ -85,6 +83,7 @@ fun SignUpScreen(
                 onNicknameChange = signUpViewModel::setNickname,
                 onSignUpClick = {
                     ToastUtil.show(context, "회원가입이 완료되었습니다")
+                    /* TODO 프로필 수정 api 구현 이후 추가하기 > 닉네임 수정 용 */
                     onSignUpSuccess()
                 }
             )
