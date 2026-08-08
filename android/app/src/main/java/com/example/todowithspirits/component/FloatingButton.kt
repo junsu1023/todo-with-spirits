@@ -15,8 +15,10 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun FloatingButton(onClick: () -> Unit) {
+    val throttledOnClick = rememberThrottledOnClick(onClick = onClick)
+
     FloatingActionButton(
-        onClick = onClick,
+        onClick = throttledOnClick,
         modifier = Modifier
             .size(50.dp)
             .border(

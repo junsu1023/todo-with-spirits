@@ -91,8 +91,10 @@ fun SpiritsTodoPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val throttledOnClick = rememberThrottledOnClick(onClick = onClick)
+
     Button(
-        onClick = onClick,
+        onClick = throttledOnClick,
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()

@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.component.throttleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -29,7 +29,7 @@ fun AddPlanButton(navigateToAdd: () -> Unit) {
             .padding(horizontal = 16.dp)
             .height(42.dp)
             .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(6.dp))
-            .noRippleClickable { navigateToAdd() },
+            .throttleClickable(showRipple = false) { navigateToAdd() },
         contentAlignment = Alignment.Center
     ) {
         Row(

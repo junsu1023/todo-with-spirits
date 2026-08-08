@@ -33,6 +33,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,6 +59,7 @@ import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomBarHeight
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.component.throttleClickable
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
@@ -407,18 +409,17 @@ fun QuickAddBottomPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.fi_rr_plus),
+                        painter = painterResource(R.drawable.todo_cross),
                         contentDescription = null,
                         tint = SpiritTodoTheme.color.systemGrey,
-                        modifier = Modifier
-                            .rotate(45f)
-                            .noRippleClickable { onDismiss() }
+                        modifier = Modifier.noRippleClickable { onDismiss() }
                     )
 
                     Image(
-                        painter = painterResource(R.drawable.fi_rr_plus),
+                        painter = painterResource(R.drawable.todo_plus),
                         contentDescription = null,
-                        modifier = Modifier.noRippleClickable {
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
+                        modifier = Modifier.throttleClickable(showRipple = false) {
                             if(title.isNotBlank()) {
                                 if(selectedTab == routineText) {
                                     quickAddViewModel.createRoutine(
