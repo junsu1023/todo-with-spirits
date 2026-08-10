@@ -55,6 +55,15 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
+    public static User ofSocialSignup(String email, String nickname) {
+        User user = new User();
+        user.email = email;
+        user.nickname = nickname;
+        user.role = UserRole.USER;
+        user.isPremium = false;
+        return user;
+    }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
