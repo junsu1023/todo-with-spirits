@@ -28,7 +28,6 @@ private const val REPEAT_COUNT = 300
 fun TimeWheelPicker(
     initialHour: Int = 0,
     initialMinute: Int = 0,
-    textSize: Int,
     onTimeSelected: (Int, Int) -> Unit
 ) {
     var selectedHour by remember { mutableIntStateOf(initialHour) }
@@ -57,7 +56,6 @@ fun TimeWheelPicker(
             WheelColumn(
                 items = HOURS,
                 initialIndex = initialHour,
-                textSize = textSize,
                 onItemSelected = {
                     selectedHour = it
                     onTimeSelected(selectedHour, selectedMinute)
@@ -66,7 +64,7 @@ fun TimeWheelPicker(
 
             Text(
                 text = ":",
-                fontSize = textSize.sp,
+                fontSize = 28.sp,
                 modifier = Modifier.padding(horizontal = 12.dp),
                 color = SpiritTodoTheme.color.mainTextAndStroke
             )
@@ -74,7 +72,6 @@ fun TimeWheelPicker(
             WheelColumn(
                 items = MINUTES,
                 initialIndex = initialMinute,
-                textSize = textSize,
                 onItemSelected = {
                     selectedMinute = it
                     onTimeSelected(selectedHour, selectedMinute)
@@ -88,7 +85,6 @@ fun TimeWheelPicker(
 private fun WheelColumn(
     items: List<Int>,
     initialIndex: Int,
-    textSize: Int,
     onItemSelected: (Int) -> Unit
 ) {
     val itemCount = items.size
@@ -117,7 +113,7 @@ private fun WheelColumn(
 
     Box(
         modifier = Modifier
-            .width(if(textSize == 18) 22.dp else 35.dp)
+            .width(35.dp)
             .height(ITEM_HEIGHT * VISIBLE_ITEMS_COUNT),
         contentAlignment = Alignment.Center
     ) {
@@ -159,7 +155,7 @@ private fun WheelColumn(
                 ) {
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
-                        fontSize = textSize.sp,
+                        fontSize = 28.sp,
                         color = if(selectedIndex == index) SpiritTodoTheme.color.mainTextAndStroke
                                 else SpiritTodoTheme.color.onSurfaceColor8
                     )
