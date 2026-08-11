@@ -197,7 +197,7 @@ fun CalendarView(
                             Box(
                                 modifier = Modifier
                                     .padding(top = 4.dp)
-                                    .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(2.dp))
+                                    .background(SpiritTodoTheme.color.mainBackground, RoundedCornerShape(2.dp))
                                     .padding(horizontal = 4.dp)
                             ) {
                                 Text(

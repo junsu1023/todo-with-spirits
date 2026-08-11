@@ -71,7 +71,7 @@ fun MySpiritCard(
             Column(modifier = Modifier.weight(1f)) {
                 Box(
                     modifier = Modifier
-                        .background(SpiritTodoTheme.color.surfaceColor14, RoundedCornerShape(4.dp))
+                        .background(SpiritTodoTheme.color.mainBackground, RoundedCornerShape(4.dp))
                         .padding(horizontal = 6.dp, vertical = 4.dp)
                 ) {
                     Text(

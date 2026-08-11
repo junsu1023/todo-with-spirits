@@ -2,6 +2,9 @@ package com.example.todowithspirits.feature.today.component
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
@@ -45,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -57,9 +62,11 @@ import androidx.core.content.ContextCompat.getString
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.BottomBarHeight
+import com.example.todowithspirits.component.QuickAddPopupBottomInset
+import com.example.todowithspirits.component.QuickAddPopupIconBadgeSize
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.component.throttleClickable
+import com.example.todowithspirits.component.QuickAddSharedKeys
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
@@ -82,8 +89,11 @@ private val routineRepeatOptions = listOf(
     RepeatOption.MONTHLY.displayName
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun QuickAddBottomPopup(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     quickAddViewModel: QuickAddViewModel = hiltViewModel(),
     onDismiss: () -> Unit
 ) {
@@ -114,9 +124,10 @@ fun QuickAddBottomPopup(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val restingBottomInsets = WindowInsets.navigationBars.add(WindowInsets(bottom = BottomBarHeight))
+    val restingBottomInsets = WindowInsets.navigationBars.add(WindowInsets(bottom = QuickAddPopupBottomInset))
     val bottomInsets = WindowInsets.ime.union(restingBottomInsets)
 
+    with(sharedTransitionScope) { with(animatedVisibilityScope) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -135,6 +146,18 @@ fun QuickAddBottomPopup(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
+                .sharedBounds(
+                    rememberSharedContentState(key = QuickAddSharedKeys.CONTAINER),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    // RemeasureToBounds는 애니메이션 중 매 프레임 실제 크기 제약을 걸어 자식을 다시 레이아웃한다.
+                    // 이 팝업의 자식(Column)은 탭/텍스트필드 등 텍스트 콘텐츠가 커서, 전환 초반 아직 작은
+                    // bounds로 강제로 눌리면서 세로로 다 안 들어가 위쪽 테두리가 잘려 보였다.
+                    // scaleToBounds(Fit)는 자식을 원래(안정된) 크기로 먼저 측정한 뒤 화면에 그릴 때만
+                    // 비율 유지로 축소/확대하므로, 눌려서 잘리는 대신 전체가 작게 보였다가 커지는 식으로
+                    // 부드럽게 이어진다.
+                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(ContentScale.Fit),
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(12.dp))
+                )
                 .noRippleClickable {
                     if(isTitleFocused) {
                         keyboardController?.hide()
@@ -150,6 +173,10 @@ fun QuickAddBottomPopup(
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp)
                     .padding(top = 14.dp, bottom = 12.dp)
+                    .animateEnterExit(
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    )
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -415,43 +442,55 @@ fun QuickAddBottomPopup(
                         modifier = Modifier.noRippleClickable { onDismiss() }
                     )
 
-                    Image(
-                        painter = painterResource(R.drawable.todo_plus),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
-                        modifier = Modifier.throttleClickable(showRipple = false) {
-                            if(title.isNotBlank()) {
-                                if(selectedTab == routineText) {
-                                    quickAddViewModel.createRoutine(
-                                        title = title,
-                                        repeatOption = repeatOption,
-                                        selectedWeekDays = selectedWeekDays,
-                                        selectedMonthDays = selectedMonthDays,
-                                        onSuccess = {
-                                            ToastUtil.show(context, "루틴 추가 성공!")
-                                            onDismiss()
-                                        }
-                                    )
-                                } else {
-                                    quickAddViewModel.createTodo(
-                                        title = title,
-                                        isImportant = isImportant,
-                                        date = selectedDate ?: LocalDate.now(),
-                                        isTimeEnabled = isTimeEnabled,
-                                        dueTime = selectedTime,
-                                        onSuccess = {
-                                            ToastUtil.show(context, "Todo 추가 성공!")
-                                            onDismiss()
-                                        }
-                                    )
+                    Box(
+                        modifier = Modifier
+                            .size(QuickAddPopupIconBadgeSize)
+                            .background(color = SpiritTodoTheme.color.mainBackground, CircleShape)
+                            .throttleClickable(showRipple = false) {
+                                if(title.isNotBlank()) {
+                                    if(selectedTab == routineText) {
+                                        quickAddViewModel.createRoutine(
+                                            title = title,
+                                            repeatOption = repeatOption,
+                                            selectedWeekDays = selectedWeekDays,
+                                            selectedMonthDays = selectedMonthDays,
+                                            onSuccess = {
+                                                ToastUtil.show(context, "루틴 추가 성공!")
+                                                onDismiss()
+                                            }
+                                        )
+                                    } else {
+                                        quickAddViewModel.createTodo(
+                                            title = title,
+                                            isImportant = isImportant,
+                                            date = selectedDate ?: LocalDate.now(),
+                                            isTimeEnabled = isTimeEnabled,
+                                            dueTime = selectedTime,
+                                            onSuccess = {
+                                                ToastUtil.show(context, "Todo 추가 성공!")
+                                                onDismiss()
+                                            }
+                                        )
+                                    }
                                 }
-                            }
-                        }
-                    )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.todo_plus),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = QuickAddSharedKeys.ICON),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        )
+                    }
                 }
             }
         }
     }
+    } }
 }
 
 @Composable
