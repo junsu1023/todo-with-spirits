@@ -368,7 +368,6 @@ fun QuickAddBottomPopup(
                                             TimeWheelPicker(
                                                 initialHour = selectedTime.hour,
                                                 initialMinute = selectedTime.minute,
-                                                textSize = 18,
                                                 onTimeSelected = { h, m ->
                                                     selectedTime = LocalTime.of(h, m)
                                                 }

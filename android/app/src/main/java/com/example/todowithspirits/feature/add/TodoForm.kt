@@ -95,7 +95,6 @@ fun TodoForm(
                             TimeWheelPicker(
                                 initialHour = uiState.dueTime.hour,
                                 initialMinute = uiState.dueTime.minute,
-                                textSize = 28,
                                 onTimeSelected = { h, m ->
                                     onDueTimeChange(LocalTime.of(h, m))
                                 }
