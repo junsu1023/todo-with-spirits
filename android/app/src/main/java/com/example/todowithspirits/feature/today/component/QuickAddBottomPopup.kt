@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -148,7 +149,13 @@ fun QuickAddBottomPopup(
                 .sharedBounds(
                     rememberSharedContentState(key = QuickAddSharedKeys.CONTAINER),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                    // RemeasureToBounds는 애니메이션 중 매 프레임 실제 크기 제약을 걸어 자식을 다시 레이아웃한다.
+                    // 이 팝업의 자식(Column)은 탭/텍스트필드 등 텍스트 콘텐츠가 커서, 전환 초반 아직 작은
+                    // bounds로 강제로 눌리면서 세로로 다 안 들어가 위쪽 테두리가 잘려 보였다.
+                    // scaleToBounds(Fit)는 자식을 원래(안정된) 크기로 먼저 측정한 뒤 화면에 그릴 때만
+                    // 비율 유지로 축소/확대하므로, 눌려서 잘리는 대신 전체가 작게 보였다가 커지는 식으로
+                    // 부드럽게 이어진다.
+                    resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(ContentScale.Fit),
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(12.dp))
                 )
                 .noRippleClickable {
