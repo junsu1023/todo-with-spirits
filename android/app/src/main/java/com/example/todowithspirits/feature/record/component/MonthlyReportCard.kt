@@ -291,7 +291,7 @@ fun MonthlyReportCard() {
 
                     PillBadge(
                         text = stringResource(R.string.monthly_achievement_rate, 99),
-                        backgroundColor = SpiritTodoTheme.color.surfaceColor14,
+                        backgroundColor = SpiritTodoTheme.color.mainBackground,
                         textColor = SpiritTodoTheme.color.mainTextAndStroke,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.offset(x = (-60).dp, y = (5).dp)
@@ -299,7 +299,7 @@ fun MonthlyReportCard() {
 
                     PillBadge(
                         text = stringResource(R.string.monthly_peer_top, 4),
-                        backgroundColor = SpiritTodoTheme.color.surfaceColor14,
+                        backgroundColor = SpiritTodoTheme.color.mainBackground,
                         textColor = SpiritTodoTheme.color.mainTextAndStroke,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.offset(x = ((-50).dp), y = 25.dp)

@@ -2,6 +2,9 @@ package com.example.todowithspirits.feature.today.component
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
@@ -57,9 +61,11 @@ import androidx.core.content.ContextCompat.getString
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.BottomBarHeight
+import com.example.todowithspirits.component.QuickAddPopupBottomInset
+import com.example.todowithspirits.component.QuickAddPopupIconBadgeSize
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.component.throttleClickable
+import com.example.todowithspirits.component.QuickAddSharedKeys
 import com.example.todowithspirits.component.SelectionTabs
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
@@ -82,8 +88,11 @@ private val routineRepeatOptions = listOf(
     RepeatOption.MONTHLY.displayName
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun QuickAddBottomPopup(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     quickAddViewModel: QuickAddViewModel = hiltViewModel(),
     onDismiss: () -> Unit
 ) {
@@ -114,9 +123,10 @@ fun QuickAddBottomPopup(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val restingBottomInsets = WindowInsets.navigationBars.add(WindowInsets(bottom = BottomBarHeight))
+    val restingBottomInsets = WindowInsets.navigationBars.add(WindowInsets(bottom = QuickAddPopupBottomInset))
     val bottomInsets = WindowInsets.ime.union(restingBottomInsets)
 
+    with(sharedTransitionScope) { with(animatedVisibilityScope) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -135,6 +145,12 @@ fun QuickAddBottomPopup(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
+                .sharedBounds(
+                    rememberSharedContentState(key = QuickAddSharedKeys.CONTAINER),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(12.dp))
+                )
                 .noRippleClickable {
                     if(isTitleFocused) {
                         keyboardController?.hide()
@@ -150,6 +166,10 @@ fun QuickAddBottomPopup(
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp)
                     .padding(top = 14.dp, bottom = 12.dp)
+                    .animateEnterExit(
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    )
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -415,43 +435,55 @@ fun QuickAddBottomPopup(
                         modifier = Modifier.noRippleClickable { onDismiss() }
                     )
 
-                    Image(
-                        painter = painterResource(R.drawable.todo_plus),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
-                        modifier = Modifier.throttleClickable(showRipple = false) {
-                            if(title.isNotBlank()) {
-                                if(selectedTab == routineText) {
-                                    quickAddViewModel.createRoutine(
-                                        title = title,
-                                        repeatOption = repeatOption,
-                                        selectedWeekDays = selectedWeekDays,
-                                        selectedMonthDays = selectedMonthDays,
-                                        onSuccess = {
-                                            ToastUtil.show(context, "루틴 추가 성공!")
-                                            onDismiss()
-                                        }
-                                    )
-                                } else {
-                                    quickAddViewModel.createTodo(
-                                        title = title,
-                                        isImportant = isImportant,
-                                        date = selectedDate ?: LocalDate.now(),
-                                        isTimeEnabled = isTimeEnabled,
-                                        dueTime = selectedTime,
-                                        onSuccess = {
-                                            ToastUtil.show(context, "Todo 추가 성공!")
-                                            onDismiss()
-                                        }
-                                    )
+                    Box(
+                        modifier = Modifier
+                            .size(QuickAddPopupIconBadgeSize)
+                            .background(color = SpiritTodoTheme.color.mainBackground, CircleShape)
+                            .throttleClickable(showRipple = false) {
+                                if(title.isNotBlank()) {
+                                    if(selectedTab == routineText) {
+                                        quickAddViewModel.createRoutine(
+                                            title = title,
+                                            repeatOption = repeatOption,
+                                            selectedWeekDays = selectedWeekDays,
+                                            selectedMonthDays = selectedMonthDays,
+                                            onSuccess = {
+                                                ToastUtil.show(context, "루틴 추가 성공!")
+                                                onDismiss()
+                                            }
+                                        )
+                                    } else {
+                                        quickAddViewModel.createTodo(
+                                            title = title,
+                                            isImportant = isImportant,
+                                            date = selectedDate ?: LocalDate.now(),
+                                            isTimeEnabled = isTimeEnabled,
+                                            dueTime = selectedTime,
+                                            onSuccess = {
+                                                ToastUtil.show(context, "Todo 추가 성공!")
+                                                onDismiss()
+                                            }
+                                        )
+                                    }
                                 }
-                            }
-                        }
-                    )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.todo_plus),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = QuickAddSharedKeys.ICON),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        )
+                    }
                 }
             }
         }
     }
+    } }
 }
 
 @Composable
