@@ -1,7 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
+import ForestPage from '@/page/ForestPage'
 import { JoinPage } from '@/page/JoinPage'
 import { LoginPage } from '@/page/LoginPage'
+import { MePage } from '@/page/MePage'
 import { PlanPage } from '@/page/PlanPage'
+import RecordPage from '@/page/RecordPage'
 import { TodayPage } from '@/page/TodayPage'
 import { AppLayout } from '@/shared/layout/AppLayout'
 import { ROUTES } from '@/shared/routes'
@@ -42,6 +45,18 @@ export const router = createBrowserRouter([
 			{
 				path: ROUTES.PLAN,
 				element: <PlanPage />,
+			},
+			{
+				path: ROUTES.MYPAGE,
+				element: <MePage />,
+			},
+			{
+				path: ROUTES.FOREST,
+				element: <ForestPage />,
+			},
+			{
+				path: ROUTES.RECORD,
+				element: <RecordPage />,
 			},
 		],
 	},

@@ -11,11 +11,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { logoutApi } from '@/feature/auth/api/mutate'
 import { useAuthStore } from '@/feature/auth/model/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar'
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/shared/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import {
 	Sidebar,
 	SidebarContent,
@@ -27,13 +23,14 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/shared/ui/sidebar'
+import { ROUTES } from '../routes'
 
 const navItems = [
-	{ label: 'Today', icon: CalendarDays, href: '/today' },
-	{ label: 'Plan', icon: CalendarRange, href: '/plan' },
-	{ label: 'Forest', icon: TreePine, href: '/forest' },
-	{ label: 'Record', icon: BarChart2, href: '/record' },
-	{ label: 'My Page', icon: User, href: '/my-page' },
+	{ label: 'Today', icon: CalendarDays, href: ROUTES.TODAY },
+	{ label: 'Plan', icon: CalendarRange, href: ROUTES.PLAN },
+	{ label: 'Forest', icon: TreePine, href: ROUTES.FOREST },
+	{ label: 'Record', icon: BarChart2, href: ROUTES.RECORD },
+	{ label: 'MyPage', icon: User, href: ROUTES.MYPAGE },
 ]
 
 export function AppSidebar() {
