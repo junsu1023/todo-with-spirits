@@ -1,3 +1,4 @@
+//todo: 컴포넌트 분리 필요
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
 import { useState } from 'react'
@@ -94,9 +95,7 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 	const displayedTodos =
 		mainTab === 'todo' ? apiTodos : apiTodos.filter((t) => t.isCompleted)
 	const displayedRoutines =
-		mainTab === 'todo'
-			? apiRoutines
-			: apiRoutines.filter((r) => r.isCompleted)
+		mainTab === 'todo' ? apiRoutines : apiRoutines.filter((r) => r.isCompleted)
 
 	const invalidateSchedule = () =>
 		queryClient.invalidateQueries({ queryKey: ['task', 'schedule', dateStr] })
@@ -105,19 +104,27 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 
 	const { mutate: completeTodo } = useMutation({
 		mutationFn: completeTask,
-		onSuccess: (res) => { if (res.result === 'success') invalidateSchedule() },
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateSchedule()
+		},
 	})
 	const { mutate: uncompleteTodo } = useMutation({
 		mutationFn: uncompleteTask,
-		onSuccess: (res) => { if (res.result === 'success') invalidateSchedule() },
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateSchedule()
+		},
 	})
 	const { mutate: completeRoutine } = useMutation({
 		mutationFn: completeTask,
-		onSuccess: (res) => { if (res.result === 'success') invalidateRoutine() },
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateRoutine()
+		},
 	})
 	const { mutate: uncompleteRoutine } = useMutation({
 		mutationFn: uncompleteTask,
-		onSuccess: (res) => { if (res.result === 'success') invalidateRoutine() },
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidateRoutine()
+		},
 	})
 
 	return (
@@ -152,7 +159,9 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
 							<span className="text-2xl font-bold">미정</span>
 							<span className="text-xs">
-								{mainTab === 'todo' ? '이 날의 할 일이 없어요' : '완료된 할 일이 없어요'}
+								{mainTab === 'todo'
+									? '이 날의 할 일이 없어요'
+									: '완료된 할 일이 없어요'}
 							</span>
 						</div>
 					)}
@@ -204,7 +213,9 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
 							<span className="text-2xl font-bold">미정</span>
 							<span className="text-xs">
-								{mainTab === 'todo' ? '이 날의 루틴이 없어요' : '완료한 루틴이 없어요'}
+								{mainTab === 'todo'
+									? '이 날의 루틴이 없어요'
+									: '완료한 루틴이 없어요'}
 							</span>
 						</div>
 					)}
@@ -215,7 +226,10 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 								color="#B2F042"
 								onToggle={() =>
 									routine.isCompleted
-										? uncompleteRoutine({ taskId: routine.taskId, date: dateStr })
+										? uncompleteRoutine({
+												taskId: routine.taskId,
+												date: dateStr,
+											})
 										: completeRoutine({ taskId: routine.taskId, date: dateStr })
 								}
 							/>
