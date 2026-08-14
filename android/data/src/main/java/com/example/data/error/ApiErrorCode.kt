@@ -12,13 +12,14 @@ sealed class ApiErrorCode(val code: String) {
     data object NotFound : ApiErrorCode("NOT_FOUND")
     data object InvalidCredentials : ApiErrorCode("INVALID_CREDENTIALS")
     data class ResourceNotFound(val resource: String) : ApiErrorCode("${resource}_NOT_FOUND")
+    data object SocialProviderUnavailable : ApiErrorCode("SOCIAL_PROVIDER_UNAVAILABLE")
     data class Unknown(val rawCode: String) : ApiErrorCode(rawCode)
 
     companion object {
         private val knownCodes: List<ApiErrorCode> = listOf(
             MissingParameter, InvalidParameter, Unauthorized, TokenExpired,
             Forbidden, Conflict, InternalServerError, ServiceUnavailable, NotFound,
-            InvalidCredentials
+            InvalidCredentials, SocialProviderUnavailable
         )
 
         fun from(code: String): ApiErrorCode {
