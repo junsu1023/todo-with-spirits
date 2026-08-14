@@ -4,6 +4,7 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.dto.auth.KakaoTokenInfoResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,10 +20,12 @@ public class KakaoTokenValidator {
     private static final String TOKEN_INFO_URL = "https://kapi.kakao.com/v1/user/access_token_info";
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final String clientSecret;
 
-    /**
-     * 카카오 액세스 토큰의 유효성을 검사하고, 반환된 유저 ID가 expectedProviderUserId와 일치하는지 확인합니다.
-     */
+    public KakaoTokenValidator(@Value("${kakao.client-secret:}") String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
     public void validate(String accessToken, String expectedProviderUserId) {
         log.info("[validate] Validating Kakao access token for providerUserId = {}", expectedProviderUserId);
 
@@ -37,9 +40,6 @@ public class KakaoTokenValidator {
         log.info("[validate] Kakao token validation successful for providerUserId = {}", expectedProviderUserId);
     }
 
-    /**
-     * 카카오 액세스 토큰으로 토큰 정보(유저 ID 등) 조회
-     */
     public KakaoTokenInfoResponse getTokenInfo(String accessToken) {
         return callTokenInfoApi(accessToken);
     }
