@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.SocialProvider
+import com.example.todowithspirits.BuildConfig
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
@@ -51,7 +52,6 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
     onSignUpClick: () -> Unit,
-    onGoogleLoginClick: () -> Unit = {},
     onEmailLoginClick: () -> Unit,
     onLoginSuccess: () -> Unit = {}
 ) {
@@ -77,6 +77,24 @@ fun LoginScreen(
                 }
                 .onFailure { error ->
                     ToastUtil.show(context, error.localizedMessage ?: "카카오 로그인에 실패했습니다")
+                }
+        }
+    }
+
+    val onGoogleLoginClick: () -> Unit = {
+        scope.launch {
+            runCatching { GoogleLoginClient.login(context, BuildConfig.GOOGLE_WEB_CLIENT_ID) }
+                .onSuccess { googleUser ->
+                    loginViewModel.socialLogin(
+                        provider = SocialProvider.GOOGLE,
+                        providerUserId = googleUser.googleUserId,
+                        providerAccessToken = googleUser.idToken,
+                        email = googleUser.email,
+                        onSuccess = onLoginSuccess
+                    )
+                }
+                .onFailure { error ->
+                    ToastUtil.show(context, error.localizedMessage ?: "구글 로그인에 실패했습니다")
                 }
         }
     }
