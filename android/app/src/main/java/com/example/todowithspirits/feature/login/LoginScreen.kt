@@ -1,5 +1,11 @@
 package com.example.todowithspirits.feature.login
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,25 +24,63 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.SocialProvider
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    onSignUpClick: () -> Unit = {},
-    onKakaoLoginClick: () -> Unit = {},
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    onSignUpClick: () -> Unit,
     onGoogleLoginClick: () -> Unit = {},
-    onEmailLoginClick: () -> Unit = {}
+    onEmailLoginClick: () -> Unit,
+    onLoginSuccess: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
+
+    LaunchedEffect(loginViewModel) {
+        loginViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
+
+    val onKakaoLoginClick: () -> Unit = {
+        scope.launch {
+            runCatching { KakaoLoginClient.login(context) }
+                .onSuccess { kakaoUser ->
+                    loginViewModel.socialLogin(
+                        provider = SocialProvider.KAKAO,
+                        providerUserId = kakaoUser.kakaoUserId,
+                        providerAccessToken = kakaoUser.accessToken,
+                        email = kakaoUser.email,
+                        onSuccess = onLoginSuccess
+                    )
+                }
+                .onFailure { error ->
+                    ToastUtil.show(context, error.localizedMessage ?: "카카오 로그인에 실패했습니다")
+                }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -137,6 +181,34 @@ fun LoginScreen(
                         color = SpiritTodoTheme.color.systemGrey
                     )
                 }
+            }
+        }
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(SpiritTodoTheme.color.dimColor),
+                contentAlignment = Alignment.Center
+            ) {
+                val infiniteTransition = rememberInfiniteTransition(label = "loading")
+                val angle by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "angle"
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.loading_gray),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .graphicsLayer { rotationZ = angle }
+                )
             }
         }
     }
