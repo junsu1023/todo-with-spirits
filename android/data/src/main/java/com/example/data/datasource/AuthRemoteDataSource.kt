@@ -17,8 +17,18 @@ class AuthRemoteDataSource @Inject constructor(
     suspend fun login(email: String, password: String): Result<LoginResponse> =
         apiCall { authApi.login(LoginRequest(email, password)) }
 
-    suspend fun socialLogin(provider: String, providerUserId: String, email: String?): Result<SocialLoginResponse> =
-        apiCall { authApi.socialLogin(SocialLoginRequest(provider, providerUserId, email)) }
+    suspend fun socialLogin(
+        provider: String,
+        providerUserId: String,
+        providerAccessToken: String,
+        email: String?
+    ): Result<SocialLoginResponse> =
+        apiCall {
+            authApi.socialLogin(
+                providerAuthorization = "Bearer $providerAccessToken",
+                request = SocialLoginRequest(provider, providerUserId, email)
+            )
+        }
 
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResponse> =
         apiCall { authApi.signUp(SignUpRequest(email, password, nickname)) }

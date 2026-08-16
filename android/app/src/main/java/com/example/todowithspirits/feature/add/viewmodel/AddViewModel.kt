@@ -135,7 +135,6 @@ class AddViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getTaskUseCase(taskId)
                 .onSuccess { task ->
-                    println("test-kjs: task = $task")
                     val taskType = if(task.taskType == TaskType.ROUTINE.type) TaskType.ROUTINE else TaskType.SCHEDULE
 
                     _uiState.update {

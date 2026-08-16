@@ -10,14 +10,18 @@ import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthApi {
     @POST(URLConstant.LOGIN.LOGIN)
     suspend fun login(@Body request: LoginRequest): Response<ApiResponse<LoginResponse>>
 
-    @POST(URLConstant.LOGIN.LOGIN)
-    suspend fun socialLogin(@Body request: SocialLoginRequest): Response<ApiResponse<SocialLoginResponse>>
+    @POST(URLConstant.LOGIN.SOCIAL_LOGIN)
+    suspend fun socialLogin(
+        @Header("Authorization") providerAuthorization: String,
+        @Body request: SocialLoginRequest
+    ): Response<ApiResponse<SocialLoginResponse>>
 
     @POST(URLConstant.LOGIN.SIGNUP)
     suspend fun signUp(@Body request: SignUpRequest): Response<ApiResponse<SignUpResponse>>

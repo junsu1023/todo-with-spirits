@@ -26,9 +26,10 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun socialLogin(
         provider: SocialProvider,
         providerUserId: String,
+        providerAccessToken: String,
         email: String?
     ): Result<SocialLoginSession> {
-        return authRemoteDataSource.socialLogin(provider.name, providerUserId, email)
+        return authRemoteDataSource.socialLogin(provider.name, providerUserId, providerAccessToken, email)
             .mapCatching { it.toDomain() }
             .onSuccess { session -> persistTokens(session.accessToken, session.refreshToken) }
             .recoverFieldValidationErrors()

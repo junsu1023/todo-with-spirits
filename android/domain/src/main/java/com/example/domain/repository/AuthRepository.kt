@@ -11,6 +11,7 @@ interface AuthRepository {
     suspend fun socialLogin(
         provider: SocialProvider,
         providerUserId: String,
+        providerAccessToken: String,
         email: String?
     ): Result<SocialLoginSession>
 

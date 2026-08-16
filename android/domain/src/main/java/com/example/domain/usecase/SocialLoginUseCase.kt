@@ -11,7 +11,8 @@ class SocialLoginUseCase @Inject constructor(
     suspend operator fun invoke(
         provider: SocialProvider,
         providerUserId: String,
+        providerAccessToken: String,
         email: String? = null
     ): Result<SocialLoginSession> =
-        authRepository.socialLogin(provider, providerUserId, email)
+        authRepository.socialLogin(provider, providerUserId, providerAccessToken, email)
 }

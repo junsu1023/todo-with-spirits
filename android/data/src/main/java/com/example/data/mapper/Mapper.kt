@@ -43,10 +43,11 @@ fun SignUpResponse.toDomain(): SignUpResult = SignUpResult(
 
 fun SocialLoginResponse.toDomain(): SocialLoginSession = SocialLoginSession(
     userId = userId,
+    email = email,
+    nickname = nickname,
     accessToken = accessToken,
     refreshToken = refreshToken,
-    isPremium = premium,
-    isNewUser = isNewUser
+    tokenType = tokenType
 )
 
 fun TaskDetailResponse.toDomain(): Task = Task(
