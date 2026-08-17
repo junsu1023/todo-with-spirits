@@ -6,8 +6,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -25,7 +25,8 @@ public class UserProfileResponse {
     private final String provider;    // social login -> provider, email login -> null
     private final String fullname; // 본명
     private final String gender; // 성별
-    private final Date birthday; // 생년월일
+    private final LocalDate birthday; // 생년월일
+    private final String emailVerificationStatus; // 이메일 인증 상태
     private final LocalDateTime createdAt;
 
     public static UserProfileResponse of(User user, List<OAuthProvider> providers) {
@@ -40,9 +41,10 @@ public class UserProfileResponse {
                 user.getRepresentativeSpiritId(),
                 provider == null ? "LOCAL" : "SOCIAL",
                 provider,
-                null,
-                null,
-                null,
+                user.getFullname(),
+                user.getGender() == null ? null : user.getGender().name(),
+                user.getBirthday(),
+                user.getEmailVerificationStatus().name(),
                 user.getCreatedAt()
         );
     }
