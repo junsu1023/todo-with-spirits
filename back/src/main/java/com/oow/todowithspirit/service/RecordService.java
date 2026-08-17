@@ -132,7 +132,6 @@ public class RecordService {
 
         // 4. 일별 차트 및 주간 기록 아이콘 계산
         List<WeeklyRecordResponse.DailyBarChartItem> dailyCharts = new ArrayList<>();
-        List<WeeklyRecordResponse.DailyStatusItem> weeklyStatuses = new ArrayList<>();
 
         int totalPlanCount = 0;
         int completedPlanCount = 0;
@@ -168,6 +167,12 @@ public class RecordService {
                     .mapToInt(Task::getGrowthValue)
                     .sum();
 
+            // 주간 기록 아이콘 상태 (SUCCESS / FAILED / EMPTY)
+            String icon = "EMPTY";
+            if (!isFuture && dayTotal > 0) {
+                icon = (dayCompleted == dayTotal) ? "SUCCESS" : "FAILED";
+            }
+
             dailyCharts.add(WeeklyRecordResponse.DailyBarChartItem.builder()
                     .date(current)
                     .dayOfWeek(current.getDayOfWeek().name().substring(0, 3))
@@ -176,65 +181,54 @@ public class RecordService {
                     .scheduleTotal(scheduleTotal)
                     .routineCompleted(routineCompleted)
                     .routineTotal(routineTotal)
-                    .build());
-
-            // 주간 기록 아이콘 상태 (SUCCESS / FAILED / EMPTY)
-            String status = "EMPTY";
-            if (!isFuture && dayTotal > 0) {
-                status = (dayCompleted == dayTotal) ? "SUCCESS" : "FAILED";
-            }
-            weeklyStatuses.add(WeeklyRecordResponse.DailyStatusItem.builder()
-                    .dayIndex(i + 1)
-                    .status(status)
+                    .icon(icon)
                     .build());
         }
 
         double averageCompletionRate = totalPlanCount == 0 ? 0.0 :
                 Math.round(((double) completedPlanCount / totalPlanCount) * 1000) / 10.0;
 
-        // 5. 유형별 비율 (To do, 루틴, 미루기)
-        WeeklyRecordResponse.TypeRatioAnalysis typeAnalysis = WeeklyRecordResponse.TypeRatioAnalysis.builder()
-                .scheduleRatio(45.0)
-                .routineRatio(35.0)
-                .delayedRatio(20.0)
-                .build();
+        // todo: insert logic
+        List<WeeklyRecordResponse.AnalysisItem> analysises = new ArrayList<>();
+        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
+                .analysisTitle("가장 빈도 높은 플랜")
+                .taskTitle("영어 단어 20개 외우기")
+                .completedCount(7)
+                .targetCount(7)
+                .build());
+        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
+                .analysisTitle("가장 잘 지킨 플랜")
+                .taskTitle("물 2L 마시기")
+                .completedCount(6)
+                .targetCount(7)
+                .build());
+        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
+                .analysisTitle("가장 많이 미룬 플")
+                .taskTitle("운동 계획 짜")
+                .completedCount(6)
+                .targetCount(6)
+                .build());
 
-        // 6. 주간 실천 Top 3 카테고리 통계
-        List<WeeklyRecordResponse.CategoryStatItem> topCategories = List.of(
-                WeeklyRecordResponse.CategoryStatItem.builder()
-                        .rank(1).categoryType(CategoryType.WORK_STUDY).categoryLabel("학업/커리어").count(15).build(),
-                WeeklyRecordResponse.CategoryStatItem.builder()
-                        .rank(2).categoryType(CategoryType.RELATIONSHIP).categoryLabel("인간관계/약속").count(8).build(),
-                WeeklyRecordResponse.CategoryStatItem.builder()
-                        .rank(3).categoryType(CategoryType.HOBBY).categoryLabel("취미").count(5).build()
-        );
-
-        // 7. 자주 놓친 분야
-        WeeklyRecordResponse.CategoryStatItem mostMissedCategory = WeeklyRecordResponse.CategoryStatItem.builder()
-                .categoryType(CategoryType.HEALTH)
-                .categoryLabel("건강")
-                .count(15)
-                .build();
-
-        // 8. 하단 피드백 문구
-        WeeklyRecordResponse.FeedbackMessage feedback = WeeklyRecordResponse.FeedbackMessage.builder()
-                .mainMessage("커리어와 미래를 향해 멋지게 질주한 한 주!")
-                .subMessage("다음 주에는 미뤄둔 건강도 챙기며 일과 삶의 균형을 맞춰볼까요?")
-                .build();
+        // todo: insert logic
+        List<WeeklyRecordResponse.AchievementItem> achievements = new ArrayList<>();
+        achievements.add(WeeklyRecordResponse.AchievementItem.builder()
+                .code("testCode")
+                .title("테스트 업적")
+                .description("테스트 업적 설명")
+                .icon("TEST_ICON")
+                .targetCount(5)
+                .build());
 
         return WeeklyRecordResponse.builder()
                 .week(date.get(WeekFields.of(Locale.KOREA).weekOfMonth()))
-                .titleMessage("버티면 승리에요")
-                .subtitleMessage("이번주도 너무 잘하고 있어요!")
+                .message("일정과 중요한 일들의 비중이 높았던 정신없는 한 주 였네요! 그래도 미뤘던 플랜들은 다시 한 번 도전 해보면 어떨까요?")
                 .dailyCharts(dailyCharts)
                 .completedTaskCount(completedPlanCount)
+                .delayedCount(0) // todo: insert logic
                 .totalTaskCount(totalPlanCount)
                 .averageCompletionRate(averageCompletionRate)
-                .weeklyStatuses(weeklyStatuses)
-                .typeAnalysis(typeAnalysis)
-                .topCategories(topCategories)
-                .mostMissedCategory(mostMissedCategory)
-                .feedback(feedback)
+                .analysises(analysises)
+                .achievements(achievements)
                 .build();
     }
 
