@@ -38,12 +38,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> socialLogin(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody SocialLoginRequest request) {
-        log.info("[socialLogin] provider={}, providerUserId={}", request.getProvider(), request.getProviderUserId());
+        log.info("[socialLogin] provider: {}, providerUserId: {}", request.getProvider(), request.getProviderUserId());
 
         String providerToken = extractTokenFromHeader(authHeader);
-        validateProviderToken(request.getProvider(), providerToken, request.getProviderUserId());
-
-        LoginResponse response = authService.socialLogin(request);
+        String verifiedEmail = validateProviderToken(request.getProvider(), providerToken, request.getProviderUserId());
+        LoginResponse response = authService.socialLogin(request, verifiedEmail);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -66,9 +65,10 @@ public class AuthController {
         return header.substring(7);
     }
 
-    private void validateProviderToken(String provider, String providerToken, String providerUserId) {
+    private String validateProviderToken(String provider, String providerToken, String providerUserId) {
         if ("kakao".equalsIgnoreCase(provider)) {
-            kakaoTokenValidator.validate(providerToken, providerUserId);
+            return kakaoTokenValidator.validate(providerToken, providerUserId);
         }
+        return null;
     }
 }

@@ -71,19 +71,27 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
-    public static User ofSocialSignup(String email, String nickname) {
+    public static User ofSocialSignup(String email, String nickname, boolean isVerified) {
         User user = new User();
         user.email = email;
         user.nickname = nickname;
         user.role = UserRole.USER;
         user.isPremium = false;
-        // 소셜 로그인 제공자가 이미 이메일을 검증했다고 간주
-        user.emailVerificationStatus = EmailVerificationStatus.VERIFIED;
+        user.emailVerificationStatus = isVerified ? EmailVerificationStatus.VERIFIED : EmailVerificationStatus.UNVERIFIED;
         return user;
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+        this.emailVerificationStatus = EmailVerificationStatus.NEEDS_REVERIFICATION;
+    }
+
+    public void verifiedEmail() {
+        this.emailVerificationStatus = EmailVerificationStatus.VERIFIED;
     }
 
     public void updateProfile(String nickname, String fullname, LocalDate birthday, Gender gender, Long representativeSpiritId) {

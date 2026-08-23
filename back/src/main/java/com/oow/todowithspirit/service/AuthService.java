@@ -26,6 +26,7 @@ public class AuthService {
     private final UserSocialAccountRepository userSocialAccountRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final SpiritService spiritService;
+    private final EmailVerificationService emailVerificationService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -65,8 +66,8 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponse socialLogin(SocialLoginRequest request) {
-        User user = findOrCreate(request);
+    public LoginResponse socialLogin(SocialLoginRequest request, String verifiedEmail) {
+        User user = findOrCreate(request, verifiedEmail);
 
         String accessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
         String refreshTokenValue = jwtProvider.generateRefreshToken();
@@ -108,10 +109,19 @@ public class AuthService {
         refreshTokenRepository.deleteAllByUserId(userId);
     }
 
-    private User findOrCreate(SocialLoginRequest request) {
+    @Transactional
+    public void verifyEmail(Long userId) {
+        emailVerificationService.sendVerificationEmail(userId);
+    }
+
+    private User findOrCreate(SocialLoginRequest request, String verifiedEmail) {
         String providerLower = request.getProvider().toLowerCase();
         validateProvider(providerLower);
         OAuthProvider provider = OAuthProvider.valueOf(providerLower.toUpperCase());
+        boolean isVerified = (verifiedEmail != null);
+        if (isVerified) {
+            request.setEmail(verifiedEmail);
+        }
 
         log.debug("[findOrCreate] provider: {}, providerUserId: {}", provider, request.getProviderUserId());
         return userSocialAccountRepository
@@ -119,15 +129,15 @@ public class AuthService {
                 .map(UserSocialAccount::getUser)
                 .orElseGet(() -> {
                     log.info("[findOrCreate] No existing user found, creating new social user");
-                    return createSocialUser(request, provider);
+                    return createSocialUser(request, provider, isVerified);
                 });
     }
 
-    private User createSocialUser(SocialLoginRequest request, OAuthProvider provider) {
+    private User createSocialUser(SocialLoginRequest request, OAuthProvider provider, boolean isVerified) {
         String nickname = StringUtils.hasText(request.getEmail())
                 ? request.getEmail().split("@")[0]
                 : generateDefaultNickname();
-        User user = User.ofSocialSignup(request.getEmail(), nickname);
+        User user = User.ofSocialSignup(request.getEmail(), nickname, isVerified);
         userRepository.save(user);
         userSocialAccountRepository.save(new UserSocialAccount(user, provider, request.getProviderUserId()));
         spiritService.createDefaultSpirit(user);

@@ -13,9 +13,39 @@ public class KakaoTokenInfoResponse {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("expires_in")
-    private Integer expiresIn;
+    @JsonProperty("connected_at")
+    private String connectedAt;
 
-    @JsonProperty("app_id")
-    private Integer appId;
+    @JsonProperty("kakao_account")
+    private KakaoAccount kakaoAccount;
+
+    @Getter
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class KakaoAccount {
+
+        @JsonProperty("has_email")
+        private Boolean hasEmail;
+
+        @JsonProperty("email_needs_agreement")
+        private Boolean emailNeedsAgreement;
+
+        @JsonProperty("is_email_valid")
+        private Boolean isEmailValid;
+
+        @JsonProperty("is_email_verified")
+        private Boolean isEmailVerified;
+
+        @JsonProperty("email")
+        private String email;
+    }
+
+    public boolean isVerifiedEmail() {
+        if (kakaoAccount == null || kakaoAccount.getEmail() == null) {
+            return false;
+        }
+
+        return Boolean.TRUE.equals(kakaoAccount.getIsEmailValid())
+                && Boolean.TRUE.equals(kakaoAccount.getIsEmailVerified());
+    }
 }
