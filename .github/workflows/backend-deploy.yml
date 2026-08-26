@@ -2,7 +2,7 @@ name: Backend CI/CD to NCP
 
 on:
   push:
-    branches: [ "back" ]
+    branches: [ "main", "feature/back" ]
     paths:
       - 'back/**' # back 폴더 내부 코드가 변경되었을 때만 실행
 
