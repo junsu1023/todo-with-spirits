@@ -4,20 +4,14 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.auth.RefreshToken;
 import com.oow.todowithspirit.domain.auth.RefreshTokenRepository;
-import com.oow.todowithspirit.domain.user.User;
-import com.oow.todowithspirit.domain.user.UserRepository;
-import com.oow.todowithspirit.dto.auth.LoginRequest;
-import com.oow.todowithspirit.dto.auth.LoginResponse;
-import com.oow.todowithspirit.dto.auth.SignupRequest;
-import com.oow.todowithspirit.dto.auth.SignupResponse;
-import com.oow.todowithspirit.dto.auth.TokenRefreshRequest;
-import com.oow.todowithspirit.dto.auth.TokenRefreshResponse;
+import com.oow.todowithspirit.domain.user.*;
+import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -25,10 +19,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final UserSocialAccountRepository userSocialAccountRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final SpiritService spiritService;
+    private final EmailVerificationService emailVerificationService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -44,7 +42,11 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.ofLocalSignup(request.getEmail(), encodedPassword, nickname);
-        return SignupResponse.from(userRepository.save(user));
+        userRepository.save(user);
+
+        spiritService.createDefaultSpirit(user);
+
+        return SignupResponse.from(user);
     }
 
     @Transactional
@@ -58,9 +60,20 @@ public class AuthService {
 
         String accessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
         String refreshTokenValue = jwtProvider.generateRefreshToken();
-
         refreshTokenRepository.save(RefreshToken.create(user.getId(), refreshTokenValue, refreshTokenExpiresAt()));
 
+        return LoginResponse.of(accessToken, refreshTokenValue, user);
+    }
+
+    @Transactional
+    public LoginResponse socialLogin(SocialLoginRequest request, String verifiedEmail) {
+        User user = findOrCreate(request, verifiedEmail);
+
+        String accessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
+        String refreshTokenValue = jwtProvider.generateRefreshToken();
+        refreshTokenRepository.save(RefreshToken.create(user.getId(), refreshTokenValue, refreshTokenExpiresAt()));
+
+        log.info("[socialLogin] Login successful for userId={}", user.getId());
         return LoginResponse.of(accessToken, refreshTokenValue, user);
     }
 
@@ -69,7 +82,6 @@ public class AuthService {
         RefreshToken oldToken = refreshTokenRepository.findByToken(request.getRefreshToken())
                 .orElseThrow(() -> new ApiException(ErrorCode.INVALID_TOKEN));
 
-        // 이미 revoke된 토큰 → 탈취 가능성, 해당 유저의 모든 토큰 폐기
         if (oldToken.isRevoked()) {
             refreshTokenRepository.deleteAllByUserId(oldToken.getUserId());
             throw new ApiException(ErrorCode.REVOKED_TOKEN);
@@ -83,7 +95,6 @@ public class AuthService {
         User user = userRepository.findById(oldToken.getUserId())
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        // 기존 토큰 폐기 후 새 토큰 발급 (rotation)
         oldToken.revoke();
 
         String newAccessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail());
@@ -98,6 +109,41 @@ public class AuthService {
         refreshTokenRepository.deleteAllByUserId(userId);
     }
 
+    @Transactional
+    public void verifyEmail(Long userId) {
+        emailVerificationService.sendVerificationEmail(userId);
+    }
+
+    private User findOrCreate(SocialLoginRequest request, String verifiedEmail) {
+        String providerLower = request.getProvider().toLowerCase();
+        validateProvider(providerLower);
+        OAuthProvider provider = OAuthProvider.valueOf(providerLower.toUpperCase());
+        boolean isVerified = (verifiedEmail != null);
+        if (isVerified) {
+            request.setEmail(verifiedEmail);
+        }
+
+        log.debug("[findOrCreate] provider: {}, providerUserId: {}", provider, request.getProviderUserId());
+        return userSocialAccountRepository
+                .findByProviderAndProviderUserId(provider, request.getProviderUserId())
+                .map(UserSocialAccount::getUser)
+                .orElseGet(() -> {
+                    log.info("[findOrCreate] No existing user found, creating new social user");
+                    return createSocialUser(request, provider, isVerified);
+                });
+    }
+
+    private User createSocialUser(SocialLoginRequest request, OAuthProvider provider, boolean isVerified) {
+        String nickname = StringUtils.hasText(request.getEmail())
+                ? request.getEmail().split("@")[0]
+                : generateDefaultNickname();
+        User user = User.ofSocialSignup(request.getEmail(), nickname, isVerified);
+        userRepository.save(user);
+        userSocialAccountRepository.save(new UserSocialAccount(user, provider, request.getProviderUserId()));
+        spiritService.createDefaultSpirit(user);
+        return user;
+    }
+
     private String generateDefaultNickname() {
         int suffix = ThreadLocalRandom.current().nextInt(1000, 9999);
         return "정령유저_" + suffix;
@@ -105,5 +151,15 @@ public class AuthService {
 
     private LocalDateTime refreshTokenExpiresAt() {
         return LocalDateTime.now().plusSeconds(jwtProvider.getRefreshTokenExpirationMs() / 1000);
+    }
+
+    private void validateProvider(String provider) {
+        if (!StringUtils.hasText(provider)) {
+            throw new ApiException(ErrorCode.MISSING_PROVIDER);
+        }
+        if (!provider.equals("google") && !provider.equals("kakao") && !provider.equals("apple")) {
+            log.warn("[validateProvider] Invalid provider [{}]", provider);
+            throw new ApiException(ErrorCode.INVALID_PROVIDER, "provider", provider);
+        }
     }
 }

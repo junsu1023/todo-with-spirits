@@ -9,13 +9,11 @@ import lombok.Getter;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class TaskCreateResponse {
+public class RoutineCreateResponse {
 
     private Long taskId;
     private String taskType;
@@ -23,22 +21,16 @@ public class TaskCreateResponse {
     private String memo;
     private String category;
 
-    // 일정 전용
-    private Boolean isAllDay;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
-    private Boolean isImportant;
-
     // 반복
     private String repeatType;
     private LocalDate repeatEndDate;
     private List<String> repeatDaysOfWeek;
     private List<Integer> repeatDaysOfMonth;
+    private Boolean excludeHoliday;
 
     // 공통
     private Integer notificationMinutes;
+    private LocalDateTime notificationAt;
     private Boolean isPublic;
 
     // 성장
@@ -53,31 +45,29 @@ public class TaskCreateResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static TaskCreateResponse from(Task task) {
-        return TaskCreateResponse.builder()
+    public static RoutineCreateResponse from(Task task) {
+        LocalDateTime calculatedNotificationAt = null;
+        if (task.getNotificationMinutes() != null && task.getEndTime() != null) {
+            calculatedNotificationAt = LocalDateTime.of(LocalDate.now(), task.getEndTime())
+                    .minusMinutes(task.getNotificationMinutes());
+        }
+
+        return RoutineCreateResponse.builder()
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
                 .memo(task.getMemo())
                 .category(task.getCategory() != null ? task.getCategory().name() : null)
-                .isAllDay(task.isAllDay())
-                .startDate(task.getStartDate())
-                .startTime(task.getStartTime())
-                .endDate(task.getEndDate())
-                .endTime(task.getEndTime())
-                .isImportant(task.isImportant())
                 .repeatType(task.getRepeatType() != null ? task.getRepeatType().name() : RepeatType.NONE.name())
                 .repeatEndDate(task.getRepeatEndDate())
-                .repeatDaysOfWeek(
-                        task.getRepeatDaysOfWeek().stream()
-                                .map(DayOfWeek::name)
-                                .collect(Collectors.toList())
-                )
+                .repeatDaysOfWeek(task.getRepeatDaysOfWeek().stream().map(DayOfWeek::name).toList())
                 .repeatDaysOfMonth(List.copyOf(task.getRepeatDaysOfMonth()))
+                .excludeHoliday(task.isExcludeHoliday())
                 .notificationMinutes(task.getNotificationMinutes())
+                .notificationAt(calculatedNotificationAt)
                 .isPublic(task.isPublic())
                 .growthValue(task.getGrowthValue())
-                .growthType(task.getGrowthType() != null ? task.getGrowthType().name() : null)
+                .growthType(task.getGrowthType().name())
                 .isCompleted(task.isCompleted())
                 .completedAt(task.getCompletedAt())
                 .createdAt(task.getCreatedAt())

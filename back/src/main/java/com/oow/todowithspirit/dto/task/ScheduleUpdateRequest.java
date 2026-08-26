@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class ScheduleCreateRequest {
+public class ScheduleUpdateRequest {
 
     @NotBlank(message = "Title is required")
     @Size(max = 255, message = "Title must be 255 characters or less")
