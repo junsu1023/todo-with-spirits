@@ -26,7 +26,11 @@ CREATE TABLE users
     email                    VARCHAR(255),                            -- null: social login
     password                 VARCHAR(255),                            -- null: social login
     nickname                 VARCHAR(50) NOT NULL,
+    fullname                 VARCHAR(50),                             -- 본명
+    birthday                 DATE,                                    -- 생년월일
+    gender                   VARCHAR(10),                             -- gender ENUM
     profile_image_url        TEXT,
+    email_verification_status VARCHAR(30) NOT NULL    DEFAULT 'UNVERIFIED', -- email_verification_status ENUM (UNVERIFIED, VERIFIED, NEEDS_REVERIFICATION)
     role                     VARCHAR(20) NOT NULL     DEFAULT 'USER', -- user_role ENUM
     is_premium               BOOLEAN     NOT NULL     DEFAULT FALSE,
     representative_spirit_id BIGINT,                                  -- spirits FK (순환 참조. ALTER로 후처리)
@@ -60,6 +64,21 @@ CREATE TABLE refresh_tokens
     created_at TIMESTAMP WITH TIME ZONE          DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_refresh_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- 이메일 인증 토큰 테이블
+CREATE TABLE email_verification_tokens
+(
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     BIGINT                   NOT NULL,
+    email       VARCHAR(255)             NOT NULL, -- 인증 대상 이메일 (발급 시점 스냅샷)
+    token       VARCHAR(255)             NOT NULL UNIQUE,
+    verified_at TIMESTAMP WITH TIME ZONE,           -- null: 미사용
+    expires_at  TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at  TIMESTAMP WITH TIME ZONE          DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_email_verification_tokens_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_email_verification_tokens_user ON email_verification_tokens (user_id);
 
 -- 구독/프리미엄 테이블
 CREATE TABLE subscriptions
@@ -137,19 +156,21 @@ CREATE TABLE tasks
     title                VARCHAR(255) NOT NULL,
     memo                 TEXT,
     category             VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- category_type ENUM
-    task_date            DATE         NOT NULL,
+    start_date           DATE         NOT NULL,
     start_time           TIME,                                    -- 종일 일정이면 null
     end_date             DATE,
     end_time             TIME,
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
     repeat_end_date      DATE,
-    growth_type          VARCHAR(20),                             -- growth_type ENUM
+    growth_type          VARCHAR(20)  NOT NULL,                   -- growth_type ENUM
     growth_value         INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
     is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_all_day           BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_public            BOOLEAN      NOT NULL    DEFAULT FALSE,
+    exclude_holiday      BOOLEAN      NOT NULL    DEFAULT FALSE,
     notification_minutes INT,
+    notification_at      TIMESTAMP WITH TIME ZONE,                -- 알림 발송 기준 시각 (23:59 - notification_minutes)
     completed_at         TIMESTAMP WITH TIME ZONE,
     created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -161,7 +182,8 @@ CREATE TABLE IF NOT EXISTS task_repeat_days_of_week
 (
     task_id     BIGINT      NOT NULL,
     day_of_week VARCHAR(10) NOT NULL,
-    CONSTRAINT fk_rdow_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
+    CONSTRAINT fk_rdow_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT pk_task_repeat_days_of_week PRIMARY KEY (task_id, day_of_week)
 );
 
 -- 매월 반복 일 (MONTHLY)
@@ -169,18 +191,19 @@ CREATE TABLE IF NOT EXISTS task_repeat_days_of_month
 (
     task_id      BIGINT NOT NULL,
     day_of_month INT    NOT NULL,
-    CONSTRAINT fk_rdom_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE
+    CONSTRAINT fk_rdom_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT pk_task_repeat_days_of_month PRIMARY KEY (task_id, day_of_month)
 );
 
--- 루틴 날짜별 완료 기록 (HABIT 전용)
-CREATE TABLE habit_completions
+-- 루틴 날짜별 완료 기록 (ROUTINE 전용)
+CREATE TABLE routine_completions
 (
     id              BIGSERIAL PRIMARY KEY,
     task_id         BIGINT                   NOT NULL,
     completion_date DATE                     NOT NULL,
     completed_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_habit_completions_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
-    CONSTRAINT uq_habit_completions UNIQUE (task_id, completion_date)
+    CONSTRAINT fk_routine_completions_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT uq_routine_completions UNIQUE (task_id, completion_date)
 );
 
 -- 일일 기록 테이블
@@ -219,6 +242,17 @@ CREATE TABLE monthly_records
         ),
     CONSTRAINT chk_monthly_records_month CHECK (month BETWEEN 1 AND 12)
 );
+
+-- 공휴일 테이블
+CREATE TABLE holiday
+(
+    id           INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    holiday_date DATE         NOT NULL UNIQUE,
+    name         VARCHAR(255) NOT NULL,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_holiday_date ON holiday (holiday_date);
 
 -- ============================================================
 --  5. 공통 정보 or 설정 관련 테이블
@@ -315,12 +349,19 @@ CREATE INDEX idx_refresh_tokens_active ON refresh_tokens (token) WHERE NOT is_re
 -- 정령 목록 / 인터랙션 일별 집계
 CREATE INDEX idx_spirits_user ON spirits (user_id);
 CREATE INDEX idx_stage_history_spirit ON spirit_stage_history (spirit_id);
--- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, ( interacted_at : : date));
+-- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, (interacted_at::date));
+-- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, CAST(interacted_at AS DATE));
 
 -- 태스크 조회 (캘린더, 목록)
-CREATE INDEX idx_tasks_user_date ON tasks (user_id, task_date);
+CREATE INDEX idx_tasks_user_date ON tasks (user_id, start_date);
+-- 스케줄 전용 날짜 범위 인덱스 (기존 인덱스명 유지 시)
+CREATE INDEX idx_tasks_user_start_date ON tasks (user_id, start_date);
+-- 루틴 종료일 조건 최적화용 복합 인덱스 추가
+CREATE INDEX idx_tasks_calendar_routine ON tasks (user_id, task_type, start_date, repeat_end_date);
 CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
 CREATE INDEX idx_tasks_user_category ON tasks (user_id, category);
+-- 알림 발송 대상 조회 (알림 서비스용)
+CREATE INDEX idx_tasks_notification_at ON tasks (notification_at) WHERE notification_at IS NOT NULL;
 
 -- 기록
 CREATE INDEX idx_daily_records_user_date ON daily_records (user_id, record_date);
