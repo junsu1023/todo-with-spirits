@@ -372,3 +372,4 @@ CREATE INDEX idx_share_cards_user_status ON share_cards (user_id, card_status);
 
 -- 업적 진행 조회
 CREATE INDEX idx_user_achievements_user ON user_achievements (user_id);
+-- update test
