@@ -48,7 +48,6 @@ jobs:
       with:
         host: ${{ secrets.NCP_HOST }}
         username: ${{ secrets.NCP_USERNAME }}
-        password: ${{ secrets.NCP_PASSWORD }}
         key: ${{ secrets.BACK_NCP_KEY }}      # password 대신 key 지정
         port: ${{ secrets.NCP_PORT }}
         script: |
