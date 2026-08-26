@@ -46,10 +46,10 @@ jobs:
     - name: Execute Remote SSH Commands
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.NCP_HOST }}
-        username: ${{ secrets.NCP_USERNAME }}
+        host: ${{ secrets.BACK_NCP_HOST }}
+        username: ${{ secrets.BACK_NCP_USERNAME }}
         key: ${{ secrets.BACK_NCP_KEY }}      # password 대신 key 지정
-        port: ${{ secrets.NCP_PORT }}
+        port: ${{ secrets.BACK_NCP_PORT }}
         script: |
           cd /root
           chmod +x start.sh
