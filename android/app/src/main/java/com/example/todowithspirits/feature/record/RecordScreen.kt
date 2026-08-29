@@ -43,13 +43,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.DailyRecord
+import com.example.domain.model.TaskType
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.record.component.DailyReportCard
 import com.example.todowithspirits.feature.record.component.MonthlyReportCard
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
 import com.example.todowithspirits.feature.record.component.WeeklyReportCard
+import com.example.todowithspirits.feature.record.viewmodel.RecordViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -57,7 +63,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
+fun RecordScreen(
+    recordViewModel: RecordViewModel = hiltViewModel(),
+    navigateToAlarm: () -> Unit = {}
+) {
+    val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by recordViewModel.isLoading.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf("일간") }
     val tabs = listOf(stringResource(R.string.daily), stringResource(R.string.weekly), stringResource(R.string.monthly))
     val weeklyTab = stringResource(R.string.weekly)
@@ -147,19 +158,24 @@ fun RecordScreen(navigateToAlarm: () -> Unit = {}) {
         ) {
             Spacer(Modifier.height(20.dp))
 
-            when (selectedTab) {
+            when(selectedTab) {
                 weeklyTab -> WeeklyTabContent()
                 monthlyTab -> MonthlyTabContent()
-                else -> DailyTabContent()
+                else -> DailyTabContent(dailyRecord = uiState.dailyRecord)
             }
 
             Spacer(Modifier.height(5.dp))
         }
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }
 
 @Composable
-private fun DailyTabContent() {
+private fun DailyTabContent(dailyRecord: DailyRecord?) {
+    val todoInfo = dailyRecord?.typeBreakdown?.get(TaskType.SCHEDULE.name)
+    val routineInfo = dailyRecord?.typeBreakdown?.get(TaskType.ROUTINE.name)
+
     Text(
         text = stringResource(R.string.daily_report),
         fontSize = 18.sp,
@@ -169,11 +185,18 @@ private fun DailyTabContent() {
 
     Spacer(Modifier.height(14.dp))
 
-    DailyReportCard()
+    DailyReportCard(
+        achievementRate = (dailyRecord?.completionRate ?: 0.0).toFloat(),
+        todoTotalCnt = todoInfo?.total ?: 0,
+        todoCompCnt = todoInfo?.completed ?: 0,
+        routineTotalCnt = routineInfo?.total ?: 0,
+        routineCompCnt = routineInfo?.completed?: 0,
+        items = dailyRecord?.items ?: emptyList()
+    )
 
     Spacer(Modifier.height(14.dp))
 
-    TodayRewardCard()
+    TodayRewardCard(todayRewards = dailyRecord?.todayRewards ?: emptyList())
 }
 
 @Composable

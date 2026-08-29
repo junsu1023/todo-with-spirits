@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -126,7 +127,8 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_fire),
+                    painter = painterResource(R.drawable.todo_flame),
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.mainTextAndStroke),
                     contentDescription = null,
                     modifier = Modifier.size(12.dp)
                 )
