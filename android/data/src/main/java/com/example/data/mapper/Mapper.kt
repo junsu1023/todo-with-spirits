@@ -3,7 +3,11 @@ package com.example.data.mapper
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
+import com.example.data.response.DailyRecordResponse
 import com.example.data.response.LoginResponse
+import com.example.data.response.RecordRewardResponse
+import com.example.data.response.RecordTaskItemResponse
+import com.example.data.response.RecordTypeProgressResponse
 import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
@@ -12,9 +16,13 @@ import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
+import com.example.domain.model.DailyRecord
 import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.RecordReward
+import com.example.domain.model.RecordTaskItem
+import com.example.domain.model.RecordTypeProgress
 import com.example.domain.model.Routine
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
@@ -164,6 +172,40 @@ fun RoutineDetailResponse.toDomain(): Routine = Routine(
     taskType = taskType,
     title = title,
     updatedAt = LocalDateTime.parse(updatedAt)
+)
+
+fun DailyRecordResponse.toDomain(): DailyRecord = DailyRecord(
+    date = LocalDate.parse(date),
+    completionRate = completionRate,
+    completedCount = completedCount,
+    totalCount = totalCount,
+    earnedGrowthPower = earnedGrowthPower,
+    typeBreakdown = typeBreakdown.mapValues { (_, progress) -> progress.toDomain() },
+    items = items.map { it.toDomain() },
+    todayRewards = todayRewards.map { it.toDomain() }
+)
+
+fun RecordTypeProgressResponse.toDomain(): RecordTypeProgress = RecordTypeProgress(
+    completed = completed,
+    total = total
+)
+
+fun RecordTaskItemResponse.toDomain(): RecordTaskItem = RecordTaskItem(
+    taskId = taskId,
+    title = title,
+    taskType = taskType,
+    growthType = growthType,
+    growthValue = growthValue,
+    interpretation = interpretation,
+    completed = completed
+)
+
+fun RecordRewardResponse.toDomain(): RecordReward = RecordReward(
+    missionType = missionType,
+    title = title,
+    rewardExp = rewardExp,
+    iconType = iconType,
+    achieved = achieved
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()
