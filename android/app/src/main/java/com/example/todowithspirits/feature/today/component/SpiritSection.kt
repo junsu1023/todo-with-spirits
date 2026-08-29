@@ -41,8 +41,9 @@ fun SpiritSection(spiritInfo: SpiritInfo) {
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Note: 대표 정령 기능 추가 시 데이터 가져와서 띄우도록 수정 예정
         Image(
-            painter = painterResource(R.drawable.temp_spirit),
+            painter = painterResource(R.drawable.fire_spirit),
             contentDescription = null,
             modifier = Modifier.size(110.dp)
         )
