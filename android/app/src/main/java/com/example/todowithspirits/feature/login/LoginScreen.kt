@@ -1,11 +1,5 @@
 package com.example.todowithspirits.feature.login
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,7 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.SocialProvider
 import com.example.todowithspirits.BuildConfig
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -202,33 +196,7 @@ fun LoginScreen(
             }
         }
 
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(SpiritTodoTheme.color.dimColor),
-                contentAlignment = Alignment.Center
-            ) {
-                val infiniteTransition = rememberInfiniteTransition(label = "loading")
-                val angle by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    ),
-                    label = "angle"
-                )
-
-                Image(
-                    painter = painterResource(R.drawable.loading_gray),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .graphicsLayer { rotationZ = angle }
-                )
-            }
-        }
+        LoadingOverlay(isLoading = isLoading)
     }
 }
 
