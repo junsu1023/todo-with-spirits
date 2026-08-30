@@ -33,5 +33,6 @@ object URLConstant {
     object RECORD {
         private const val RECORD = "$API/record"
         const val RECORD_TODAY = "$RECORD/today"
+        const val RECORD_WEEKLY = "$RECORD/weekly"
     }
 }
