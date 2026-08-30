@@ -415,7 +415,7 @@ public class TaskService {
         };
     }
 
-    private Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
+    public Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
             List<Long> routineIds, LocalDate from, LocalDate to) {
         if (routineIds.isEmpty()) return Map.of();
         return routineCompletionRepository
@@ -427,7 +427,7 @@ public class TaskService {
                 ));
     }
 
-    private List<LocalDate> expandOccurrences(Task task, LocalDate from, LocalDate to) {
+    public List<LocalDate> expandOccurrences(Task task, LocalDate from, LocalDate to) {
         LocalDate rangeStart = task.getStartDate().isAfter(from) ? task.getStartDate() : from;
         LocalDate rangeEnd = task.getRepeatEndDate() == null ? to
                 : task.getRepeatEndDate().isBefore(to) ? task.getRepeatEndDate() : to;

@@ -62,6 +62,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("date") LocalDate date
     );
 
-    @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.endDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.startDate <= :endDate AND t.endDate >= :startDate")
     List<Task> findByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate);
 }
