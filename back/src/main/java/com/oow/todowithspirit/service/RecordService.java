@@ -27,6 +27,8 @@ public class RecordService {
     private final SpiritRepository spiritRepository;
     private final RoutineCompletionRepository routineCompletionRepository;
 
+    private final TaskService taskService;
+
     @Transactional(readOnly = true)
     public DailyRecordResponse getDailyRecord(Long userId, LocalDate date) {
         if (userId == null) {
@@ -121,17 +123,24 @@ public class RecordService {
         LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
-        // 2. 주차 정보 계산 (예: "6월 1주 리포트")
-        int month = date.getMonthValue();
-        int weekOfMonth = date.get(WeekFields.of(Locale.KOREA).weekOfMonth());
+        // 2. 통합 조회
+        List<Task> allTasks = taskRepository.findCalendarTasksWithDateRange(userId, startOfWeek, endOfWeek);
+        List<Task> schedules = allTasks.stream()
+                .filter(t -> t.getTaskType() == TaskType.SCHEDULE)
+                .toList();
+        List<Task> routines = allTasks.stream()
+                .filter(t -> t.getTaskType() == TaskType.ROUTINE)
+                .toList();
 
-        // 3. 해당 주간의 전체 Task 및 완료된 루틴 ID 조회
-        List<Task> weeklyTasks = taskRepository.findByUserIdAndDateRange(userId, startOfWeek, endOfWeek);
-        Set<Long> completedRoutineIds = routineCompletionRepository
-                .findCompletedTaskIdsByUserIdAndDateRange(userId, startOfWeek, endOfWeek);
+        Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = Collections.emptyMap();
+        if (!routines.isEmpty()) {
+            List<Long> routineIds = routines.stream().map(Task::getId).toList();
+            completionMap = taskService.loadCompletionMap(routineIds, startOfWeek, endOfWeek);
+        }
 
-        // 4. 일별 차트 및 주간 기록 아이콘 계산
+        // 3. 일별 차트 및 주간 기록 아이콘 계산
         List<WeeklyRecordResponse.DailyBarChartItem> dailyCharts = new ArrayList<>();
+        Map<CategoryType, CategoryCounter> categoryMap = new HashMap<>();
 
         int totalPlanCount = 0;
         int completedPlanCount = 0;
@@ -140,20 +149,43 @@ public class RecordService {
             LocalDate current = startOfWeek.plusDays(i);
             boolean isFuture = current.isAfter(LocalDate.now());
 
-            // 해당 날짜 Task 필터링
-            List<Task> dayTasks = weeklyTasks.stream()
-                    .filter(t -> t.getEndDate() != null && t.getEndDate().equals(current))
+            // 당일 일정(Schedule) 필터링 (시작일/종료일 기준)
+            List<Task> daySchedules = schedules.stream()
+                    .filter(s -> isScheduleOnDate(s, current))
                     .toList();
 
-            int scheduleTotal = (int) dayTasks.stream().filter(t -> t.getTaskType() != TaskType.ROUTINE).count();
-            int scheduleCompleted = (int) dayTasks.stream()
-                    .filter(t -> t.getTaskType() != TaskType.ROUTINE && t.isCompleted())
-                    .count();
+            int scheduleTotal = daySchedules.size();
+            int scheduleCompleted = (int) daySchedules.stream().filter(Task::isCompleted).count();
 
-            int routineTotal = (int) dayTasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).count();
-            int routineCompleted = (int) dayTasks.stream()
-                    .filter(t -> t.getTaskType() == TaskType.ROUTINE && completedRoutineIds.contains(t.getId()))
-                    .count();
+            // 일정 카테고리 집계
+            for (Task schedule : daySchedules) {
+                CategoryType category = (schedule.getCategory() != null) ? schedule.getCategory() : CategoryType.NONE;
+                categoryMap.computeIfAbsent(category, CategoryCounter::new).add(schedule.isCompleted());
+            }
+
+            // B. 당일 루틴(Routine) 전개 및 필터링
+            int routineTotal = 0;
+            int routineCompleted = 0;
+
+            for (Task routine : routines) {
+                // 해당 날짜에 루틴 수행일인지 확인 (expandOccurrences 결과 검증)
+                if (taskService.expandOccurrences(routine, current, current).contains(current)) {
+                    routineTotal++;
+
+                    // 완료 여부 체크
+                    boolean isCompleted = completionMap
+                            .getOrDefault(routine.getId(), Collections.emptyMap())
+                            .containsKey(current);
+
+                    if (isCompleted) {
+                        routineCompleted++;
+                    }
+
+                    // 루틴 카테고리 집계 (전개된 Occurrence 단위로 카운트)
+                    CategoryType category = (routine.getCategory() != null) ? routine.getCategory() : CategoryType.NONE;
+                    categoryMap.computeIfAbsent(category, CategoryCounter::new).add(isCompleted);
+                }
+            }
 
             int dayTotal = scheduleTotal + routineTotal;
             int dayCompleted = scheduleCompleted + routineCompleted;
@@ -162,12 +194,20 @@ public class RecordService {
             completedPlanCount += dayCompleted;
 
             // 성장력/경험치 계산
-            int growthPower = isFuture ? 0 : dayTasks.stream()
-                    .filter(task -> isTaskCompleted(task, completedRoutineIds))
-                    .mapToInt(Task::getGrowthValue)
-                    .sum();
+            int growthPower = 0;
+            if (!isFuture) {
+                int scheduleGrowth = daySchedules.stream().filter(Task::isCompleted).mapToInt(Task::getGrowthValue).sum();
+                int routineGrowth = 0;
+                for (Task routine : routines) {
+                    if (taskService.expandOccurrences(routine, current, current).contains(current) &&
+                            completionMap.getOrDefault(routine.getId(), Collections.emptyMap()).containsKey(current)) {
+                        routineGrowth += routine.getGrowthValue();
+                    }
+                }
+                growthPower = scheduleGrowth + routineGrowth;
+            }
 
-            // 주간 기록 아이콘 상태 (SUCCESS / FAILED / EMPTY)
+            // 아이콘 상태 (SUCCESS / FAILED / EMPTY)
             String icon = "EMPTY";
             if (!isFuture && dayTotal > 0) {
                 icon = (dayCompleted == dayTotal) ? "SUCCESS" : "FAILED";
@@ -185,39 +225,31 @@ public class RecordService {
                     .build());
         }
 
+        // 평균 달성률
         double averageCompletionRate = totalPlanCount == 0 ? 0.0 :
                 Math.round(((double) completedPlanCount / totalPlanCount) * 1000) / 10.0;
 
-        // todo: insert logic
-        List<WeeklyRecordResponse.AnalysisItem> analysises = new ArrayList<>();
-        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
-                .analysisTitle("가장 빈도 높은 플랜")
-                .taskTitle("영어 단어 20개 외우기")
-                .completedCount(7)
-                .targetCount(7)
-                .build());
-        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
-                .analysisTitle("가장 잘 지킨 플랜")
-                .taskTitle("물 2L 마시기")
-                .completedCount(6)
-                .targetCount(7)
-                .build());
-        analysises.add(WeeklyRecordResponse.AnalysisItem.builder()
-                .analysisTitle("가장 많이 미룬 플")
-                .taskTitle("운동 계획 짜")
-                .completedCount(6)
-                .targetCount(6)
-                .build());
+        // 4. 카테고리별 분석
+        List<WeeklyRecordResponse.CategoryStatItem> topCategories = categoryMap.values().stream()
+                .filter(c -> c.completedCount > 0)
+                .sorted((a, b) -> Integer.compare(b.completedCount, a.completedCount))
+                .limit(3)
+                .map(c -> WeeklyRecordResponse.CategoryStatItem.builder()
+                        .category(c.category)
+                        .completedCount(c.completedCount)
+                        .totalCount(c.totalCount)
+                        .build())
+                .toList();
 
-        // todo: insert logic
-        List<WeeklyRecordResponse.AchievementItem> achievements = new ArrayList<>();
-        achievements.add(WeeklyRecordResponse.AchievementItem.builder()
-                .code("testCode")
-                .title("테스트 업적")
-                .description("테스트 업적 설명")
-                .icon("TEST_ICON")
-                .targetCount(5)
-                .build());
+        WeeklyRecordResponse.CategoryStatItem bottomCategory = categoryMap.values().stream()
+                .filter(c -> c.getMissedCount() > 0)
+                .max(Comparator.comparingInt(CategoryCounter::getMissedCount))
+                .map(c -> WeeklyRecordResponse.CategoryStatItem.builder()
+                        .category(c.category)
+                        .completedCount(c.completedCount)
+                        .totalCount(c.totalCount)
+                        .build())
+                .orElse(null);
 
         return WeeklyRecordResponse.builder()
                 .week(date.get(WeekFields.of(Locale.KOREA).weekOfMonth()))
@@ -227,8 +259,8 @@ public class RecordService {
                 .delayedCount(0) // todo: insert logic
                 .totalTaskCount(totalPlanCount)
                 .averageCompletionRate(averageCompletionRate)
-                .analysises(analysises)
-                .achievements(achievements)
+                .topCategories(topCategories)
+                .bottomCategory(bottomCategory)
                 .build();
     }
 
@@ -282,5 +314,34 @@ public class RecordService {
             return completedRoutineIds.contains(task.getId());
         }
         return task.isCompleted();
+    }
+
+    private static class CategoryCounter {
+        CategoryType category;
+        int completedCount = 0;
+        int totalCount = 0;
+
+        CategoryCounter(CategoryType category) {
+            this.category = category;
+        }
+
+        void add(boolean isCompleted) {
+            this.totalCount++;
+            if (isCompleted) {
+                this.completedCount++;
+            }
+        }
+
+        int getMissedCount() {
+            return totalCount - completedCount;
+        }
+    }
+
+    // 해당 날짜에 일정이 존재하는지 검증
+    private boolean isScheduleOnDate(Task schedule, LocalDate targetDate) {
+        if (schedule.getEndDate() != null) {
+            return schedule.getEndDate().equals(targetDate);
+        }
+        return schedule.getStartDate() != null && schedule.getStartDate().equals(targetDate);
     }
 }
