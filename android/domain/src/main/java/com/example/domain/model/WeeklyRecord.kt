@@ -2,11 +2,6 @@ package com.example.domain.model
 
 import java.time.LocalDate
 
-/**
- * GET /api/record/weekly 응답 (주간 기록 조회).
- *
- * @property week 몇 주차인지
- */
 data class WeeklyRecord(
     val week: Int,
     val message: String,
@@ -20,9 +15,6 @@ data class WeeklyRecord(
     val achievements: List<WeeklyAchievement>
 )
 
-/**
- * @property icon SUCCESS / FAILED / EMPTY
- */
 data class WeeklyDailyChart(
     val date: LocalDate,
     val dayOfWeek: String,

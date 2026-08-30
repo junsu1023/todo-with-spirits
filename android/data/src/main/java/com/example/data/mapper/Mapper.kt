@@ -221,14 +221,14 @@ fun RecordRewardResponse.toDomain(): RecordReward = RecordReward(
 fun WeeklyRecordResponse.toDomain(): WeeklyRecord = WeeklyRecord(
     week = week,
     message = message,
-    dailyCharts = dailyCharts.map { it.toDomain() },
+    dailyCharts = dailyCharts.orEmpty().map { it.toDomain() },
     completedTaskCount = completedTaskCount,
     delayedCount = delayedCount,
     totalTaskCount = totalTaskCount,
     averageCompletionRate = averageCompletionRate,
-    typeAnalysis = typeAnalysis.toDomain(),
-    analyses = analyses.map { it.toDomain() },
-    achievements = achievements.map { it.toDomain() }
+    typeAnalysis = typeAnalysis?.toDomain() ?: WeeklyTypeAnalysis(0.0, 0.0, 0.0),
+    analyses = analyses.orEmpty().map { it.toDomain() },
+    achievements = achievements.orEmpty().map { it.toDomain() }
 )
 
 fun WeeklyDailyChartResponse.toDomain(): WeeklyDailyChart = WeeklyDailyChart(

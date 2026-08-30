@@ -3,7 +3,6 @@ package com.example.todowithspirits.feature.record.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,20 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.WeeklyDailyChart
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun WeeklyRecordRow(statuses: List<WeekDayStatus>) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+fun WeeklyRecordRow(charts: List<WeeklyDailyChart>) {
+    val statuses = charts.map { (it.scheduleTotal + it.routineTotal) to (it.scheduleCompleted + it.routineCompleted) }
+
+    Row(modifier = Modifier.fillMaxWidth()) {
         statuses.forEachIndexed { index, status ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
                     modifier = Modifier
-                        .size(38.dp)
+                        .size(32.dp)
                         .background(
                             color = SpiritTodoTheme.color.surfaceColor1,
                             shape = CircleShape
@@ -44,17 +43,16 @@ fun WeeklyRecordRow(statuses: List<WeekDayStatus>) {
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    when (status) {
-                        WeekDayStatus.COMPLETED -> Image(
-                            painter = painterResource(R.drawable.fi_rr_color_star),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        WeekDayStatus.FAILED -> Image(
-                            painter = painterResource(R.drawable.fi_rr_cross_small),
+                    when (status.first) {
+                        0 -> { /* no icon */ }
+                        status.second -> Image(
+                            painter = painterResource(R.drawable.todo_important_24),
                             contentDescription = null
                         )
-                        WeekDayStatus.EMPTY -> { /* no icon */ }
+                        else -> Image(
+                            painter = painterResource(R.drawable.todo_cross),
+                            contentDescription = null
+                        )
                     }
                 }
 
@@ -65,6 +63,22 @@ fun WeeklyRecordRow(statuses: List<WeekDayStatus>) {
                     fontSize = 10.sp,
                     color = SpiritTodoTheme.color.onSurfaceColor8
                 )
+            }
+
+            if (index != statuses.lastIndex) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                            .background(SpiritTodoTheme.color.surfaceColor15)
+                    )
+                }
             }
         }
     }

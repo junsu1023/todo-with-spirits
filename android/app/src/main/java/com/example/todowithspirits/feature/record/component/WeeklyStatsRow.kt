@@ -21,7 +21,11 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun WeeklyStatsRow() {
+fun WeeklyStatsRow(
+    completedTaskCount: Int,
+    totalTaskCount: Int,
+    averageCompletionRate: Double
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -42,16 +46,15 @@ fun WeeklyStatsRow() {
             Spacer(Modifier.height(5.dp))
 
             Row(verticalAlignment = Alignment.Bottom) {
-                // dummy
                 Text(
-                    text = "999개",
+                    text = "$completedTaskCount",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Text(
-                    text = " / 1000",
+                    text = " / $totalTaskCount",
                     fontSize = 12.sp,
                     color = SpiritTodoTheme.color.onSurfaceColor8
                 )
@@ -77,7 +80,7 @@ fun WeeklyStatsRow() {
 
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = "100%",
+                    text = "$averageCompletionRate%",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.todoTextMain

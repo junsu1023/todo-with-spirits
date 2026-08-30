@@ -37,14 +37,14 @@ data class RecordRewardResponse(
 data class WeeklyRecordResponse(
     val week: Int,
     val message: String,
-    val dailyCharts: List<WeeklyDailyChartResponse> = emptyList(),
+    val dailyCharts: List<WeeklyDailyChartResponse>? = null,
     val completedTaskCount: Int,
     val delayedCount: Int,
     val totalTaskCount: Int,
     val averageCompletionRate: Double,
-    val typeAnalysis: WeeklyTypeAnalysisResponse,
-    val analyses: List<WeeklyPlanAnalysisResponse> = emptyList(),
-    val achievements: List<WeeklyAchievementResponse> = emptyList()
+    val typeAnalysis: WeeklyTypeAnalysisResponse? = null,
+    val analyses: List<WeeklyPlanAnalysisResponse>? = null,
+    val achievements: List<WeeklyAchievementResponse>? = null
 )
 
 data class WeeklyDailyChartResponse(

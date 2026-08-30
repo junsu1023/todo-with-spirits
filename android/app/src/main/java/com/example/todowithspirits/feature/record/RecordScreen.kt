@@ -1,13 +1,8 @@
 package com.example.todowithspirits.feature.record
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,31 +30,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DailyRecord
 import com.example.domain.model.TaskType
+import com.example.domain.model.WeeklyPlanAnalysis
+import com.example.domain.model.WeeklyRecord
+import com.example.domain.model.WeeklyTypeAnalysis
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.WeeklyPeriodCard
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.record.component.DailyReportCard
 import com.example.todowithspirits.feature.record.component.MonthlyReportCard
 import com.example.todowithspirits.feature.record.component.TodayRewardCard
+import com.example.todowithspirits.feature.record.component.WeeklyAnalysisSection
 import com.example.todowithspirits.feature.record.component.WeeklyReportCard
 import com.example.todowithspirits.feature.record.viewmodel.RecordViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun RecordScreen(
@@ -159,7 +154,7 @@ fun RecordScreen(
             Spacer(Modifier.height(20.dp))
 
             when(selectedTab) {
-                weeklyTab -> WeeklyTabContent()
+                weeklyTab -> WeeklyTabContent(weeklyRecord = uiState.weeklyRecord)
                 monthlyTab -> MonthlyTabContent()
                 else -> DailyTabContent(dailyRecord = uiState.dailyRecord)
             }
@@ -200,12 +195,11 @@ private fun DailyTabContent(dailyRecord: DailyRecord?) {
 }
 
 @Composable
-private fun WeeklyTabContent() {
+private fun WeeklyTabContent(weeklyRecord: WeeklyRecord?) {
     var isWeekExpanded by remember { mutableStateOf(false) }
     var weekStart by remember { mutableStateOf(LocalDate.now().with(DayOfWeek.MONDAY)) }
     val weekEnd = weekStart.plusDays(6)
     val weekOfMonth = (weekStart.dayOfMonth - 1) / 7 + 1
-    val weekDateFormatter = remember { DateTimeFormatter.ofPattern("yy년 M월 d일", Locale.KOREAN) }
 
     Row(
         modifier = Modifier
@@ -216,7 +210,7 @@ private fun WeeklyTabContent() {
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Text(
-            text = stringResource(R.string.week_header_format, weekStart.monthValue, weekOfMonth),
+            text = stringResource(R.string.week_header_format, weekStart.monthValue, weeklyRecord?.week ?: weekOfMonth),
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = SpiritTodoTheme.color.todoTextMain
@@ -230,48 +224,25 @@ private fun WeeklyTabContent() {
         )
     }
 
-    AnimatedVisibility(
-        visible = isWeekExpanded,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(6.dp))
-                .padding(vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.fi_rr_angle_small_left),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .noRippleClickable { weekStart = weekStart.minusWeeks(1) }
-            )
-
-            Text(
-                text = "${weekStart.format(weekDateFormatter)} ~ ${weekEnd.format(weekDateFormatter)}",
-                fontSize = 16.sp,
-                color = SpiritTodoTheme.color.todoTextMain,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-
-            Image(
-                painter = painterResource(R.drawable.fi_rr_angle_small_right),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(color = SpiritTodoTheme.color.todoTextMain),
-                modifier = Modifier
-                    .size(24.dp)
-                    .noRippleClickable { weekStart = weekStart.plusWeeks(1) }
-            )
-        }
-    }
+    WeeklyPeriodCard(
+        isWeekExpanded = isWeekExpanded,
+        weekStart = weekStart,
+        weekEnd = weekEnd,
+        onBeforeClick = { weekStart = it },
+        onAfterClick = { weekStart = it }
+    )
 
     Spacer(Modifier.height(10.dp))
 
-    WeeklyReportCard()
+    WeeklyReportCard(
+        message = weeklyRecord?.message ?: stringResource(R.string.weekly_report_subtitle),
+        charts = weeklyRecord?.dailyCharts ?: emptyList(),
+        completedTaskCount = weeklyRecord?.completedTaskCount ?: 0,
+        totalTaskCount = weeklyRecord?.totalTaskCount ?: 0,
+        averageCompletionRate = weeklyRecord?.averageCompletionRate ?: 0.0,
+        typeAnalysis = weeklyRecord?.typeAnalysis ?: WeeklyTypeAnalysis(0.0, 0.0, 0.0),
+        top3Section = weeklyRecord?.achievements ?: emptyList()
+    )
 }
 
 @Composable
