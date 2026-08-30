@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.TodoWithSpirits" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.TodoWithSpirits" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- 시스템 스플래시가 걷힌 뒤 Compose SplashScreen 첫 프레임까지 색 깜빡임이 없도록 창 배경도 흰색. -->
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!--
+      콜드 스타트 시 안드로이드가 띄우는 시스템 스플래시.
+      아이콘을 완전 투명(@drawable/splash_no_icon)으로 처리해 "안드로이드 로고 스플래시"가 보이지 않게 하고,
+      배경도 흰색으로 맞춰서 곧바로 이어지는 Compose SplashScreen(흰 배경 + 정령 애니메이션)과 구분되지 않게 한다.
+      (12+ 에서는 이 창 자체는 제거 불가 → 흰 화면만 잠깐 스친 뒤 내 SplashScreen 으로 이어짐.)
+    -->
+    <style name="Theme.TodoWithSpirits.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_no_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.TodoWithSpirits</item>
+    </style>
 </resources>

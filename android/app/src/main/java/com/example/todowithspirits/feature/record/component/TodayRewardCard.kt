@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,26 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.MissionType
+import com.example.domain.model.RecordReward
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-private data class RewardItem(
-    val iconRes: Int,
-    val type: String,
-    val description: String,
-    val exp: Int,
-    val isHidden: Boolean = false
-)
-
-private val dummyRewards = listOf(
-    RewardItem(R.drawable.fi_rr_time_check, "일일 미션", "오늘 플랜 5개 이상 완료", 20),
-    RewardItem(R.drawable.fi_rr_fire, "끄기 스코어", "미뤘던 목표 2개 완료", 20),
-    RewardItem(R.drawable.important_icon, "히든 미션", "정령의 호감도 +10 쌓기", 100, isHidden = true),
-    RewardItem(R.drawable.important_icon, "히든 미션", "정령의 호감도 +10 쌓기", 100, isHidden = true)
-)
-
 @Composable
-fun TodayRewardCard() {
+fun TodayRewardCard(todayRewards: List<RecordReward>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,10 +44,10 @@ fun TodayRewardCard() {
 
         Spacer(Modifier.height(12.dp))
 
-        dummyRewards.forEachIndexed { index, reward ->
+        todayRewards.forEachIndexed { index, reward ->
             RewardRow(reward = reward)
 
-            if (index < dummyRewards.lastIndex) {
+            if (index < todayRewards.lastIndex) {
                 Spacer(Modifier.height(6.dp))
             }
         }
@@ -89,8 +75,8 @@ fun TodayRewardCard() {
 }
 
 @Composable
-private fun RewardRow(reward: RewardItem) {
-    val accentColor = if(reward.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8
+private fun RewardRow(reward: RecordReward) {
+    val accentColor = if(reward.missionType == MissionType.HIDDEN.name) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8
 
     Row(
         modifier = Modifier
@@ -100,7 +86,7 @@ private fun RewardRow(reward: RewardItem) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(reward.iconRes),
+            painter = painterResource(reward.iconType.typeToRes()),
             contentDescription = null,
             modifier = Modifier.size(22.dp)
         )
@@ -109,7 +95,7 @@ private fun RewardRow(reward: RewardItem) {
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = reward.type,
+                text = reward.missionType.translate(),
                 fontSize = 12.sp,
                 color = accentColor
             )
@@ -117,7 +103,7 @@ private fun RewardRow(reward: RewardItem) {
             Spacer(Modifier.height(1.dp))
 
             Text(
-                text = reward.description,
+                text = reward.title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = SpiritTodoTheme.color.todoTextMain
@@ -126,7 +112,7 @@ private fun RewardRow(reward: RewardItem) {
 
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = reward.exp.toString(),
+                text = reward.rewardExp.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = accentColor
@@ -138,5 +124,22 @@ private fun RewardRow(reward: RewardItem) {
                 color = accentColor
             )
         }
+    }
+}
+
+private fun String.typeToRes(): Int {
+    return when(this) {
+        "THUMB_UP" -> R.drawable.todo_thumb_up
+        "FLAME" -> R.drawable.todo_flame
+        else -> R.drawable.todo_diamond
+    }
+}
+
+private fun String.translate(): String {
+    return when(this) {
+        MissionType.DAILY.name -> "일일 미션"
+        MissionType.CONSISTENCY.name -> "끈기 스코어"
+        MissionType.HIDDEN.name -> "히든 미션"
+        else -> "기타"
     }
 }

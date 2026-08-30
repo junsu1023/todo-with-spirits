@@ -30,9 +30,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -149,12 +151,6 @@ fun QuickAddBottomPopup(
                 .sharedBounds(
                     rememberSharedContentState(key = QuickAddSharedKeys.CONTAINER),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    // RemeasureToBounds는 애니메이션 중 매 프레임 실제 크기 제약을 걸어 자식을 다시 레이아웃한다.
-                    // 이 팝업의 자식(Column)은 탭/텍스트필드 등 텍스트 콘텐츠가 커서, 전환 초반 아직 작은
-                    // bounds로 강제로 눌리면서 세로로 다 안 들어가 위쪽 테두리가 잘려 보였다.
-                    // scaleToBounds(Fit)는 자식을 원래(안정된) 크기로 먼저 측정한 뒤 화면에 그릴 때만
-                    // 비율 유지로 축소/확대하므로, 눌려서 잘리는 대신 전체가 작게 보였다가 커지는 식으로
-                    // 부드럽게 이어진다.
                     resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(ContentScale.Fit),
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(12.dp))
                 )
@@ -171,6 +167,7 @@ fun QuickAddBottomPopup(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 14.dp)
                     .padding(top = 14.dp, bottom = 12.dp)
                     .animateEnterExit(
@@ -317,6 +314,7 @@ fun QuickAddBottomPopup(
                                                     selectedDate = it
                                                     isDateExpanded = false
                                                 },
+                                                onMonthSettledDate = { selectedDate = it },
                                                 showMonthNavigation = false
                                             )
 

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,11 +19,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.WeeklyAchievement
+import com.example.domain.model.WeeklyDailyChart
+import com.example.domain.model.WeeklyTypeAnalysis
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun WeeklyReportCard() {
+fun WeeklyReportCard(
+    message: String,
+    charts: List<WeeklyDailyChart>,
+    completedTaskCount: Int,
+    totalTaskCount: Int,
+    averageCompletionRate: Double,
+    typeAnalysis: WeeklyTypeAnalysis,
+    top3Section: List<WeeklyAchievement>
+) {
     Column {
         Column(
             modifier = Modifier
@@ -37,7 +47,7 @@ fun WeeklyReportCard() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.weekly_report_title),
                         fontSize = 20.sp,
@@ -48,7 +58,7 @@ fun WeeklyReportCard() {
                     Spacer(Modifier.height(2.dp))
 
                     Text(
-                        text = stringResource(R.string.weekly_report_subtitle),
+                        text = message,
                         fontSize = 14.sp,
                         color = SpiritTodoTheme.color.todoTextMain
                     )
@@ -62,11 +72,15 @@ fun WeeklyReportCard() {
 
             Spacer(Modifier.height(28.dp))
 
-            WeeklyBarChart()
+            WeeklyBarChart(charts = charts)
 
             Spacer(Modifier.height(16.dp))
 
-            WeeklyStatsRow()
+            WeeklyStatsRow(
+                completedTaskCount = completedTaskCount,
+                totalTaskCount = totalTaskCount,
+                averageCompletionRate = averageCompletionRate
+            )
 
             Spacer(Modifier.height(14.dp))
 
@@ -85,7 +99,7 @@ fun WeeklyReportCard() {
 
                 Spacer(Modifier.height(10.dp))
 
-                WeeklyRecordRow(dummyDayStatuses)
+                WeeklyRecordRow(charts = charts)
             }
         }
 
@@ -106,7 +120,11 @@ fun WeeklyReportCard() {
 
             Spacer(Modifier.height(20.dp))
 
-            WeeklyAnalysisSection(todoFraction = 0.5f, routineFraction = 0.3f, delayFraction = 0.2f)
+            WeeklyAnalysisSection(
+                todoFraction = typeAnalysis.scheduleRatio,
+                routineFraction = typeAnalysis.routineRatio,
+                delayFraction = typeAnalysis.delayedRatio
+            )
 
             Spacer(Modifier.height(20.dp))
 
@@ -119,7 +137,7 @@ fun WeeklyReportCard() {
 
             Spacer(Modifier.height(6.dp))
 
-            WeeklyTop3Section()
+            Top3Section(weeklyTop3Section = top3Section)
 
             Spacer(Modifier.height(24.dp))
 

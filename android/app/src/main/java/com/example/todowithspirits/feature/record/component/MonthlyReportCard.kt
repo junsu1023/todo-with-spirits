@@ -337,7 +337,7 @@ fun MonthlyReportCard() {
 
             Spacer(Modifier.height(6.dp))
 
-            WeeklyTop3Section()
+            Top3Section()
 
             Spacer(Modifier.height(24.dp))
 

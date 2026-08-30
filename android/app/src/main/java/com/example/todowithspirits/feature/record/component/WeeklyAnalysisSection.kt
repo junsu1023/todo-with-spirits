@@ -27,9 +27,9 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun WeeklyAnalysisSection(
-    todoFraction: Float,
-    routineFraction: Float,
-    delayFraction: Float
+    todoFraction: Double,
+    routineFraction: Double,
+    delayFraction: Double
 ) {
     Row(
         modifier = Modifier
@@ -39,7 +39,7 @@ fun WeeklyAnalysisSection(
     ) {
         Box(
             modifier = Modifier
-                .weight(todoFraction)
+                .weight(if(todoFraction == 0.0) 1f else (todoFraction / 100).toFloat())
                 .fillMaxHeight()
                 .background(SpiritTodoTheme.color.keyTodo),
             contentAlignment = Alignment.Center
@@ -53,7 +53,7 @@ fun WeeklyAnalysisSection(
         }
         Box(
             modifier = Modifier
-                .weight(routineFraction)
+                .weight(if(routineFraction == 0.0) 1f else (routineFraction / 100).toFloat())
                 .fillMaxHeight()
                 .background(SpiritTodoTheme.color.keyRoutine),
             contentAlignment = Alignment.Center
@@ -67,7 +67,7 @@ fun WeeklyAnalysisSection(
         }
         Box(
             modifier = Modifier
-                .weight(delayFraction)
+                .weight(if(delayFraction == 0.0) 1f else (delayFraction / 100f).toFloat())
                 .fillMaxHeight()
                 .background(SpiritTodoTheme.color.surfaceColor15),
             contentAlignment = Alignment.Center

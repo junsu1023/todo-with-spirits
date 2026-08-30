@@ -19,19 +19,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.WeeklyAchievement
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.R
 
 @Composable
-fun WeeklyTop3Section() {
-    val trackColor = SpiritTodoTheme.color.mainArea
-    val items = listOf(
-        Triple(trackColor, "학업/커리어", "15회"),
-        Triple(trackColor, "인간관계/약속", "8회"),
-        Triple(trackColor, "취미", "5회")
-    )
+fun Top3Section(weeklyTop3Section: List<WeeklyAchievement> = emptyList()) {
+    val items = weeklyTop3Section.ifEmpty { emptyList() }
 
-    items.forEachIndexed { index, (_, name, count) ->
+    items.forEachIndexed { index, item ->
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -56,7 +52,7 @@ fun WeeklyTop3Section() {
 
                 Column {
                     Text(
-                        text = name,
+                        text = item.title,
                         fontSize = 14.sp,
                         color = SpiritTodoTheme.color.todoTextMain
                     )
@@ -64,7 +60,7 @@ fun WeeklyTop3Section() {
             }
 
             Text(
-                text = count,
+                text = item.targetCount.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = SpiritTodoTheme.color.todoTextMain

@@ -3,24 +3,42 @@ package com.example.data.mapper
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
+import com.example.data.response.DailyRecordResponse
 import com.example.data.response.LoginResponse
+import com.example.data.response.RecordRewardResponse
+import com.example.data.response.RecordTaskItemResponse
+import com.example.data.response.RecordTypeProgressResponse
 import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
+import com.example.data.response.WeeklyAchievementResponse
+import com.example.data.response.WeeklyDailyChartResponse
+import com.example.data.response.WeeklyPlanAnalysisResponse
+import com.example.data.response.WeeklyRecordResponse
+import com.example.data.response.WeeklyTypeAnalysisResponse
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
+import com.example.domain.model.DailyRecord
 import com.example.domain.model.LoginSession
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.RecordReward
+import com.example.domain.model.RecordTaskItem
+import com.example.domain.model.RecordTypeProgress
 import com.example.domain.model.Routine
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskSummary
+import com.example.domain.model.WeeklyAchievement
+import com.example.domain.model.WeeklyDailyChart
+import com.example.domain.model.WeeklyPlanAnalysis
+import com.example.domain.model.WeeklyRecord
+import com.example.domain.model.WeeklyTypeAnalysis
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -164,6 +182,86 @@ fun RoutineDetailResponse.toDomain(): Routine = Routine(
     taskType = taskType,
     title = title,
     updatedAt = LocalDateTime.parse(updatedAt)
+)
+
+fun DailyRecordResponse.toDomain(): DailyRecord = DailyRecord(
+    date = LocalDate.parse(date),
+    completionRate = completionRate,
+    completedCount = completedCount,
+    totalCount = totalCount,
+    earnedGrowthPower = earnedGrowthPower,
+    typeBreakdown = typeBreakdown.mapValues { (_, progress) -> progress.toDomain() },
+    items = items.map { it.toDomain() },
+    todayRewards = todayRewards.map { it.toDomain() }
+)
+
+fun RecordTypeProgressResponse.toDomain(): RecordTypeProgress = RecordTypeProgress(
+    completed = completed,
+    total = total
+)
+
+fun RecordTaskItemResponse.toDomain(): RecordTaskItem = RecordTaskItem(
+    taskId = taskId,
+    title = title,
+    taskType = taskType,
+    growthType = growthType,
+    growthValue = growthValue,
+    interpretation = interpretation,
+    completed = completed
+)
+
+fun RecordRewardResponse.toDomain(): RecordReward = RecordReward(
+    missionType = missionType,
+    title = title,
+    rewardExp = rewardExp,
+    iconType = iconType,
+    achieved = achieved
+)
+
+fun WeeklyRecordResponse.toDomain(): WeeklyRecord = WeeklyRecord(
+    week = week,
+    message = message,
+    dailyCharts = dailyCharts.orEmpty().map { it.toDomain() },
+    completedTaskCount = completedTaskCount,
+    delayedCount = delayedCount,
+    totalTaskCount = totalTaskCount,
+    averageCompletionRate = averageCompletionRate,
+    typeAnalysis = typeAnalysis?.toDomain() ?: WeeklyTypeAnalysis(0.0, 0.0, 0.0),
+    analyses = analyses.orEmpty().map { it.toDomain() },
+    achievements = achievements.orEmpty().map { it.toDomain() }
+)
+
+fun WeeklyDailyChartResponse.toDomain(): WeeklyDailyChart = WeeklyDailyChart(
+    date = LocalDate.parse(date),
+    dayOfWeek = dayOfWeek,
+    dayNumber = dayNumber,
+    growthPower = growthPower,
+    scheduleCompleted = scheduleCompleted,
+    scheduleTotal = scheduleTotal,
+    routineCompleted = routineCompleted,
+    routineTotal = routineTotal,
+    icon = icon
+)
+
+fun WeeklyTypeAnalysisResponse.toDomain(): WeeklyTypeAnalysis = WeeklyTypeAnalysis(
+    scheduleRatio = scheduleRatio,
+    routineRatio = routineRatio,
+    delayedRatio = delayedRatio
+)
+
+fun WeeklyPlanAnalysisResponse.toDomain(): WeeklyPlanAnalysis = WeeklyPlanAnalysis(
+    analysisTitle = analysisTitle,
+    taskTitle = taskTitle,
+    completedCount = completedCount,
+    targetCount = targetCount
+)
+
+fun WeeklyAchievementResponse.toDomain(): WeeklyAchievement = WeeklyAchievement(
+    code = code,
+    title = title,
+    description = description,
+    icon = icon,
+    targetCount = targetCount
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()
