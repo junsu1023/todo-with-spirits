@@ -52,9 +52,10 @@ fun SpiritsTodoSwitch(
             ),
         contentAlignment = Alignment.CenterStart
     ) {
-        val padding = (maxHeight - thumbSize) / 2
+        val padding = ((maxHeight - thumbSize) / 2).coerceAtLeast(0.dp)
         val thumbOffset by animateDpAsState(
-            targetValue = if (checked) maxWidth - thumbSize - padding else padding,
+            targetValue = (if (checked) maxWidth - thumbSize - padding else padding)
+                .coerceAtLeast(0.dp),
             label = "switchThumbOffset"
         )
 

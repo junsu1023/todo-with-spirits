@@ -56,13 +56,12 @@ fun CalendarView(
     showMonthNavigation: Boolean = true,
     showSelectedDateInHeader: Boolean = false,
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
-    onMonthChanged: (YearMonth) -> Unit = {}
+    onMonthChanged: (YearMonth) -> Unit = {},
+    onMonthSettledDate: (LocalDate) -> Unit = onDateSelected
 ) {
     val today = remember { LocalDate.now() }
     val selectedDateFormatter = KoreanDateWithDayFormatter
     val scope = rememberCoroutineScope()
-
-    // 페이지 <-> 달 변환의 기준점. 최초 1회만 고정한다.
     val anchorMonth = remember { YearMonth.from(selectedDate) }
     fun monthForPage(page: Int): YearMonth =
         anchorMonth.plusMonths((page - CALENDAR_START_PAGE).toLong())
@@ -79,7 +78,10 @@ fun CalendarView(
         if (currentMonth == YearMonth.from(today)) today else currentMonth.atDay(1)
     }
 
-    // 바깥에서 selectedDate 의 '월'이 바뀌면(예: 다른 달의 날짜 선택) 해당 달 페이지로 이동
+    val currentSelectedDate by rememberUpdatedState(selectedDate)
+    val currentOnMonthSettledDate by rememberUpdatedState(onMonthSettledDate)
+    val currentOnMonthChanged by rememberUpdatedState(onMonthChanged)
+
     LaunchedEffect(selectedDate) {
         val target = pageForMonth(YearMonth.from(selectedDate))
         if (target != pagerState.currentPage) {
@@ -87,11 +89,18 @@ fun CalendarView(
         }
     }
 
-    // 스와이프/버튼 이동이 멈춘(settled) 시점의 달을 바깥에 알린다. 최초 진입 시 1회는 건너뛴다.
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.settledPage }
             .drop(1)
-            .collect { onMonthChanged(monthForPage(it)) }
+            .collect { page ->
+                val month = monthForPage(page)
+                currentOnMonthChanged(month)
+
+                val target = if (month == YearMonth.from(today)) today else month.atDay(1)
+                if (target != currentSelectedDate) {
+                    currentOnMonthSettledDate(target)
+                }
+            }
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
