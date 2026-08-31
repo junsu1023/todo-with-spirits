@@ -1,0 +1,22 @@
+{
+  "name": "TodoSpirits.Runtime.Tests",
+  "rootNamespace": "TodoSpirits.Runtime.Tests",
+  "references": [
+    "TodoSpirits.Core",
+    "TodoSpirits.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}
