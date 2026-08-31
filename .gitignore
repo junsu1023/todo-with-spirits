@@ -35,3 +35,8 @@ google-services.json
 
 # Local documentation
 /unity/Docs/
+
+# Machine-local AI tool settings
+/.claude/settings.local.json
+/.codex/config.toml
+/unity/TodoSpirits/ProjectSettings/Packages/com.unity.ai.assistant/Settings.json
