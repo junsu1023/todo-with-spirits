@@ -1,0 +1,4 @@
+
+[mcp_servers.unity]
+command = "C:\\Users\\wigon\\AppData\\Local\\Unity\\bin\\unity.exe"
+args = ["mcp","--project-path","C:\\Develop\\todo-with-spirits\\unity\\TodoSpirits"]
