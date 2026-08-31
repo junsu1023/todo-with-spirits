@@ -1,11 +1,5 @@
 package com.example.todowithspirits.feature.plan
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PublicStateOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.add.viewmodel.toAlarmOption
@@ -67,32 +61,8 @@ fun PlanDetailScreen(
     val isLoading by planDetailViewModel.isLoading.collectAsStateWithLifecycle()
     val item = planState
 
-    if(isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(SpiritTodoTheme.color.surfaceColor1),
-            contentAlignment = Alignment.Center
-        ) {
-            val infiniteTransition = rememberInfiniteTransition(label = "loading")
-            val angle by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
-                ),
-                label = "angle"
-            )
-
-            Image(
-                painter = painterResource(R.drawable.loading_gray),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(48.dp)
-                    .graphicsLayer { rotationZ = angle }
-            )
-        }
+    if (isLoading) {
+        LoadingOverlay(isLoading = true, background = SpiritTodoTheme.color.surfaceColor1)
         return
     }
 

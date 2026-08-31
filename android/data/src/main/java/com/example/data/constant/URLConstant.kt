@@ -2,7 +2,6 @@
 package com.example.data.constant
 
 object URLConstant {
-    const val BASE_URL = "https://todo-with-spirits.onrender.com"
     const val API = "api"
 
     object HEALTH {
@@ -28,5 +27,12 @@ object URLConstant {
         const val LOGOUT = "$AUTH/logout"
         const val SIGNUP = "$AUTH/signup"
         const val REISSUE = "$AUTH/reissue"
+        const val SOCIAL_LOGIN = "$AUTH/social/login"
+    }
+
+    object RECORD {
+        private const val RECORD = "$API/record"
+        const val RECORD_TODAY = "$RECORD/today"
+        const val RECORD_WEEKLY = "$RECORD/weekly"
     }
 }

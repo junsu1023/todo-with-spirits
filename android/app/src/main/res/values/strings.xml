@@ -1,22 +1,30 @@
 <resources>
     <string name="app_name">TodoWithSpirits</string>
+    <!-- NOTE 임시 스플래시 타이틀. 정식 앱 이름이 정해지면 교체 -->
+    <string name="splash_app_name">Spirits</string>
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
     <string name="password">비밀번호</string>
     <string name="password_placeholder">비밀번호를 입력해주세요</string>
+    <string name="password_simple_placeholder">비밀번호</string>
+    <string name="password_format_hint">8자 이상 영문/숫자/특수문자 중 2가지 포함</string>
+    <string name="invalid_email_error">유효한 이메일을 입력해주세요.</string>
+    <string name="next">다음</string>
     <string name="login">로그인</string>
     <string name="sign_up">회원가입</string>
-    <string name="or_divider">또는</string>
-    <string name="login_with_kakao">카카오로 로그인</string>
+    <string name="login_with_kakao">카카오 로그인</string>
     <string name="login_with_google">Google로 로그인</string>
+    <string name="login_with_email">이메일로 로그인</string>
+    <string name="no_account_question">아직 계정이 없으신가요?</string>
+    <string name="sign_up_with_email">이메일로 회원가입</string>
+    <string name="find_password">비밀번호 찾기</string>
+    <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm">비밀번호 확인</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional">닉네임 (선택)</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
-    <string name="nickname_auto_generate_hint">입력하지 않으면 정령유저_1234 형식으로 자동 생성돼요</string>
-    <string name="sign_up_button">가입하기</string>
     <string name="required_field_error">필수 입력 항목입니다</string>
-    <string name="password_mismatch_error">비밀번호가 일치하지 않습니다</string>
+    <string name="password_mismatch_error">비밀번호가 일치하지 않습니다.</string>
     <string name="already_have_account">이미 계정이 있으신가요?</string>
     <string name="today">Today</string>
     <string name="plan">Plan</string>
@@ -153,4 +161,10 @@
     <string name="language">언어</string>
     <string name="record_title">기록</string>
     <string name="empty_plans">예정된 플랜 없음</string>
+    <string name="verification_code_title">인증번호를 입력해주세요.</string>
+    <string name="verification_code_description_suffix"> 으로</string>
+    <string name="verification_code_description_body">발송 된 인증번호 6자리를 입력해주세요</string>
+    <string name="verification_code_placeholder">인증번호</string>
+    <string name="signup_welcome_title">가입을 환영합니다!</string>
+    <string name="signup_welcome_subtitle">정령들에게 알려줄 사용자님의 이름을 설정해주세요.</string>
 </resources>

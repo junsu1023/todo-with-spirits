@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { TooltipProvider } from '@/shared/ui/tooltip'
 import { router } from './app/router'
 import './index.css'
@@ -17,6 +18,7 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <RouterProvider router={router} />
+        <Toaster richColors position="top-center" />
       </TooltipProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

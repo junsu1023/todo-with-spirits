@@ -13,10 +13,14 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+    open-in-view: false
 jwt:
-  secret: ${JWT_SECRET:jwt_secret} # 36byte base64 encoded data
+  secret: ${JWT_SECRET:jwt.secret} # base64 encoded secret (prod: JWT_SECRET env var)
   access-token-expiration: 3600000      # 1hour (ms)
   refresh-token-expiration: 604800000   # 7days (ms)
+
+kakao:
+  client-secret: ${KAKAO_CLIENT_SECRET:}
 
 management:
   endpoints:

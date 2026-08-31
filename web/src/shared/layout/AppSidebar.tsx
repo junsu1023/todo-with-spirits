@@ -1,12 +1,17 @@
+import { useMutation } from '@tanstack/react-query'
 import {
 	BarChart2,
 	CalendarDays,
 	CalendarRange,
+	LogOut,
 	TreePine,
 	User,
 } from 'lucide-react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { logoutApi } from '@/feature/auth/api/mutate'
+import { useAuthStore } from '@/feature/auth/model/authStore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import {
 	Sidebar,
 	SidebarContent,
@@ -18,17 +23,26 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/shared/ui/sidebar'
+import { ROUTES } from '../routes'
 
 const navItems = [
-	{ label: 'Today', icon: CalendarDays, href: '/today' },
-	{ label: 'Plan', icon: CalendarRange, href: '/plan' },
-	{ label: 'Forest', icon: TreePine, href: '/forest' },
-	{ label: 'Record', icon: BarChart2, href: '/record' },
-	{ label: 'My Page', icon: User, href: '/my-page' },
+	{ label: 'Today', icon: CalendarDays, href: ROUTES.TODAY },
+	{ label: 'Plan', icon: CalendarRange, href: ROUTES.PLAN },
+	{ label: 'Forest', icon: TreePine, href: ROUTES.FOREST },
+	{ label: 'Record', icon: BarChart2, href: ROUTES.RECORD },
+	{ label: 'MyPage', icon: User, href: ROUTES.MYPAGE },
 ]
 
 export function AppSidebar() {
 	const { pathname } = useLocation()
+	const clearAuth = useAuthStore((state) => state.clearAuth)
+
+	const { mutate: logout } = useMutation({
+		mutationFn: logoutApi,
+		onSettled: () => {
+			clearAuth()
+		},
+	})
 
 	return (
 		<Sidebar>
@@ -59,16 +73,30 @@ export function AppSidebar() {
 			</SidebarContent>
 
 			<SidebarFooter>
-				<div className="flex items-center gap-3 px-2 py-3">
-					<Avatar className="size-9">
-						<AvatarImage src="" alt="User avatar" />
-						<AvatarFallback>U</AvatarFallback>
-					</Avatar>
-					<div className="flex flex-col">
-						<span className="text-sm font-medium">Username</span>
-						<span className="text-xs text-muted-foreground">Member</span>
-					</div>
-				</div>
+				<Popover>
+					<PopoverTrigger className="w-full rounded-lg hover:bg-sidebar-accent transition-colors">
+						<div className="flex items-center gap-3 px-2 py-3">
+							<Avatar className="size-9">
+								<AvatarImage src="" alt="User avatar" />
+								<AvatarFallback>U</AvatarFallback>
+							</Avatar>
+							<div className="flex flex-col text-left">
+								<span className="text-sm font-medium">Username</span>
+								<span className="text-xs text-muted-foreground">Member</span>
+							</div>
+						</div>
+					</PopoverTrigger>
+					<PopoverContent side="top" align="start" className="w-48 p-1">
+						<button
+							type="button"
+							onClick={() => logout()}
+							className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-red-500 transition-colors hover:bg-red-50"
+						>
+							<LogOut size={15} />
+							로그아웃
+						</button>
+					</PopoverContent>
+				</Popover>
 			</SidebarFooter>
 		</Sidebar>
 	)

@@ -31,6 +31,7 @@ import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
@@ -54,11 +55,10 @@ fun PlanScreen(
     navigateToAlarm: () -> Unit
 ) {
     val uiState by planViewModel.uiState.collectAsStateWithLifecycle()
-
+    val isLoading by planViewModel.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val todoColor = SpiritTodoTheme.color.surfaceColor8
     val routineColor = SpiritTodoTheme.color.surfaceColor9
-
     val calendarEventData = remember(uiState.calendarEvents, todoColor, routineColor) {
         uiState.calendarEvents.mapValues { (_, events) ->
             CalendarDayEvent(
@@ -72,16 +72,13 @@ fun PlanScreen(
             )
         }
     }
-
     val todoLabel = stringResource(R.string.todo)
     val routineLabel = stringResource(R.string.routine)
-
     val sortOptions = remember(uiState.isHidden) {
         PlanSortOption.entries
             .filter { !(uiState.isHidden && it == PlanSortOption.COMPLETE) }
             .map { it.displayName }
     }
-
     val filteredPlans = remember(uiState.plans, uiState.isHidden, uiState.selectedTab, todoLabel, routineLabel) {
         uiState.plans.filter { item ->
             val doneFilter = !uiState.isHidden || !item.isDone
@@ -93,7 +90,6 @@ fun PlanScreen(
             doneFilter && tabFilter
         }
     }
-
     val sortedPlans = remember(filteredPlans, uiState.sortOption) {
         when (uiState.sortOption) {
             PlanSortOption.DEADLINE -> filteredPlans.sortedWith(
@@ -158,28 +154,7 @@ fun PlanScreen(
             }
         }
 
-        if (sortedPlans.isEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.todo_empty),
-                        contentDescription = null
-                    )
-
-                    Text(
-                        text = stringResource(R.string.empty_plans),
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.systemGrey
-                    )
-                }
-            }
-        } else {
+        if(uiState.plans.isNotEmpty()) {
             item {
                 Column {
                     Row(
@@ -235,7 +210,30 @@ fun PlanScreen(
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
+        }
 
+        if (sortedPlans.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.todo_empty),
+                        contentDescription = null
+                    )
+
+                    Text(
+                        text = stringResource(R.string.empty_plans),
+                        fontSize = 14.sp,
+                        color = SpiritTodoTheme.color.systemGrey
+                    )
+                }
+            }
+        } else {
             items(sortedPlans, key = { it.id }) { item ->
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
@@ -250,7 +248,8 @@ fun PlanScreen(
                                 planViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
                             }
                         },
-                        navigateToDetail = { navigateToDetail(item.id) }
+                        navigateToDetail = { navigateToDetail(item.id) },
+                        resetKey = uiState.selectedTab to uiState.sortOption
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -262,4 +261,6 @@ fun PlanScreen(
             }
         }
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }

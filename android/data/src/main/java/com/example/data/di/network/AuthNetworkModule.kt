@@ -1,9 +1,10 @@
 package com.example.data.di.network
 
 import com.example.core.qualifier.Auth
+import com.example.data.BuildConfig
 import com.example.data.api.AuthApi
+import com.example.data.api.RecordApi
 import com.example.data.api.TaskApi
-import com.example.data.constant.URLConstant
 import com.example.data.network.AuthInterceptor
 import com.example.data.network.TokenAuthenticator
 import dagger.Module
@@ -28,7 +29,7 @@ object AuthNetworkModule {
 
     @Provides
     @Singleton
-    fun provideBaseUrl(): String = URLConstant.BASE_URL
+    fun provideBaseUrl(): String = BuildConfig.BASE_URL
 
     @Auth
     @Provides
@@ -73,4 +74,10 @@ object AuthNetworkModule {
     fun provideAuthApi(
         @Auth retrofit: Retrofit
     ): AuthApi = retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRecordApi(
+        @Auth retrofit: Retrofit
+    ): RecordApi = retrofit.create(RecordApi::class.java)
 }

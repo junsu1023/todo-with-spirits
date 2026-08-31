@@ -8,6 +8,8 @@ import com.example.data.mapper.toDomain
 import com.example.domain.exception.FieldValidationException
 import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
+import com.example.domain.model.SocialLoginSession
+import com.example.domain.model.SocialProvider
 import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -18,7 +20,19 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(email: String, password: String): Result<LoginSession> {
         return authRemoteDataSource.login(email, password)
             .map { it.toDomain() }
-            .onSuccess { session -> persistSession(session) }
+            .onSuccess { session -> persistTokens(session.accessToken, session.refreshToken) }
+    }
+
+    override suspend fun socialLogin(
+        provider: SocialProvider,
+        providerUserId: String,
+        providerAccessToken: String,
+        email: String?
+    ): Result<SocialLoginSession> {
+        return authRemoteDataSource.socialLogin(provider.name, providerUserId, providerAccessToken, email)
+            .mapCatching { it.toDomain() }
+            .onSuccess { session -> persistTokens(session.accessToken, session.refreshToken) }
+            .recoverFieldValidationErrors()
     }
 
     override suspend fun logout(): Result<Unit> {
@@ -38,9 +52,9 @@ class AuthRepositoryImpl @Inject constructor(
         return true
     }
 
-    private fun persistSession(session: LoginSession) {
-        TokenHolder.accessToken = session.accessToken
-        tokenStorage.saveTokens(session.accessToken, session.refreshToken)
+    private fun persistTokens(accessToken: String, refreshToken: String) {
+        TokenHolder.accessToken = accessToken
+        tokenStorage.saveTokens(accessToken, refreshToken)
     }
 
     private fun clearSession() {

@@ -14,16 +14,13 @@ val spiritsLightColor = SpiritColor(
     surfaceColor8 = Color(0xFF8DE4FF),
     surfaceColor9 = Color(0xFFB2F042),
     surfaceColor10 = Color(0xFFFAFAFA),
-    surfaceColor11 = Color(0xFFF49191),
     surfaceColor12 = Color(0xFFFBFBFB),
     surfaceColor13 = Color(0xFFF4ECFC),
-    surfaceColor14 = Color(0xFFF3E8FF),
     surfaceColor15 = Color(0xFFD9D9D9),
     surfaceColor16 = Color(0xFFF7F7F7),
     onSurfaceColor2 = Color(0xFFD1D1D6),
     onSurfaceColor3 = Color(0xFFFFFFFF),
     onSurfaceColor5 = Color(0xFF8F8170),
-    onSurfaceColor7 = Color(0xFFF49191),
     onSurfaceColor8 = Color(0xFFC7C7C7),
     onSurfaceColor9 = Color(0xFFC2C2C2),
     onSurfaceColor10 = Color(0xFF6A66A1),
@@ -33,10 +30,15 @@ val spiritsLightColor = SpiritColor(
     todoTextMain = Color(0xFF857563),
     keyTodo = Color(0xFF8DE4FF),
     keyRoutine = Color(0xFFB2F042),
+    mainBackground = Color(0xFFF3E8FF),
     systemBackground = Color(0xFFFAFAFA),
     mainTextAndStroke = Color(0xFFB286FD),
     systemArea = Color(0xFFECECEC),
-    mainArea = Color(0xFFD7BFFF)
+    mainArea = Color(0xFFD7BFFF),
+    systemRed = Color(0xFFF49191),
+    kakaoBg = Color(0xFFFEE500),
+    kakaoText = Color(0xD9000000),
+    googleText = Color(0xFF1F1F1F)
 )
 
 class SpiritColor(
@@ -48,16 +50,13 @@ class SpiritColor(
     surfaceColor8: Color,
     surfaceColor9: Color,
     surfaceColor10: Color,
-    surfaceColor11: Color,
     surfaceColor12: Color,
     surfaceColor13: Color,
-    surfaceColor14: Color,
     surfaceColor15: Color,
     surfaceColor16: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
     onSurfaceColor5: Color,
-    onSurfaceColor7: Color,
     onSurfaceColor8: Color,
     onSurfaceColor9: Color,
     onSurfaceColor10: Color,
@@ -67,10 +66,15 @@ class SpiritColor(
     todoTextMain: Color,
     keyTodo: Color,
     keyRoutine: Color,
+    mainBackground: Color,
     systemBackground: Color,
     mainTextAndStroke: Color,
     systemArea: Color,
-    mainArea: Color
+    mainArea: Color,
+    systemRed: Color,
+    kakaoBg: Color,
+    kakaoText: Color,
+    googleText: Color
 ) {
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
@@ -96,16 +100,10 @@ class SpiritColor(
     var surfaceColor10 by mutableStateOf(surfaceColor10)
         private set
 
-    var surfaceColor11 by mutableStateOf(surfaceColor11)
-        private set
-
     var surfaceColor12 by mutableStateOf(surfaceColor12)
         private set
 
     var surfaceColor13 by mutableStateOf(surfaceColor13)
-        private set
-
-    var surfaceColor14 by mutableStateOf(surfaceColor14)
         private set
 
     var surfaceColor15 by mutableStateOf(surfaceColor15)
@@ -120,9 +118,6 @@ class SpiritColor(
     var onSurfaceColor3 by mutableStateOf(onSurfaceColor3)
         private set
     var onSurfaceColor5 by mutableStateOf(onSurfaceColor5)
-        private set
-
-    var onSurfaceColor7 by mutableStateOf(onSurfaceColor7)
         private set
 
     var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
@@ -152,6 +147,9 @@ class SpiritColor(
     var keyRoutine by mutableStateOf(keyRoutine)
         private set
 
+    var mainBackground by mutableStateOf(mainBackground)
+        private set
+
     var systemBackground by mutableStateOf(systemBackground)
         private set
 
@@ -162,5 +160,17 @@ class SpiritColor(
         private set
 
     var mainArea by mutableStateOf(mainArea)
+        private set
+
+    var systemRed by mutableStateOf(systemRed)
+        private set
+
+    var kakaoBg by mutableStateOf(kakaoBg)
+        private set
+
+    var kakaoText by mutableStateOf(kakaoText)
+        private set
+
+    var googleText by mutableStateOf(googleText)
         private set
 }

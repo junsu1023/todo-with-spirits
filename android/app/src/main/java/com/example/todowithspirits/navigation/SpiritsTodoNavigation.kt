@@ -1,5 +1,7 @@
 package com.example.todowithspirits.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -23,6 +25,7 @@ import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
+import com.example.todowithspirits.feature.login.EmailLoginScreen
 import com.example.todowithspirits.feature.login.LoginScreen
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
@@ -68,7 +71,11 @@ fun SpiritsTodoNavigation(
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None }
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
@@ -83,19 +90,35 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Login.route) {
             LoginScreen(
+                onSignUpClick = { navController.navigate(Screen.SignUp.route) },
+                onEmailLoginClick = { navController.navigate(Screen.EmailLogin.route) },
                 onLoginSuccess = {
                     navController.navigate(Screen.Today.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
-                },
-                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
+                }
+            )
+        }
+
+        composable(Screen.EmailLogin.route) {
+            EmailLoginScreen(
+                onBack = onBack,
+                onLoginSuccess = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onBack = onBack,
-                onSignUpSuccess = onBack
+                onSignUpSuccess = {
+                    navController.navigate(Screen.Today.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
 

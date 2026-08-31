@@ -1,5 +1,6 @@
 package com.oow.todowithspirit.dto.task;
 
+import com.oow.todowithspirit.domain.task.CategoryType;
 import com.oow.todowithspirit.domain.task.NotificationType;
 import com.oow.todowithspirit.domain.task.RepeatType;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +19,8 @@ public class RoutineCreateRequest {
     @Size(max = 255, message = "Title must be 255 characters or less")
     private String title;
 
+    private CategoryType category;
+
     // 루틴은 DAILY, WEEKLY, MONTHLY 만 허용 (NONE, YEARLY 불가)
     @NotNull(message = "Repeat type is required")
     private RepeatType repeatType;
@@ -30,9 +33,11 @@ public class RoutineCreateRequest {
     // 매월 반복 시 선택 일 (1 ~ 31)
     private Set<Integer> repeatDaysOfMonth;
 
-    private NotificationType notification;
+    private NotificationType notificationType;
 
     private Boolean isPublic;
+
+    private Boolean excludeHoliday;
 
     @Size(max = 2000, message = "Memo must be 2000 characters or less")
     private String memo;

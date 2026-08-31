@@ -1,7 +1,6 @@
 package com.example.data.api
 
 import com.example.data.constant.URLConstant
-import com.example.data.request.CompleteTaskRequest
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
@@ -39,13 +38,13 @@ interface TaskApi {
     @POST(URLConstant.TASK.TASK_COMPLETE)
     suspend fun completeTask(
         @Path("taskId") taskId: Long,
-        @Body request: CompleteTaskRequest
+        @Query("date") date: String
     ): Response<ApiResponse<Unit?>>
 
-    @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_COMPLETE, hasBody = true)
+    @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_COMPLETE)
     suspend fun cancelTaskCompletion(
         @Path("taskId") taskId: Long,
-        @Body request: CompleteTaskRequest
+        @Query("date") date: String
     ): Response<ApiResponse<Unit?>>
 
     @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_DELETE, hasBody = true)

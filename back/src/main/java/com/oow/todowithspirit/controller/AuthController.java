@@ -1,29 +1,27 @@
 package com.oow.todowithspirit.controller;
 
+import com.oow.todowithspirit.common.exception.ApiException;
+import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.common.response.ApiResponse;
-import com.oow.todowithspirit.dto.auth.LoginRequest;
-import com.oow.todowithspirit.dto.auth.LoginResponse;
-import com.oow.todowithspirit.dto.auth.SignupRequest;
-import com.oow.todowithspirit.dto.auth.SignupResponse;
-import com.oow.todowithspirit.dto.auth.TokenRefreshRequest;
-import com.oow.todowithspirit.dto.auth.TokenRefreshResponse;
+import com.oow.todowithspirit.domain.auth.KakaoTokenValidator;
+import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
+    private final KakaoTokenValidator kakaoTokenValidator;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@Valid @RequestBody SignupRequest request) {
@@ -36,6 +34,18 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(authService.login(request)));
     }
 
+    @PostMapping("/social/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> socialLogin(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody SocialLoginRequest request) {
+        log.info("[socialLogin] provider: {}, providerUserId: {}", request.getProvider(), request.getProviderUserId());
+
+        String providerToken = extractTokenFromHeader(authHeader);
+        String verifiedEmail = validateProviderToken(request.getProvider(), providerToken, request.getProviderUserId());
+        LoginResponse response = authService.socialLogin(request, verifiedEmail);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<TokenRefreshResponse>> reissue(@Valid @RequestBody TokenRefreshRequest request) {
         return ResponseEntity.ok(ApiResponse.success(authService.reissue(request)));
@@ -45,5 +55,20 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal Long userId) {
         authService.logout(userId);
         return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    private String extractTokenFromHeader(String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            log.warn("[extractTokenFromHeader] Invalid Authorization header format");
+            throw new ApiException(ErrorCode.UNAUTHORIZED);
+        }
+        return header.substring(7);
+    }
+
+    private String validateProviderToken(String provider, String providerToken, String providerUserId) {
+        if ("kakao".equalsIgnoreCase(provider)) {
+            return kakaoTokenValidator.validate(providerToken, providerUserId);
+        }
+        return null;
     }
 }

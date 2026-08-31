@@ -41,7 +41,7 @@ fun SpiritsTodoSwitch(
         modifier = modifier
             .clip(CircleShape)
             .background(
-                if (checked) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.surfaceColor15
+                if(checked) SpiritTodoTheme.color.mainArea else SpiritTodoTheme.color.surfaceColor15
             )
             .toggleable(
                 value = checked,
@@ -52,9 +52,10 @@ fun SpiritsTodoSwitch(
             ),
         contentAlignment = Alignment.CenterStart
     ) {
-        val padding = (maxHeight - thumbSize) / 2
+        val padding = ((maxHeight - thumbSize) / 2).coerceAtLeast(0.dp)
         val thumbOffset by animateDpAsState(
-            targetValue = if (checked) maxWidth - thumbSize - padding else padding,
+            targetValue = (if (checked) maxWidth - thumbSize - padding else padding)
+                .coerceAtLeast(0.dp),
             label = "switchThumbOffset"
         )
 
@@ -88,21 +89,27 @@ fun SpiritsTodoCheckbox(
 fun SpiritsTodoPrimaryButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
+    val throttledOnClick = rememberThrottledOnClick(onClick = onClick)
+
     Button(
-        onClick = onClick,
+        onClick = throttledOnClick,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = SpiritTodoTheme.color.mainArea
+            containerColor = SpiritTodoTheme.color.mainArea,
+            disabledContainerColor = SpiritTodoTheme.color.systemArea,
+            disabledContentColor = SpiritTodoTheme.color.systemGrey
         )
     ) {
         Text(
             text = text,
-            color = SpiritTodoTheme.color.surfaceColor1,
+            color = if(enabled) SpiritTodoTheme.color.surfaceColor1 else SpiritTodoTheme.color.systemGrey,
             fontSize = 16.sp
         )
     }

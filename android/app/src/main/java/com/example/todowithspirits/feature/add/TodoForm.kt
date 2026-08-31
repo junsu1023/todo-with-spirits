@@ -56,7 +56,7 @@ fun TodoForm(
     Column(modifier = Modifier.fillMaxWidth()) {
         SettingGroup {
             SettingCheckboxItem(
-                icon = painterResource(R.drawable.todo_important2),
+                icon = painterResource(R.drawable.todo_important_20),
                 label = stringResource(R.string.important),
                 checked = uiState.isImportant,
                 onCheckedChange = onImportantChange
@@ -95,7 +95,6 @@ fun TodoForm(
                             TimeWheelPicker(
                                 initialHour = uiState.dueTime.hour,
                                 initialMinute = uiState.dueTime.minute,
-                                textSize = 28,
                                 onTimeSelected = { h, m ->
                                     onDueTimeChange(LocalTime.of(h, m))
                                 }
