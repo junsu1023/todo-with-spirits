@@ -59,9 +59,8 @@ sysinfo.txt
 Thumbs.db
 Desktop.ini
 
-# Local AI agent instructions
+# Local AI agent instruction override
 AGENT.md
-AGENTS.md
 
 # Local Unity MCP support files
 [Aa]ssets/[Pp]lugins/[Rr]oslyn/
