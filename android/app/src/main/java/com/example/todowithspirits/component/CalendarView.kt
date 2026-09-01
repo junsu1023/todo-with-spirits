@@ -56,8 +56,7 @@ fun CalendarView(
     showMonthNavigation: Boolean = true,
     showSelectedDateInHeader: Boolean = false,
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
-    onMonthChanged: (YearMonth) -> Unit = {},
-    onMonthSettledDate: (LocalDate) -> Unit = onDateSelected
+    onMonthChanged: (YearMonth) -> Unit = {}
 ) {
     val today = remember { LocalDate.now() }
     val selectedDateFormatter = KoreanDateWithDayFormatter
@@ -78,8 +77,6 @@ fun CalendarView(
         if (currentMonth == YearMonth.from(today)) today else currentMonth.atDay(1)
     }
 
-    val currentSelectedDate by rememberUpdatedState(selectedDate)
-    val currentOnMonthSettledDate by rememberUpdatedState(onMonthSettledDate)
     val currentOnMonthChanged by rememberUpdatedState(onMonthChanged)
 
     LaunchedEffect(selectedDate) {
@@ -93,13 +90,7 @@ fun CalendarView(
         snapshotFlow { pagerState.settledPage }
             .drop(1)
             .collect { page ->
-                val month = monthForPage(page)
-                currentOnMonthChanged(month)
-
-                val target = if (month == YearMonth.from(today)) today else month.atDay(1)
-                if (target != currentSelectedDate) {
-                    currentOnMonthSettledDate(target)
-                }
+                currentOnMonthChanged(monthForPage(page))
             }
     }
 
