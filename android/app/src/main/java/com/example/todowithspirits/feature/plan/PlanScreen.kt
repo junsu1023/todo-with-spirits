@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -131,7 +132,13 @@ fun PlanScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 CalendarView(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            SpiritTodoTheme.color.systemBackground,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(vertical = 16.dp),
                     selectedDate = uiState.selectedDate,
                     onDateSelected = { planViewModel.setSelectedDate(it) },
                     showSelectedDateInHeader = true,

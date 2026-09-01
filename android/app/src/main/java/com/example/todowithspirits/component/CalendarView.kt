@@ -275,7 +275,7 @@ private fun CalendarMonthGrid(
                                 text = date.dayOfMonth.toString(),
                                 color = when {
                                     isSelected -> SpiritTodoTheme.color.onSurfaceColor3
-                                    !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.onSurfaceColor9
+                                    !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.surfaceColor15
                                     else -> SpiritTodoTheme.color.todoTextMain
                                 },
                                 fontSize = 12.sp,
