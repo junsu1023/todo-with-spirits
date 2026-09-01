@@ -314,7 +314,6 @@ fun QuickAddBottomPopup(
                                                     selectedDate = it
                                                     isDateExpanded = false
                                                 },
-                                                onMonthSettledDate = { selectedDate = it },
                                                 showMonthNavigation = false
                                             )
 
