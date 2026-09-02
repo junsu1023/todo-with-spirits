@@ -70,7 +70,7 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 		mutationFn: createSchedule,
 		onSuccess: (res) => {
 			if (res.result !== 'success') return
-			queryClient.invalidateQueries({ queryKey: ['task', 'schedule', dateStr] })
+			queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
 			reset()
 		},
 	})

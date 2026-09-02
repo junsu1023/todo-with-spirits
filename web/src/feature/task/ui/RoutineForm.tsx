@@ -43,7 +43,7 @@ export function RoutineForm({ dateStr }: RoutineFormProps) {
 		mutationFn: createRoutine,
 		onSuccess: (res) => {
 			if (res.result !== 'success') return
-			queryClient.invalidateQueries({ queryKey: ['task', 'routine', dateStr] })
+			queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
 			reset()
 		},
 	})
