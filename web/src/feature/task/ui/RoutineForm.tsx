@@ -15,11 +15,7 @@ const DAYS: { label: string; value: DayOfWeek }[] = [
 	{ label: '토', value: 'SATURDAY' },
 ]
 
-interface RoutineFormProps {
-	dateStr: string
-}
-
-export function RoutineForm({ dateStr }: RoutineFormProps) {
+export function RoutineForm() {
 	const queryClient = useQueryClient()
 
 	const {
