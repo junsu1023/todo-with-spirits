@@ -1,12 +1,21 @@
 //todo: 컴포넌트 분리 필요
+import { Accordion } from '@base-ui/react/accordion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
 import { useState } from 'react'
-import { getRoutineList, getTaskSchedule } from '@/entity/task/api/query'
-import type { RepeatType } from '@/entity/task/model/type'
-import { completeTask, uncompleteTask } from '@/feature/task/api/mutate'
+import { getTaskCalendar } from '@/entity/task/api/query'
+import type { CalendarItem, RepeatType } from '@/entity/task/model/type'
+import {
+	completeTask,
+	deleteTasks,
+	uncompleteTask,
+	updateSchedule,
+} from '@/feature/task/api/mutate'
+import { TaskEditForm } from '@/feature/task/ui/TaskEditForm'
 import { TaskInputDock } from '@/feature/task/ui/TaskInputDock'
+import { TaskItem } from '@/feature/task/ui/TaskItem'
 import { Card } from '@/shared/ui/card'
+import { Dialog, DialogPopup } from '@/shared/ui/dialog'
 
 type DisplayRepeatType = '매일' | '매주' | '매월'
 
@@ -19,47 +28,9 @@ const REPEAT_MAP: Record<RepeatType, DisplayRepeatType | null> = {
 
 type MainTab = 'todo' | 'completed'
 
-function formatDateBadge(date: string, time?: string) {
-	const d = new Date(date)
-	const label = `${d.getMonth() + 1}.${d.getDate()}`
-	return time ? `${label} ${time}` : label
-}
-
 function formatRepeat(repeatType: RepeatType | undefined) {
 	if (!repeatType) return ''
 	return REPEAT_MAP[repeatType] ?? ''
-}
-
-function CheckButton({
-	checked,
-	color,
-	onToggle,
-}: {
-	checked: boolean
-	color: string
-	onToggle: () => void
-}) {
-	return (
-		<button
-			type="button"
-			onClick={onToggle}
-			style={checked ? { backgroundColor: color } : undefined}
-			className={`flex size-7 shrink-0 items-center justify-center rounded-full transition-colors ${
-				checked ? '' : 'border-2 border-gray-300 bg-white'
-			}`}
-		>
-			{checked && (
-				<svg
-					viewBox="0 0 24 24"
-					className="size-[13px] stroke-white stroke-[3] fill-none"
-					role="img"
-					aria-label="완료"
-				>
-					<polyline points="20 6 9 17 4 12" />
-				</svg>
-			)}
-		</button>
-	)
 }
 
 interface TodayTodoCardProps {
@@ -76,184 +47,224 @@ function toDateString(date: Date) {
 export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 	const dateStr = toDateString(selectedDate)
 
-	const { data: todoList } = useQuery({
-		queryKey: ['task', 'schedule', dateStr],
-		queryFn: () => getTaskSchedule({ from: dateStr, to: dateStr }),
-	})
-	const { data: routineList } = useQuery({
-		queryKey: ['task', 'routine', dateStr],
-		queryFn: () => getRoutineList({ from: dateStr, to: dateStr }),
+	const { data: dayData } = useQuery({
+		queryKey: ['task', 'calendar', dateStr, dateStr],
+		queryFn: () => getTaskCalendar({ from: dateStr, to: dateStr }),
 	})
 
 	const queryClient = useQueryClient()
 	const [mainTab, setMainTab] = useState<MainTab>('todo')
 
-	const apiTodos = todoList?.result === 'success' ? todoList.detail.items : []
-	const apiRoutines =
-		routineList?.result === 'success' ? routineList.detail.items : []
+	const allItems = dayData?.result === 'success' ? dayData.detail.items : []
+	const apiTodos = allItems.filter((i) => i.taskType !== 'ROUTINE')
+	const apiRoutines = allItems.filter((i) => i.taskType === 'ROUTINE')
 
 	const displayedTodos =
 		mainTab === 'todo' ? apiTodos : apiTodos.filter((t) => t.isCompleted)
 	const displayedRoutines =
 		mainTab === 'todo' ? apiRoutines : apiRoutines.filter((r) => r.isCompleted)
 
-	const invalidateSchedule = () =>
-		queryClient.invalidateQueries({ queryKey: ['task', 'schedule', dateStr] })
-	const invalidateRoutine = () =>
-		queryClient.invalidateQueries({ queryKey: ['task', 'routine', dateStr] })
+	const invalidate = () =>
+		queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
 
-	const { mutate: completeTodo } = useMutation({
+	const { mutate: completeItem } = useMutation({
 		mutationFn: completeTask,
 		onSuccess: (res) => {
-			if (res.result === 'success') invalidateSchedule()
+			if (res.result === 'success') invalidate()
 		},
 	})
-	const { mutate: uncompleteTodo } = useMutation({
+	const { mutate: uncompleteItem } = useMutation({
 		mutationFn: uncompleteTask,
 		onSuccess: (res) => {
-			if (res.result === 'success') invalidateSchedule()
+			if (res.result === 'success') invalidate()
 		},
 	})
-	const { mutate: completeRoutine } = useMutation({
-		mutationFn: completeTask,
+
+	const { mutate: deleteTask } = useMutation({
+		mutationFn: deleteTasks,
 		onSuccess: (res) => {
-			if (res.result === 'success') invalidateRoutine()
+			if (res.result === 'success') invalidate()
 		},
 	})
-	const { mutate: uncompleteRoutine } = useMutation({
-		mutationFn: uncompleteTask,
+
+	const { mutate: toggleImportant } = useMutation({
+		mutationFn: updateSchedule,
 		onSuccess: (res) => {
-			if (res.result === 'success') invalidateRoutine()
+			if (res.result === 'success') invalidate()
 		},
 	})
+
+	const handleToggleImportant = (todo: CalendarItem) => {
+		const date = todo.endDate ?? dateStr
+		const endDateTime = todo.isAllDay
+			? `${date}T23:59:59`
+			: `${date}T${todo.endTime ?? '23:59:59'}`
+		toggleImportant({
+			taskId: todo.taskId,
+			title: todo.title,
+			endDateTime,
+			isAllDay: todo.isAllDay ?? true,
+			isImportant: !todo.isImportant,
+		})
+	}
+
+	const [editingItem, setEditingItem] = useState<CalendarItem | null>(null)
+
+	const openEdit = (item: CalendarItem) => setEditingItem(item)
 
 	return (
-		<Card className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden p-6">
-			{/* 헤더 */}
-			<div className="flex items-center justify-between">
-				<h2 className="text-xl font-bold">Plan</h2>
-				<div className="flex rounded-full bg-gray-100 p-1">
-					{(['todo', 'completed'] as MainTab[]).map((tab) => (
-						<button
-							key={tab}
-							type="button"
-							onClick={() => setMainTab(tab)}
-							className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-								mainTab === tab
-									? 'bg-white text-gray-900 shadow-sm'
-									: 'text-gray-400'
-							}`}
-						>
-							{tab === 'todo' ? 'To-do' : 'Completed'}
-						</button>
-					))}
+		<>
+			<Card className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden p-6">
+				{/* 헤더 */}
+				<div className="flex items-center justify-between">
+					<h2 className="text-xl font-bold">Plan</h2>
+					<div className="flex rounded-full bg-gray-100 p-1">
+						{(['todo', 'completed'] as MainTab[]).map((tab) => (
+							<button
+								key={tab}
+								type="button"
+								onClick={() => setMainTab(tab)}
+								className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+									mainTab === tab
+										? 'bg-white text-gray-900 shadow-sm'
+										: 'text-gray-400'
+								}`}
+							>
+								{tab === 'todo' ? 'To-do' : 'Completed'}
+							</button>
+						))}
+					</div>
 				</div>
-			</div>
 
-			{/* To do + 루틴 2열 */}
-			<div className="flex min-h-0 flex-1 gap-6 overflow-y-auto">
-				{/* 할 일 */}
-				<div className="flex flex-1 flex-col gap-4">
-					<p className="font-semibold text-gray-700">To do</p>
-					{displayedTodos.length === 0 && (
-						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
-							<span className="text-2xl font-bold">미정</span>
-							<span className="text-xs">
-								{mainTab === 'todo'
-									? '이 날의 할 일이 없어요'
-									: '완료된 할 일이 없어요'}
-							</span>
-						</div>
-					)}
-					{displayedTodos.map((todo) => (
-						<div key={todo.taskId} className="flex items-center gap-3">
-							<CheckButton
-								checked={todo.isCompleted}
-								color="#48CAD9"
-								onToggle={() =>
-									todo.isCompleted
-										? uncompleteTodo({ taskId: todo.taskId })
-										: completeTodo({ taskId: todo.taskId })
-								}
-							/>
-							<div className="flex flex-1 flex-col">
-								<span
-									className={`text-base ${
+				{/* To do + 루틴 2열 */}
+				<div className="flex min-h-0 flex-1 gap-6 overflow-y-auto">
+					{/* 할 일 */}
+					<div className="flex flex-1 flex-col gap-4">
+						<p className="font-semibold text-gray-700">To do</p>
+						{displayedTodos.length === 0 && (
+							<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
+								<span className="text-2xl font-bold">미정</span>
+								<span className="text-xs">
+									{mainTab === 'todo'
+										? '이 날의 할 일이 없어요'
+										: '완료된 할 일이 없어요'}
+								</span>
+							</div>
+						)}
+						<Accordion.Root multiple className="flex flex-col gap-3">
+							{displayedTodos.map((todo) => (
+								<TaskItem
+									key={todo.taskId}
+									value={String(todo.taskId)}
+									title={todo.title}
+									isCompleted={todo.isCompleted}
+									checkColor="#48CAD9"
+									onToggle={() =>
 										todo.isCompleted
-											? 'text-gray-400 line-through'
-											: 'text-gray-800'
-									}`}
-								>
-									{todo.title}
+											? uncompleteItem({ taskId: todo.taskId, date: dateStr })
+											: completeItem({ taskId: todo.taskId, date: dateStr })
+									}
+									onPostpone={() => {}}
+									onEdit={() => openEdit(todo)}
+									onDelete={() => deleteTask({ taskIds: [todo.taskId] })}
+									subtitle={
+										!todo.isAllDay && todo.endTime ? (
+											<span className="text-xs text-[#B286FD]">
+												{todo.endTime.slice(0, 5)}
+											</span>
+										) : undefined
+									}
+									trailing={
+										<button
+											type="button"
+											onClick={(e) => {
+												e.stopPropagation()
+												handleToggleImportant(todo)
+											}}
+											className="shrink-0"
+										>
+											<Star
+												size={16}
+												className={
+													todo.isImportant
+														? 'fill-[#B286FD] text-[#B286FD]'
+														: 'text-gray-200 hover:text-gray-300'
+												}
+											/>
+										</button>
+									}
+								/>
+							))}
+						</Accordion.Root>
+					</div>
+
+					<div className="w-px bg-gray-100" />
+
+					{/* 루틴 */}
+					<div className="flex flex-1 flex-col gap-4">
+						<p className="font-semibold text-gray-700">루틴</p>
+						{displayedRoutines.length === 0 && (
+							<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
+								<span className="text-2xl font-bold">미정</span>
+								<span className="text-xs">
+									{mainTab === 'todo'
+										? '이 날의 루틴이 없어요'
+										: '완료한 루틴이 없어요'}
 								</span>
-								{todo.endDate && (
-									<span className="text-xs text-[#B286FD]">
-										{formatDateBadge(todo.endDate, todo.endTime?.slice(0, 5))}
-									</span>
-								)}
 							</div>
-							<Star
-								size={16}
-								className={
-									todo.isImportant
-										? 'fill-[#B286FD] text-[#B286FD]'
-										: 'text-gray-200'
-								}
-							/>
-						</div>
-					))}
-				</div>
-
-				<div className="w-px bg-gray-100" />
-
-				{/* 루틴 */}
-				<div className="flex flex-1 flex-col gap-4">
-					<p className="font-semibold text-gray-700">루틴</p>
-					{displayedRoutines.length === 0 && (
-						<div className="flex flex-col items-center gap-1 py-6 text-gray-300">
-							<span className="text-2xl font-bold">미정</span>
-							<span className="text-xs">
-								{mainTab === 'todo'
-									? '이 날의 루틴이 없어요'
-									: '완료한 루틴이 없어요'}
-							</span>
-						</div>
-					)}
-					{displayedRoutines.map((routine) => (
-						<div key={routine.taskId} className="flex items-center gap-3">
-							<CheckButton
-								checked={routine.isCompleted}
-								color="#B2F042"
-								onToggle={() =>
-									routine.isCompleted
-										? uncompleteRoutine({
-												taskId: routine.taskId,
-												date: dateStr,
-											})
-										: completeRoutine({ taskId: routine.taskId, date: dateStr })
-								}
-							/>
-							<div className="flex flex-1 flex-col">
-								<span
-									className={`text-base ${
+						)}
+						<Accordion.Root multiple className="flex flex-col gap-3">
+							{displayedRoutines.map((routine) => (
+								<TaskItem
+									key={routine.taskId}
+									value={String(routine.taskId)}
+									title={routine.title}
+									isCompleted={routine.isCompleted}
+									checkColor="#B2F042"
+									onToggle={() =>
 										routine.isCompleted
-											? 'text-gray-400 line-through'
-											: 'text-gray-800'
-									}`}
-								>
-									{routine.title}
-								</span>
-								<span className="text-xs text-[#B2A042]">
-									{formatRepeat(routine.repeatType)}
-								</span>
-							</div>
-						</div>
-					))}
+											? uncompleteItem({
+													taskId: routine.taskId,
+													date: dateStr,
+												})
+											: completeItem({ taskId: routine.taskId, date: dateStr })
+									}
+									onPostpone={() => {}}
+									onEdit={() => openEdit(routine)}
+									onDelete={() => deleteTask({ taskIds: [routine.taskId] })}
+									subtitle={
+										<span className="text-xs text-[#B2A042]">
+											{formatRepeat(routine.repeatType)}
+										</span>
+									}
+								/>
+							))}
+						</Accordion.Root>
+					</div>
 				</div>
-			</div>
 
-			{/* 입력 도크 */}
-			<TaskInputDock dateStr={dateStr} />
-		</Card>
+				{/* 입력 도크 */}
+				<TaskInputDock dateStr={dateStr} />
+			</Card>
+
+			{/* 수정 모달 */}
+			<Dialog
+				open={editingItem !== null}
+				onOpenChange={(open) => {
+					if (!open) setEditingItem(null)
+				}}
+			>
+				<DialogPopup className="max-w-md">
+					{editingItem && (
+						<TaskEditForm
+							item={editingItem}
+							dateStr={dateStr}
+							onSuccess={() => setEditingItem(null)}
+							onCancel={() => setEditingItem(null)}
+						/>
+					)}
+				</DialogPopup>
+			</Dialog>
+		</>
 	)
 }
