@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import ForestPage from '@/page/ForestPage'
 import { JoinPage } from '@/page/JoinPage'
+import { KakaoCallbackPage } from '@/page/KakaoCallbackPage'
 import { LoginPage } from '@/page/LoginPage'
 import { MePage } from '@/page/MePage'
 import { PlanPage } from '@/page/PlanPage'
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
 				<JoinPage />
 			</GuestOnlyRoute>
 		),
+	},
+	{
+		path: '/oauth/kakao',
+		element: <KakaoCallbackPage />,
 	},
 	{
 		element: (
