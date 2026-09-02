@@ -258,7 +258,6 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 					{editingItem && (
 						<TaskEditForm
 							item={editingItem}
-							dateStr={dateStr}
 							onSuccess={() => setEditingItem(null)}
 							onCancel={() => setEditingItem(null)}
 						/>

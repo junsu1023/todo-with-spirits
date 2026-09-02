@@ -125,7 +125,6 @@ function FormRow({
 
 interface TaskEditFormProps {
 	item: CalendarItem
-	dateStr: string
 	onSuccess: () => void
 	onCancel: () => void
 }
@@ -137,7 +136,6 @@ function todayStr() {
 
 export function TaskEditForm({
 	item,
-	dateStr,
 	onSuccess,
 	onCancel,
 }: TaskEditFormProps) {
