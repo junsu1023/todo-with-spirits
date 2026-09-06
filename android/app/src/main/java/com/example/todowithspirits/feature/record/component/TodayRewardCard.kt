@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.record.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,31 +50,39 @@ fun TodayRewardCard(todayRewards: List<RecordReward>) {
 
         Spacer(Modifier.height(12.dp))
 
-        todayRewards.forEachIndexed { index, reward ->
+        var expanded by remember { mutableStateOf(false) }
+
+        val visibleRewards = if(expanded) todayRewards else todayRewards.take(4)
+
+        visibleRewards.forEachIndexed { index, reward ->
             RewardRow(reward = reward)
 
-            if (index < todayRewards.lastIndex) {
+            if (index < visibleRewards.lastIndex) {
                 Spacer(Modifier.height(6.dp))
             }
         }
 
-        Spacer(Modifier.height(14.dp))
+        if (!expanded && todayRewards.size >= 5) {
+            Spacer(Modifier.height(14.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(SpiritTodoTheme.color.onSurfaceColor8, RoundedCornerShape(30.dp))
-                    .padding(horizontal = 24.dp, vertical = 8.5.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = stringResource(R.string.more),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.onSurfaceColor3
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(30.dp))
+                        .background(SpiritTodoTheme.color.mainArea)
+                        .clickable { expanded = true }
+                        .padding(horizontal = 24.dp, vertical = 8.5.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.more),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = SpiritTodoTheme.color.onSurfaceColor3
+                    )
+                }
             }
         }
     }
