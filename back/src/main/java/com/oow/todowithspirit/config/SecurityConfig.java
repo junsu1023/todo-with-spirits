@@ -37,7 +37,8 @@ public class SecurityConfig {
                                 "/api/auth/signup",
                                 "/api/auth/login",
                                 "/api/auth/reissue",
-                                "/api/auth/social/login"
+                                "/api/auth/social/login",
+                                "/api/health"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/email/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/user/email/verify", "/email/verify").permitAll()

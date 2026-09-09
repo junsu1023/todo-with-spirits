@@ -75,6 +75,14 @@ public class UserService {
         return UserProfileResponse.of(user, providers);
     }
 
+    @Transactional
+    public void withdraw(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+
+        userRepository.delete(user);
+    }
+
     private void validateSpiritOwnership(Long userId, Long spiritId) {
         Spirit spirit = spiritRepository.findById(spiritId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Spirit not found"));

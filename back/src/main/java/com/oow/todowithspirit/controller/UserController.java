@@ -40,6 +40,13 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userService.updateEmail(userId, request)));
     }
 
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> withdraw(
+            @AuthenticationPrincipal Long userId) {
+        userService.withdraw(userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
     @PostMapping("/me/email/verify/resend")
     public ResponseEntity<ApiResponse<Void>> resendEmailVerification(
             @AuthenticationPrincipal Long userId) {
