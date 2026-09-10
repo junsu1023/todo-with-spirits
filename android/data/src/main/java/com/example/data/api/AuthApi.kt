@@ -10,6 +10,7 @@ import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -28,4 +29,7 @@ interface AuthApi {
 
     @POST(URLConstant.LOGIN.LOGOUT)
     suspend fun logout(): Response<ApiResponse<Unit?>>
+
+    @DELETE(URLConstant.USER.USER_ME)
+    suspend fun withdraw(): Response<ApiResponse<Unit?>>
 }

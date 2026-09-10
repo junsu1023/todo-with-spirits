@@ -34,4 +34,6 @@ class AuthRemoteDataSource @Inject constructor(
         apiCall { authApi.signUp(SignUpRequest(email, password, nickname)) }
 
     suspend fun logout(): Result<Unit> = apiCallUnit { authApi.logout() }
+
+    suspend fun withdraw(): Result<Unit> = apiCallUnit { authApi.withdraw() }
 }

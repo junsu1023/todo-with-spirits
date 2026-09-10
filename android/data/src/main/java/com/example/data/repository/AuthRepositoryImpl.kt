@@ -40,6 +40,11 @@ class AuthRepositoryImpl @Inject constructor(
             .onSuccess { clearSession() }
     }
 
+    override suspend fun withdraw(): Result<Unit> {
+        return authRemoteDataSource.withdraw()
+            .onSuccess { clearSession() }
+    }
+
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> {
         return authRemoteDataSource.signUp(email, password, nickname)
             .mapCatching { it.toDomain() }
