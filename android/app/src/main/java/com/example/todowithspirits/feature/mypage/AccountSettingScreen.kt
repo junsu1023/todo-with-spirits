@@ -46,6 +46,7 @@ fun AccountSettingScreen(
 ) {
     var showWithdrawDialog by remember { mutableStateOf(false) }
     val isLoading by accountSettingViewModel.isLoading.collectAsStateWithLifecycle()
+    val isPasswordChangeAvailable by accountSettingViewModel.isPasswordChangeAvailable.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -84,16 +85,18 @@ fun AccountSettingScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        SettingActionRow(
-            label = stringResource(R.string.modify_password),
-            modifier = Modifier.padding(horizontal = 18.dp),
-            labelColor = SpiritTodoTheme.color.systemGrey,
-            trailingIconRes = R.drawable.todo_arrow2_20,
-            trailingIconTint = null,
-            onClick = onModifyPasswordClick
-        )
+        if (isPasswordChangeAvailable) {
+            SettingActionRow(
+                label = stringResource(R.string.modify_password),
+                modifier = Modifier.padding(horizontal = 18.dp),
+                labelColor = SpiritTodoTheme.color.systemGrey,
+                trailingIconRes = R.drawable.todo_arrow2_20,
+                trailingIconTint = null,
+                onClick = onModifyPasswordClick
+            )
 
-        Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+        }
 
         SettingActionRow(
             label = stringResource(R.string.withdraw),
