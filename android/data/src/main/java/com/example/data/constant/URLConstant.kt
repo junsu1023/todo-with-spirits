@@ -30,6 +30,11 @@ object URLConstant {
         const val SOCIAL_LOGIN = "$AUTH/social/login"
     }
 
+    object USER {
+        private const val USER = "$API/user"
+        const val USER_ME = "$USER/me"
+    }
+
     object RECORD {
         private const val RECORD = "$API/record"
         const val RECORD_TODAY = "$RECORD/today"

@@ -1,5 +1,6 @@
 package com.example.domain.repository
 
+import com.example.domain.model.LoginMethod
 import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
@@ -17,7 +18,11 @@ interface AuthRepository {
 
     suspend fun logout(): Result<Unit>
 
+    suspend fun withdraw(): Result<Unit>
+
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult>
 
     suspend fun restoreSession(): Boolean
+
+    fun getLoginMethod(): LoginMethod?
 }
