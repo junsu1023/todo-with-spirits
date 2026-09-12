@@ -310,13 +310,14 @@ CREATE TABLE share_cards
 -- ============================================================
 CREATE TABLE user_settings
 (
-    id                  BIGSERIAL PRIMARY KEY,
-    user_id             BIGINT      NOT NULL UNIQUE,
-    dark_mode           BOOLEAN     NOT NULL     DEFAULT FALSE,
-    language            VARCHAR(10) NOT NULL     DEFAULT 'ko',
-    auto_backup_enabled BOOLEAN     NOT NULL     DEFAULT FALSE,
-    created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                    BIGSERIAL PRIMARY KEY,
+    user_id               BIGINT      NOT NULL UNIQUE,
+    dark_mode             BOOLEAN     NOT NULL     DEFAULT FALSE,
+    language              VARCHAR(10) NOT NULL     DEFAULT 'SYSTEM', -- language ENUM (SYSTEM, KO, EN, JA, ZH)
+    dday_display_enabled  BOOLEAN     NOT NULL     DEFAULT TRUE,     -- 플랜(task) 디데이 표시
+    auto_backup_enabled   BOOLEAN     NOT NULL     DEFAULT FALSE,
+    created_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
