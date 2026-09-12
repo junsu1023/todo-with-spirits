@@ -4,6 +4,8 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.spirit.Spirit;
 import com.oow.todowithspirit.domain.spirit.SpiritRepository;
+import com.oow.todowithspirit.domain.subscription.Subscription;
+import com.oow.todowithspirit.domain.subscription.SubscriptionRepository;
 import com.oow.todowithspirit.domain.user.OAuthProvider;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
@@ -24,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserSocialAccountRepository userSocialAccountRepository;
     private final SpiritRepository spiritRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final EmailVerificationService emailVerificationService;
 
     @Transactional(readOnly = true)
@@ -33,7 +36,7 @@ public class UserService {
 
         List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(userId);
 
-        return UserProfileResponse.of(user, providers);
+        return UserProfileResponse.of(user, providers, isPremium(userId));
     }
 
     @Transactional
@@ -51,7 +54,7 @@ public class UserService {
 
         List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(userId);
 
-        return UserProfileResponse.of(user, providers);
+        return UserProfileResponse.of(user, providers, isPremium(userId));
     }
 
     @Transactional
@@ -72,7 +75,13 @@ public class UserService {
 
         List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(userId);
 
-        return UserProfileResponse.of(user, providers);
+        return UserProfileResponse.of(user, providers, isPremium(userId));
+    }
+
+    private boolean isPremium(Long userId) {
+        return subscriptionRepository.findByUserId(userId)
+                .map(Subscription::isActive)
+                .orElse(false);
     }
 
     @Transactional

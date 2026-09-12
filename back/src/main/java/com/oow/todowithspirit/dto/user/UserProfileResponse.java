@@ -29,7 +29,7 @@ public class UserProfileResponse {
     private final String emailVerificationStatus; // 이메일 인증 상태
     private final LocalDateTime createdAt;
 
-    public static UserProfileResponse of(User user, List<OAuthProvider> providers) {
+    public static UserProfileResponse of(User user, List<OAuthProvider> providers, boolean isPremium) {
         String provider = providers.isEmpty() ? null : providers.get(0).name();
         return new UserProfileResponse(
                 user.getId(),
@@ -37,7 +37,7 @@ public class UserProfileResponse {
                 user.getNickname(),
                 user.getProfileImageUrl(),
                 user.getRole().name(),
-                user.isPremium(),
+                isPremium,
                 user.getRepresentativeSpiritId(),
                 provider == null ? "LOCAL" : "SOCIAL",
                 provider,
