@@ -23,4 +23,12 @@ public class DisplaySettingController {
         DisplaySettingResponse response = displaySettingService.getDisplaySettings(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @PatchMapping
+    public ResponseEntity<ApiResponse<DisplaySettingResponse>> updateDisplaySettings(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody DisplaySettingUpdateRequest request) {
+        DisplaySettingResponse response = displaySettingService.updateDisplaySettings(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }
