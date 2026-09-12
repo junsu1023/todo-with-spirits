@@ -23,4 +23,12 @@ public class NotificationSettingController {
         NotificationSettingResponse response = notificationSettingService.getNotificationSettings(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @PatchMapping
+    public ResponseEntity<ApiResponse<NotificationSettingResponse>> updateNotificationSettings(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody NotificationSettingUpdateRequest request) {
+        NotificationSettingResponse response = notificationSettingService.updateNotificationSettings(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }
