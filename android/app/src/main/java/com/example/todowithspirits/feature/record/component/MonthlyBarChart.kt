@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,31 +26,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
+import com.example.domain.model.MonthlyComparison
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlin.math.roundToInt
 
 private data class MonthBarData(val month: Int, val value: Int?)
 
-private val monthBarDummyData = listOf(
-    MonthBarData(1, 70),
-    MonthBarData(2, 80),
-    MonthBarData(3, 65),
-    MonthBarData(4, 90),
-    MonthBarData(5, 85),
-    MonthBarData(6, 99),
-    MonthBarData(7, null)
-)
-
 @Composable
-fun MonthlyBarChart() {
-    val validValues = monthBarDummyData.mapNotNull { it.value }
+fun MonthlyBarChart(
+    comparisons: List<MonthlyComparison> = emptyList(),
+    currentMonth: Int = 12
+) {
+    val monthBarData = remember(comparisons, currentMonth) {
+        (1..12).map { month ->
+            val value = comparisons.find { it.month == month }
+                ?.takeIf { month <= currentMonth }
+                ?.let { (it.completedRate * 100).roundToInt() }
+            MonthBarData(month, value)
+        }
+    }
+    val validValues = monthBarData.mapNotNull { it.value }
     val maxValue = if (validValues.isEmpty()) 1 else validValues.max().coerceAtLeast(1)
-    val maxIndex = monthBarDummyData.indexOfFirst { it.value != null && it.value == validValues.max() }
+    val maxIndex = monthBarData.indexOfFirst { it.value != null && it.value == validValues.max() }
 
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth()) {
-            monthBarDummyData.forEachIndexed { index, _ ->
+            monthBarData.forEachIndexed { index, _ ->
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -68,7 +72,7 @@ fun MonthlyBarChart() {
                             )
 
                             Text(
-                                text = "${monthBarDummyData[maxIndex].value}",
+                                text = "${monthBarData[maxIndex].value}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SpiritTodoTheme.color.onSurfaceColor3,
@@ -83,7 +87,7 @@ fun MonthlyBarChart() {
         Spacer(Modifier.height(4.dp))
 
         Row(Modifier.fillMaxWidth()) {
-            monthBarDummyData.forEach { month ->
+            monthBarData.forEach { month ->
                 Text(
                     text = if (month.value == null) "?" else "${month.value}",
                     modifier = Modifier.weight(1f),
@@ -101,7 +105,7 @@ fun MonthlyBarChart() {
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            monthBarDummyData.forEach { month ->
+            monthBarData.forEach { month ->
                 val fraction = if (month.value == null || maxValue == 0) 0.05f else month.value.toFloat() / maxValue
                 val animatedFraction by rememberAnimatedProgress(fraction, label = "monthBarFraction${month.month}")
 
@@ -133,7 +137,7 @@ fun MonthlyBarChart() {
         Spacer(Modifier.height(5.dp))
 
         Row(Modifier.fillMaxWidth()) {
-            monthBarDummyData.forEach { month ->
+            monthBarData.forEach { month ->
                 Text(
                     text = "${month.month}월",
                     modifier = Modifier.weight(1f),

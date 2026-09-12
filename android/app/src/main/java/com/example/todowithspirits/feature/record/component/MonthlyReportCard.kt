@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,12 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.MonthlyRecord
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PillBadge
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlin.math.roundToInt
 
 private fun getSeasonTitle(month: Int): String = when (month) {
     1 -> "한겨울의"
@@ -54,9 +53,23 @@ private fun getSeasonTitle(month: Int): String = when (month) {
 }
 
 @Composable
-fun MonthlyReportCard() {
-    var currentYearMonth by remember { mutableStateOf(YearMonth.now()) }
+fun MonthlyReportCard(
+    yearMonth: YearMonth,
+    onYearMonthChange: (YearMonth) -> Unit,
+    monthlyRecord: MonthlyRecord?
+) {
     val today = remember { LocalDate.now() }
+
+    val currentRate = monthlyRecord?.monthlyComparisons
+        ?.find { it.month == yearMonth.monthValue }
+        ?.completedRate
+        ?: monthlyRecord?.averageCompletionRate
+        ?: 0.0
+    val previousRate = monthlyRecord?.monthlyComparisons
+        ?.find { it.month == yearMonth.minusMonths(1).monthValue }
+        ?.completedRate
+        ?: 0.0
+    val comparisonDiffPercent = ((currentRate - previousRate) * 100).roundToInt()
 
     Column {
         Column(
@@ -70,11 +83,11 @@ fun MonthlyReportCard() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val yearShort = currentYearMonth.year % 100
-                val season = getSeasonTitle(currentYearMonth.monthValue)
+                val yearShort = yearMonth.year % 100
+                val season = getSeasonTitle(yearMonth.monthValue)
 
                 Text(
-                    text = "${yearShort}년 $season ${currentYearMonth.monthValue}월",
+                    text = "${yearShort}년 $season ${yearMonth.monthValue}월",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.mainTextAndStroke
@@ -87,7 +100,7 @@ fun MonthlyReportCard() {
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
-                            .noRippleClickable { currentYearMonth = currentYearMonth.minusMonths(1) }
+                            .noRippleClickable { onYearMonthChange(yearMonth.minusMonths(1)) }
                     )
 
                     Spacer(modifier = Modifier.width(14.dp))
@@ -98,23 +111,26 @@ fun MonthlyReportCard() {
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier
                             .size(22.dp)
-                            .noRippleClickable { currentYearMonth = currentYearMonth.plusMonths(1) }
+                            .noRippleClickable { onYearMonthChange(yearMonth.plusMonths(1)) }
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(2.dp))
 
-            // dummy
             Text(
-                text = "이번 달도 바쁘겠지만 할 수 있어요!",
+                text = monthlyRecord?.message ?: "이번 달도 바쁘겠지만 할 수 있어요!",
                 fontSize = 14.sp,
                 color = SpiritTodoTheme.color.todoTextMain
             )
 
             Spacer(Modifier.height(20.dp))
 
-            MonthlyCalendar(yearMonth = currentYearMonth, today = today)
+            MonthlyCalendar(
+                yearMonth = yearMonth,
+                today = today,
+                dailyHeatmaps = monthlyRecord?.dailyHeatmaps ?: emptyList()
+            )
 
             Spacer(Modifier.height(16.dp))
 
@@ -141,7 +157,7 @@ fun MonthlyReportCard() {
 
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = "15개",
+                            text = "${monthlyRecord?.completedTaskCount ?: 0}개",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = SpiritTodoTheme.color.todoTextMain,
@@ -149,7 +165,7 @@ fun MonthlyReportCard() {
                         )
 
                         Text(
-                            text = "/ 1000",
+                            text = "/ ${monthlyRecord?.totalTaskCount ?: 0}",
                             fontSize = 12.sp,
                             color = SpiritTodoTheme.color.onSurfaceColor8,
                             modifier = Modifier.alignByBaseline()
@@ -177,7 +193,7 @@ fun MonthlyReportCard() {
                     Spacer(Modifier.height(5.dp))
 
                     Text(
-                        text = "99%",
+                        text = "${monthlyRecord?.averageCompletionRate?.roundToInt() ?: 0}%",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = SpiritTodoTheme.color.todoTextMain
@@ -213,7 +229,10 @@ fun MonthlyReportCard() {
 
             Spacer(Modifier.height(14.dp))
 
-            MonthlyBarChart()
+            MonthlyBarChart(
+                comparisons = monthlyRecord?.monthlyComparisons ?: emptyList(),
+                currentMonth = yearMonth.monthValue
+            )
 
             Spacer(Modifier.height(14.dp))
 
@@ -225,7 +244,7 @@ fun MonthlyReportCard() {
                     .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.monthly_comparison_desc, 99),
+                    text = stringResource(R.string.monthly_comparison_desc, comparisonDiffPercent),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.mainTextAndStroke
@@ -290,7 +309,10 @@ fun MonthlyReportCard() {
                     )
 
                     PillBadge(
-                        text = stringResource(R.string.monthly_achievement_rate, 99),
+                        text = stringResource(
+                            R.string.monthly_achievement_rate,
+                            ((monthlyRecord?.mainCategoryCompletionRate ?: 0.0) * 100).roundToInt()
+                        ),
                         backgroundColor = SpiritTodoTheme.color.mainBackground,
                         textColor = SpiritTodoTheme.color.mainTextAndStroke,
                         fontWeight = FontWeight.Medium,
@@ -298,7 +320,10 @@ fun MonthlyReportCard() {
                     )
 
                     PillBadge(
-                        text = stringResource(R.string.monthly_peer_top, 4),
+                        text = stringResource(
+                            R.string.monthly_peer_top,
+                            monthlyRecord?.mainCategoryPeerPercentile ?: 0
+                        ),
                         backgroundColor = SpiritTodoTheme.color.mainBackground,
                         textColor = SpiritTodoTheme.color.mainTextAndStroke,
                         fontWeight = FontWeight.Medium,
@@ -309,7 +334,7 @@ fun MonthlyReportCard() {
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text = stringResource(R.string.monthly_analysis_title),
+                    text = monthlyRecord?.title ?: stringResource(R.string.monthly_analysis_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = SpiritTodoTheme.color.onSurfaceColor10,
@@ -319,7 +344,7 @@ fun MonthlyReportCard() {
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = stringResource(R.string.monthly_analysis_subtitle),
+                    text = monthlyRecord?.content ?: stringResource(R.string.monthly_analysis_subtitle),
                     fontSize = 12.sp,
                     color = SpiritTodoTheme.color.todoTextMain,
                     textAlign = TextAlign.Center
@@ -337,7 +362,7 @@ fun MonthlyReportCard() {
 
             Spacer(Modifier.height(6.dp))
 
-            Top3Section()
+            MonthlyTop3Section(topCategories = monthlyRecord?.topCategories ?: emptyList())
 
             Spacer(Modifier.height(24.dp))
 
@@ -350,7 +375,9 @@ fun MonthlyReportCard() {
 
             Spacer(Modifier.height(6.dp))
 
-            MissedAreaRow()
+            monthlyRecord?.bottomCategory?.let {
+                MissedAreaRow(bottomCategory = it)
+            } ?: MissedAreaRow()
         }
     }
 }

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.DailyRecord
+import com.example.domain.model.MonthlyRecord
 import com.example.domain.model.TaskType
 import com.example.domain.model.WeeklyPlanAnalysis
 import com.example.domain.model.WeeklyRecord
@@ -56,6 +57,7 @@ import com.example.todowithspirits.feature.record.viewmodel.RecordViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Composable
 fun RecordScreen(
@@ -65,9 +67,14 @@ fun RecordScreen(
     val uiState by recordViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by recordViewModel.isLoading.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf("일간") }
+    var currentYearMonth by remember { mutableStateOf(YearMonth.now()) }
     val tabs = listOf(stringResource(R.string.daily), stringResource(R.string.weekly), stringResource(R.string.monthly))
     val weeklyTab = stringResource(R.string.weekly)
     val monthlyTab = stringResource(R.string.monthly)
+
+    LaunchedEffect(currentYearMonth) {
+        recordViewModel.loadMonthlyRecord(currentYearMonth.atDay(1))
+    }
 
     Column(
         modifier = Modifier
@@ -155,7 +162,11 @@ fun RecordScreen(
 
             when(selectedTab) {
                 weeklyTab -> WeeklyTabContent(weeklyRecord = uiState.weeklyRecord)
-                monthlyTab -> MonthlyTabContent()
+                monthlyTab -> MonthlyTabContent(
+                    yearMonth = currentYearMonth,
+                    onYearMonthChange = { currentYearMonth = it },
+                    monthlyRecord = uiState.monthlyRecord
+                )
                 else -> DailyTabContent(dailyRecord = uiState.dailyRecord)
             }
 
@@ -246,9 +257,15 @@ private fun WeeklyTabContent(weeklyRecord: WeeklyRecord?) {
 }
 
 @Composable
-private fun MonthlyTabContent() {
+private fun MonthlyTabContent(
+    yearMonth: YearMonth,
+    onYearMonthChange: (YearMonth) -> Unit,
+    monthlyRecord: MonthlyRecord?
+) {
+    println("test-kjs: monthlyRecord = $monthlyRecord")
+
     Text(
-        text = stringResource(R.string.monthly_report, 7),
+        text = stringResource(R.string.monthly_report, yearMonth.monthValue),
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         color = SpiritTodoTheme.color.todoTextMain
@@ -256,5 +273,9 @@ private fun MonthlyTabContent() {
 
     Spacer(Modifier.height(14.dp))
 
-    MonthlyReportCard()
+    MonthlyReportCard(
+        yearMonth = yearMonth,
+        onYearMonthChange = onYearMonthChange,
+        monthlyRecord = monthlyRecord
+    )
 }
