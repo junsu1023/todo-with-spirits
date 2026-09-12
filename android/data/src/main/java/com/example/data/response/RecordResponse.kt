@@ -79,3 +79,40 @@ data class WeeklyAchievementResponse(
     val icon: String,
     val targetCount: Int
 )
+
+data class MonthlyRecordResponse(
+    val year: Int,
+    val month: Int,
+    val message: String,
+    val completedTaskCount: Int,
+    val totalTaskCount: Int,
+    val averageCompletionRate: Double,
+    val dailyHeatmaps: List<MonthlyDailyHeatmapResponse>? = null,
+    val monthlyComparisons: List<MonthlyComparisonResponse>? = null,
+    val mainCategory: String?,
+    val mainCategoryPeerPercentile: Int,
+    val mainCategoryCompletionRate: Double,
+    val title: String,
+    val content: String,
+    val topCategories: List<MonthlyCategoryCountResponse>? = null,
+    val bottomCategory: MonthlyCategoryCountResponse?
+)
+
+data class MonthlyDailyHeatmapResponse(
+    val date: String,
+    val scheduleTotalCount: Int,
+    val scheduleCompletedCount: Int,
+    val routineTotalCount: Int,
+    val routineCompletedCount: Int
+)
+
+data class MonthlyComparisonResponse(
+    val month: Int,
+    val completedRate: Double
+)
+
+data class MonthlyCategoryCountResponse(
+    val category: String,
+    val completedCount: Int,
+    val totalCount: Int
+)
