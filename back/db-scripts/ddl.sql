@@ -327,9 +327,11 @@ CREATE TABLE notification_settings
 (
     id                          BIGSERIAL PRIMARY KEY,
     user_id                     BIGINT  NOT NULL UNIQUE,
-    routine_reminder_enabled    BOOLEAN NOT NULL         DEFAULT TRUE,
-    routine_reminder_time       TIME, -- NULL이면 앱 기본값 사용
-    spirit_notification_enabled BOOLEAN NOT NULL         DEFAULT TRUE,
+    reminder_enabled            BOOLEAN NOT NULL DEFAULT TRUE,  -- 리마인드 알림
+    postponed_task_enabled      BOOLEAN NOT NULL DEFAULT FALSE, -- 미룬 플랜 정기 알림
+    routine_reminder_enabled    BOOLEAN NOT NULL DEFAULT TRUE,  -- 루틴 안내 알림
+    streak_save_enabled         BOOLEAN NOT NULL DEFAULT TRUE,  -- 스트릭(연속 달성) 세이브 알림
+    night_push_enabled          BOOLEAN NOT NULL DEFAULT FALSE, -- 야간 푸시 알림 수신
     created_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notification_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
