@@ -207,6 +207,28 @@ CREATE TABLE routine_completions
     CONSTRAINT uq_routine_completions UNIQUE (task_id, completion_date)
 );
 
+-- Task 미루기 이력 (SCHEDULE/ROUTINE 공통, append-only 이벤트 로그)
+-- 미룬 횟수는 COUNT(*) WHERE task_id=? AND original_date=? 로 구함
+-- ROUTINE의 현재 유효 날짜/시간은 같은 (task_id, original_date)의 최신(created_at) row 기준
+CREATE TABLE task_postponements
+(
+    id             BIGSERIAL PRIMARY KEY,
+    task_id        BIGINT      NOT NULL,
+    user_id        BIGINT      NOT NULL,           -- 리포트 집계용 비정규화
+    category       VARCHAR(20) NOT NULL,           -- 리포트 집계용 비정규화 (postpone 시점 task.category 스냅샷)
+    task_type      VARCHAR(20) NOT NULL,           -- SCHEDULE / ROUTINE
+    original_date  DATE        NOT NULL,           -- ROUTINE: 반복 규칙상 원래 occurrence 날짜 / SCHEDULE: 최초 예정일 (둘 다 불변, 집계 키)
+    postponed_date DATE        NOT NULL,           -- 이 이동으로 새로 정해진 날짜
+    postponed_time TIME,
+    created_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_task_postponements_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT fk_task_postponements_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_task_postponements_user_original_date ON task_postponements (user_id, original_date);
+CREATE INDEX idx_task_postponements_task_original_date ON task_postponements (task_id, original_date);
+
 -- 일일 기록 테이블
 CREATE TABLE daily_records
 (
