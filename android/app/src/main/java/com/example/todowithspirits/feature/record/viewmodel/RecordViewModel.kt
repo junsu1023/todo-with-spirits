@@ -25,12 +25,6 @@ class RecordViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RecordUiState())
     val uiState: StateFlow<RecordUiState> get() = _uiState.asStateFlow()
 
-    init {
-        loadDailyRecord()
-        loadWeeklyRecord()
-        // 월간 기록은 RecordScreen에서 선택된 연월(currentYearMonth)에 맞춰 로드된다
-    }
-
     fun loadDailyRecord() {
         viewModelScope.launchWithLoading {
             getDailyRecordUseCase()
@@ -63,7 +57,7 @@ class RecordViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getMonthlyRecordUseCase(date)
                 .onSuccess { record ->
-                    Log.d(TAG, "loadMonthlyRecord = $record")
+                    Log.d(TAG, "loadMonthlyRecord date=$date monthlyComparisons=${record.monthlyComparisons}")
                     _uiState.update { it.copy(monthlyRecord = record) }
                 }
                 .onFailure {

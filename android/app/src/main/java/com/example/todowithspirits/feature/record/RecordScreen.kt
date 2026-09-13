@@ -72,6 +72,11 @@ fun RecordScreen(
     val weeklyTab = stringResource(R.string.weekly)
     val monthlyTab = stringResource(R.string.monthly)
 
+    LaunchedEffect(Unit) {
+        recordViewModel.loadDailyRecord()
+        recordViewModel.loadWeeklyRecord()
+    }
+
     LaunchedEffect(currentYearMonth) {
         recordViewModel.loadMonthlyRecord(currentYearMonth.atDay(1))
     }
@@ -262,9 +267,6 @@ private fun MonthlyTabContent(
     onYearMonthChange: (YearMonth) -> Unit,
     monthlyRecord: MonthlyRecord?
 ) {
-    println("test-kjs: topCategory = ${monthlyRecord?.topCategories}")
-    println("test-kjs: monthlyRecord = ${monthlyRecord?.bottomCategory}")
-
     Text(
         text = stringResource(R.string.monthly_report, yearMonth.monthValue),
         fontSize = 18.sp,
