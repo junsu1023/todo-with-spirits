@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "email_verification_tokens")
+@Table(name = "email_verification_codes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EmailVerificationToken {
+public class EmailVerificationCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +23,8 @@ public class EmailVerificationToken {
     @Column(nullable = false, length = 255)
     private String email;
 
-    @Column(nullable = false, unique = true, length = 255)
-    private String token;
+    @Column(nullable = false, length = 6)
+    private String code;
 
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
@@ -35,14 +35,14 @@ public class EmailVerificationToken {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static EmailVerificationToken create(Long userId, String email, String token, LocalDateTime expiresAt) {
-        EmailVerificationToken evt = new EmailVerificationToken();
-        evt.userId = userId;
-        evt.email = email;
-        evt.token = token;
-        evt.expiresAt = expiresAt;
-        evt.createdAt = LocalDateTime.now();
-        return evt;
+    public static EmailVerificationCode create(Long userId, String email, String code, LocalDateTime expiresAt) {
+        EmailVerificationCode evc = new EmailVerificationCode();
+        evc.userId = userId;
+        evc.email = email;
+        evc.code = code;
+        evc.expiresAt = expiresAt;
+        evc.createdAt = LocalDateTime.now();
+        return evc;
     }
 
     public boolean isUsed() {
