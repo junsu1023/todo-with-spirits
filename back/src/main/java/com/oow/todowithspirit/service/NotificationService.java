@@ -2,10 +2,14 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.notification.NotificationRepository;
+import com.oow.todowithspirit.domain.notification.Notification;
 import com.oow.todowithspirit.domain.notification.NotificationCategory;
+import com.oow.todowithspirit.domain.notification.NotificationCursor;
+import com.oow.todowithspirit.domain.notification.NotificationRepository;
+import com.oow.todowithspirit.dto.notification.NotificationPageResponse;
 import com.oow.todowithspirit.dto.notification.NotificationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,25 +24,50 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getNotifications(Long userId, int months) {
-        if (months < 1) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "months", "months must be at least 1");
+    public NotificationPageResponse getNotifications(Long userId, int size, String cursor) {
+        if (size < 1) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "size", "size must be at least 1");
         }
 
-        LocalDateTime since = LocalDateTime.now().minusMonths(months);
-        List<NotificationResponse> notifications = notificationRepository
-                .findByUserIdAndCreatedAtAfterOrderByCreatedAtDesc(userId, since).stream()
-                .map(NotificationResponse::from)
-                .toList();
-
-        // TODO: 실제 알림 발행 로직(스케줄러/이벤트) 붙기 전까지 카테고리별 더미 데이터로 대체
-        if (notifications.isEmpty()) {
-            return buildDummyNotifications();
+        PageRequest pageRequest = PageRequest.of(0, size + 1);
+        List<Notification> rows;
+        if (cursor == null) {
+            rows = notificationRepository.findFirstPage(userId, pageRequest);
+        } else {
+            NotificationCursor decoded = NotificationCursor.decode(cursor);
+            rows = notificationRepository.findNextPage(userId, decoded.createdAt(), decoded.id(), pageRequest);
         }
 
-        return notifications;
+        // ===== DUMMY_DATA_START: 실제 알림 발행 로직(스케줄러/이벤트) 붙으면 이 if 블록과
+        //       buildDummyNotifications() 메서드를 통째로 삭제할 것 =====
+        if (rows.isEmpty() && cursor == null) {
+            List<NotificationResponse> dummyPage = buildDummyNotifications().stream()
+                    .limit(size)
+                    .toList();
+
+            return NotificationPageResponse.builder()
+                    .content(dummyPage)
+                    .nextCursor(null)
+                    .hasNext(false)
+                    .build();
+        }
+        // ===== DUMMY_DATA_END =====
+
+        boolean hasNext = rows.size() > size;
+        List<Notification> page = hasNext ? rows.subList(0, size) : rows;
+
+        String nextCursor = hasNext
+                ? NotificationCursor.of(page.get(page.size() - 1)).encode()
+                : null;
+
+        return NotificationPageResponse.builder()
+                .content(page.stream().map(NotificationResponse::from).toList())
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 
+    // ===== DUMMY_DATA_START: getNotifications()의 위 블록과 함께 삭제할 것 =====
     private List<NotificationResponse> buildDummyNotifications() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -84,4 +113,5 @@ public class NotificationService {
                 .sorted(Comparator.comparing(NotificationResponse::getCreatedAt).reversed())
                 .toList();
     }
+    // ===== DUMMY_DATA_END =====
 }
