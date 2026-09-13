@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +26,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.getValue
 import com.example.domain.model.MonthlyComparison
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlin.math.roundToInt
 
-private data class MonthBarData(val month: Int, val value: Int?)
+private val MIN_BAR_HEIGHT = 3.dp
+private val MAX_BAR_HEIGHT = 80.dp
+private val CHART_AREA_HEIGHT = MAX_BAR_HEIGHT + 24.dp
+
+private data class MonthBarData(val month: Int, val value: Int?) // value == null: 아직 오지 않은 미래 달 ("?" 표시)
 
 @Composable
 fun MonthlyBarChart(
@@ -47,20 +51,31 @@ fun MonthlyBarChart(
             MonthBarData(month, value)
         }
     }
-    val validValues = monthBarData.mapNotNull { it.value }
-    val maxValue = if (validValues.isEmpty()) 1 else validValues.max().coerceAtLeast(1)
-    val maxIndex = monthBarData.indexOfFirst { it.value != null && it.value == validValues.max() }
+
+    val maxValueRaw = monthBarData.mapNotNull { it.value }.maxOrNull() ?: 0
+    val maxValue = maxValueRaw.coerceAtLeast(1)
+    val crownIndex = if (maxValueRaw > 0) monthBarData.indexOfFirst { it.value == maxValueRaw } else -1
 
     Column(Modifier.fillMaxWidth()) {
-        Row(Modifier.fillMaxWidth()) {
-            monthBarData.forEachIndexed { index, _ ->
-                Box(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(CHART_AREA_HEIGHT)
+        ) {
+            monthBarData.forEachIndexed { index, month ->
+                val fraction = if (month.value == null) 0f else month.value.toFloat() / maxValue
+                val animatedFraction by rememberAnimatedProgress(fraction, label = "monthBarFraction${month.month}")
+                val barHeight = if (month.value == null) MIN_BAR_HEIGHT
+                    else (MAX_BAR_HEIGHT * animatedFraction).coerceAtLeast(MIN_BAR_HEIGHT)
+
+                Column(
                     modifier = Modifier
                         .weight(1f)
-                        .height(38.dp),
-                    contentAlignment = Alignment.BottomCenter
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (index == maxIndex) {
+                    if (index == crownIndex) {
                         Box(
                             modifier = Modifier.size(width = 24.dp, height = 19.dp),
                             contentAlignment = Alignment.Center
@@ -72,54 +87,27 @@ fun MonthlyBarChart(
                             )
 
                             Text(
-                                text = "${monthBarData[maxIndex].value}",
+                                text = "${month.value}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SpiritTodoTheme.color.onSurfaceColor3,
                                 modifier = Modifier.offset(y = 2.dp)
                             )
                         }
+                    } else {
+                        Text(
+                            text = month.value?.toString() ?: "?",
+                            fontSize = 12.sp,
+                            color = SpiritTodoTheme.color.todoTextMain
+                        )
                     }
-                }
-            }
-        }
 
-        Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(2.dp))
 
-        Row(Modifier.fillMaxWidth()) {
-            monthBarData.forEach { month ->
-                Text(
-                    text = if (month.value == null) "?" else "${month.value}",
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.todoTextMain
-                )
-            }
-        }
-
-        Spacer(Modifier.height(4.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-        ) {
-            monthBarData.forEach { month ->
-                val fraction = if (month.value == null || maxValue == 0) 0.05f else month.value.toFloat() / maxValue
-                val animatedFraction by rememberAnimatedProgress(fraction, label = "monthBarFraction${month.month}")
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
-                            .fillMaxHeight(animatedFraction.coerceAtLeast(0.01f))
+                            .height(barHeight)
                             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                             .background(SpiritTodoTheme.color.systemArea)
                     )
