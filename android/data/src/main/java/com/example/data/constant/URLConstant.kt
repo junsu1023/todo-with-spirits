@@ -33,6 +33,7 @@ object URLConstant {
     object USER {
         private const val USER = "$API/user"
         const val USER_ME = "$USER/me"
+        const val EMAIL_VERIFY_RESEND = "$USER_ME/email/verify/resend"
     }
 
     object RECORD {
