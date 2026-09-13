@@ -13,6 +13,7 @@
 -- CREATE TYPE interaction_type AS ENUM ('PET', 'FEED', 'PLAY');
 -- CREATE TYPE achievement_type AS ENUM ('FIRST_CATEGORY_COMPLETE', 'CATEGORY_HALF_COMPLETE', 'CATEGORY_ALL_COMPLETE',
 -- 'TOTAL_COMPLTE_COUNT', 'HIDDEN_ACHIEVEMENT', 'STREAK', 'SPIRIT_LEVEL', 'USER_LEVEL', 'SPIRIT_MASTER', 'CATEGORY_MASTER','BADGE_COLLECTOR');
+-- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
 -- CREATE TYPE card_type AS ENUM ('TODAY', 'MONTHLY');
 -- CREATE TYPE card_status AS ENUM ('PROCESSING', 'READY', 'FAILED');
 
@@ -339,6 +340,22 @@ CREATE TABLE notification_settings
 );
 
 -- ============================================================
+--  16-1. 알림 목록 테이블 (사용자에게 발송된 알림 이력)
+-- ============================================================
+CREATE TABLE notifications
+(
+    id         BIGSERIAL PRIMARY KEY,
+    user_id    BIGINT      NOT NULL,
+    category   VARCHAR(20) NOT NULL, -- notification_category ENUM (SYSTEM, EVENT, SPIRIT_FOREST)
+    content    TEXT        NOT NULL,
+    is_read    BOOLEAN     NOT NULL DEFAULT FALSE,
+    read_at    TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- ============================================================
 --  17. 인덱스
 -- ============================================================
 
@@ -375,4 +392,8 @@ CREATE INDEX idx_share_cards_user_status ON share_cards (user_id, card_status);
 
 -- 업적 진행 조회
 CREATE INDEX idx_user_achievements_user ON user_achievements (user_id);
+
+-- 알림 목록 조회 (최신순)
+CREATE INDEX idx_notifications_user_created ON notifications (user_id, created_at DESC);
+
 -- update test
