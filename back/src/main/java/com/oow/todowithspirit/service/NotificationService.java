@@ -67,6 +67,23 @@ public class NotificationService {
                 .build();
     }
 
+    @Transactional
+    public void markAsRead(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Notification not found"));
+
+        if (!notification.getUserId().equals(userId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "You do not own this notification");
+        }
+
+        notification.markAsRead();
+    }
+
+    @Transactional
+    public void markAllAsRead(Long userId) {
+        notificationRepository.markAllAsRead(userId, LocalDateTime.now());
+    }
+
     // ===== DUMMY_DATA_START: getNotifications()의 위 블록과 함께 삭제할 것 =====
     private List<NotificationResponse> buildDummyNotifications() {
         LocalDateTime now = LocalDateTime.now();

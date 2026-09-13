@@ -346,7 +346,7 @@ CREATE TABLE notifications
 (
     id         BIGSERIAL PRIMARY KEY,
     user_id    BIGINT      NOT NULL,
-    category   VARCHAR(20) NOT NULL, -- notification_category ENUM (SYSTEM, EVENT, SPIRIT_FOREST)
+    category   VARCHAR(20) NOT NULL, -- notification_category ENUM (SYSTEM, EVENT, SPIRIT)
     content    TEXT        NOT NULL,
     is_read    BOOLEAN     NOT NULL DEFAULT FALSE,
     read_at    TIMESTAMP WITH TIME ZONE,

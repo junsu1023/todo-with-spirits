@@ -2,6 +2,7 @@ package com.oow.todowithspirit.domain.notification;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,4 +31,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             @Param("cursorId") Long cursorId,
             Pageable pageable
     );
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Notification n SET n.isRead = true, n.readAt = :now WHERE n.userId = :userId AND n.isRead = false")
+    int markAllAsRead(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 }

@@ -42,4 +42,11 @@ public class Notification extends BaseTimeEntity {
         notification.isRead = false;
         return notification;
     }
+
+    public void markAsRead() {
+        if (!this.isRead) {
+            this.isRead = true;
+            this.readAt = LocalDateTime.now();
+        }
+    }
 }
