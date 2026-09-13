@@ -378,6 +378,10 @@ fun MonthlyReportCard(
             monthlyRecord?.bottomCategory?.let {
                 MissedAreaRow(bottomCategory = it)
             } ?: MissedAreaRow()
+
+            Spacer(Modifier.height(24.dp))
+
+            WeeklyHighlightBanner()
         }
     }
 }

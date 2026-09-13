@@ -262,7 +262,8 @@ private fun MonthlyTabContent(
     onYearMonthChange: (YearMonth) -> Unit,
     monthlyRecord: MonthlyRecord?
 ) {
-    println("test-kjs: monthlyRecord = $monthlyRecord")
+    println("test-kjs: topCategory = ${monthlyRecord?.topCategories}")
+    println("test-kjs: monthlyRecord = ${monthlyRecord?.bottomCategory}")
 
     Text(
         text = stringResource(R.string.monthly_report, yearMonth.monthValue),
