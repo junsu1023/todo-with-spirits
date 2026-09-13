@@ -2,20 +2,19 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.user.EmailVerificationCode;
-import com.oow.todowithspirit.domain.user.EmailVerificationCodeRepository;
-import com.oow.todowithspirit.domain.user.User;
-import com.oow.todowithspirit.domain.user.UserRepository;
+import com.oow.todowithspirit.domain.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -72,6 +71,30 @@ public class EmailVerificationService {
 
         user.verifiedEmail();
         verificationCode.verify();
+    }
+
+    /**
+     * 인증 만료 시간이 지났는데도 인증되지 않은 회원가입 건은 계정 자체를 삭제한다.
+     * (소셜 로그인 유저는 인증 코드가 발급되지 않으므로 영향 없음)
+     */
+    @Scheduled(fixedDelay = 60_000)
+    @Transactional
+    public void deleteExpiredUnverifiedUsers() {
+        List<Long> userIds = emailVerificationCodeRepository.findUserIdsWithExpiredUnverifiedCode(LocalDateTime.now());
+        if (userIds.isEmpty()) {
+            return;
+        }
+
+        List<User> usersToDelete = userRepository.findAllById(userIds).stream()
+                .filter(user -> user.getEmailVerificationStatus() != EmailVerificationStatus.VERIFIED)
+                .toList();
+
+        if (usersToDelete.isEmpty()) {
+            return;
+        }
+
+        userRepository.deleteAll(usersToDelete);
+        log.info("[deleteExpiredUnverifiedUsers] Deleted {} unverified user(s) past code expiration", usersToDelete.size());
     }
 
     private String generateCode() {

@@ -15,4 +15,7 @@ public interface EmailVerificationCodeRepository extends JpaRepository<EmailVeri
     Optional<EmailVerificationCode> findByEmailAndCode(String email, String code);
 
     void deleteAllByUserId(Long userId);
+
+    @Query("SELECT c.userId FROM EmailVerificationCode c WHERE c.expiresAt < :now AND c.verifiedAt IS NULL")
+    List<Long> findUserIdsWithExpiredUnverifiedCode(@Param("now") LocalDateTime now);
 }
