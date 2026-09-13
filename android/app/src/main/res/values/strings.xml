@@ -93,6 +93,8 @@
     <string name="week_header_format">%1$d월 %2$d주 리포트</string>
     <string name="times_count">%d회</string>
     <string name="weekly_missed_area">자주 놓친 분야</string>
+    <string name="weekly_missed_area_highlight_title">커리어와 미래를 향해 멋지게 질주한 한 주!</string>
+    <string name="weekly_missed_area_highlight_subtitle">다음 주는 미뤄둔 건강도 챙기며 일과 삶의 균형을 맞춰볼까요?</string>
     <string name="weekly_achieved_plan">이번주 달성 플랜</string>
     <string name="weekly_avg_rate">평균 달성률</string>
     <string name="monthly_report">%d월 리포트</string>

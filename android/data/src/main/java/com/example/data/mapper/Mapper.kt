@@ -5,6 +5,10 @@ import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DailyRecordResponse
 import com.example.data.response.LoginResponse
+import com.example.data.response.MonthlyCategoryCountResponse
+import com.example.data.response.MonthlyComparisonResponse
+import com.example.data.response.MonthlyDailyHeatmapResponse
+import com.example.data.response.MonthlyRecordResponse
 import com.example.data.response.RecordRewardResponse
 import com.example.data.response.RecordTaskItemResponse
 import com.example.data.response.RecordTypeProgressResponse
@@ -23,6 +27,10 @@ import com.example.domain.model.AlarmOption
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.DailyRecord
 import com.example.domain.model.LoginSession
+import com.example.domain.model.MonthlyCategoryCount
+import com.example.domain.model.MonthlyComparison
+import com.example.domain.model.MonthlyDailyHeatmap
+import com.example.domain.model.MonthlyRecord
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.RecordReward
@@ -262,6 +270,43 @@ fun WeeklyAchievementResponse.toDomain(): WeeklyAchievement = WeeklyAchievement(
     description = description,
     icon = icon,
     targetCount = targetCount
+)
+
+fun MonthlyRecordResponse.toDomain(): MonthlyRecord = MonthlyRecord(
+    year = year,
+    month = month,
+    message = message,
+    completedTaskCount = completedTaskCount,
+    totalTaskCount = totalTaskCount,
+    averageCompletionRate = averageCompletionRate,
+    dailyHeatmaps = dailyHeatmaps.orEmpty().map { it.toDomain() },
+    monthlyComparisons = monthlyComparisons.orEmpty().map { it.toDomain() },
+    mainCategory = mainCategory,
+    mainCategoryPeerPercentile = mainCategoryPeerPercentile,
+    mainCategoryCompletionRate = mainCategoryCompletionRate,
+    title = title,
+    content = content,
+    topCategories = topCategories.orEmpty().map { it.toDomain() },
+    bottomCategory = bottomCategory?.toDomain() ?: MonthlyCategoryCount("NONE", 0, 0)
+)
+
+fun MonthlyDailyHeatmapResponse.toDomain(): MonthlyDailyHeatmap = MonthlyDailyHeatmap(
+    date = LocalDate.parse(date),
+    scheduleTotalCount = scheduleTotalCount,
+    scheduleCompletedCount = scheduleCompletedCount,
+    routineTotalCount = routineTotalCount,
+    routineCompletedCount = routineCompletedCount
+)
+
+fun MonthlyComparisonResponse.toDomain(): MonthlyComparison = MonthlyComparison(
+    month = month,
+    completedRate = completedRate
+)
+
+fun MonthlyCategoryCountResponse.toDomain(): MonthlyCategoryCount = MonthlyCategoryCount(
+    category = category,
+    completedCount = completedCount,
+    totalCount = totalCount
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()

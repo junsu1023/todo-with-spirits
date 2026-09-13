@@ -49,6 +49,7 @@ import com.example.domain.model.WeeklyDailyChart
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.rememberAnimatedProgress
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDate
 
 private val MIN_BAR_HEIGHT = 3.dp
 private val MAX_BAR_HEIGHT = 100.dp
@@ -61,7 +62,7 @@ private val TOOLTIP_WIDTH = 124.dp
 private data class WeeklyBar(
     val dayOfMonth: Int,
     val dayLabel: String,
-    val value: Int,
+    val value: Int?, // null이면 아직 오지 않은 미래 날짜 (그래프에는 "?"로 표시)
     val chart: WeeklyDailyChart
 )
 
@@ -76,18 +77,19 @@ fun WeeklyBarChart(charts: List<WeeklyDailyChart>) {
         return
     }
 
-    val bars = remember(charts) {
+    val today = remember { LocalDate.now() }
+    val bars = remember(charts, today) {
         charts.map { chart ->
             WeeklyBar(
                 dayOfMonth = chart.date.dayOfMonth,
                 dayLabel = chart.dayOfWeek,
-                value = chart.scheduleCompleted + chart.routineCompleted,
+                value = if (chart.date.isAfter(today)) null else chart.scheduleCompleted + chart.routineCompleted,
                 chart = chart
             )
         }
     }
 
-    val maxValueRaw = bars.maxOf { it.value }
+    val maxValueRaw = bars.mapNotNull { it.value }.maxOrNull() ?: 0
     val maxValue = maxValueRaw.coerceAtLeast(1)
     val crownIndex = if (maxValueRaw > 0) bars.indexOfFirst { it.value == maxValueRaw } else -1
     var pressedIndex by remember { mutableIntStateOf(-1) }
@@ -106,9 +108,10 @@ fun WeeklyBarChart(charts: List<WeeklyDailyChart>) {
                     .fillMaxHeight()
             ) {
                 bars.forEachIndexed { index, bar ->
-                    val fraction = bar.value.toFloat() / maxValue
+                    val fraction = if (bar.value == null) 0f else bar.value.toFloat() / maxValue
                     val animatedFraction by rememberAnimatedProgress(fraction, label = "barFraction$index")
-                    val barHeight = (MAX_BAR_HEIGHT * animatedFraction).coerceAtLeast(MIN_BAR_HEIGHT)
+                    val barHeight = if (bar.value == null) MIN_BAR_HEIGHT
+                        else (MAX_BAR_HEIGHT * animatedFraction).coerceAtLeast(MIN_BAR_HEIGHT)
 
                     Column(
                         modifier = Modifier
@@ -147,7 +150,7 @@ fun WeeklyBarChart(charts: List<WeeklyDailyChart>) {
                             }
                         } else {
                             Text(
-                                text = "${bar.value}",
+                                text = bar.value?.toString() ?: "?",
                                 fontSize = 12.sp,
                                 color = SpiritTodoTheme.color.todoTextMain
                             )
@@ -168,8 +171,9 @@ fun WeeklyBarChart(charts: List<WeeklyDailyChart>) {
 
             if (pressedIndex != -1) {
                 val bar = bars[pressedIndex]
-                val pressedFraction = bar.value.toFloat() / maxValue
-                val pressedBarHeight = (MAX_BAR_HEIGHT * pressedFraction).coerceAtLeast(MIN_BAR_HEIGHT)
+                val pressedFraction = bar.value?.let { it.toFloat() / maxValue } ?: 0f
+                val pressedBarHeight = if (bar.value == null) MIN_BAR_HEIGHT
+                    else (MAX_BAR_HEIGHT * pressedFraction).coerceAtLeast(MIN_BAR_HEIGHT)
                 val barRightX = colWidth * pressedIndex + colWidth * 0.75f
                 val barLeftX = colWidth * pressedIndex + colWidth * 0.25f
                 val tipY = (CHART_AREA_HEIGHT - pressedBarHeight + 4.dp)

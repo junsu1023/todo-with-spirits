@@ -151,6 +151,10 @@ fun WeeklyReportCard(
             Spacer(Modifier.height(6.dp))
 
             MissedAreaRow()
+
+            Spacer(Modifier.height(16.dp))
+
+            WeeklyHighlightBanner()
         }
     }
 }
