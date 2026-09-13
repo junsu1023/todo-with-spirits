@@ -393,7 +393,7 @@ CREATE INDEX idx_share_cards_user_status ON share_cards (user_id, card_status);
 -- 업적 진행 조회
 CREATE INDEX idx_user_achievements_user ON user_achievements (user_id);
 
--- 알림 목록 조회 (최신순)
-CREATE INDEX idx_notifications_user_created ON notifications (user_id, created_at DESC);
+-- 알림 목록 조회 (커서 기반 페이지네이션: created_at, id 복합키로 seek)
+CREATE INDEX idx_notifications_user_created ON notifications (user_id, created_at DESC, id DESC);
 
 -- update test
