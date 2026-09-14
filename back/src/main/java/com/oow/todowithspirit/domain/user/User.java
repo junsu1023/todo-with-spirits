@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,19 +28,6 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false, length = 50)
     private String nickname;
-
-    @Column(length = 50)
-    private String fullname;
-
-    @Column
-    private LocalDate birthday;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 10)
-    private Gender gender;
-
-    @Column(name = "profile_image_url")
-    private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "email_verification_status", nullable = false, length = 30)
@@ -94,18 +80,9 @@ public class User extends BaseTimeEntity {
         this.emailVerificationStatus = EmailVerificationStatus.VERIFIED;
     }
 
-    public void updateProfile(String nickname, String fullname, LocalDate birthday, Gender gender, Long representativeSpiritId) {
+    public void updateProfile(String nickname, Long representativeSpiritId) {
         if (nickname != null) {
             this.nickname = nickname;
-        }
-        if (fullname != null) {
-            this.fullname = fullname;
-        }
-        if (birthday != null) {
-            this.birthday = birthday;
-        }
-        if (gender != null) {
-            this.gender = gender;
         }
         if (representativeSpiritId != null) {
             this.representativeSpiritId = representativeSpiritId;

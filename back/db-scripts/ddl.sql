@@ -27,10 +27,6 @@ CREATE TABLE users
     email                    VARCHAR(255),                            -- null: social login
     password                 VARCHAR(255),                            -- null: social login
     nickname                 VARCHAR(50) NOT NULL,
-    fullname                 VARCHAR(50),                             -- 본명
-    birthday                 DATE,                                    -- 생년월일
-    gender                   VARCHAR(10),                             -- gender ENUM
-    profile_image_url        TEXT,
     email_verification_status VARCHAR(30) NOT NULL    DEFAULT 'UNVERIFIED', -- email_verification_status ENUM (UNVERIFIED, VERIFIED, NEEDS_REVERIFICATION)
     role                     VARCHAR(20) NOT NULL     DEFAULT 'USER', -- user_role ENUM
     is_premium               BOOLEAN     NOT NULL     DEFAULT FALSE,

@@ -49,8 +49,7 @@ public class UserService {
             validateSpiritOwnership(userId, representativeSpiritId);
         }
 
-        user.updateProfile(request.getNickname(), request.getFullname(), request.getBirthday(),
-                request.getGender(), representativeSpiritId);
+        user.updateProfile(request.getNickname(), representativeSpiritId);
 
         List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(userId);
 
