@@ -5,6 +5,7 @@ import com.example.data.BuildConfig
 import com.example.data.api.AuthApi
 import com.example.data.api.NotificationApi
 import com.example.data.api.RecordApi
+import com.example.data.api.SettingApi
 import com.example.data.api.TaskApi
 import com.example.data.network.AuthInterceptor
 import com.example.data.network.TokenAuthenticator
@@ -87,4 +88,10 @@ object AuthNetworkModule {
     fun provideNotificationApi(
         @Auth retrofit: Retrofit
     ): NotificationApi = retrofit.create(NotificationApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSettingApi(
+        @Auth retrofit: Retrofit
+    ): SettingApi = retrofit.create(SettingApi::class.java)
 }

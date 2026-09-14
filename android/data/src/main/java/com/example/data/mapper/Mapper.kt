@@ -4,6 +4,7 @@ import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DailyRecordResponse
+import com.example.data.response.DisplaySettingResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.MonthlyCategoryCountResponse
 import com.example.data.response.MonthlyComparisonResponse
@@ -26,8 +27,10 @@ import com.example.data.response.WeeklyPlanAnalysisResponse
 import com.example.data.response.WeeklyRecordResponse
 import com.example.data.response.WeeklyTypeAnalysisResponse
 import com.example.domain.model.AlarmOption
+import com.example.domain.model.AppLanguage
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.DailyRecord
+import com.example.domain.model.DisplaySetting
 import com.example.domain.model.LoginSession
 import com.example.domain.model.MonthlyCategoryCount
 import com.example.domain.model.MonthlyComparison
@@ -326,6 +329,12 @@ fun NotificationItemResponse.toDomain(): NotificationItem = NotificationItem(
     content = content,
     createdAt = LocalDateTime.parse(createdAt),
     read = read
+)
+
+fun DisplaySettingResponse.toDomain(): DisplaySetting = DisplaySetting(
+    darkMode = darkMode,
+    ddayDisplayEnabled = ddayDisplayEnabled,
+    language = AppLanguage.fromApiValue(language)
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()

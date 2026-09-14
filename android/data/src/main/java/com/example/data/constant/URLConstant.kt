@@ -48,4 +48,9 @@ object URLConstant {
         const val NOTIFICATION_READ = "$NOTIFICATION/{alarmId}/read"
         const val NOTIFICATION_READ_ALL = "$NOTIFICATION/read"
     }
+
+    object SETTING {
+        private const val SETTING = "$API/setting"
+        const val SETTING_DISPLAY = "$SETTING/display"
+    }
 }
