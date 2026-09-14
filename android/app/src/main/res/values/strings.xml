@@ -165,6 +165,7 @@
     <string name="language">언어</string>
     <string name="record_title">기록</string>
     <string name="empty_plans">예정된 플랜 없음</string>
+    <string name="empty_alarm">알림이 없습니다</string>
     <string name="verification_code_title">인증번호를 입력해주세요.</string>
     <string name="verification_code_description_suffix"> 으로</string>
     <string name="verification_code_description_body">발송 된 인증번호 6자리를 입력해주세요</string>
