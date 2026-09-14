@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.setting.component.DisplaySelectorRow
 import com.example.todowithspirits.feature.setting.component.DisplayToggleRow
@@ -26,13 +29,20 @@ import com.example.todowithspirits.feature.setting.state.PlanSortOptions
 import com.example.todowithspirits.feature.setting.state.ThemeOptions
 import com.example.todowithspirits.feature.setting.viewmodel.DisplaySettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun DisplaySettingScreen(
     displaySettingViewModel: DisplaySettingViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val uiState by displaySettingViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by displaySettingViewModel.isLoading.collectAsStateWithLifecycle()
+
+    LaunchedEffect(displaySettingViewModel) {
+        displaySettingViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
 
     Column(
         modifier = Modifier
@@ -76,4 +86,6 @@ fun DisplaySettingScreen(
 
         Spacer(Modifier.height(24.dp))
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }
