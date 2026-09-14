@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.alarm
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,13 @@ fun AlarmScreen(
         alarmViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
+    val leaveScreen: () -> Unit = {
+        alarmViewModel.markAllAsRead()
+        onBack()
+    }
+
+    BackHandler(onBack = leaveScreen)
+
     val newAlarms = uiState.notifications.filter { !it.read }
     val pastAlarms = uiState.notifications.filter { it.read }
 
@@ -63,8 +71,11 @@ fun AlarmScreen(
             leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.alarm),
             rightIconRes = R.drawable.todo_setting,
-            onLeftIconClick = onBack,
-            onRightIconClick = onSettingClick
+            onLeftIconClick = leaveScreen,
+            onRightIconClick = {
+                alarmViewModel.markAllAsRead()
+                onSettingClick()
+            }
         )
 
         Spacer(modifier = Modifier.height(10.dp))

@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.GetNotificationsUseCase
+import com.example.domain.usecase.MarkAllNotificationsReadUseCase
 import com.example.todowithspirits.feature.alarm.state.AlarmUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /*
@@ -23,7 +25,8 @@ TODO 알림 실시간성 미지원 상태 (보류):
 */
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
-    private val getNotificationsUseCase: GetNotificationsUseCase
+    private val getNotificationsUseCase: GetNotificationsUseCase,
+    private val markAllNotificationsReadUseCase: MarkAllNotificationsReadUseCase
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(AlarmUiState())
     val uiState: StateFlow<AlarmUiState> get() = _uiState.asStateFlow()
@@ -73,6 +76,17 @@ class AlarmViewModel @Inject constructor(
                     Log.e(TAG, "loadMore notifications failed!", it)
                     emitErrorMsg(it.localizedMessage ?: "알림을 불러오지 못했습니다")
                 }
+        }
+    }
+
+    // AlarmScreen을 벗어날 때(뒤로가기/설정 아이콘) 호출된다. 화면 이탈을 막을 필요는 없어서
+    // 로딩 상태 없이 백그라운드로 요청만 보내고, 실패해도 사용자에게 별도 안내는 하지 않는다.
+    fun markAllAsRead() {
+        if (_uiState.value.notifications.none { !it.read }) return
+
+        viewModelScope.launch {
+            markAllNotificationsReadUseCase()
+                .onFailure { Log.e(TAG, "markAllNotificationsRead failed!", it) }
         }
     }
 }
