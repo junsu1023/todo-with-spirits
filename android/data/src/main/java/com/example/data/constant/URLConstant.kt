@@ -42,4 +42,8 @@ object URLConstant {
         const val RECORD_WEEKLY = "$RECORD/weekly"
         const val RECORD_MONTHLY = "$RECORD/monthly"
     }
+
+    object NOTIFICATION {
+        const val NOTIFICATION = "$API/notification"
+    }
 }

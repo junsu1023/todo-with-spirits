@@ -9,6 +9,8 @@ import com.example.data.response.MonthlyCategoryCountResponse
 import com.example.data.response.MonthlyComparisonResponse
 import com.example.data.response.MonthlyDailyHeatmapResponse
 import com.example.data.response.MonthlyRecordResponse
+import com.example.data.response.NotificationItemResponse
+import com.example.data.response.NotificationPageResponse
 import com.example.data.response.RecordRewardResponse
 import com.example.data.response.RecordTaskItemResponse
 import com.example.data.response.RecordTypeProgressResponse
@@ -33,6 +35,9 @@ import com.example.domain.model.MonthlyDailyHeatmap
 import com.example.domain.model.MonthlyRecord
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.NotificationCategory
+import com.example.domain.model.NotificationItem
+import com.example.domain.model.NotificationPage
 import com.example.domain.model.RecordReward
 import com.example.domain.model.RecordTaskItem
 import com.example.domain.model.RecordTypeProgress
@@ -307,6 +312,20 @@ fun MonthlyCategoryCountResponse.toDomain(): MonthlyCategoryCount = MonthlyCateg
     category = category,
     completedCount = completedCount,
     totalCount = totalCount
+)
+
+fun NotificationPageResponse.toDomain(): NotificationPage = NotificationPage(
+    items = content.map { it.toDomain() },
+    nextCursor = nextCursor,
+    hasNext = hasNext
+)
+
+fun NotificationItemResponse.toDomain(): NotificationItem = NotificationItem(
+    id = id,
+    category = NotificationCategory.fromApiValue(category),
+    content = content,
+    createdAt = LocalDateTime.parse(createdAt),
+    read = read
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()
