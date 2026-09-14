@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,9 +34,10 @@ public class AuthService {
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", "Email already in use");
-        }
+        userRepository.findByEmail(request.getEmail())
+                .ifPresent(existingUser -> {
+                    throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", buildLoginGuideMessage(existingUser));
+                });
 
         String nickname = StringUtils.hasText(request.getNickname())
                 ? request.getNickname()
@@ -146,6 +148,14 @@ public class AuthService {
     }
 
     private User createSocialUser(SocialLoginRequest request, OAuthProvider provider, boolean isVerified) {
+        if (StringUtils.hasText(request.getEmail())) {
+            userRepository.findByEmail(request.getEmail())
+                    .ifPresent(existingUser -> {
+                        log.info("[createSocialUser] Email already registered under a different account, blocking signup");
+                        throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", buildLoginGuideMessage(existingUser));
+                    });
+        }
+
         String nickname = StringUtils.hasText(request.getEmail())
                 ? request.getEmail().split("@")[0]
                 : generateDefaultNickname();
@@ -154,6 +164,17 @@ public class AuthService {
         userSocialAccountRepository.save(new UserSocialAccount(user, provider, request.getProviderUserId()));
         spiritService.createDefaultSpirit(user);
         return user;
+    }
+
+    private String buildLoginGuideMessage(User existingUser) {
+        List<String> methods = new ArrayList<>();
+        if (existingUser.getPassword() != null) {
+            methods.add("이메일/비밀번호");
+        }
+        userSocialAccountRepository.findProvidersByUserId(existingUser.getId())
+                .forEach(provider -> methods.add(provider.name()));
+
+        return "이미 가입된 이메일입니다. " + String.join(", ", methods) + " 로그인을 이용해주세요.";
     }
 
     private String generateDefaultNickname() {
