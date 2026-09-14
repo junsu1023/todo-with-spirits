@@ -8,17 +8,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CategoryType {
 
-    NONE(GrowthType.CONSISTENCY),
-    WORK_STUDY(GrowthType.FOCUS),
-    HEALTH(GrowthType.ENERGY),
-    LIFE(GrowthType.CONSISTENCY),
-    RELATIONSHIP(GrowthType.CONSISTENCY),
-    GROWTH(GrowthType.CREATIVITY),
-    HOBBY(GrowthType.CREATIVITY),
-    REST(GrowthType.ENERGY),
-    FINANCE(GrowthType.CONSISTENCY);
+    NONE(GrowthType.CONSISTENCY, "미정"),
+    WORK_STUDY(GrowthType.FOCUS, "학업/커리어"),
+    HEALTH(GrowthType.ENERGY, "건강"),
+    LIFE(GrowthType.CONSISTENCY, "생활"),
+    RELATIONSHIP(GrowthType.CONSISTENCY, "인관관계/약속"),
+    GROWTH(GrowthType.CREATIVITY, "자기계발"),
+    HOBBY(GrowthType.CREATIVITY, "취미"),
+    REST(GrowthType.ENERGY, "휴식/마인드"),
+    FINANCE(GrowthType.CONSISTENCY, "자산/경제");
 
     private final GrowthType defaultGrowthType;
+    private final String description;
 
     public static GrowthType resolveGrowthType(CategoryType category) {
         if (category == null) {

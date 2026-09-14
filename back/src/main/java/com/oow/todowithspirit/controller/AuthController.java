@@ -3,6 +3,7 @@ package com.oow.todowithspirit.controller;
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.common.response.ApiResponse;
+import com.oow.todowithspirit.domain.auth.GoogleTokenValidator;
 import com.oow.todowithspirit.domain.auth.KakaoTokenValidator;
 import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.service.AuthService;
@@ -22,6 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final KakaoTokenValidator kakaoTokenValidator;
+    private final GoogleTokenValidator googleTokenValidator;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@Valid @RequestBody SignupRequest request) {
@@ -68,6 +70,9 @@ public class AuthController {
     private String validateProviderToken(String provider, String providerToken, String providerUserId) {
         if ("kakao".equalsIgnoreCase(provider)) {
             return kakaoTokenValidator.validate(providerToken, providerUserId);
+        }
+        if ("google".equalsIgnoreCase(provider)) {
+            return googleTokenValidator.validate(providerToken, providerUserId);
         }
         return null;
     }

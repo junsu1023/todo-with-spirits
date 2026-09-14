@@ -2,6 +2,7 @@ package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
 import com.oow.todowithspirit.dto.record.DailyRecordResponse;
+import com.oow.todowithspirit.dto.record.MonthlyRecordResponse;
 import com.oow.todowithspirit.dto.record.WeeklyRecordResponse;
 import com.oow.todowithspirit.service.RecordService;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,21 @@ public class RecordController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-        @GetMapping("/weekly")
-        public ResponseEntity<ApiResponse<WeeklyRecordResponse>> getWeeklyRecord(
-                @AuthenticationPrincipal Long userId,
-                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    @GetMapping("/weekly")
+    public ResponseEntity<ApiResponse<WeeklyRecordResponse>> getWeeklyRecord(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-            WeeklyRecordResponse response = recordService.getWeeklyRecord(userId, date);
-            return ResponseEntity.ok(ApiResponse.success(response));
-        }
+        WeeklyRecordResponse response = recordService.getWeeklyRecord(userId, date);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/monthly")
+    public ResponseEntity<ApiResponse<MonthlyRecordResponse>> getMonthlyRecord(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        MonthlyRecordResponse response = recordService.getMonthlyRecord(userId, date);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }

@@ -66,6 +66,18 @@ public class TaskController {
     }
 
     // ==============================================
+    // 미루기 (일정/루틴 공통)
+    // ==============================================
+
+    @PatchMapping("/{taskId}/postpone")
+    public ResponseEntity<ApiResponse<TaskPostponeResponse>> postponeTask(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @Valid @RequestBody TaskPostponeRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.postponeTask(userId, taskId, request)));
+    }
+
+    // ==============================================
     // 완료 / 완료 취소
     // ==============================================
     @PostMapping("/{taskId}/complete")

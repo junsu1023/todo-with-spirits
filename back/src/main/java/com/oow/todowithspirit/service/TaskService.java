@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class TaskService {
     private final UserRepository userRepository;
     private final HolidayRepository holidayRepository;
     private final RoutineCompletionRepository routineCompletionRepository;
+    private final TaskPostponementRepository taskPostponementRepository;
     private final SpiritService spiritService;
 
     // =========================================================
@@ -127,6 +130,132 @@ public class TaskService {
         );
 
         return ScheduleCreateResponse.from(task);
+    }
+
+    // =========================================================
+    // 미루기
+    // =========================================================
+
+    @Transactional
+    public TaskPostponeResponse postponeTask(Long userId, Long taskId, TaskPostponeRequest request) {
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+
+        LocalDate originalDate;
+        LocalDate currentDate;
+        LocalTime currentTime;
+
+        if (task.getTaskType() == TaskType.ROUTINE) {
+            if (request.getOriginalDate() == null) {
+                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "originalDate is required for routines");
+            }
+            originalDate = request.getOriginalDate();
+            if (!isOccurrenceDate(task, originalDate)) {
+                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "Not an occurrence date for this routine");
+            }
+
+            TaskPostponement latest = taskPostponementRepository
+                    .findTopByTaskIdAndOriginalDateOrderByCreatedAtDesc(taskId, originalDate)
+                    .orElse(null);
+            currentDate = latest != null ? latest.getPostponedDate() : originalDate;
+            currentTime = latest != null ? latest.getPostponedTime() : task.getEndTime();
+        } else {
+            // SCHEDULE: 처음 미룰 때는 지금 예정일을 원본으로 삼고, 이후로는 최초 로그의 원본을 계속 재사용
+            originalDate = taskPostponementRepository.findTopByTaskIdOrderByCreatedAtAsc(taskId)
+                    .map(TaskPostponement::getOriginalDate)
+                    .orElse(task.getStartDate());
+            currentDate = task.getStartDate();
+            currentTime = task.getEndTime();
+        }
+
+        Integer maxCount = TaskPostponePolicy.maxPostponeCount(task);
+        int currentCount = (int) taskPostponementRepository.countByTaskIdAndOriginalDate(taskId, originalDate);
+
+        if (maxCount != null && currentCount >= maxCount) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "postponeCount",
+                    "Postpone limit reached for this occurrence (max " + maxCount + ")");
+        }
+
+        LocalDate newDate = request.getNewDate() != null ? request.getNewDate() : currentDate;
+        LocalTime newTime = request.getNewTime() != null ? request.getNewTime() : currentTime;
+
+        if (task.getTaskType() == TaskType.ROUTINE) {
+            validatePostponeRange(task, originalDate, newDate);
+            validateNoCollision(task, originalDate, newDate);
+        }
+
+        taskPostponementRepository.save(TaskPostponement.create(task, originalDate, newDate, newTime));
+
+        if (task.getTaskType() == TaskType.SCHEDULE) {
+            task.rescheduleTo(newDate, newTime);
+        }
+
+        int newCount = currentCount + 1;
+        Integer remaining = maxCount != null ? maxCount - newCount : null;
+
+        return TaskPostponeResponse.builder()
+                .taskId(taskId)
+                .originalDate(originalDate)
+                .postponedDate(newDate)
+                .postponedTime(newTime)
+                .postponeCount(newCount)
+                .maxPostponeCount(maxCount)
+                .remainingPostponeCount(remaining)
+                .build();
+    }
+
+    /**
+     * repeatType별 미루기 가능 날짜 범위 검증
+     */
+    private void validatePostponeRange(Task task, LocalDate originalDate, LocalDate newDate) {
+        switch (task.getRepeatType()) {
+            case DAILY -> {
+                if (!newDate.equals(originalDate)) {
+                    throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
+                            "Daily routines cannot change date, only time");
+                }
+            }
+            case WEEKLY -> {
+                LocalDate weekEnd = originalDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+                if (newDate.isBefore(originalDate) || newDate.isAfter(weekEnd)) {
+                    throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
+                            "Weekly routines can only be postponed within the current week");
+                }
+            }
+            case MONTHLY -> {
+                LocalDate monthEnd = originalDate.with(TemporalAdjusters.lastDayOfMonth());
+                if (newDate.isBefore(originalDate) || newDate.isAfter(monthEnd)) {
+                    throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
+                            "Monthly routines can only be postponed within the current month");
+                }
+            }
+            default -> throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Unsupported repeat type for postpone");
+        }
+    }
+
+    /**
+     * 같은 루틴의 다른 occurrence와 날짜가 겹치는지 검증 (반복 todo/루틴은 겹칠 수 있으므로 유의)
+     */
+    private void validateNoCollision(Task task, LocalDate originalDate, LocalDate newDate) {
+        if (newDate.equals(originalDate)) return;
+
+        if (isOccurrenceDate(task, newDate)) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
+                    "Target date already has an occurrence of this routine");
+        }
+
+        Map<LocalDate, TaskPostponement> latestByOriginalDate = taskPostponementRepository
+                .findAllByTaskId(task.getId()).stream()
+                .collect(Collectors.toMap(TaskPostponement::getOriginalDate, Function.identity(),
+                        (a, b) -> a.getCreatedAt().isAfter(b.getCreatedAt()) ? a : b));
+
+        boolean collides = latestByOriginalDate.entrySet().stream()
+                .anyMatch(e -> !e.getKey().equals(originalDate) && e.getValue().getPostponedDate().equals(newDate));
+
+        if (collides) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
+                    "Target date is already occupied by another occurrence of this routine");
+        }
     }
 
     // =========================================================
@@ -415,7 +544,7 @@ public class TaskService {
         };
     }
 
-    private Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
+    public Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
             List<Long> routineIds, LocalDate from, LocalDate to) {
         if (routineIds.isEmpty()) return Map.of();
         return routineCompletionRepository
@@ -427,7 +556,7 @@ public class TaskService {
                 ));
     }
 
-    private List<LocalDate> expandOccurrences(Task task, LocalDate from, LocalDate to) {
+    public List<LocalDate> expandOccurrences(Task task, LocalDate from, LocalDate to) {
         LocalDate rangeStart = task.getStartDate().isAfter(from) ? task.getStartDate() : from;
         LocalDate rangeEnd = task.getRepeatEndDate() == null ? to
                 : task.getRepeatEndDate().isBefore(to) ? task.getRepeatEndDate() : to;

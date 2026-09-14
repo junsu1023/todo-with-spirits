@@ -193,6 +193,19 @@ public class Task extends BaseTimeEntity {
         this.isPublic = isPublic;
     }
 
+    /**
+     * 미루기 전용: SCHEDULE의 날짜/시간만 이동 (다른 필드는 그대로)
+     */
+    public void rescheduleTo(LocalDate newDate, LocalTime newTime) {
+        this.startDate = newDate;
+        this.endDate = newDate;
+        this.endTime = newTime != null ? newTime : this.endTime;
+        if (this.notificationMinutes != null) {
+            LocalDateTime endDateTime = LocalDateTime.of(newDate, this.endTime != null ? this.endTime : LocalTime.of(23, 59, 59));
+            this.notificationAt = computeScheduleNotificationAt(endDateTime, this.isAllDay, this.notificationMinutes);
+        }
+    }
+
     public void completeTask() {
         this.isCompleted = true;
         this.completedAt = LocalDateTime.now();
