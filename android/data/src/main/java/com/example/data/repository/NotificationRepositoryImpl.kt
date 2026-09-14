@@ -11,4 +11,10 @@ class NotificationRepositoryImpl @Inject constructor(
 ) : NotificationRepository {
     override suspend fun getNotifications(size: Int?, cursor: String?): Result<NotificationPage> =
         notificationRemoteDataSource.getNotifications(size, cursor).mapCatching { it.toDomain() }
+
+    override suspend fun markNotificationRead(alarmId: Long): Result<Unit> =
+        notificationRemoteDataSource.markNotificationRead(alarmId)
+
+    override suspend fun markAllNotificationsRead(): Result<Unit> =
+        notificationRemoteDataSource.markAllNotificationsRead()
 }

@@ -45,5 +45,7 @@ object URLConstant {
 
     object NOTIFICATION {
         const val NOTIFICATION = "$API/notification"
+        const val NOTIFICATION_READ = "$NOTIFICATION/{alarmId}/read"
+        const val NOTIFICATION_READ_ALL = "$NOTIFICATION/read"
     }
 }
