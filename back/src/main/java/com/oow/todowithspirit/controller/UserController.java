@@ -2,6 +2,7 @@ package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
 import com.oow.todowithspirit.dto.user.EmailUpdateRequest;
+import com.oow.todowithspirit.dto.user.EmailVerificationSendRequest;
 import com.oow.todowithspirit.dto.user.EmailVerifyRequest;
 import com.oow.todowithspirit.dto.user.UserProfileResponse;
 import com.oow.todowithspirit.dto.user.UserProfileUpdateRequest;
@@ -48,10 +49,16 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @PostMapping("/me/email/verify/resend")
+    @PostMapping("/me/email/verify/send")
     public ResponseEntity<ApiResponse<Void>> resendEmailVerification(
             @AuthenticationPrincipal Long userId) {
-        emailVerificationService.sendVerificationEmail(userId);
+        emailVerificationService.resendForAccount(userId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PostMapping("/email/verify/send")
+    public ResponseEntity<ApiResponse<Void>> sendEmailVerification(@Valid @RequestBody EmailVerificationSendRequest request) {
+        emailVerificationService.sendSignupVerificationCode(request.getEmail());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

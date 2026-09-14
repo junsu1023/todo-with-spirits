@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,21 +31,21 @@ public class EmailVerificationService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    // 회원가입 전 이메일 인증. 아직 users 테이블에 계정이 없는 상태에서 호출됨
     @Transactional
-    public void sendVerificationEmail(Long userId) {
+    public void sendSignupVerificationCode(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", "An account with this email already exists.");
+        }
+        issueAndSendCode(email);
+    }
+
+    // 로그인된 계정의 이메일 재인증 (예: 이메일 변경 후 재인증)
+    @Transactional
+    public void resendForAccount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
-
-        // 이전에 발급된 미사용 코드는 무효화
-        log.info("[sendVerificationEmail] Delete previous email verification codes. userId: {}", userId);
-        emailVerificationCodeRepository.deleteAllByUserId(userId);
-
-        String code = generateCode();
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(codeExpirationMs / 1000);
-        emailVerificationCodeRepository.save(EmailVerificationCode.create(userId, user.getEmail(), code, expiresAt));
-        log.debug("[sendVerificationEmail] Created new verification code. userId: {}, email: {}", userId, user.getEmail());
-
-        sendMail(user.getEmail(), code);
+        issueAndSendCode(user.getEmail());
     }
 
     @Transactional
@@ -61,16 +60,10 @@ public class EmailVerificationService {
             throw new ApiException(ErrorCode.EXPIRED_TOKEN, "Verification code has expired");
         }
 
-        User user = userRepository.findById(verificationCode.getUserId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
-
-        // 코드 발급 이후 이메일이 다시 변경된 경우 이 코드는 더 이상 유효하지 않음
-        if (!verificationCode.getEmail().equals(user.getEmail())) {
-            throw new ApiException(ErrorCode.INVALID_TOKEN, "Email has changed since this code was issued");
-        }
-
-        user.verifiedEmail();
         verificationCode.verify();
+
+        // 이미 가입된 계정의 이메일 재인증인 경우 계정 상태도 함께 갱신
+        userRepository.findByEmail(email).ifPresent(User::verifiedEmail);
     }
 
     /**
@@ -85,16 +78,17 @@ public class EmailVerificationService {
             return;
         }
 
-        List<User> usersToDelete = userRepository.findAllById(userIds).stream()
-                .filter(user -> user.getEmailVerificationStatus() != EmailVerificationStatus.VERIFIED)
-                .toList();
+    private void issueAndSendCode(String email) {
+        // 이전에 발급된 코드는 무효화하고 새로 발급
+        log.info("[issueAndSendCode] Delete previous email verification codes. email: {}", email);
+        emailVerificationCodeRepository.deleteAllByEmail(email);
 
-        if (usersToDelete.isEmpty()) {
-            return;
-        }
+        String code = generateCode();
+        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(codeExpirationMs / 1000);
+        emailVerificationCodeRepository.save(EmailVerificationCode.create(email, code, expiresAt));
+        log.debug("[issueAndSendCode] Created new verification code. email: {}", email);
 
-        userRepository.deleteAll(usersToDelete);
-        log.info("[deleteExpiredUnverifiedUsers] Deleted {} unverified user(s) past code expiration", usersToDelete.size());
+        sendMail(email, code);
     }
 
     private String generateCode() {

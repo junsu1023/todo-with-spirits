@@ -62,22 +62,18 @@ CREATE TABLE refresh_tokens
     CONSTRAINT fk_refresh_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- 이메일 인증 코드 테이블 (6자리 숫자, 5분 유효)
+-- 이메일 인증 코드 테이블 (6자리 숫자, 5분 유효). 회원가입 이전에 발급되므로 특정 유저에 종속되지 않음
 CREATE TABLE email_verification_codes
 (
     id          BIGSERIAL PRIMARY KEY,
-    user_id     BIGINT                   NOT NULL,
-    email       VARCHAR(255)             NOT NULL, -- 인증 대상 이메일 (발급 시점 스냅샷)
-    code        VARCHAR(6)               NOT NULL, -- 6자리 숫자 코드 (여러 유저가 동시에 같은 코드를 받을 수 있어 UNIQUE 아님)
+    email       VARCHAR(255)             NOT NULL, -- 인증 대상 이메일
+    code        VARCHAR(6)               NOT NULL, -- 6자리 숫자 코드 (여러 이메일이 동시에 같은 코드를 받을 수 있어 UNIQUE 아님)
     verified_at TIMESTAMP WITH TIME ZONE,           -- null: 미사용
     expires_at  TIMESTAMP WITH TIME ZONE NOT NULL,
-    created_at  TIMESTAMP WITH TIME ZONE          DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_email_verification_codes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    created_at  TIMESTAMP WITH TIME ZONE          DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_email_verification_codes_user ON email_verification_codes (user_id);
--- 만료됐는데 인증 안 된 유저 정리(스케줄러)용 조회 인덱스
-CREATE INDEX idx_email_verification_codes_expires_verified ON email_verification_codes (expires_at, verified_at);
+CREATE INDEX idx_email_verification_codes_email ON email_verification_codes (email);
 
 -- 구독/프리미엄 테이블
 CREATE TABLE subscriptions
@@ -415,5 +411,3 @@ CREATE INDEX idx_user_achievements_user ON user_achievements (user_id);
 
 -- 알림 목록 조회 (커서 기반 페이지네이션: created_at, id 복합키로 seek)
 CREATE INDEX idx_notifications_user_created ON notifications (user_id, created_at DESC, id DESC);
-
--- update test

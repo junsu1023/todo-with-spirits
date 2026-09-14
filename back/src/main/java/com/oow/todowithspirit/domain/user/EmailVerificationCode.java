@@ -17,9 +17,6 @@ public class EmailVerificationCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @Column(nullable = false, length = 255)
     private String email;
 
@@ -35,9 +32,8 @@ public class EmailVerificationCode {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static EmailVerificationCode create(Long userId, String email, String code, LocalDateTime expiresAt) {
+    public static EmailVerificationCode create(String email, String code, LocalDateTime expiresAt) {
         EmailVerificationCode evc = new EmailVerificationCode();
-        evc.userId = userId;
         evc.email = email;
         evc.code = code;
         evc.expiresAt = expiresAt;
