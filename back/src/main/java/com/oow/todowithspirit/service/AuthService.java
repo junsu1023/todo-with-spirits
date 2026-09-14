@@ -58,7 +58,8 @@ public class AuthService {
         return userRepository.findByEmail(email)
                 .map(user -> {
                     List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(user.getId());
-                    return EmailCheckResponse.of(user.getPassword() != null, providers);
+                    OAuthProvider provider = providers.isEmpty() ? null : providers.get(0);
+                    return EmailCheckResponse.of(provider);
                 })
                 .orElseGet(EmailCheckResponse::notRegistered);
     }
