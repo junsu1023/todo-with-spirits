@@ -10,6 +10,9 @@ import javax.inject.Inject
 class DisplaySettingRepositoryImpl @Inject constructor(
     private val settingRemoteDataSource: SettingRemoteDataSource
 ) : DisplaySettingRepository {
+    override suspend fun getDisplaySetting(): Result<DisplaySetting> =
+        settingRemoteDataSource.getDisplaySetting().mapCatching { it.toDomain() }
+
     override suspend fun updateDisplaySetting(
         darkMode: Boolean?,
         ddayDisplayEnabled: Boolean?,

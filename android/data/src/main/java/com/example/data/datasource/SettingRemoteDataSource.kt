@@ -9,6 +9,9 @@ import javax.inject.Inject
 class SettingRemoteDataSource @Inject constructor(
     private val settingApi: SettingApi
 ) {
+    suspend fun getDisplaySetting(): Result<DisplaySettingResponse> =
+        apiCall { settingApi.getDisplaySetting() }
+
     suspend fun updateDisplaySetting(
         darkMode: Boolean?,
         ddayDisplayEnabled: Boolean?,
