@@ -10,7 +10,7 @@ public interface EmailVerificationCodeRepository extends JpaRepository<EmailVeri
 
     Optional<EmailVerificationCode> findByEmailAndCode(String email, String code);
 
-    void deleteAllByUserId(Long userId);
+    boolean existsByEmailAndVerifiedAtIsNotNull(String email);
 
     void deleteAllByEmail(String email);
 }

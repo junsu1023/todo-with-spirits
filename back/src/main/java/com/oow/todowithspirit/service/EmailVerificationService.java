@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -66,17 +65,15 @@ public class EmailVerificationService {
         userRepository.findByEmail(email).ifPresent(User::verifiedEmail);
     }
 
-    /**
-     * 인증 만료 시간이 지났는데도 인증되지 않은 회원가입 건은 계정 자체를 삭제한다.
-     * (소셜 로그인 유저는 인증 코드가 발급되지 않으므로 영향 없음)
-     */
-    @Scheduled(fixedDelay = 60_000)
+    @Transactional(readOnly = true)
+    public boolean isVerified(String email) {
+        return emailVerificationCodeRepository.existsByEmailAndVerifiedAtIsNotNull(email);
+    }
+
     @Transactional
-    public void deleteExpiredUnverifiedUsers() {
-        List<Long> userIds = emailVerificationCodeRepository.findUserIdsWithExpiredUnverifiedCode(LocalDateTime.now());
-        if (userIds.isEmpty()) {
-            return;
-        }
+    public void consumeVerification(String email) {
+        emailVerificationCodeRepository.deleteAllByEmail(email);
+    }
 
     private void issueAndSendCode(String email) {
         // 이전에 발급된 코드는 무효화하고 새로 발급

@@ -39,6 +39,10 @@ public class AuthService {
                     throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", buildLoginGuideMessage(existingUser));
                 });
 
+        if (!emailVerificationService.isVerified(request.getEmail())) {
+            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED, "email", "이메일 인증이 완료되지 않았습니다");
+        }
+
         String nickname = StringUtils.hasText(request.getNickname())
                 ? request.getNickname()
                 : generateDefaultNickname();
@@ -48,7 +52,7 @@ public class AuthService {
         userRepository.save(user);
 
         spiritService.createDefaultSpirit(user);
-        emailVerificationService.sendVerificationEmail(user.getId());
+        emailVerificationService.consumeVerification(request.getEmail());
 
         return SignupResponse.from(user);
     }
@@ -122,11 +126,6 @@ public class AuthService {
     @Transactional
     public void logout(Long userId) {
         refreshTokenRepository.deleteAllByUserId(userId);
-    }
-
-    @Transactional
-    public void verifyEmail(Long userId) {
-        emailVerificationService.sendVerificationEmail(userId);
     }
 
     private User findOrCreate(SocialLoginRequest request, String verifiedEmail) {
