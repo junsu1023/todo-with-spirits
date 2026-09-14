@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -48,6 +49,16 @@ public class AuthService {
         emailVerificationService.sendVerificationEmail(user.getId());
 
         return SignupResponse.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public EmailCheckResponse checkEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(user.getId());
+                    return EmailCheckResponse.of(user.getPassword() != null, providers);
+                })
+                .orElseGet(EmailCheckResponse::notRegistered);
     }
 
     @Transactional
