@@ -42,7 +42,7 @@ public class SecurityConfig {
                                 "/api/health"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user/email/verify/send", "/api/user/email/verify").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/user/me/email/verify/resend", "/me/email/verify/resend").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/user/me/email/verify/send", "/me/email/verify/send").authenticated()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
