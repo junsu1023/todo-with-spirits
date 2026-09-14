@@ -4,11 +4,14 @@ import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DailyRecordResponse
+import com.example.data.response.DisplaySettingResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.MonthlyCategoryCountResponse
 import com.example.data.response.MonthlyComparisonResponse
 import com.example.data.response.MonthlyDailyHeatmapResponse
 import com.example.data.response.MonthlyRecordResponse
+import com.example.data.response.NotificationItemResponse
+import com.example.data.response.NotificationPageResponse
 import com.example.data.response.RecordRewardResponse
 import com.example.data.response.RecordTaskItemResponse
 import com.example.data.response.RecordTypeProgressResponse
@@ -24,8 +27,10 @@ import com.example.data.response.WeeklyPlanAnalysisResponse
 import com.example.data.response.WeeklyRecordResponse
 import com.example.data.response.WeeklyTypeAnalysisResponse
 import com.example.domain.model.AlarmOption
+import com.example.domain.model.AppLanguage
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.DailyRecord
+import com.example.domain.model.DisplaySetting
 import com.example.domain.model.LoginSession
 import com.example.domain.model.MonthlyCategoryCount
 import com.example.domain.model.MonthlyComparison
@@ -33,6 +38,9 @@ import com.example.domain.model.MonthlyDailyHeatmap
 import com.example.domain.model.MonthlyRecord
 import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
+import com.example.domain.model.NotificationCategory
+import com.example.domain.model.NotificationItem
+import com.example.domain.model.NotificationPage
 import com.example.domain.model.RecordReward
 import com.example.domain.model.RecordTaskItem
 import com.example.domain.model.RecordTypeProgress
@@ -307,6 +315,26 @@ fun MonthlyCategoryCountResponse.toDomain(): MonthlyCategoryCount = MonthlyCateg
     category = category,
     completedCount = completedCount,
     totalCount = totalCount
+)
+
+fun NotificationPageResponse.toDomain(): NotificationPage = NotificationPage(
+    items = content.map { it.toDomain() },
+    nextCursor = nextCursor,
+    hasNext = hasNext
+)
+
+fun NotificationItemResponse.toDomain(): NotificationItem = NotificationItem(
+    id = id,
+    category = NotificationCategory.fromApiValue(category),
+    content = content,
+    createdAt = LocalDateTime.parse(createdAt),
+    read = read
+)
+
+fun DisplaySettingResponse.toDomain(): DisplaySetting = DisplaySetting(
+    darkMode = darkMode,
+    ddayDisplayEnabled = ddayDisplayEnabled,
+    language = AppLanguage.fromApiValue(language)
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()

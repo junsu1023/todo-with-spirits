@@ -20,6 +20,8 @@ interface AuthRepository {
 
     suspend fun withdraw(): Result<Unit>
 
+    suspend fun resendEmailVerification(): Result<Unit>
+
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult>
 
     suspend fun restoreSession(): Boolean

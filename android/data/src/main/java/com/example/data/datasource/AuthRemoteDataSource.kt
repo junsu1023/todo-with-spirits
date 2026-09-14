@@ -36,4 +36,6 @@ class AuthRemoteDataSource @Inject constructor(
     suspend fun logout(): Result<Unit> = apiCallUnit { authApi.logout() }
 
     suspend fun withdraw(): Result<Unit> = apiCallUnit { authApi.withdraw() }
+
+    suspend fun resendEmailVerification(): Result<Unit> = apiCallUnit { authApi.resendEmailVerification() }
 }

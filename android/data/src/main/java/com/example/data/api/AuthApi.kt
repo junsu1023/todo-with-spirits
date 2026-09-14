@@ -32,4 +32,7 @@ interface AuthApi {
 
     @DELETE(URLConstant.USER.USER_ME)
     suspend fun withdraw(): Response<ApiResponse<Unit?>>
+
+    @POST(URLConstant.USER.EMAIL_VERIFY_RESEND)
+    suspend fun resendEmailVerification(): Response<ApiResponse<Unit?>>
 }

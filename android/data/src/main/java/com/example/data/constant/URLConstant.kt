@@ -33,6 +33,7 @@ object URLConstant {
     object USER {
         private const val USER = "$API/user"
         const val USER_ME = "$USER/me"
+        const val EMAIL_VERIFY_RESEND = "$USER_ME/email/verify/resend"
     }
 
     object RECORD {
@@ -40,5 +41,16 @@ object URLConstant {
         const val RECORD_TODAY = "$RECORD/today"
         const val RECORD_WEEKLY = "$RECORD/weekly"
         const val RECORD_MONTHLY = "$RECORD/monthly"
+    }
+
+    object NOTIFICATION {
+        const val NOTIFICATION = "$API/notification"
+        const val NOTIFICATION_READ = "$NOTIFICATION/{alarmId}/read"
+        const val NOTIFICATION_READ_ALL = "$NOTIFICATION/read"
+    }
+
+    object SETTING {
+        private const val SETTING = "$API/setting"
+        const val SETTING_DISPLAY = "$SETTING/display"
     }
 }
