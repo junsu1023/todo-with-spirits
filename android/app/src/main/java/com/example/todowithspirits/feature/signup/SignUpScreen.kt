@@ -71,9 +71,12 @@ fun SignUpScreen(
                 uiState = uiState,
                 onNicknameChange = signUpViewModel::setNickname,
                 onSignUpClick = {
-                    ToastUtil.show(context, "회원가입이 완료되었습니다")
-                    /* TODO 프로필 수정 api 구현 이후 추가하기 > 닉네임 수정 용 */
-                    onSignUpSuccess()
+                    signUpViewModel.completeSignUp(
+                        onSuccess = {
+                            ToastUtil.show(context, "회원가입이 완료되었습니다")
+                            onSignUpSuccess()
+                        }
+                    )
                 }
             )
         }

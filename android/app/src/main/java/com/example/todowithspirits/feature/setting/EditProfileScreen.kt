@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,22 +21,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.feature.setting.viewmodel.EditProfileViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun EditProfileScreen(
+    editProfileViewModel: EditProfileViewModel = hiltViewModel(),
     nickname: String = "댕트리버",
-    onBack: () -> Unit = {},
-    onConfirm: (String) -> Unit = {}
+    onBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val isLoading by editProfileViewModel.isLoading.collectAsStateWithLifecycle()
     var value by remember { mutableStateOf(nickname) }
+
+    LaunchedEffect(editProfileViewModel) {
+        editProfileViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
 
     Column(
         modifier = Modifier
@@ -73,12 +86,14 @@ fun EditProfileScreen(
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.check),
-            onClick = { onConfirm(value) },
+            onClick = { editProfileViewModel.updateNickname(value, onSuccess = onBack) },
             modifier = Modifier.padding(horizontal = 18.dp)
         )
 
         Spacer(Modifier.height(21.dp))
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }
 
 @Composable

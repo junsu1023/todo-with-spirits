@@ -9,6 +9,7 @@ import com.example.domain.usecase.CheckEmailAvailabilityUseCase
 import com.example.domain.usecase.LoginUseCase
 import com.example.domain.usecase.SendEmailVerificationUseCase
 import com.example.domain.usecase.SignUpUseCase
+import com.example.domain.usecase.UpdateUserProfileUseCase
 import com.example.domain.usecase.VerifyEmailCodeUseCase
 import com.example.todowithspirits.feature.signup.SignUpStep
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
@@ -31,7 +32,8 @@ class SignUpViewModel @Inject constructor(
     private val sendEmailVerificationUseCase: SendEmailVerificationUseCase,
     private val verifyEmailCodeUseCase: VerifyEmailCodeUseCase,
     private val signUpUseCase: SignUpUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> get() = _uiState.asStateFlow()
@@ -250,6 +252,29 @@ class SignUpViewModel @Inject constructor(
             } else {
                 emitErrorMsg(error.localizedMessage ?: "회원가입에 실패했습니다")
             }
+        }
+    }
+
+    // NICKNAME 단계(회원가입 마지막 화면)에서 확인 버튼 클릭 시 호출된다. 화면에 입력된 닉네임으로
+    // 내 정보 수정 API를 호출해 서버에 반영한다.
+    fun completeSignUp(onSuccess: () -> Unit) {
+        val nickname = _uiState.value.nickname
+
+        viewModelScope.launchWithLoading {
+            updateUserProfileUseCase(nickname = nickname)
+                .onSuccess {
+                    Log.d(TAG, "updateUserProfile success = $it")
+                    onSuccess()
+                }
+                .onFailure { error ->
+                    Log.e(TAG, "updateUserProfile failed!", error)
+
+                    if (error is FieldValidationException) {
+                        _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
+                    } else {
+                        emitErrorMsg(error.localizedMessage ?: "닉네임 저장에 실패했습니다")
+                    }
+                }
         }
     }
 
