@@ -1,5 +1,6 @@
 package com.example.domain.repository
 
+import com.example.domain.model.EmailAvailability
 import com.example.domain.model.LoginMethod
 import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
@@ -7,6 +8,8 @@ import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
 
 interface AuthRepository {
+    suspend fun checkEmail(email: String): Result<EmailAvailability>
+
     suspend fun login(email: String, password: String): Result<LoginSession>
 
     suspend fun socialLogin(

@@ -6,6 +6,7 @@ import com.example.data.network.apiCallUnit
 import com.example.data.request.LoginRequest
 import com.example.data.request.SignUpRequest
 import com.example.data.request.SocialLoginRequest
+import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
@@ -14,6 +15,9 @@ import javax.inject.Inject
 class AuthRemoteDataSource @Inject constructor(
     private val authApi: AuthApi
 ) {
+    suspend fun checkEmail(email: String): Result<EmailAvailabilityResponse> =
+        apiCall { authApi.checkEmail(email) }
+
     suspend fun login(email: String, password: String): Result<LoginResponse> =
         apiCall { authApi.login(LoginRequest(email, password)) }
 

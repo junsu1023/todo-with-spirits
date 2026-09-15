@@ -6,6 +6,7 @@ import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.error.ApiException
 import com.example.data.mapper.toDomain
 import com.example.domain.exception.FieldValidationException
+import com.example.domain.model.EmailAvailability
 import com.example.domain.model.LoginMethod
 import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
@@ -18,6 +19,11 @@ class AuthRepositoryImpl @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource,
     private val tokenStorage: TokenStorage
 ) : AuthRepository {
+    override suspend fun checkEmail(email: String): Result<EmailAvailability> {
+        return authRemoteDataSource.checkEmail(email)
+            .mapCatching { it.toDomain() }
+    }
+
     override suspend fun login(email: String, password: String): Result<LoginSession> {
         return authRemoteDataSource.login(email, password)
             .map { it.toDomain() }
