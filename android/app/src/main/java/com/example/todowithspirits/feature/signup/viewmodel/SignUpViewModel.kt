@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.exception.FieldValidationException
+import com.example.domain.usecase.CheckEmailAvailabilityUseCase
 import com.example.domain.usecase.LoginUseCase
+import com.example.domain.usecase.SendEmailVerificationUseCase
 import com.example.domain.usecase.SignUpUseCase
+import com.example.domain.usecase.VerifyEmailCodeUseCase
 import com.example.todowithspirits.feature.signup.SignUpStep
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
 import com.example.todowithspirits.util.isValidEmail
@@ -24,6 +27,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
+    private val checkEmailAvailabilityUseCase: CheckEmailAvailabilityUseCase,
+    private val sendEmailVerificationUseCase: SendEmailVerificationUseCase,
+    private val verifyEmailCodeUseCase: VerifyEmailCodeUseCase,
     private val signUpUseCase: SignUpUseCase,
     private val loginUseCase: LoginUseCase
 ) : BaseViewModel() {
@@ -93,17 +99,51 @@ class SignUpViewModel @Inject constructor(
             errors["confirmPassword"] = "비밀번호가 일치하지 않습니다."
         }
 
-        val nextStep = if (errors.isEmpty()) SignUpStep.EMAIL_VERIFICATION else SignUpStep.CREDENTIALS
-
-        _uiState.update {
-            it.copy(
-                fieldErrors = errors,
-                step = nextStep
-            )
+        if (errors.isNotEmpty()) {
+            _uiState.update { it.copy(fieldErrors = errors) }
+            return
         }
 
-        if (nextStep == SignUpStep.EMAIL_VERIFICATION) {
+        viewModelScope.launchWithLoading {
+            checkEmailAvailabilityUseCase(state.email).onSuccess { availability ->
+                Log.d(TAG, "checkEmail = $availability")
+
+                if (availability.registered) {
+                    val message = if (availability.provider != null) {
+                        "이미 소셜 계정으로 가입된 이메일입니다. 소셜 로그인을 이용해주세요."
+                    } else {
+                        "이미 가입된 이메일입니다."
+                    }
+                    _uiState.update { it.copy(fieldErrors = mapOf("email" to message)) }
+                    return@launchWithLoading
+                }
+
+                 sendVerificationEmail(state.email)
+            }.onFailure { error ->
+                Log.e(TAG, "checkEmail failed!", error)
+
+                if (error is FieldValidationException) {
+                    _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
+                } else {
+                    emitErrorMsg(error.localizedMessage ?: "이메일 확인에 실패했습니다")
+                }
+            }
+        }
+    }
+
+    private suspend fun sendVerificationEmail(email: String) {
+        sendEmailVerificationUseCase(email).onSuccess {
+            Log.d(TAG, "sendEmailVerification success")
+            _uiState.update { it.copy(fieldErrors = emptyMap(), step = SignUpStep.EMAIL_VERIFICATION) }
             startVerificationTimer()
+        }.onFailure { error ->
+            Log.e(TAG, "sendEmailVerification failed!", error)
+
+            if (error is FieldValidationException) {
+                _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
+            } else {
+                emitErrorMsg(error.localizedMessage ?: "인증 메일 발송에 실패했습니다")
+            }
         }
     }
 
@@ -118,17 +158,34 @@ class SignUpViewModel @Inject constructor(
 
     fun verifyEmailCode() {
         val state = _uiState.value
+        val code = state.verificationCode.toIntOrNull()
 
-        // TODO: 인증번호 서버 검증 로직이 구현되기 전까지 더미 코드(123456)로 성공 여부를 판단한다.
-        if (state.verificationCode != DUMMY_VERIFICATION_CODE) {
+        if (code == null) {
             _uiState.update { it.copy(fieldErrors = mapOf("verificationCode" to "인증번호를 다시 확인해주세요.")) }
-            emitErrorMsg("인증번호가 일치하지 않습니다.")
             return
         }
 
-        cancelVerificationTimer()
+        viewModelScope.launchWithLoading {
+            verifyEmailCodeUseCase(state.email, code).onSuccess {
+                Log.d(TAG, "verifyEmailCode success")
+                cancelVerificationTimer()
+                 performSignUp(
+                     onSuccess = {
+                         _uiState.update {
+                             it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME)
+                         }
+                     }
+                 )
+            }.onFailure { error ->
+                Log.e(TAG, "verifyEmailCode failed!", error)
 
-        signUp(onSuccess = { _uiState.update { it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME) } })
+                if (error is FieldValidationException) {
+                    _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
+                } else {
+                    emitErrorMsg(error.localizedMessage ?: "인증번호가 일치하지 않습니다.")
+                }
+            }
+        }
     }
 
     private fun startVerificationTimer() {
@@ -173,35 +230,30 @@ class SignUpViewModel @Inject constructor(
         emitErrorMsg("인증 시간이 초과되었습니다. 다시 시도해주세요.")
     }
 
-    fun signUp(onSuccess: () -> Unit = {}) {
+    private suspend fun performSignUp(onSuccess: () -> Unit) {
         val state = _uiState.value
 
-        viewModelScope.launchWithLoading {
-            signUpUseCase(state.email, state.password, null)
-                .onSuccess {
-                    Log.d(TAG, "signUp success = $it")
+        signUpUseCase(state.email, state.password, null).onSuccess {
+            Log.d(TAG, "signUp success = $it")
 
-                    loginUseCase(state.email, state.password)
-                        .onSuccess { onSuccess() }
-                        .onFailure { error ->
-                            Log.e(TAG, "auto login after signUp failed!", error)
-                            emitErrorMsg("회원가입은 완료되었지만 자동 로그인에 실패했습니다. 다시 로그인해주세요")
-                        }
-                }
+            loginUseCase(state.email, state.password)
+                .onSuccess { onSuccess() }
                 .onFailure { error ->
-                    Log.e(TAG, "signUp failed!", error)
-
-                    if (error is FieldValidationException) {
-                        _uiState.update { it.copy(fieldErrors = error.fieldErrors, step = SignUpStep.CREDENTIALS) }
-                    } else {
-                        emitErrorMsg(error.localizedMessage ?: "회원가입에 실패했습니다")
-                    }
+                    Log.e(TAG, "auto login after signUp failed!", error)
+                    emitErrorMsg("회원가입은 완료되었지만 자동 로그인에 실패했습니다. 다시 로그인해주세요")
                 }
+        }.onFailure { error ->
+            Log.e(TAG, "signUp failed!", error)
+
+            if (error is FieldValidationException) {
+                _uiState.update { it.copy(fieldErrors = error.fieldErrors, step = SignUpStep.CREDENTIALS) }
+            } else {
+                emitErrorMsg(error.localizedMessage ?: "회원가입에 실패했습니다")
+            }
         }
     }
 
     companion object {
-        private const val DUMMY_VERIFICATION_CODE = "123456"
         private const val VERIFICATION_TIME_LIMIT_SECONDS = 5 * 60
     }
 }
