@@ -2,6 +2,7 @@ package com.example.data.api
 
 import com.example.data.constant.URLConstant
 import com.example.data.request.LoginRequest
+import com.example.data.request.SendEmailVerificationRequest
 import com.example.data.request.SignUpRequest
 import com.example.data.request.SocialLoginRequest
 import com.example.data.response.ApiResponse
@@ -41,4 +42,7 @@ interface AuthApi {
 
     @POST(URLConstant.USER.EMAIL_VERIFY_RESEND)
     suspend fun resendEmailVerification(): Response<ApiResponse<Unit?>>
+
+    @POST(URLConstant.USER.EMAIL_VERIFY_SEND)
+    suspend fun sendEmailVerification(@Body request: SendEmailVerificationRequest): Response<ApiResponse<Unit?>>
 }

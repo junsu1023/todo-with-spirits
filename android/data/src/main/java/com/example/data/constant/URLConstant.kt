@@ -34,7 +34,8 @@ object URLConstant {
     object USER {
         private const val USER = "$API/user"
         const val USER_ME = "$USER/me"
-        const val EMAIL_VERIFY_RESEND = "$USER_ME/email/verify/resend"
+        const val EMAIL_VERIFY_RESEND = "$USER_ME/email/verify/resend" // 로그인 상태에서 재발송
+        const val EMAIL_VERIFY_SEND = "$USER/email/verify/send" // 비로그인 상태(회원가입 전)에서 발송
     }
 
     object RECORD {

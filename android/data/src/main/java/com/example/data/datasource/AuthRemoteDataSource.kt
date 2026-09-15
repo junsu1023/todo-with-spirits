@@ -4,6 +4,7 @@ import com.example.data.api.AuthApi
 import com.example.data.network.apiCall
 import com.example.data.network.apiCallUnit
 import com.example.data.request.LoginRequest
+import com.example.data.request.SendEmailVerificationRequest
 import com.example.data.request.SignUpRequest
 import com.example.data.request.SocialLoginRequest
 import com.example.data.response.EmailAvailabilityResponse
@@ -42,4 +43,7 @@ class AuthRemoteDataSource @Inject constructor(
     suspend fun withdraw(): Result<Unit> = apiCallUnit { authApi.withdraw() }
 
     suspend fun resendEmailVerification(): Result<Unit> = apiCallUnit { authApi.resendEmailVerification() }
+
+    suspend fun sendEmailVerification(email: String): Result<Unit> =
+        apiCallUnit { authApi.sendEmailVerification(SendEmailVerificationRequest(email)) }
 }

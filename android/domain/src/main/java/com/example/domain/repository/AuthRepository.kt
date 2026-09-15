@@ -25,6 +25,9 @@ interface AuthRepository {
 
     suspend fun resendEmailVerification(): Result<Unit>
 
+    // 회원가입 전(비로그인) 단계에서 이메일 인증 메일을 발송한다
+    suspend fun sendEmailVerification(email: String): Result<Unit>
+
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult>
 
     suspend fun restoreSession(): Boolean
