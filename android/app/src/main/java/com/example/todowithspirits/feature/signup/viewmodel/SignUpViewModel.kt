@@ -136,7 +136,9 @@ class SignUpViewModel @Inject constructor(
     private suspend fun sendVerificationEmail(email: String) {
         sendEmailVerificationUseCase(email).onSuccess {
             Log.d(TAG, "sendEmailVerification success")
-            _uiState.update { it.copy(fieldErrors = emptyMap(), step = SignUpStep.EMAIL_VERIFICATION) }
+            _uiState.update {
+                it.copy(fieldErrors = emptyMap(), step = SignUpStep.EMAIL_VERIFICATION, verificationCode = "")
+            }
             startVerificationTimer()
         }.onFailure { error ->
             Log.e(TAG, "sendEmailVerification failed!", error)
@@ -151,7 +153,9 @@ class SignUpViewModel @Inject constructor(
 
     fun goBackToCredentials() {
         cancelVerificationTimer()
-        _uiState.update { it.copy(step = SignUpStep.CREDENTIALS, fieldErrors = emptyMap()) }
+        _uiState.update {
+            it.copy(step = SignUpStep.CREDENTIALS, fieldErrors = emptyMap(), verificationCode = "")
+        }
     }
 
     fun goBackToEmailVerification() {
@@ -181,11 +185,14 @@ class SignUpViewModel @Inject constructor(
             }.onFailure { error ->
                 Log.e(TAG, "verifyEmailCode failed!", error)
 
-                if (error is FieldValidationException) {
-                    _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
+                val message = if (error is FieldValidationException) {
+                    error.fieldErrors.values.firstOrNull() ?: error.message
                 } else {
-                    emitErrorMsg(error.localizedMessage ?: "인증번호가 일치하지 않습니다.")
-                }
+                    error.localizedMessage
+                } ?: "인증번호가 일치하지 않습니다."
+
+                _uiState.update { it.copy(fieldErrors = mapOf("verificationCode" to message)) }
+                emitErrorMsg(message)
             }
         }
     }
@@ -255,8 +262,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    // NICKNAME 단계(회원가입 마지막 화면)에서 확인 버튼 클릭 시 호출된다. 화면에 입력된 닉네임으로
-    // 내 정보 수정 API를 호출해 서버에 반영한다.
     fun completeSignUp(onSuccess: () -> Unit) {
         val nickname = _uiState.value.nickname
 
