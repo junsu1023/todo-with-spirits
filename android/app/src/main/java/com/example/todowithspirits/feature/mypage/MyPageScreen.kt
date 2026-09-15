@@ -14,13 +14,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SettingActionRow
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
@@ -29,6 +34,7 @@ import com.example.todowithspirits.feature.mypage.component.ProfileSection
 import com.example.todowithspirits.feature.mypage.component.StatusRow
 import com.example.todowithspirits.feature.mypage.viewmodel.MyPageViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
 
 data class SettingItem(
     val iconRes: Int,
@@ -54,6 +60,14 @@ fun MyPageScreen(
     navigateToCustomerSupport: () -> Unit = {},
     navigateToLogout: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val uiState by myPageViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by myPageViewModel.isLoading.collectAsStateWithLifecycle()
+
+    LaunchedEffect(myPageViewModel) {
+        myPageViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,7 +77,11 @@ fun MyPageScreen(
         TitleHeader(title = stringResource(R.string.my_page_title))
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            ProfileSection(navigateToAccountSetting = navigateToAccountSetting)
+            ProfileSection(
+                nickname = uiState.nickname,
+                email = uiState.email,
+                navigateToAccountSetting = navigateToAccountSetting
+            )
 
             Spacer(Modifier.height(15.dp))
 
@@ -124,6 +142,8 @@ fun MyPageScreen(
 
         Spacer(modifier = Modifier.height(26.dp))
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }
 
 @Composable

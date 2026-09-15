@@ -39,15 +39,19 @@ import com.example.todowithspirits.util.ToastUtil
 @Composable
 fun EditProfileScreen(
     editProfileViewModel: EditProfileViewModel = hiltViewModel(),
-    nickname: String = "댕트리버",
     onBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val uiState by editProfileViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by editProfileViewModel.isLoading.collectAsStateWithLifecycle()
-    var value by remember { mutableStateOf(nickname) }
+    var value by remember { mutableStateOf("") }
 
     LaunchedEffect(editProfileViewModel) {
         editProfileViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
+
+    LaunchedEffect(uiState.nickname) {
+        value = uiState.nickname
     }
 
     Column(

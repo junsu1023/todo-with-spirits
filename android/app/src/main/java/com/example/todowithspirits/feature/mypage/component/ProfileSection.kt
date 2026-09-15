@@ -21,7 +21,11 @@ import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun ProfileSection(navigateToAccountSetting: () -> Unit) {
+fun ProfileSection(
+    nickname: String,
+    email: String?,
+    navigateToAccountSetting: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -30,14 +34,14 @@ fun ProfileSection(navigateToAccountSetting: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column {
                 Text(
-                    text = "일하기 싫어요",
+                    text = nickname,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.todoTextMain
                 )
 
                 Text(
-                    text = "wish0221@gmail.com",
+                    text = email ?: "-",
                     fontSize = 12.sp,
                     color = SpiritTodoTheme.color.systemGrey
                 )
