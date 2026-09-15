@@ -265,6 +265,7 @@ export function TaskEditForm({
 				onKeyDown={(e) => {
 					if (e.key === 'Enter') handleSave()
 				}}
+				// biome-ignore lint/a11y/noAutofocus: 모달 오픈 시 제목 입력 포커스 의도
 				autoFocus
 			/>
 

@@ -48,7 +48,9 @@ export function KakaoCallbackPage() {
 				}
 
 				if (!tokenData.access_token) {
-					throw new Error(tokenData.error_description ?? '카카오 토큰 발급 실패')
+					throw new Error(
+						tokenData.error_description ?? '카카오 토큰 발급 실패',
+					)
 				}
 
 				const accessToken = tokenData.access_token
@@ -71,18 +73,22 @@ export function KakaoCallbackPage() {
 					setSocialAuth(res.detail)
 					navigate('/', { replace: true })
 				} else {
-					toast.error(res.detail.description[0]?.message ?? '로그인에 실패했습니다')
+					toast.error(
+						res.detail.description[0]?.message ?? '로그인에 실패했습니다',
+					)
 					navigate('/login', { replace: true })
 				}
 			} catch (err) {
 				console.error('[Kakao] callback error', err)
-				toast.error(err instanceof Error ? err.message : '카카오 로그인에 실패했습니다')
+				toast.error(
+					err instanceof Error ? err.message : '카카오 로그인에 실패했습니다',
+				)
 				navigate('/login', { replace: true })
 			}
 		}
 
 		handleCallback(code)
-	}, [])
+	}, [navigate, searchParams, setSocialAuth])
 
 	return (
 		<div className="flex h-screen items-center justify-center bg-gray-50">
