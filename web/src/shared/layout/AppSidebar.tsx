@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import {
 	BarChart2,
 	CalendarDays,
@@ -10,6 +10,7 @@ import {
 import { NavLink, useLocation } from 'react-router-dom'
 import { logoutApi } from '@/feature/auth/api/mutate'
 import { useAuthStore } from '@/feature/auth/model/authStore'
+import { getMe } from '@/feature/user/api/query'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import {
@@ -36,6 +37,12 @@ const navItems = [
 export function AppSidebar() {
 	const { pathname } = useLocation()
 	const clearAuth = useAuthStore((state) => state.clearAuth)
+
+	const { data: meData } = useQuery({
+		queryKey: ['user', 'me'],
+		queryFn: getMe,
+	})
+	const me = meData?.result === 'success' ? meData.detail : null
 
 	const { mutate: logout } = useMutation({
 		mutationFn: logoutApi,
@@ -78,11 +85,17 @@ export function AppSidebar() {
 						<div className="flex items-center gap-3 px-2 py-3">
 							<Avatar className="size-9">
 								<AvatarImage src="" alt="User avatar" />
-								<AvatarFallback>U</AvatarFallback>
+								<AvatarFallback>
+									{me?.nickname?.[0]?.toUpperCase() ?? 'U'}
+								</AvatarFallback>
 							</Avatar>
 							<div className="flex flex-col text-left">
-								<span className="text-sm font-medium">Username</span>
-								<span className="text-xs text-muted-foreground">Member</span>
+								<span className="text-sm font-medium">
+									{me?.nickname ?? '-'}
+								</span>
+								<span className="text-xs text-muted-foreground">
+									{me?.role ?? '-'}
+								</span>
 							</div>
 						</div>
 					</PopoverTrigger>
