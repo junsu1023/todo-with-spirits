@@ -6,6 +6,7 @@ import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
+import com.example.domain.model.UserProfile
 
 interface AuthRepository {
     suspend fun checkEmail(email: String): Result<EmailAvailability>
@@ -22,6 +23,9 @@ interface AuthRepository {
     suspend fun logout(): Result<Unit>
 
     suspend fun withdraw(): Result<Unit>
+
+    // 닉네임/대표 정령 수정. 둘 다 optional이며 null이면 변경하지 않는다.
+    suspend fun updateUserProfile(nickname: String? = null, representativeSpiritId: Long? = null): Result<UserProfile>
 
     suspend fun resendEmailVerification(): Result<Unit>
 
