@@ -24,15 +24,14 @@ interface AuthRepository {
 
     suspend fun withdraw(): Result<Unit>
 
-    // 닉네임/대표 정령 수정. 둘 다 optional이며 null이면 변경하지 않는다.
+    suspend fun getUserProfile(): Result<UserProfile>
+
     suspend fun updateUserProfile(nickname: String? = null, representativeSpiritId: Long? = null): Result<UserProfile>
 
     suspend fun resendEmailVerification(): Result<Unit>
 
-    // 회원가입 전(비로그인) 단계에서 이메일 인증 메일을 발송한다
     suspend fun sendEmailVerification(email: String): Result<Unit>
 
-    // 메일로 발송된 6자리 인증코드를 검증한다 (미인증유저 -> 인증유저)
     suspend fun verifyEmailCode(email: String, code: Int): Result<Unit>
 
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult>

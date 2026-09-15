@@ -44,6 +44,9 @@ interface AuthApi {
     @DELETE(URLConstant.USER.USER_ME)
     suspend fun withdraw(): Response<ApiResponse<Unit?>>
 
+    @GET(URLConstant.USER.USER_ME)
+    suspend fun getUserProfile(): Response<ApiResponse<UserProfileResponse>>
+
     @PATCH(URLConstant.USER.USER_ME)
     suspend fun updateUserProfile(@Body request: UpdateUserProfileRequest): Response<ApiResponse<UserProfileResponse>>
 

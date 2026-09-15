@@ -59,6 +59,11 @@ class AuthRepositoryImpl @Inject constructor(
             .onSuccess { clearSession() }
     }
 
+    override suspend fun getUserProfile(): Result<UserProfile> {
+        return authRemoteDataSource.getUserProfile()
+            .mapCatching { it.toDomain() }
+    }
+
     override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> {
         return authRemoteDataSource.updateUserProfile(nickname, representativeSpiritId)
             .mapCatching { it.toDomain() }

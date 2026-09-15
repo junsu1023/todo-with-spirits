@@ -45,6 +45,9 @@ class AuthRemoteDataSource @Inject constructor(
 
     suspend fun withdraw(): Result<Unit> = apiCallUnit { authApi.withdraw() }
 
+    suspend fun getUserProfile(): Result<UserProfileResponse> =
+        apiCall { authApi.getUserProfile() }
+
     suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfileResponse> =
         apiCall { authApi.updateUserProfile(UpdateUserProfileRequest(nickname, representativeSpiritId)) }
 
