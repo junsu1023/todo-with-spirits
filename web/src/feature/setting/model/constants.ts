@@ -1,5 +1,19 @@
 import { Info, Monitor, User } from 'lucide-react'
 import { ROUTES } from '@/shared/routes'
+import type { Language } from './type'
+
+export const LANGUAGE_LABELS: Record<Language, string> = {
+	system: '시스템',
+	ko: '한국어',
+	en: '영어',
+	ja: '일본어',
+	zh: '중국어',
+}
+
+export const LANGUAGE_OPTIONS = Object.values(LANGUAGE_LABELS)
+
+export const labelToLanguage = (label: string): Language =>
+	(Object.entries(LANGUAGE_LABELS).find(([, v]) => v === label)?.[0] as Language) ?? 'system'
 
 export const SETTING_ITEMS = [
 	{
