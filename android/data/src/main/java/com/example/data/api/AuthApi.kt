@@ -5,6 +5,7 @@ import com.example.data.request.LoginRequest
 import com.example.data.request.SendEmailVerificationRequest
 import com.example.data.request.SignUpRequest
 import com.example.data.request.SocialLoginRequest
+import com.example.data.request.VerifyEmailCodeRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
@@ -45,4 +46,7 @@ interface AuthApi {
 
     @POST(URLConstant.USER.EMAIL_VERIFY_SEND)
     suspend fun sendEmailVerification(@Body request: SendEmailVerificationRequest): Response<ApiResponse<Unit?>>
+
+    @POST(URLConstant.USER.EMAIL_VERIFY)
+    suspend fun verifyEmailCode(@Body request: VerifyEmailCodeRequest): Response<ApiResponse<Unit?>>
 }

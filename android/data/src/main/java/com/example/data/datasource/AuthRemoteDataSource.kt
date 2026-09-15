@@ -7,6 +7,7 @@ import com.example.data.request.LoginRequest
 import com.example.data.request.SendEmailVerificationRequest
 import com.example.data.request.SignUpRequest
 import com.example.data.request.SocialLoginRequest
+import com.example.data.request.VerifyEmailCodeRequest
 import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.SignUpResponse
@@ -46,4 +47,7 @@ class AuthRemoteDataSource @Inject constructor(
 
     suspend fun sendEmailVerification(email: String): Result<Unit> =
         apiCallUnit { authApi.sendEmailVerification(SendEmailVerificationRequest(email)) }
+
+    suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> =
+        apiCallUnit { authApi.verifyEmailCode(VerifyEmailCodeRequest(email, code)) }
 }

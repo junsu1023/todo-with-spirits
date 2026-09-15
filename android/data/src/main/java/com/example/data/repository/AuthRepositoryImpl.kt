@@ -67,6 +67,11 @@ class AuthRepositoryImpl @Inject constructor(
             .recoverFieldValidationErrors()
     }
 
+    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> {
+        return authRemoteDataSource.verifyEmailCode(email, code)
+            .recoverFieldValidationErrors()
+    }
+
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> {
         return authRemoteDataSource.signUp(email, password, nickname)
             .mapCatching { it.toDomain() }
