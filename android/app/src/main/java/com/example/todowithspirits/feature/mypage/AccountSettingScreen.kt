@@ -16,12 +16,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import com.example.todowithspirits.component.SettingsRow
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.feature.mypage.viewmodel.AccountSettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun AccountSettingScreen(
@@ -44,9 +47,15 @@ fun AccountSettingScreen(
     onWithdrawSuccess: () -> Unit = {},
     accountSettingViewModel: AccountSettingViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     var showWithdrawDialog by remember { mutableStateOf(false) }
+    val uiState by accountSettingViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by accountSettingViewModel.isLoading.collectAsStateWithLifecycle()
     val isPasswordChangeAvailable by accountSettingViewModel.isPasswordChangeAvailable.collectAsStateWithLifecycle()
+
+    LaunchedEffect(accountSettingViewModel) {
+        accountSettingViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
 
     Column(
         modifier = Modifier
@@ -64,7 +73,7 @@ fun AccountSettingScreen(
 
         InfoRow(
             label = stringResource(R.string.nickname),
-            value = "댕트리버",
+            value = uiState.nickname,
             onClick = onNicknameClick
         )
 
@@ -72,7 +81,7 @@ fun AccountSettingScreen(
 
         InfoRow(
             label = stringResource(R.string.linked_account),
-            value = "wish0221@gmail.com",
+            value = uiState.email ?: "-",
             showChevron = false
         )
 
