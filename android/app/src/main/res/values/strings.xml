@@ -170,6 +170,10 @@
     <string name="verification_code_description_suffix"> 으로</string>
     <string name="verification_code_description_body">발송 된 인증번호 6자리를 입력해주세요</string>
     <string name="verification_code_placeholder">인증번호</string>
+    <string name="verification_email_not_received">이메일을 받지 못하셨나요?</string>
+    <string name="verification_email_resend_hint_prefix">스팸 편지함 확인 또는</string>
+    <string name="verification_email_resend_action">인증 메일 다시 보내기</string>
+    <string name="verification_email_resend_success">인증 메일을 다시 보냈습니다</string>
     <string name="signup_welcome_title">가입을 환영합니다!</string>
     <string name="signup_welcome_subtitle">정령들에게 알려줄 사용자님의 이름을 설정해주세요.</string>
 </resources>

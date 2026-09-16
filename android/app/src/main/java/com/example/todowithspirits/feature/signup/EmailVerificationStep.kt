@@ -59,7 +59,8 @@ fun EmailVerificationStep(
     uiState: SignUpUiState,
     onCodeChange: (String) -> Unit,
     onBack: () -> Unit,
-    onVerify: () -> Unit
+    onVerify: () -> Unit,
+    onResend: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -128,8 +129,37 @@ fun EmailVerificationStep(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp)
+                .padding(horizontal = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = stringResource(R.string.verification_email_not_received),
+                fontSize = 12.sp,
+                color = SpiritTodoTheme.color.systemGrey
+            )
+
+            Spacer(Modifier.height(2.dp))
+
+            Row {
+                Text(
+                    text = stringResource(R.string.verification_email_resend_hint_prefix),
+                    fontSize = 12.sp,
+                    color = SpiritTodoTheme.color.systemGrey
+                )
+
+                Spacer(Modifier.width(4.dp))
+
+                Text(
+                    text = stringResource(R.string.verification_email_resend_action),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = SpiritTodoTheme.color.mainTextAndStroke,
+                    modifier = Modifier.noRippleClickable(onClick = onResend)
+                )
+            }
+
+            Spacer(Modifier.height(24.dp))
+
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.check),
                 enabled = uiState.verificationCode.isNotBlank(),
