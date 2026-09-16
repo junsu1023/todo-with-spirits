@@ -176,7 +176,9 @@ namespace TodoSpirits.Runtime
                 $"mock:{date}:{stableSuffix}",
                 title,
                 category,
-                $"{date}T{completedTime}");
+                $"{date}T{completedTime}") {
+                    RoutineId = stableSuffix == "thirty-minute-walk" ? "mock-routine:daily-walk" : null
+                };
         }
 
         private static string NormalizeDate(string date)

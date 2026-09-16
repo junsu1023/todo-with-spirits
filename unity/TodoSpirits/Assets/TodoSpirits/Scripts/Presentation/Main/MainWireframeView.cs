@@ -52,12 +52,45 @@ namespace TodoSpirits.Presentation.Main
             new Dictionary<ActivitySpotId, ActivitySpotBinding>(5);
 
         private bool _initialized;
+        private readonly Dictionary<int, GameObject> _decorations = new Dictionary<int, GameObject>();
+
+        public void RenderCompanionWorld(CompanionLife life, CompanionInterventions interventions, bool traveling)
+        {
+            spiritActor.PresentLife(life);
+            bool present = life.Farewell != FarewellStep.Independent && !traveling;
+            spiritActor.gameObject.SetActive(present);
+            if (!present)
+            {
+                foreach(var pair in _spotsById) pair.Value.SetSelected(false);
+                actionText.text = traveling ? "지금 · 이슬 숲을 여행하는 중" : "새로운 동행을 기다리는 집";
+                speechText.text = traveling ? "준비물을 챙겨 숲 너머를 둘러보고 있어요." : life.DisplayName + "의 기록은 이곳에 남아 있어요.";
+            }
+            ActivitySpotId[] slots = { ActivitySpotId.Desk, ActivitySpotId.Workshop, ActivitySpotId.TeaTable, ActivitySpotId.Yard, ActivitySpotId.Rest };
+            for(int i=0;i<slots.Length;i++)
+            {
+                bool equipped = interventions.EquippedDecorations.Contains(i.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                if (!_decorations.TryGetValue(i,out var prop) && equipped && _spotsById.TryGetValue(slots[i],out var spot))
+                {
+                    prop = CompanionWorldArt.Decoration(spot.PropAnchor != null ? spot.PropAnchor : spot.Destination,i);
+                    _decorations.Add(i,prop);
+                }
+                if (prop != null) prop.SetActive(equipped);
+            }
+        }
 
         public GameObject Root => gameObject;
 
         public RectTransform WorldRoot => worldRoot;
 
         public SpiritLivingActor SpiritActor => spiritActor;
+
+        public void ReserveCompanionNavigation()
+        {
+            if (todayRecordButton == null) return;
+            var rect = (RectTransform)todayRecordButton.transform;
+            rect.anchorMin = new Vector2(rect.anchorMin.x, .205f);
+            rect.anchorMax = new Vector2(rect.anchorMax.x, .295f);
+        }
 
         public bool Initialize(
             Font runtimeFont,
@@ -88,6 +121,7 @@ namespace TodoSpirits.Presentation.Main
             debugButton.onClick.AddListener(() => toggleDebug?.Invoke());
             debugButton.gameObject.SetActive(debugAvailable);
             SetActivityDebugVisible(false);
+            CompanionWorldArt.BuildLivingSpace(worldRoot, activitySpots);
             _initialized = true;
             return true;
         }
@@ -178,9 +212,17 @@ namespace TodoSpirits.Presentation.Main
                 : growthState;
         }
 
-        public void PresentSpiritDay(SpiritActionId action, string dialogue, bool animateMovement)
+        public void PresentSpiritDay(SpiritActionId action, string dialogue, bool animateMovement, int presentationVariant = 0, string savedLocation = null)
         {
             ActivitySpotId spotId = ResolveSpotId(action);
+            // A saved day keeps its actual location even after growth or a rule change.
+            if (!string.IsNullOrEmpty(savedLocation))
+                foreach (SpiritActionId placeAction in Enum.GetValues(typeof(SpiritActionId)))
+                    if (SpiritActionCatalog.Get(placeAction).Location == savedLocation)
+                    {
+                        spotId = ResolveSpotId(placeAction);
+                        break;
+                    }
             if (!_spotsById.TryGetValue(spotId, out ActivitySpotBinding selectedSpot))
             {
                 Debug.LogError($"No authored ActivitySpotBinding exists for '{spotId}'. Falling back to Rest.", this);
@@ -195,7 +237,7 @@ namespace TodoSpirits.Presentation.Main
                 pair.Value.SetSelected(pair.Key == selectedSpot.StableId);
             }
 
-            spiritActor.Present(action, selectedSpot.Destination, dialogue, animateMovement);
+            spiritActor.Present(action, selectedSpot.Destination, dialogue, animateMovement, presentationVariant);
         }
 
         public void SetActivityDebugVisible(bool visible)

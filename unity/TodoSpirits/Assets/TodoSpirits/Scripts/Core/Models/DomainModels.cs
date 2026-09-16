@@ -55,6 +55,7 @@ namespace TodoSpirits.Core
         public string Title;
         public UserTaskCategory UserCategory;
         public string CompletedAt;
+        public string RoutineId;
 
         public CompletedTask()
         {
@@ -208,6 +209,7 @@ namespace TodoSpirits.Core
         public string Location;
         public string Dialogue;
         public int Seed;
+        public int PresentationVariant; // 0 keeps the legacy pose; 1..3 are persisted daily variations.
         public List<TaskActionLink> TaskActionLinks;
 
         public SpiritDayResult()
@@ -297,6 +299,7 @@ namespace TodoSpirits.Core
         public string SelectionReason;
         public string SimulationVersion;
         public bool RewardAcknowledged;
+        public string LifeActivityText;
 
         public DailyCompanionRecord()
         {

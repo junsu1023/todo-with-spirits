@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace TodoSpirits.Runtime
@@ -12,6 +14,7 @@ namespace TodoSpirits.Runtime
     {
         private const string SaveDirectoryName = "TodoSpirits";
         private const string SaveFileName = "prototype-save.json";
+        private bool _loadedFromBackup;
 
         public string SavePath { get; }
 
@@ -37,29 +40,32 @@ namespace TodoSpirits.Runtime
 
         public PrototypeSaveData Load()
         {
-            if (!File.Exists(SavePath))
-            {
-                return new PrototypeSaveData();
-            }
+            _loadedFromBackup = false;
+            string backup = SavePath + ".bak";
+            if (!File.Exists(SavePath) && !File.Exists(backup)) return new PrototypeSaveData();
+            if (TryRead(SavePath, out var data)) return data;
+            if (TryRead(backup, out data)) { _loadedFromBackup = true; return data; }
+            throw new IOException("동행 저장과 백업을 읽을 수 없습니다. 기존 파일을 보존했습니다.");
+        }
 
+        private static bool TryRead(string path, out PrototypeSaveData data)
+        {
+            data = null;
+            if (!File.Exists(path)) return false;
             try
             {
-                var json = File.ReadAllText(SavePath, Encoding.UTF8);
-                var saveData = JsonUtility.FromJson<PrototypeSaveData>(json);
-                if (saveData == null)
-                {
-                    Debug.LogWarning($"Prototype save was empty or invalid: {SavePath}");
-                    return new PrototypeSaveData();
-                }
-
-                saveData.EnsureCollections();
-                return saveData;
+                var json = File.ReadAllText(path, Encoding.UTF8);
+                var document = JObject.Parse(json);
+                if (!(document["EssenceWallet"] is JObject) || !(document["Records"] is JArray)) return false;
+                data = JsonUtility.FromJson<PrototypeSaveData>(json);
+                if (data == null || data.EssenceWallet == null || data.Records == null) return false;
+                data.EnsureCollections();
+                return true;
             }
-            catch (Exception exception)
-            {
-                Debug.LogWarning($"Could not load prototype save at {SavePath}. A new in-memory save will be used.\n{exception}");
-                return new PrototypeSaveData();
-            }
+            catch (ArgumentException) { return false; }
+            catch (JsonException) { return false; }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
         }
 
         public void Save(PrototypeSaveData saveData)
@@ -77,7 +83,24 @@ namespace TodoSpirits.Runtime
             }
 
             var json = JsonUtility.ToJson(saveData, true);
-            File.WriteAllText(SavePath, json, new UTF8Encoding(false));
+            var temporaryPath = SavePath + ".tmp";
+            try
+            {
+                using (var stream = new FileStream(temporaryPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var bytes = new UTF8Encoding(false).GetBytes(json);
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Flush(true);
+                }
+                if (File.Exists(SavePath))
+                    File.Replace(temporaryPath, SavePath, _loadedFromBackup ? null : SavePath + ".bak");
+                else File.Move(temporaryPath, SavePath);
+                _loadedFromBackup = false;
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+            }
         }
     }
 }

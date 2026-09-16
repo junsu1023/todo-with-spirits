@@ -27,6 +27,17 @@ namespace TodoSpirits.Core
 
         private static readonly KeywordRule[] KeywordRules =
         {
+            new KeywordRule(UserTaskCategory.Living, SpiritActionId.CraftRepair, "생활·돌보기", "청소", "요리", "정리", "수리", "화분"),
+            new KeywordRule(UserTaskCategory.SelfDevelopment, SpiritActionId.ReadRecords, "새로운 배움", "공부", "책", "기록", "목표", "강의"),
+            new KeywordRule(UserTaskCategory.SelfDevelopment, SpiritActionId.CraftRepair, "기술 연습", "연습", "만들기", "제작"),
+            new KeywordRule(UserTaskCategory.Hobby, SpiritActionId.CraftRepair, "취미·창작", "그림", "공예", "만들기", "사진"),
+            new KeywordRule(UserTaskCategory.Hobby, SpiritActionId.WalkForest, "취미·탐색", "수집", "탐방", "탐색", "등산"),
+            new KeywordRule(UserTaskCategory.Hobby, SpiritActionId.Rest, "음악·감상", "음악", "영화", "감상"),
+            new KeywordRule(UserTaskCategory.RestMind, SpiritActionId.WalkForest, "마음 산책", "산책", "걷기"),
+            new KeywordRule(UserTaskCategory.RestMind, SpiritActionId.Rest, "마음 돌보기", "명상", "낮잠", "휴식", "음악"),
+            new KeywordRule(UserTaskCategory.Assets, SpiritActionId.ReadRecords, "생활 장부", "장부", "계획", "예산", "저축"),
+            new KeywordRule(UserTaskCategory.Assets, SpiritActionId.CraftRepair, "물건 관리", "정리", "수리", "물건"),
+            new KeywordRule(UserTaskCategory.Economy, SpiritActionId.ReadRecords, "장터 소식", "시황", "경제", "시장", "주식", "뉴스"),
             new KeywordRule(
                 UserTaskCategory.WorkStudy,
                 SpiritActionId.CraftRepair,
@@ -54,13 +65,15 @@ namespace TodoSpirits.Core
                 "친구", "저녁", "약속", "만남", "가족", "대화", "통화")
         };
 
-        public TaskClassification Classify(CompletedTask task)
+        public TaskClassification Classify(CompletedTask task, TaskClassificationMemory memory = null)
         {
             if (task == null)
             {
                 throw new ArgumentNullException(nameof(task));
             }
 
+            var remembered = memory?.Resolve(task);
+            if (remembered != null) return remembered;
             KeywordRule matchedRule;
             if (IsPrototypeCategory(task.UserCategory))
             {
@@ -98,7 +111,7 @@ namespace TodoSpirits.Core
                 "지원되는 명시 카테고리와 키워드가 없어 안전한 기본 행동인 휴식을 사용했습니다.");
         }
 
-        public List<TaskClassification> Classify(IEnumerable<CompletedTask> tasks)
+        public List<TaskClassification> Classify(IEnumerable<CompletedTask> tasks, TaskClassificationMemory memory = null)
         {
             var results = new List<TaskClassification>();
             if (tasks == null)
@@ -110,7 +123,9 @@ namespace TodoSpirits.Core
             {
                 if (task != null)
                 {
-                    results.Add(Classify(task));
+                    var classification = Classify(task, memory);
+                    results.Add(classification);
+                    memory?.RememberRoutine(task, classification);
                 }
             }
 
@@ -140,6 +155,30 @@ namespace TodoSpirits.Core
                 case UserTaskCategory.Relationships:
                     action = SpiritActionId.SocialTea;
                     subcategory = "관계 기본";
+                    break;
+                case UserTaskCategory.Living:
+                    action = SpiritActionId.CraftRepair;
+                    subcategory = "생활 돌보기";
+                    break;
+                case UserTaskCategory.SelfDevelopment:
+                    action = SpiritActionId.ReadRecords;
+                    subcategory = "배움과 기록";
+                    break;
+                case UserTaskCategory.Hobby:
+                    action = SpiritActionId.CraftRepair;
+                    subcategory = "취미와 창작";
+                    break;
+                case UserTaskCategory.RestMind:
+                    action = SpiritActionId.Rest;
+                    subcategory = "마음과 휴식";
+                    break;
+                case UserTaskCategory.Assets:
+                    action = SpiritActionId.ReadRecords;
+                    subcategory = "생활 장부";
+                    break;
+                case UserTaskCategory.Economy:
+                    action = SpiritActionId.ReadRecords;
+                    subcategory = "장터 소식";
                     break;
                 default:
                     action = SpiritActionId.Rest;
@@ -214,9 +253,7 @@ namespace TodoSpirits.Core
 
         private static bool IsPrototypeCategory(UserTaskCategory category)
         {
-            return category == UserTaskCategory.WorkStudy ||
-                   category == UserTaskCategory.Health ||
-                   category == UserTaskCategory.Relationships;
+            return category >= UserTaskCategory.WorkStudy && category <= UserTaskCategory.Economy;
         }
     }
 }

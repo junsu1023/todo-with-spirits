@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace TodoSpirits.Presentation.Main
 {
     [DisallowMultipleComponent]
-    public sealed class SpiritLivingActor : MonoBehaviour
+    public sealed partial class SpiritLivingActor : MonoBehaviour
     {
         [Header("Required authored references")]
         [SerializeField]
@@ -49,11 +49,18 @@ namespace TodoSpirits.Presentation.Main
         private Vector3 _baseVisualPosition;
         private Quaternion _baseVisualRotation;
         private Vector3 _baseVisualScale;
+        private Vector3 _authoredVisualScale;
+        private Color _lifeTint = Color.white;
+        private GameObject _lifeAccessories;
+        private int _appearanceKey = -1;
         private bool _idlePaused;
         private bool _hasPresentation;
         private SpiritActionId _lastAction;
         private RectTransform _lastDestination;
         private string _lastDialogue;
+        private int _presentationVariant;
+        private float _traitTempo = 1f;
+        private CompanionSoftShape _bodySilhouette;
 
         public RectTransform ActorRoot => actorRoot;
 
@@ -69,8 +76,18 @@ namespace TodoSpirits.Presentation.Main
                 _baseVisualPosition = visualRoot.localPosition;
                 _baseVisualRotation = visualRoot.localRotation;
                 _baseVisualScale = visualRoot.localScale;
+                _authoredVisualScale = _baseVisualScale;
+                if (bodyImage != null)
+                {
+                    var body = CompanionWorldArt.Soft(bodyImage.transform,"SoftBody",new Vector2(.5f,.5f),Vector2.zero,bodyImage.color,.7f);
+                    body.anchorMin = Vector2.zero; body.anchorMax = Vector2.one;
+                    body.offsetMin = body.offsetMax = Vector2.zero; body.SetAsFirstSibling();
+                    _bodySilhouette = body.GetComponent<CompanionSoftShape>();
+                    bodyImage.enabled = false;
+                }
             }
 
+            BuildExpressionArt();
             SetReactionVisible(false);
         }
 
@@ -110,7 +127,8 @@ namespace TodoSpirits.Presentation.Main
             SpiritActionId action,
             RectTransform destination,
             string dialogue,
-            bool animateMovement)
+            bool animateMovement,
+            int presentationVariant = 0)
         {
             if (!ValidateReferences(out string error))
             {
@@ -129,6 +147,7 @@ namespace TodoSpirits.Presentation.Main
             _lastAction = action;
             _lastDestination = destination;
             _lastDialogue = dialogue;
+            _presentationVariant = Mathf.Clamp(presentationVariant,0,3);
             StopPresentation();
             _presentationRoutine = StartCoroutine(
                 PresentRoutine(action, destination, dialogue, animateMovement, true));
@@ -141,6 +160,60 @@ namespace TodoSpirits.Presentation.Main
             {
                 visualRoot.localPosition = _baseVisualPosition;
             }
+        }
+
+        public void PresentLife(CompanionLife life)
+        {
+            if (life == null || visualRoot == null) return;
+            _traitTempo = life.Temperaments.Contains(SpiritTemperament.Active) ? 1.3f :
+                life.Temperaments.Contains(SpiritTemperament.Relaxed) ? .7f :
+                life.Temperaments.Contains(SpiritTemperament.Cautious) ? .85f : 1f;
+            int phase = life.AppearancePhase;
+            var previewRoute = life.Stage == CompanionStage.Preparing ? CompanionLifeRules.PreviewRoute(life) : life.Route;
+            int key = (int)life.Stage * 10 + (life.Stage >= CompanionStage.Preparing ? (int)previewRoute : 0);
+            if (_appearanceKey == key) return;
+            _appearanceKey = key;
+            if (_lifeAccessories != null) { _lifeAccessories.SetActive(false); Destroy(_lifeAccessories); }
+            _baseVisualScale = _authoredVisualScale * (phase == 0 ? .85f : phase == 1 ? 1f : 1.12f);
+            _lifeTint = phase == 0 ? new Color(.84f,1f,.8f) : phase == 1 ? new Color(.65f,.94f,.65f) : new Color(.55f,.83f,.69f);
+            _lifeAccessories = new GameObject("LifeAccessories", typeof(RectTransform));
+            var root = (RectTransform)_lifeAccessories.transform;
+            root.SetParent(visualRoot, false);
+            root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
+            for (int i = 0; i <= phase; i++)
+            {
+                var leaf = CompanionWorldArt.Soft(root, "CrownLeaf" + i, new Vector2(.4f + i * .13f, .9f), new Vector2(25,48), new Color(.27f,.53f,.34f));
+                leaf.localRotation = Quaternion.Euler(0,0,-35 + i*35);
+            }
+            if (life.Stage == CompanionStage.Preparing)
+            {
+                var cream = new Color(.97f,.91f,.69f);
+                if (previewRoute == AdultRoute.Recorder)
+                    CompanionWorldArt.Shape(root,"FutureNotebook",new Vector2(.85f,.28f),new Vector2(24,34),cream);
+                else if (previewRoute == AdultRoute.Explorer)
+                    CompanionWorldArt.Shape(root,"FuturePouch",new Vector2(.91f,.32f),new Vector2(26,31),new Color(.53f,.37f,.22f));
+                else
+                    CompanionWorldArt.Shape(root,"FutureApronCloth",new Vector2(.7f,.22f),new Vector2(30,24),new Color(.68f,.42f,.27f));
+            }
+            if (phase == 2)
+            {
+                if (life.Route == AdultRoute.Recorder)
+                {
+                    CompanionWorldArt.Shape(root,"RecorderScroll",new Vector2(.86f,.28f),new Vector2(35,60),new Color(.97f,.91f,.69f));
+                    CompanionWorldArt.Shape(root,"ScrollRibbon",new Vector2(.86f,.28f),new Vector2(40,8),new Color(.5f,.3f,.22f));
+                }
+                else if (life.Route == AdultRoute.Explorer)
+                {
+                    CompanionWorldArt.Shape(root,"ExplorerBackpack",new Vector2(.94f,.38f),new Vector2(40,72),new Color(.53f,.37f,.22f));
+                    CompanionWorldArt.Shape(root,"ExplorerHat",new Vector2(.5f,.91f),new Vector2(120,14),new Color(.79f,.64f,.37f));
+                }
+                else
+                {
+                    CompanionWorldArt.Shape(root,"ArtisanApron",new Vector2(.5f,.24f),new Vector2(80,49),new Color(.68f,.42f,.27f));
+                    CompanionWorldArt.Shape(root,"ApronPocket",new Vector2(.5f,.23f),new Vector2(30,22),new Color(.86f,.66f,.41f));
+                }
+            }
+            if (_hasPresentation && gameObject.activeInHierarchy) Present(_lastAction,_lastDestination,_lastDialogue,false,_presentationVariant);
         }
 
         public void StopPresentation()
@@ -169,6 +242,7 @@ namespace TodoSpirits.Presentation.Main
             bool showArrivalReaction)
         {
             PoseStyle pose = GetPose(action);
+            SetActionArt(action);
             actionIcon.gameObject.SetActive(false);
             visualRoot.localRotation = _baseVisualRotation;
             visualRoot.localScale = _baseVisualScale;
@@ -189,12 +263,15 @@ namespace TodoSpirits.Presentation.Main
             }
 
             actionIcon.text = pose.Icon;
-            actionIcon.gameObject.SetActive(true);
-            visualRoot.localRotation = _baseVisualRotation * Quaternion.Euler(0f, 0f, pose.RotationDegrees);
+            actionIcon.gameObject.SetActive(false);
+            SetActionArt(action);
+            float variantTilt = _presentationVariant == 0 ? 0 : (_presentationVariant - 2) * 5f;
+            visualRoot.localRotation = _baseVisualRotation * Quaternion.Euler(0f, 0f, pose.RotationDegrees + variantTilt);
             visualRoot.localScale = Vector3.Scale(_baseVisualScale, pose.Scale);
             if (bodyImage != null)
             {
-                bodyImage.color = pose.BodyColor;
+                bodyImage.color = Color.Lerp(pose.BodyColor, _lifeTint, .5f);
+                if (_bodySilhouette != null) _bodySilhouette.color = bodyImage.color;
             }
 
             float idleTime = 0f;
@@ -208,9 +285,10 @@ namespace TodoSpirits.Presentation.Main
                 }
 
                 idleTime += Time.unscaledDeltaTime;
-                float wave = Mathf.Sin(idleTime * idleFrequency * pose.IdleSpeedMultiplier);
+                float wave = Mathf.Sin(idleTime * idleFrequency * pose.IdleSpeedMultiplier * _traitTempo);
                 visualRoot.localPosition = _baseVisualPosition +
-                    new Vector3(0f, wave * idleAmplitude * pose.IdleAmplitudeMultiplier, 0f);
+                    new Vector3(_presentationVariant == 2 ? wave * 3f : 0f, wave * idleAmplitude * pose.IdleAmplitudeMultiplier, 0f);
+                AnimateActionArt(action, idleTime * _traitTempo, wave);
                 yield return null;
             }
         }
@@ -218,6 +296,9 @@ namespace TodoSpirits.Presentation.Main
         private IEnumerator MoveTo(Vector2 targetPosition)
         {
             Vector2 startPosition = actorRoot.anchoredPosition;
+            SetExpression(SpiritExpression.Neutral);
+            foreach (var prop in _heldProps) if (prop != null) prop.SetActive(false);
+            FaceTravelDirection(targetPosition - startPosition);
             float elapsed = 0f;
             while (elapsed < moveDuration)
             {
@@ -227,10 +308,13 @@ namespace TodoSpirits.Presentation.Main
                 Vector2 position = Vector2.LerpUnclamped(startPosition, targetPosition, eased);
                 position.y += Mathf.Sin(t * Mathf.PI * 4f) * 12f;
                 actorRoot.anchoredPosition = position;
+                AnimateFeet(Mathf.Sin(t * Mathf.PI * 8));
                 yield return null;
             }
 
             actorRoot.anchoredPosition = targetPosition;
+            FaceTravelDirection(Vector2.zero);
+            AnimateFeet(0);
         }
 
         private IEnumerator PlayArrivalReaction(string dialogue)
@@ -242,6 +326,7 @@ namespace TodoSpirits.Presentation.Main
             }
 
             reactionText.text = dialogue;
+            SetExpression(SpiritExpression.Happy);
             SetReactionVisible(true);
             RectTransform bubbleRect = reactionBubble.transform as RectTransform;
             float elapsed = 0f;
@@ -249,6 +334,7 @@ namespace TodoSpirits.Presentation.Main
             {
                 elapsed += Time.unscaledDeltaTime;
                 float normalized = Mathf.Clamp01(elapsed / Mathf.Max(0.01f, reactionDuration));
+                visualRoot.localPosition = _baseVisualPosition + Vector3.up * Mathf.Sin(normalized * Mathf.PI) * 9f;
                 reactionBubble.alpha = Mathf.Clamp01(normalized * 5f) * Mathf.Clamp01((1f - normalized) * 5f);
                 if (bubbleRect != null)
                 {
@@ -260,6 +346,7 @@ namespace TodoSpirits.Presentation.Main
             }
 
             SetReactionVisible(false);
+            visualRoot.localPosition = _baseVisualPosition;
         }
 
         private Vector2 ResolveAnchoredPosition(RectTransform destination)

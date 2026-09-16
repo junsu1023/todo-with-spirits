@@ -10,7 +10,7 @@ namespace TodoSpirits.Runtime
     /// <summary>
     /// Coordinates the internal demo input, deterministic core simulation, reward wallet, and save data.
     /// </summary>
-    public sealed class PrototypeApplicationService
+    public sealed partial class PrototypeApplicationService
     {
         private const string ProfileASpiritId = "prototype-spirit-001";
         private const string ProfileBSpiritId = "prototype-spirit-002";
@@ -23,6 +23,7 @@ namespace TodoSpirits.Runtime
         private readonly TaskClassifier _taskClassifier;
         private readonly SpiritDayGenerator _dayGenerator;
         private readonly DateTime _initialDate;
+        private readonly bool _lifeCycleEnabled;
 
         private bool _initialized;
         private PrototypeSaveData _saveData;
@@ -33,7 +34,8 @@ namespace TodoSpirits.Runtime
             ISpiritSaveRepository saveRepository,
             TaskClassifier taskClassifier,
             SpiritDayGenerator dayGenerator,
-            DateTime? initialDate = null)
+            DateTime? initialDate = null,
+            bool lifeCycleEnabled = false)
         {
             _todoCompletionSource = todoCompletionSource ??
                 throw new ArgumentNullException(nameof(todoCompletionSource));
@@ -45,9 +47,12 @@ namespace TodoSpirits.Runtime
             _dayGenerator = dayGenerator ??
                 throw new ArgumentNullException(nameof(dayGenerator));
             _initialDate = (initialDate ?? DateTime.Today).Date;
+            _lifeCycleEnabled = lifeCycleEnabled;
         }
 
         public bool IsInitialized => _initialized;
+        public bool LifeCycleEnabled => _lifeCycleEnabled;
+        public CompanionLife CurrentLife => _saveData?.Companions.Find(life => life.SpiritId == _saveData.ActiveCompanionId);
 
         public DateTime CurrentDate { get; private set; }
 
@@ -122,6 +127,30 @@ namespace TodoSpirits.Runtime
 
             _saveData = _saveRepository.Load() ?? new PrototypeSaveData();
             NormalizeSaveData();
+            if (_lifeCycleEnabled)
+            {
+                try
+                {
+                    InitializeLifeCycle();
+                    _currentRecord = FindRecord(CurrentDateKey, CurrentSpiritState.SpiritId);
+                    if (_currentRecord == null)
+                    {
+                        _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey,
+                            _todoCompletionSource.GetCompletedTasks(CurrentDateKey));
+                        _saveData.Records.Add(_currentRecord);
+                    }
+                    _saveRepository.Save(_saveData);
+                    _initialized = true;
+                    return _currentRecord;
+                }
+                catch
+                {
+                    _initialized = false;
+                    _currentRecord = null;
+                    _saveData = null;
+                    throw;
+                }
+            }
             CurrentDemoProfile = ResolveProfile(_saveData.SpiritState.SpiritId);
             _saveData.SpiritState = CreateDemoSpirit(CurrentDemoProfile);
             CurrentDemoDay = DemoDayId.Day1WorkFocus;
@@ -155,6 +184,8 @@ namespace TodoSpirits.Runtime
         public DailyCompanionRecord SetCurrentDate(DateTime date)
         {
             EnsureInitialized();
+            if (_lifeCycleEnabled)
+                throw new InvalidOperationException("동행 모드에서는 다음 날 진행으로 날짜를 변경해 주세요.");
             if (TryGetDemoDay(date.Date, out var demoDay))
             {
                 return SelectDemoDay(demoDay);
@@ -168,6 +199,7 @@ namespace TodoSpirits.Runtime
         public DailyCompanionRecord SelectDemoDay(DemoDayId day)
         {
             EnsureInitialized();
+            if (_lifeCycleEnabled) throw new InvalidOperationException("동행 모드에서는 데모 날짜를 선택할 수 없습니다.");
             ValidateDemoDay(day);
             if (_mockTodoCompletionSource == null)
             {
@@ -184,6 +216,7 @@ namespace TodoSpirits.Runtime
         public DailyCompanionRecord SelectDemoProfile(DemoTemperamentProfile profile)
         {
             EnsureInitialized();
+            if (_lifeCycleEnabled) throw new InvalidOperationException("동행 모드의 기질은 알 선택으로 결정됩니다.");
             ValidateDemoProfile(profile);
 
             CurrentDemoProfile = profile;
@@ -225,6 +258,7 @@ namespace TodoSpirits.Runtime
         public DailyCompanionRecord RegenerateCurrentDay()
         {
             EnsureInitialized();
+            if (_lifeCycleEnabled) throw new InvalidOperationException("확정된 하루 행동은 다시 추첨할 수 없습니다.");
             var removedRecords = new List<DailyCompanionRecord>();
             for (var i = _saveData.Records.Count - 1; i >= 0; i--)
             {
@@ -263,6 +297,7 @@ namespace TodoSpirits.Runtime
         public bool ResetDemoSave()
         {
             EnsureInitialized();
+            if (_lifeCycleEnabled) throw new InvalidOperationException("데모 초기화로 동행 기록을 삭제할 수 없습니다.");
 
             try
             {
@@ -350,7 +385,7 @@ namespace TodoSpirits.Runtime
             var tasks = completedTasks == null
                 ? new List<CompletedTask>()
                 : new List<CompletedTask>(completedTasks);
-            var classifications = _taskClassifier.Classify(tasks);
+            var classifications = _taskClassifier.Classify(tasks, saveData.ClassificationMemory);
             var historyRecords = BuildHistoryInputRecords(
                 saveData,
                 baseSpiritState,
@@ -365,8 +400,15 @@ namespace TodoSpirits.Runtime
                 tasks,
                 classifications,
                 historyState,
-                SimulationVersion);
+                SimulationVersion,
+                _lifeCycleEnabled ? GetGiftActionCandidates(date, baseSpiritState.SpiritId) : null,
+                _lifeCycleEnabled ? CurrentLife.ActiveProject?.Action : null);
 
+            if (_lifeCycleEnabled)
+            {
+                SpiritDayPresentation.Apply(report.SpiritDay, baseSpiritState.SpiritId);
+                report.SpiritDay.Location = CompanionStagePresentation.PlaceName(CurrentLife.Stage, report.SpiritDay.PrimaryAction);
+            }
             var essenceReward = EssenceRewardCalculator.Calculate(tasks.Count);
             var rewardBand = EssenceRewardCalculator.GetBand(tasks.Count);
             var grantedDelta = saveData.EssenceWallet.ApplyReward(
@@ -398,6 +440,7 @@ namespace TodoSpirits.Runtime
             string targetDate)
         {
             var historyRecords = new List<DailyCompanionRecord>(saveData.Records);
+            if (_lifeCycleEnabled) return historyRecords;
             if (!TryGetDemoDay(targetDate, out var targetDemoDay))
             {
                 return historyRecords;
@@ -502,7 +545,7 @@ namespace TodoSpirits.Runtime
             var profile = _saveData.SpiritState == null
                 ? DemoTemperamentProfile.ProfileA
                 : ResolveProfile(_saveData.SpiritState.SpiritId);
-            _saveData.SpiritState = CreateDemoSpirit(profile);
+            if (!_lifeCycleEnabled) _saveData.SpiritState = CreateDemoSpirit(profile);
 
             if (_saveData.EssenceWallet == null)
             {

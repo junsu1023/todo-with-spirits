@@ -13,7 +13,7 @@ using UnityEngine.UI;
 namespace TodoSpirits.Presentation.Main
 {
     [DisallowMultipleComponent]
-    public sealed class MainSceneController : MonoBehaviour
+    public sealed partial class MainSceneController : MonoBehaviour
     {
         private const string RuntimeRootName = "[TodoSpirits Wireframe Runtime]";
         private const string GrowthStateText = "아직 어린 정령 · 오늘을 함께 살아가는 중";
@@ -42,6 +42,7 @@ namespace TodoSpirits.Presentation.Main
         private DebugOverlayView _debugOverlay;
         private Coroutine _rewardRoutine;
         private Coroutine _delayedRewardRoutine;
+        private float _nextDateCheck;
 
         public Canvas Canvas => canvas;
 
@@ -106,6 +107,7 @@ namespace TodoSpirits.Presentation.Main
                 DailyCompanionRecord record = _application.GetOrCreateCurrentRecord();
                 RefreshViews(record, true);
                 ShowPendingReward(record);
+                if (_application.LifeCycleEnabled && !_application.CurrentLife.StageEventSeen) OpenLife();
             }
             catch (Exception exception)
             {
@@ -119,6 +121,22 @@ namespace TodoSpirits.Presentation.Main
 
         private void Update()
         {
+            if (_application != null && _application.LifeCycleEnabled && Time.unscaledTime >= _nextDateCheck)
+            {
+                _nextDateCheck = Time.unscaledTime + 10f;
+                try
+                {
+                    if (DateTime.Today > _application.CurrentDate) HideRewardCard();
+                    if (_application.SynchronizeLifeDate(DateTime.Today))
+                    {
+                        while (_screenStack.Count > 1) PopScreen();
+                        RefreshViews(_application.CurrentRecord, true);
+                        if (!_application.CurrentLife.StageEventSeen) OpenLife();
+                        else ShowPendingReward(_application.CurrentRecord);
+                    }
+                }
+                catch (Exception error) { Debug.LogError("날짜 갱신 실패: " + error.Message); }
+            }
             Keyboard keyboard = Keyboard.current;
             Gamepad gamepad = Gamepad.current;
             bool keyboardBack = keyboard != null && keyboard.escapeKey.wasPressedThisFrame;
@@ -192,6 +210,7 @@ namespace TodoSpirits.Presentation.Main
             _mainView.name = "MainScreen";
             _recordView = Instantiate(todayRecordScreenPrefab, safeAreaRect, false);
             _recordView.name = "TodayRecordScreen";
+            BuildCompanionMenu(ui, safeAreaRect);
 
             const string giftMessage =
                 "정수는 EXP가 아니라 함께한 기록의 흔적입니다.\n\n" +
@@ -221,9 +240,9 @@ namespace TodoSpirits.Presentation.Main
             if (!_mainView.Initialize(
                     font,
                     OpenTodayRecord,
-                    () => PushScreen(_giftView.Root),
-                    () => PushScreen(_travelView.Root),
-                    () => PushScreen(_decorateView.Root),
+                    () => { if (_application.LifeCycleEnabled) OpenGifts(); else PushScreen(_giftView.Root); },
+                    () => { if (_application.LifeCycleEnabled) OpenTravel(); else PushScreen(_travelView.Root); },
+                    () => { if (_application.LifeCycleEnabled) OpenDecorations(); else PushScreen(_decorateView.Root); },
                     ToggleDebug,
                     debugAvailable) ||
                 !_recordView.Initialize(font, PopScreen))
@@ -257,7 +276,7 @@ namespace TodoSpirits.Presentation.Main
                 essenceBalance,
                 action.DisplayName,
                 spiritDay.Dialogue,
-                GrowthStateText);
+                _application.LifeCycleEnabled ? _application.CurrentLife.DisplayName + " · " + CompanionLifeRules.StageText(_application.CurrentLife) : GrowthStateText);
             _recordView.Render(
                 record.Date,
                 PresentationTextFormatter.CompletedTaskTitles(record),
@@ -274,12 +293,17 @@ namespace TodoSpirits.Presentation.Main
                 _application.CurrentProfileName,
                 debugInfo);
 
-            if (animateSpirit)
+            if (_application.LifeCycleEnabled)
+                _mainView.RenderCompanionWorld(_application.CurrentLife, _application.Interventions, _application.PendingTrip != null);
+
+            if (animateSpirit && _mainView.SpiritActor.gameObject.activeInHierarchy)
             {
                 _mainView.PresentSpiritDay(
                     spiritDay.PrimaryAction,
                     spiritDay.Dialogue,
-                    true);
+                    true,
+                    spiritDay.PresentationVariant,
+                    spiritDay.Location);
             }
         }
 
@@ -353,10 +377,17 @@ namespace TodoSpirits.Presentation.Main
             _screenStack[topIndex].SetActive(false);
             _screenStack.RemoveAt(topIndex);
             _screenStack[_screenStack.Count - 1].SetActive(true);
+            if (_application != null && _application.LifeCycleEnabled && _screenStack.Count == 1)
+            {
+                RefreshViews(_application.CurrentRecord, true);
+                if (_application.CurrentLife.Farewell == FarewellStep.LastCompanionship)
+                    StartCoroutine(ObserveLastCompanionship());
+            }
         }
 
         private void HandleBack()
         {
+            if (_companionMenu != null && _companionMenu.Root.activeSelf) { _companionMenu.Back?.Invoke(); return; }
             if (_debugOverlay != null && _debugOverlay.IsVisible)
             {
                 _debugOverlay.SetVisible(false);
@@ -373,6 +404,7 @@ namespace TodoSpirits.Presentation.Main
             {
                 return;
             }
+            if (_application.LifeCycleEnabled) { OpenLifeDebug(); return; }
 
             bool show = !_debugOverlay.IsVisible;
             if (show)

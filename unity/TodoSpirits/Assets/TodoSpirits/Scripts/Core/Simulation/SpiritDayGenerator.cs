@@ -37,7 +37,9 @@ namespace TodoSpirits.Core
             IEnumerable<CompletedTask> completedTasks,
             IEnumerable<TaskClassification> classifications,
             SpiritState spiritState,
-            string simulationVersion = DefaultSimulationVersion)
+            string simulationVersion = DefaultSimulationVersion,
+            IEnumerable<SpiritActionId> experienceActions = null,
+            SpiritActionId? ongoingAction = null)
         {
             if (string.IsNullOrWhiteSpace(date))
             {
@@ -61,7 +63,8 @@ namespace TodoSpirits.Core
                 : simulationVersion;
             var seed = StableHash.ToSignedSeed(
                 BuildCanonicalSeedInput(date, taskList, classificationList, spiritState, version));
-            var candidates = ScoreAllCandidates(seed, taskList.Count, classificationList, spiritState);
+            var experiences = experienceActions == null ? new HashSet<SpiritActionId>() : new HashSet<SpiritActionId>(experienceActions);
+            var candidates = ScoreAllCandidates(seed, taskList.Count, classificationList, spiritState, experiences, ongoingAction);
             var rankedCandidates = new List<ActionCandidateScore>(candidates);
             rankedCandidates.Sort(CompareCandidateScores);
 
@@ -120,7 +123,9 @@ namespace TodoSpirits.Core
             int seed,
             int completedTaskCount,
             List<TaskClassification> classifications,
-            SpiritState spiritState)
+            SpiritState spiritState,
+            HashSet<SpiritActionId> experiences,
+            SpiritActionId? ongoingAction)
         {
             var candidates = new List<ActionCandidateScore>();
             var definitions = SpiritActionCatalog.All;
@@ -137,13 +142,15 @@ namespace TodoSpirits.Core
 
                 var temperamentScore = GetTemperamentScore(spiritState.Temperaments, action);
                 var favoriteScore = spiritState.FavoriteAction == action ? 3f : 0f;
+                var experienceScore = experiences.Contains(action) ? 2f : 0f;
+                var projectScore = ongoingAction == action ? 3f : 0f;
                 var repetitionPenalty = GetRepetitionPenalty(
                     spiritState.RecentPrimaryActions,
                     action);
                 var jitter = GetDeterministicJitter(seed, action);
                 var total = baseScore + taskScore + temperamentScore +
-                            favoriteScore + repetitionPenalty + jitter;
-                var eligibleForPrimary = completedTaskCount > 0 && taskScore > 0f;
+                            favoriteScore + repetitionPenalty + jitter + experienceScore + projectScore;
+                var eligibleForPrimary = completedTaskCount > 0 && (taskScore > 0f || experienceScore > 0f || projectScore > 0f);
                 var selectionWeight = eligibleForPrimary
                     ? Math.Max(
                         1,
@@ -162,7 +169,8 @@ namespace TodoSpirits.Core
                     TotalScore = total,
                     EligibleForPrimary = eligibleForPrimary,
                     SelectionWeight = selectionWeight,
-                    Reason = BuildCandidateReason(
+                    Reason = (projectScore > 0f ? "스스로 이어가는 활동 (+3). " : string.Empty) +
+                        (experienceScore > 0f ? "선물로 접한 행동 후보 (+2). " : string.Empty) + BuildCandidateReason(
                         action,
                         baseScore,
                         taskScore,
@@ -339,7 +347,7 @@ namespace TodoSpirits.Core
 
             var score = 0f;
             var usedTemperaments = new HashSet<SpiritTemperament>();
-            for (var i = 0; i < temperaments.Count && usedTemperaments.Count < 2; i++)
+            for (var i = 0; i < temperaments.Count && usedTemperaments.Count < 3; i++)
             {
                 var temperament = temperaments[i];
                 if (temperament == SpiritTemperament.Unspecified ||
@@ -370,6 +378,14 @@ namespace TodoSpirits.Core
                     return action == SpiritActionId.WalkForest ? 8f : 0f;
                 case SpiritTemperament.Sociable:
                     return action == SpiritActionId.SocialTea ? 8f : 0f;
+                case SpiritTemperament.Relaxed:
+                    return action == SpiritActionId.Rest ? 8f : action == SpiritActionId.SocialTea ? 2f : 0f;
+                case SpiritTemperament.Cautious:
+                    return action == SpiritActionId.ReadRecords ? 6f : action == SpiritActionId.Rest ? 3f : 0f;
+                case SpiritTemperament.Playful:
+                    return action == SpiritActionId.CraftRepair ? 4f : action == SpiritActionId.SocialTea ? 5f : 0f;
+                case SpiritTemperament.Independent:
+                    return action == SpiritActionId.WalkForest ? 4f : action == SpiritActionId.CraftRepair ? 4f : 0f;
                 default:
                     return 0f;
             }
@@ -483,7 +499,7 @@ namespace TodoSpirits.Core
                 return results;
             }
 
-            for (var i = 0; i < temperaments.Count && results.Count < 2; i++)
+            for (var i = 0; i < temperaments.Count && results.Count < 3; i++)
             {
                 var temperament = temperaments[i];
                 if (temperament != SpiritTemperament.Unspecified && !results.Contains(temperament))
