@@ -6,10 +6,13 @@ import com.example.data.datasource.AuthRemoteDataSource
 import com.example.data.error.ApiException
 import com.example.data.mapper.toDomain
 import com.example.domain.exception.FieldValidationException
+import com.example.domain.model.EmailAvailability
+import com.example.domain.model.LoginMethod
 import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
+import com.example.domain.model.UserProfile
 import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -17,10 +20,18 @@ class AuthRepositoryImpl @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource,
     private val tokenStorage: TokenStorage
 ) : AuthRepository {
+    override suspend fun checkEmail(email: String): Result<EmailAvailability> {
+        return authRemoteDataSource.checkEmail(email)
+            .mapCatching { it.toDomain() }
+    }
+
     override suspend fun login(email: String, password: String): Result<LoginSession> {
         return authRemoteDataSource.login(email, password)
             .map { it.toDomain() }
-            .onSuccess { session -> persistTokens(session.accessToken, session.refreshToken) }
+            .onSuccess { session ->
+                persistTokens(session.accessToken, session.refreshToken)
+                tokenStorage.saveLoginMethod(LoginMethod.EMAIL.name)
+            }
     }
 
     override suspend fun socialLogin(
@@ -31,13 +42,46 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<SocialLoginSession> {
         return authRemoteDataSource.socialLogin(provider.name, providerUserId, providerAccessToken, email)
             .mapCatching { it.toDomain() }
-            .onSuccess { session -> persistTokens(session.accessToken, session.refreshToken) }
+            .onSuccess { session ->
+                persistTokens(session.accessToken, session.refreshToken)
+                tokenStorage.saveLoginMethod(provider.toLoginMethod().name)
+            }
             .recoverFieldValidationErrors()
     }
 
     override suspend fun logout(): Result<Unit> {
         return authRemoteDataSource.logout()
             .onSuccess { clearSession() }
+    }
+
+    override suspend fun withdraw(): Result<Unit> {
+        return authRemoteDataSource.withdraw()
+            .onSuccess { clearSession() }
+    }
+
+    override suspend fun getUserProfile(): Result<UserProfile> {
+        return authRemoteDataSource.getUserProfile()
+            .mapCatching { it.toDomain() }
+    }
+
+    override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> {
+        return authRemoteDataSource.updateUserProfile(nickname, representativeSpiritId)
+            .mapCatching { it.toDomain() }
+            .recoverFieldValidationErrors()
+    }
+
+    override suspend fun resendEmailVerification(): Result<Unit> {
+        return authRemoteDataSource.resendEmailVerification()
+    }
+
+    override suspend fun sendEmailVerification(email: String): Result<Unit> {
+        return authRemoteDataSource.sendEmailVerification(email)
+            .recoverFieldValidationErrors()
+    }
+
+    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> {
+        return authRemoteDataSource.verifyEmailCode(email, code)
+            .recoverFieldValidationErrors()
     }
 
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> {
@@ -50,6 +94,17 @@ class AuthRepositoryImpl @Inject constructor(
         val accessToken = tokenStorage.getAccessToken() ?: return false
         TokenHolder.accessToken = accessToken
         return true
+    }
+
+    override fun getLoginMethod(): LoginMethod? {
+        return tokenStorage.getLoginMethod()?.let { stored ->
+            runCatching { LoginMethod.valueOf(stored) }.getOrNull()
+        }
+    }
+
+    private fun SocialProvider.toLoginMethod(): LoginMethod = when (this) {
+        SocialProvider.KAKAO -> LoginMethod.KAKAO
+        SocialProvider.GOOGLE -> LoginMethod.GOOGLE
     }
 
     private fun persistTokens(accessToken: String, refreshToken: String) {

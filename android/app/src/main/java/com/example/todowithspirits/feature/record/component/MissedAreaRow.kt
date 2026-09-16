@@ -13,10 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.MonthlyCategoryCount
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun MissedAreaRow() {
+fun MissedAreaRow(bottomCategory: MonthlyCategoryCount = MonthlyCategoryCount("NONE", 0, 0)) {
+    val missedCount = (bottomCategory.totalCount - bottomCategory.completedCount).coerceAtLeast(0)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -26,13 +29,13 @@ fun MissedAreaRow() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "건강",
+            text = bottomCategory.category.toCategoryDisplayName(),
             fontSize = 14.sp,
             color = SpiritTodoTheme.color.todoTextMain
         )
 
         Text(
-            text = "15회",
+            text = "${missedCount}회",
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color = SpiritTodoTheme.color.todoTextMain

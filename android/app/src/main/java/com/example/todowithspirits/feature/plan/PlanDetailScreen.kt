@@ -206,21 +206,12 @@ fun PlanDetailScreen(
                 text = if(item.isPublic) PublicStateOption.PUBLIC.displayName else PublicStateOption.PRIVATE.displayName
             )
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(24.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 120.dp)
-                    .border(1.dp, SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp))
-                    .padding(14.dp)
-            ) {
-                Text(
-                    text = item.memo.ifEmpty { "메모" },
-                    fontSize = 15.sp,
-                    color = if(item.memo.isEmpty()) SpiritTodoTheme.color.onSurfaceColor2 else SpiritTodoTheme.color.todoTextMain
-                )
-            }
+            DetailInfoRow(
+                iconRes = if(item.memo.isEmpty()) R.drawable.todo_quote_open_2 else R.drawable.todo_quote_open_2_color,
+                text = item.memo.ifEmpty { "메모 없음" }
+            )
 
             Spacer(Modifier.height(24.dp))
         }
@@ -258,7 +249,7 @@ private fun DetailInfoRow(iconRes: Int, text: String) {
         Text(
             text = text,
             fontSize = 14.sp,
-            color = SpiritTodoTheme.color.todoTextMain
+            color = if(text == "메모 없음") SpiritTodoTheme.color.systemGrey else SpiritTodoTheme.color.todoTextMain
         )
     }
 }

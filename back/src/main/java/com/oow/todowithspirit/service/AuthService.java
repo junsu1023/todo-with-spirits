@@ -45,6 +45,7 @@ public class AuthService {
         userRepository.save(user);
 
         spiritService.createDefaultSpirit(user);
+        emailVerificationService.sendVerificationEmail(user.getId());
 
         return SignupResponse.from(user);
     }

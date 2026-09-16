@@ -15,12 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todowithspirits.feature.alarm.AlarmData
+import com.example.domain.model.NotificationItem
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
-fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
-    val labelColor = if(isNew) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemGrey
+fun AlarmItem(alarm: NotificationItem) {
+    val isNew = !alarm.read
+    val labelColor = if (isNew) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemGrey
 
     Column(
         modifier = Modifier
@@ -37,13 +41,13 @@ fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = alarm.type,
+                text = alarm.category.displayName,
                 fontSize = 12.sp,
                 color = labelColor
             )
 
             Text(
-                text = alarm.timeLabel,
+                text = formatNotificationTime(alarm.createdAt),
                 fontSize = 12.sp,
                 color = labelColor
             )
@@ -52,12 +56,28 @@ fun AlarmItem(alarm: AlarmData, isNew: Boolean) {
         Spacer(Modifier.height(6.dp))
 
         Text(
-            text = alarm.message,
+            text = alarm.content,
             fontSize = 14.sp,
             color = SpiritTodoTheme.color.todoTextMain,
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
+    }
+}
+
+private val notificationDateFormatter = DateTimeFormatter.ofPattern("MM. dd")
+
+private fun formatNotificationTime(createdAt: LocalDateTime, now: LocalDateTime = LocalDateTime.now()): String {
+    val minutes = ChronoUnit.MINUTES.between(createdAt, now)
+    val hours = ChronoUnit.HOURS.between(createdAt, now)
+    val days = ChronoUnit.DAYS.between(createdAt, now)
+
+    return when {
+        minutes < 1 -> "방금 전"
+        minutes < 60 -> "${minutes}분 전"
+        hours < 24 -> "${hours}시간 전"
+        days < 7 -> "${days}일 전"
+        else -> createdAt.format(notificationDateFormatter)
     }
 }

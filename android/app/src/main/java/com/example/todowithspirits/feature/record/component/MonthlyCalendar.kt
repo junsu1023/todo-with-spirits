@@ -19,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.MonthlyDailyHeatmap
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
@@ -32,7 +34,12 @@ import kotlin.collections.chunked
 import kotlin.collections.forEach
 
 @Composable
-fun MonthlyCalendar(yearMonth: YearMonth, today: LocalDate) {
+fun MonthlyCalendar(
+    yearMonth: YearMonth,
+    today: LocalDate,
+    dailyHeatmaps: List<MonthlyDailyHeatmap> = emptyList()
+) {
+    val heatmapByDate = remember(dailyHeatmaps) { dailyHeatmaps.associateBy { it.date } }
     val allCells = remember(yearMonth) {
         val daysInMonth = yearMonth.lengthOfMonth()
         val firstDay = yearMonth.atDay(1)
@@ -63,7 +70,9 @@ fun MonthlyCalendar(yearMonth: YearMonth, today: LocalDate) {
         Spacer(Modifier.height(12.dp))
 
         allCells.chunked(7).forEach { week ->
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 week.forEach { day ->
                     Box(
                         modifier = Modifier.weight(1f),
@@ -72,14 +81,24 @@ fun MonthlyCalendar(yearMonth: YearMonth, today: LocalDate) {
                         if (day != null) {
                             val date = yearMonth.atDay(day)
                             val isToday = date == today
-                            val isPast = date.isBefore(today)
-                            val hasStamp = isPast && day % 5 == 0
+                            val heatmap = heatmapByDate[date]
+                            val scheduleTotal = heatmap?.scheduleTotalCount ?: 0
+                            val scheduleCompleted = heatmap?.scheduleCompletedCount ?: 0
+                            val routineTotal = heatmap?.routineTotalCount ?: 0
+                            val routineCompleted = heatmap?.routineCompletedCount ?: 0
+                            val hasSchedule = scheduleTotal > 0
+                            val hasRoutine = routineTotal > 0
+                            val totalCount = scheduleTotal + routineTotal
+                            val completedCount = scheduleCompleted + routineCompleted
+                            // 해당 일자의 모든 todo/루틴을 완료했을 때만 스탬프 표시
+                            val hasStamp = totalCount > 0 && completedCount == totalCount
 
                             CalendarDayCell(
                                 day = day,
                                 isToday = isToday,
-                                isPast = isPast,
-                                hasStamp = hasStamp
+                                hasStamp = hasStamp,
+                                hasSchedule = hasSchedule,
+                                hasRoutine = hasRoutine
                             )
                         }
                     }
@@ -97,17 +116,18 @@ fun MonthlyCalendar(yearMonth: YearMonth, today: LocalDate) {
 private fun CalendarDayCell(
     day: Int,
     isToday: Boolean,
-    isPast: Boolean,
-    hasStamp: Boolean
+    hasStamp: Boolean,
+    hasSchedule: Boolean,
+    hasRoutine: Boolean
 ) {
     Column(
         modifier = Modifier.padding(vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (isPast) {
+        if (hasSchedule || hasRoutine) {
             Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyTodo, CircleShape))
-                Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyRoutine, CircleShape))
+                if (hasSchedule) Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyTodo, CircleShape))
+                if (hasRoutine) Box(Modifier.size(5.dp).background(SpiritTodoTheme.color.keyRoutine, CircleShape))
             }
         } else {
             Spacer(Modifier.height(5.dp))
@@ -115,7 +135,6 @@ private fun CalendarDayCell(
 
         Spacer(Modifier.height(4.dp))
 
-        // 임시 스탬프
         if (hasStamp) {
             Box(
                 modifier = Modifier
@@ -139,7 +158,7 @@ private fun CalendarDayCell(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(SpiritTodoTheme.color.surfaceColor1)
+                    .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(8.dp))
                     .then(
                         if (isToday) Modifier.border(1.dp, SpiritTodoTheme.color.mainTextAndStroke, RoundedCornerShape(8.dp))
                         else Modifier
@@ -150,7 +169,7 @@ private fun CalendarDayCell(
                     text = "$day",
                     fontSize = 12.sp,
                     color = when {
-                        isToday -> SpiritTodoTheme.color.onSurfaceColor2
+                        isToday -> SpiritTodoTheme.color.mainTextAndStroke
                         else -> SpiritTodoTheme.color.todoTextMain
                     },
                     fontWeight = FontWeight.Medium

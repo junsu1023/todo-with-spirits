@@ -194,7 +194,8 @@ fun SpiritsTodoNavigation(
             AccountSettingScreen(
                 onBack = onBack,
                 onNicknameClick = navigateToNicknameEdit,
-                onModifyPasswordClick = navigateToChangePassword
+                onModifyPasswordClick = navigateToChangePassword,
+                onWithdrawSuccess = navigateToLogout
             )
         }
 

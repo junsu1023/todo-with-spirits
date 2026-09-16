@@ -93,6 +93,8 @@
     <string name="week_header_format">%1$d월 %2$d주 리포트</string>
     <string name="times_count">%d회</string>
     <string name="weekly_missed_area">자주 놓친 분야</string>
+    <string name="weekly_missed_area_highlight_title">커리어와 미래를 향해 멋지게 질주한 한 주!</string>
+    <string name="weekly_missed_area_highlight_subtitle">다음 주는 미뤄둔 건강도 챙기며 일과 삶의 균형을 맞춰볼까요?</string>
     <string name="weekly_achieved_plan">이번주 달성 플랜</string>
     <string name="weekly_avg_rate">평균 달성률</string>
     <string name="monthly_report">%d월 리포트</string>
@@ -143,6 +145,8 @@
     <string name="linked_account">연동 계정</string>
     <string name="logout">로그아웃</string>
     <string name="withdraw">회원탈퇴</string>
+    <string name="withdraw_confirm_message">회원탈퇴 시 모든 회원정보와 연관 데이터가 즉시 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?</string>
+    <string name="cancel">취소</string>
     <string name="detail_alarm_setting">세부 설정</string>
     <string name="all_plan">전체 플랜</string>
     <string name="my_page_title">마이 페이지</string>
@@ -161,6 +165,7 @@
     <string name="language">언어</string>
     <string name="record_title">기록</string>
     <string name="empty_plans">예정된 플랜 없음</string>
+    <string name="empty_alarm">알림이 없습니다</string>
     <string name="verification_code_title">인증번호를 입력해주세요.</string>
     <string name="verification_code_description_suffix"> 으로</string>
     <string name="verification_code_description_body">발송 된 인증번호 6자리를 입력해주세요</string>

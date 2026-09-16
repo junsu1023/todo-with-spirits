@@ -14,13 +14,25 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
+  mail:
+    host: ${MAIL_HOST:smtp.naver.com}
+    port: ${MAIL_PORT:465}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: ${MAIL_HOST:smtp.naver.com}
 jwt:
   secret: ${JWT_SECRET:jwt.secret} # base64 encoded secret (prod: JWT_SECRET env var)
   access-token-expiration: 3600000      # 1hour (ms)
   refresh-token-expiration: 604800000   # 7days (ms)
 
-kakao:
-  client-secret: ${KAKAO_CLIENT_SECRET:}
+email-verification:
+  code-expiration-ms: ${EMAIL_VERIFICATION_CODE_EXPIRATION_MS:300000}   # 5minutes (ms)
 
 management:
   endpoints:

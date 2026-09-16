@@ -15,6 +15,8 @@ import { getTaskCalendar } from '@/entity/task'
 import type { Category } from '@/entity/task/model/type'
 import {
 	completeTask,
+	createRoutine,
+	createSchedule,
 	deleteTasks,
 	uncompleteTask,
 	updateRoutine,
@@ -364,7 +366,7 @@ function PlanTaskList({
 					onClick={() => setHideCompleted((h) => !h)}
 					className={`text-sm transition-colors ${hideCompleted ? 'text-[#B286FD]' : 'text-gray-400'}`}
 				>
-					완료 숨기기
+					{hideCompleted ? '완료까지 보이기' : '완료 숨기기'}
 				</button>
 				<DropdownSelect
 					options={SORT_OPTIONS}
@@ -587,6 +589,26 @@ export function PlanPage() {
 		},
 	})
 
+	const { mutate: createScheduleMutate } = useMutation({
+		mutationFn: createSchedule,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+				setIsAdding(false)
+			}
+		},
+	})
+
+	const { mutate: createRoutineMutate } = useMutation({
+		mutationFn: createRoutine,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+				setIsAdding(false)
+			}
+		},
+	})
+
 	const handleDelete = (id: number) => {
 		deleteTasksMutate({ taskIds: [id] })
 	}
@@ -604,7 +626,39 @@ export function PlanPage() {
 
 	const handleSave = (updated: PlanItem) => {
 		if (editingId === null) {
-			// 신규 생성 - phase 2
+			if (updated.type === 'todo' && updated.date) {
+				const endDateTime = updated.time
+					? `${updated.date}T${updated.time}`
+					: `${updated.date}T23:59:59`
+				createScheduleMutate({
+					title: updated.title,
+					isAllDay: !updated.time,
+					startDatetime: `${updated.date}T00:00:00`,
+					endDateTime,
+					isImportant: updated.starred,
+					category: updated.category
+						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+						: 'NONE',
+					isPublic: updated.isPublic ?? false,
+					memo: updated.memo,
+				})
+				return
+			}
+			if (updated.type === 'routine' && updated.repeatType) {
+				createRoutineMutate({
+					title: updated.title,
+					repeatType: updated.repeatType,
+					...(updated.repeatDaysOfWeek?.length && {
+						repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
+					}),
+					...(updated.repeatDaysOfMonth?.length && {
+						repeatDaysOfMonth: updated.repeatDaysOfMonth,
+					}),
+					isPublic: updated.isPublic ?? false,
+					memo: updated.memo,
+				})
+				return
+			}
 			setIsAdding(false)
 			return
 		}

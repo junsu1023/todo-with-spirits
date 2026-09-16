@@ -34,7 +34,7 @@ export function TaskInputDock({ dateStr }: TaskInputDockProps) {
 			{inputTab === '할 일' ? (
 				<ScheduleForm dateStr={dateStr} />
 			) : (
-				<RoutineForm dateStr={dateStr} />
+				<RoutineForm />
 			)}
 		</div>
 	)

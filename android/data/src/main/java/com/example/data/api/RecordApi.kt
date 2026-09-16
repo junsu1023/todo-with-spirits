@@ -3,6 +3,7 @@ package com.example.data.api
 import com.example.data.constant.URLConstant
 import com.example.data.response.ApiResponse
 import com.example.data.response.DailyRecordResponse
+import com.example.data.response.MonthlyRecordResponse
 import com.example.data.response.WeeklyRecordResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,4 +15,7 @@ interface RecordApi {
 
     @GET(URLConstant.RECORD.RECORD_WEEKLY)
     suspend fun getWeeklyRecord(@Query("date") date: String): Response<ApiResponse<WeeklyRecordResponse>>
+
+    @GET(URLConstant.RECORD.RECORD_MONTHLY)
+    suspend fun getMonthlyRecord(@Query("date") date: String): Response<ApiResponse<MonthlyRecordResponse>>
 }

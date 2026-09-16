@@ -19,9 +19,15 @@ class TokenStorage @Inject constructor(
         }
     }
 
+    fun saveLoginMethod(loginMethod: String) {
+        prefs.edit { putString(KEY_LOGIN_METHOD, loginMethod) }
+    }
+
     fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
 
     fun getRefreshToken(): String? = prefs.getString(KEY_REFRESH_TOKEN, null)
+
+    fun getLoginMethod(): String? = prefs.getString(KEY_LOGIN_METHOD, null)
 
     fun clear() {
         prefs.edit { clear() }
@@ -31,5 +37,6 @@ class TokenStorage @Inject constructor(
         const val PREFS_NAME = "auth_session"
         const val KEY_ACCESS_TOKEN = "access_token"
         const val KEY_REFRESH_TOKEN = "refresh_token"
+        const val KEY_LOGIN_METHOD = "login_method"
     }
 }

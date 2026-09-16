@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.MonthlyCategoryCount
 import com.example.domain.model.WeeklyAchievement
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.R
@@ -68,6 +69,54 @@ fun Top3Section(weeklyTop3Section: List<WeeklyAchievement> = emptyList()) {
         }
 
         if (index < items.lastIndex) {
+            Spacer(Modifier.height(6.dp))
+        }
+    }
+}
+
+@Composable
+fun MonthlyTop3Section(topCategories: List<MonthlyCategoryCount> = emptyList()) {
+    topCategories.forEachIndexed { index, item ->
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(6.dp))
+                .padding(horizontal = 10.dp, vertical = 9.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(
+                        when(index) {
+                            0 -> R.drawable.todo_rank1
+                            1 -> R.drawable.todo_rank2
+                            else -> R.drawable.todo_rank3
+                        }
+                    ),
+                    contentDescription = null
+                )
+
+                Spacer(Modifier.width(8.dp))
+
+                Column {
+                    Text(
+                        text = item.category.toCategoryDisplayName(),
+                        fontSize = 14.sp,
+                        color = SpiritTodoTheme.color.todoTextMain
+                    )
+                }
+            }
+
+            Text(
+                text = "${item.completedCount}/${item.totalCount}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = SpiritTodoTheme.color.todoTextMain
+            )
+        }
+
+        if (index < topCategories.lastIndex) {
             Spacer(Modifier.height(6.dp))
         }
     }

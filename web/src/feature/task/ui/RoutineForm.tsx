@@ -15,11 +15,7 @@ const DAYS: { label: string; value: DayOfWeek }[] = [
 	{ label: '토', value: 'SATURDAY' },
 ]
 
-interface RoutineFormProps {
-	dateStr: string
-}
-
-export function RoutineForm({ dateStr }: RoutineFormProps) {
+export function RoutineForm() {
 	const queryClient = useQueryClient()
 
 	const {
@@ -43,7 +39,7 @@ export function RoutineForm({ dateStr }: RoutineFormProps) {
 		mutationFn: createRoutine,
 		onSuccess: (res) => {
 			if (res.result !== 'success') return
-			queryClient.invalidateQueries({ queryKey: ['task', 'routine', dateStr] })
+			queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
 			reset()
 		},
 	})

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.GetDailyRecordUseCase
+import com.example.domain.usecase.GetMonthlyRecordUseCase
 import com.example.domain.usecase.GetWeeklyRecordUseCase
 import com.example.todowithspirits.feature.record.state.RecordUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,15 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class RecordViewModel @Inject constructor(
     private val getDailyRecordUseCase: GetDailyRecordUseCase,
-    private val getWeeklyRecordUseCase: GetWeeklyRecordUseCase
+    private val getWeeklyRecordUseCase: GetWeeklyRecordUseCase,
+    private val getMonthlyRecordUseCase: GetMonthlyRecordUseCase
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(RecordUiState())
     val uiState: StateFlow<RecordUiState> get() = _uiState.asStateFlow()
-
-    init {
-        loadDailyRecord()
-        loadWeeklyRecord()
-    }
 
     fun loadDailyRecord() {
         viewModelScope.launchWithLoading {
@@ -52,6 +49,20 @@ class RecordViewModel @Inject constructor(
                 .onFailure {
                     Log.e(TAG, "loadWeeklyRecord failed!", it)
                     emitErrorMsg(it.localizedMessage ?: "주간 기록을 불러오지 못했습니다")
+                }
+        }
+    }
+
+    fun loadMonthlyRecord(date: LocalDate = LocalDate.now()) {
+        viewModelScope.launchWithLoading {
+            getMonthlyRecordUseCase(date)
+                .onSuccess { record ->
+                    Log.d(TAG, "loadMonthlyRecord date=$date monthlyComparisons=${record.monthlyComparisons}")
+                    _uiState.update { it.copy(monthlyRecord = record) }
+                }
+                .onFailure {
+                    Log.e(TAG, "loadMonthlyRecord failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "월간 기록을 불러오지 못했습니다")
                 }
         }
     }
