@@ -133,13 +133,14 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private suspend fun sendVerificationEmail(email: String) {
+    private suspend fun sendVerificationEmail(email: String, onSuccess: () -> Unit = {}) {
         sendEmailVerificationUseCase(email).onSuccess {
             Log.d(TAG, "sendEmailVerification success")
             _uiState.update {
                 it.copy(fieldErrors = emptyMap(), step = SignUpStep.EMAIL_VERIFICATION, verificationCode = "")
             }
             startVerificationTimer()
+            onSuccess()
         }.onFailure { error ->
             Log.e(TAG, "sendEmailVerification failed!", error)
 
@@ -148,6 +149,15 @@ class SignUpViewModel @Inject constructor(
             } else {
                 emitErrorMsg(error.localizedMessage ?: "인증 메일 발송에 실패했습니다")
             }
+        }
+    }
+
+    // EmailVerificationStep의 "인증 메일 다시 보내기" 클릭 시 호출된다.
+    fun resendVerificationEmail(onSuccess: () -> Unit = {}) {
+        val email = _uiState.value.email
+
+        viewModelScope.launchWithLoading {
+            sendVerificationEmail(email, onSuccess)
         }
     }
 

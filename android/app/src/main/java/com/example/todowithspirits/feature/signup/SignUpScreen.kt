@@ -12,10 +12,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -32,6 +34,7 @@ fun SignUpScreen(
     val context = LocalContext.current
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by signUpViewModel.isLoading.collectAsStateWithLifecycle()
+    val resendSuccessMsg = stringResource(R.string.verification_email_resend_success)
 
     LaunchedEffect(signUpViewModel) {
         signUpViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
@@ -64,7 +67,12 @@ fun SignUpScreen(
                 uiState = uiState,
                 onCodeChange = signUpViewModel::setVerificationCode,
                 onBack = signUpViewModel::goBackToCredentials,
-                onVerify = signUpViewModel::verifyEmailCode
+                onVerify = signUpViewModel::verifyEmailCode,
+                onResend = {
+                    signUpViewModel.resendVerificationEmail(
+                        onSuccess = { ToastUtil.show(context, resendSuccessMsg) }
+                    )
+                }
             )
 
             SignUpStep.NICKNAME -> NicknameStep(
