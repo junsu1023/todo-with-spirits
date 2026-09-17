@@ -145,7 +145,13 @@
     <string name="linked_account">연동 계정</string>
     <string name="logout">로그아웃</string>
     <string name="withdraw">회원탈퇴</string>
-    <string name="withdraw_confirm_message">회원탈퇴 시 모든 회원정보와 연관 데이터가 즉시 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?</string>
+    <string name="withdraw_stay_title">%s님,\n벌써 헤어지기엔 너무 아쉬워요…</string>
+    <string name="withdraw_stay_subtitle">탈퇴 대신 잠시 쉬어가는 건 어떨까요?\n계정은 그대로 두고 편하게 쉬다 오시는 걸 추천드려요.</string>
+    <string name="withdraw_stay_button">더 머무르기</string>
+    <string name="withdraw_leave_button">탈퇴하기</string>
+    <string name="withdraw_dialog_title">정말 떠나시는 건가요?</string>
+    <string name="withdraw_dialog_message">탈퇴 시 소중하게 키운 기록과 재화가\n모두 사라져 복구할 수 없어요.</string>
+    <string name="withdraw_dialog_confirm">탈퇴</string>
     <string name="cancel">취소</string>
     <string name="detail_alarm_setting">세부 설정</string>
     <string name="all_plan">전체 플랜</string>
