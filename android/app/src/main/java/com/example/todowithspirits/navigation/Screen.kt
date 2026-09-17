@@ -15,6 +15,7 @@ sealed class Screen(val route: String) {
     data object AlarmSetting: Screen("alarmSetting")
     data object MyPage: Screen("myPage")
     data object AccountSetting: Screen("accountSetting")
+    data object Withdraw: Screen("withdraw")
     data object EditProfile: Screen("editProfile")
     data object ChangePassword: Screen("changePassword")
     data object DisplaySetting: Screen("displaySetting")

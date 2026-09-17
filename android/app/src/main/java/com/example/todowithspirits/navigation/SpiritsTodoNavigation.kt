@@ -15,6 +15,7 @@ import com.example.core.auth.SessionExpiredNotifier
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
+import com.example.todowithspirits.feature.mypage.WithdrawScreen
 import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
@@ -44,6 +45,7 @@ fun SpiritsTodoNavigation(
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
+    val navigateToWithdraw: () -> Unit = { navController.navigate(Screen.Withdraw.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
     val navigateToDataSetting: () -> Unit = { navController.navigate(Screen.DataSetting.route) }
     val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
@@ -195,6 +197,13 @@ fun SpiritsTodoNavigation(
                 onBack = onBack,
                 onNicknameClick = navigateToNicknameEdit,
                 onModifyPasswordClick = navigateToChangePassword,
+                onWithdrawClick = navigateToWithdraw
+            )
+        }
+
+        composable(Screen.Withdraw.route) {
+            WithdrawScreen(
+                onBack = onBack,
                 onWithdrawSuccess = navigateToLogout
             )
         }
