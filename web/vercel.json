@@ -1,3 +1,39 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" }
+      ]
+    },
+    {
+      "source": "/forest-webgl/WebGL/Build/:file*.wasm.br",
+      "headers": [
+        { "key": "Content-Type", "value": "application/wasm" },
+        { "key": "Content-Encoding", "value": "br" }
+      ]
+    },
+    {
+      "source": "/forest-webgl/WebGL/Build/:file*.js.br",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript" },
+        { "key": "Content-Encoding", "value": "br" }
+      ]
+    },
+    {
+      "source": "/forest-webgl/WebGL/Build/:file*.data.br",
+      "headers": [
+        { "key": "Content-Type", "value": "application/octet-stream" },
+        { "key": "Content-Encoding", "value": "br" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/forest-webgl/(.*)",
+      "destination": "/forest-webgl/$1"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
