@@ -20,6 +20,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://devrepo.kakao.com/nexus/content/groups/public/") }
+        // Unity as a Library (Forest) — 사전 빌드된 AAR을 로컬 Maven 저장소로 제공.
+        // 자세한 내용은 android/app/src/main/java/com/example/todowithspirits/feature/forest 참고.
+        maven { url = uri("$rootDir/vendor/forest-unity/maven") }
     }
 }
 

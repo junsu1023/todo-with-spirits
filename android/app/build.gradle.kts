@@ -52,6 +52,11 @@ android {
         // Google Cloud Console에 등록한 "웹 애플리케이션" 타입 OAuth 클라이언트 ID (Android 타입 아님).
         // Credential Manager가 발급하는 idToken의 aud 클레임이 되고, 서버가 그 값으로 우리 백엔드용 토큰인지 검증한다.
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
+
+        // Unity as a Library (Forest) AAR은 arm64-v8a만 패키징되어 있다.
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
     }
 
     buildTypes {
@@ -71,6 +76,16 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // Unity as a Library (Forest)가 요구하는 패키징 설정.
+    androidResources {
+        noCompress += listOf("unity3d", "ress", "resource", "obb", "bundle", "unityexp", "json")
+    }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 
@@ -108,6 +123,9 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.google.id)
+
+    // Unity as a Library (Forest) — 사전 빌드된 AAR. unity-classes.jar도 AAR에 포함되어 있다.
+    implementation("com.todospirits:forest-unity:0.4.0-a04")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

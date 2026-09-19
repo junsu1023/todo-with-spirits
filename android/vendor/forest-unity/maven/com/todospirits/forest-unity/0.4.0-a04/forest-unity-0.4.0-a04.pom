@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.todospirits</groupId>
+  <artifactId>forest-unity</artifactId>
+  <version>0.4.0-a04</version>
+  <packaging>aar</packaging>
+  <name>TodoSpirits Unity Android A04</name>
+  <dependencies>
+    <dependency>
+      <groupId>androidx.appcompat</groupId>
+      <artifactId>appcompat</artifactId>
+      <version>1.6.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.core</groupId>
+      <artifactId>core</artifactId>
+      <version>1.9.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.constraintlayout</groupId>
+      <artifactId>constraintlayout</artifactId>
+      <version>2.1.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.games</groupId>
+      <artifactId>games-activity</artifactId>
+      <version>4.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.games</groupId>
+      <artifactId>games-frame-pacing</artifactId>
+      <version>2.1.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.android.billingclient</groupId>
+      <artifactId>billing</artifactId>
+      <version>8.3.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

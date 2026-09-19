@@ -44,6 +44,26 @@
                 <data android:scheme="kakao${kakaoNativeAppKey}" />
             </intent-filter>
         </activity>
+
+        <!-- Unity as a Library (Forest). unityLibrary가 선언하는 기본 launcher Activity는 제거하고
+             호스트의 숲 Activity를 exported=false로 등록한다. -->
+        <activity android:name="com.unity3d.player.UnityPlayerGameActivity" tools:node="remove" />
+        <activity android:name="com.unity3d.player.UnityPlayerActivity" tools:node="remove" />
+
+        <activity
+            android:name=".feature.forest.ForestUnityActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="fullSensor"
+            android:hardwareAccelerated="false"
+            android:resizeableActivity="true"
+            android:enableOnBackInvokedCallback="false"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
+            android:theme="@style/BaseUnityGameActivityTheme">
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+            <meta-data android:name="android.app.lib_name" android:value="game" />
+            <meta-data android:name="notch_support" android:value="true" />
+        </activity>
     </application>
 
 </manifest>

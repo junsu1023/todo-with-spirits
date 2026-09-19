@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.core.auth.SessionExpiredNotifier
 import com.example.todowithspirits.feature.add.AddScreen
 import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
 import com.example.todowithspirits.feature.mypage.WithdrawScreen
 import com.example.todowithspirits.feature.setting.DataSettingScreen
@@ -57,6 +58,13 @@ fun SpiritsTodoNavigation(
     val navigateToLogout: () -> Unit = {
         navController.navigate(Screen.Login.route) {
             popUpTo(0) { inclusive = true }
+        }
+    }
+    val navigateToToday: () -> Unit = {
+        navController.navigate(Screen.Today.route) {
+            popUpTo(Screen.Today.route) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
         }
     }
     val onBack: () -> Unit = { navController.popBackStack() }
@@ -154,7 +162,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Forest.route) {
-
+            ForestScreen(onReturnToToday = navigateToToday)
         }
 
         composable(Screen.Record.route) {
