@@ -3,17 +3,12 @@ import { Link } from 'react-router-dom'
 import { getCurrentSpirit } from '@/entity/spirit'
 import { SETTING_ITEMS, SettingRow } from '@/feature/setting'
 import { SpiritListModal } from '@/feature/spirit'
+import { getMe } from '@/feature/user/api/query'
 import sampleSpiritImage from '@/shared/assets/sample-spirit.png'
+import { ROUTES } from '@/shared/routes'
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar'
 import { Card } from '@/shared/ui/card'
 import { StatCard } from '@/shared/ui/StatCard'
-
-// ─── Mock data (유저/스탯은 API 미연결) ────────────────────────────────────────
-
-const MOCK_USER = {
-	nickname: 'Username',
-	email: 'user@example.com',
-}
 
 const MOCK_STATS = {
 	streak: 12,
@@ -23,6 +18,12 @@ const MOCK_STATS = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function MePage() {
+	const { data: meData } = useQuery({
+		queryKey: ['user', 'me'],
+		queryFn: getMe,
+	})
+	const me = meData?.result === 'success' ? meData.detail : null
+
 	const { data: spiritData } = useQuery({
 		queryKey: ['spirit', 'current'],
 		queryFn: getCurrentSpirit,
@@ -40,22 +41,21 @@ export function MePage() {
 						<Avatar className="size-16">
 							<AvatarImage src="" alt="profile" />
 							<AvatarFallback className="text-lg">
-								{MOCK_USER.nickname.slice(0, 1)}
+								{me?.nickname?.[0]?.toUpperCase() ?? 'U'}
 							</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col items-center gap-0.5">
 							<span className="text-base font-semibold text-gray-800">
-								{MOCK_USER.nickname}
+								{me?.nickname ?? '-'}
 							</span>
-							<span className="text-xs text-gray-400">{MOCK_USER.email}</span>
+							<span className="text-xs text-gray-400">{me?.email ?? '-'}</span>
 						</div>
-						<button
-							type="button"
-							onClick={() => {}}
-							className="cursor-pointer rounded-full bg-gray-100 px-4 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
+						<Link
+							to={ROUTES.MYPAGE_SETTING_ACCOUNT}
+							className="rounded-full bg-gray-100 px-4 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
 						>
 							계정 관리
-						</button>
+						</Link>
 					</Card>
 
 					<StatCard label="연속 달성" value={MOCK_STATS.streak} unit="일" />
@@ -80,7 +80,9 @@ export function MePage() {
 							src={spirit?.imageUrl || sampleSpiritImage}
 							alt={spirit?.spiritName ?? '정령'}
 							className="h-24 w-24 shrink-0 rounded-xl object-cover"
-							onError={(e) => { e.currentTarget.src = sampleSpiritImage }}
+							onError={(e) => {
+								e.currentTarget.src = sampleSpiritImage
+							}}
 						/>
 
 						<div className="flex flex-1 flex-col gap-2">
@@ -130,6 +132,7 @@ export function MePage() {
 							icon={item.icon}
 							label={item.label}
 							description={item.description}
+							href={item.href}
 						/>
 					))}
 				</div>
