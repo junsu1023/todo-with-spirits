@@ -9,12 +9,6 @@ export const signupSchema = z
 			.max(20, '비밀번호는 20자 이하이어야 합니다.')
 			.regex(/^(?=.*[a-zA-Z])(?=.*[0-9])/, '영문과 숫자를 조합해주세요.'),
 		passwordConfirm: z.string(),
-		nickname: z
-			.string()
-			.refine((v) => v === '' || (v.length >= 2 && v.length <= 12), {
-				message: '닉네임은 2~12자로 입력해주세요.',
-			})
-			.optional(),
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
 		message: '비밀번호가 일치하지 않습니다.',

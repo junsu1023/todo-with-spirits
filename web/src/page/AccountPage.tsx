@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/feature/auth/model/authStore'
 import { deleteMe, updateMe } from '@/feature/user/api/mutate'
 import { getMe } from '@/feature/user/api/query'
 import { ROUTES } from '@/shared/routes'
@@ -21,6 +22,7 @@ const PROVIDER_LABEL: Record<string, string> = {
 export function AccountPage() {
 	const queryClient = useQueryClient()
 	const navigate = useNavigate()
+	const clearAuth = useAuthStore((s) => s.clearAuth)
 
 	const { data: meData } = useQuery({
 		queryKey: ['user', 'me'],
@@ -35,7 +37,7 @@ export function AccountPage() {
 	}, [me?.nickname])
 
 	const { mutate: save, isPending } = useMutation({
-		mutationFn: updateMe,
+		mutationFn: (body: Parameters<typeof updateMe>[0]) => updateMe(body),
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
@@ -46,6 +48,7 @@ export function AccountPage() {
 	const { mutate: withdraw, isPending: isWithdrawing } = useMutation({
 		mutationFn: deleteMe,
 		onSuccess: () => {
+			clearAuth()
 			queryClient.clear()
 			navigate(ROUTES.LOGIN, { replace: true })
 		},

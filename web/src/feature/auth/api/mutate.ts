@@ -21,6 +21,19 @@ export const signupApi = (body: SignupRequest) =>
 		.post('api/auth/signup', { json: body, throwHttpErrors: false })
 		.json<ApiResponse<SignupResponse>>()
 
+export const sendEmailVerificationApi = (email: string) =>
+	apiClient
+		.post('api/user/email/verify/send', {
+			json: { email },
+			throwHttpErrors: false,
+		})
+		.json<ApiResponse<null>>()
+
+export const verifyEmailCodeApi = (body: { email: string; code: number }) =>
+	apiClient
+		.post('api/user/email/verify', { json: body, throwHttpErrors: false })
+		.json<ApiResponse<null>>()
+
 export const socialLoginApi = (
 	providerAccessToken: string,
 	body: SocialLoginRequest,
