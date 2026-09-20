@@ -1,4 +1,13 @@
 export type EmailVerificationStatus = 'VERIFIED' | 'UNVERIFIED' | 'PENDING'
+export type PlanType = 'MONTHLY' | 'YEARLY'
+
+export interface SubscriptionDetail {
+	planType: PlanType
+	startedAt: string
+	expiresAt: string
+	autoRenew: boolean
+	premium: boolean
+}
 export type LoginType = 'LOCAL' | 'SOCIAL'
 export type Provider = 'KAKAO' | 'GOOGLE'
 export type Role = 'USER' | 'ADMIN'

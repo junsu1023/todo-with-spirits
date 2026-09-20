@@ -13,3 +13,8 @@ export const updateMe = (body: UpdateUserRequest, authToken?: string) =>
 
 export const deleteMe = () =>
 	apiClient.delete('api/user/me').json<ApiResponse<null>>()
+
+export const sendVerificationEmailForMe = () =>
+	apiClient
+		.post('api/user/me/email/verify/send', { throwHttpErrors: false })
+		.json<ApiResponse<null>>()
