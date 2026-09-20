@@ -136,6 +136,9 @@
   * {
     @apply border-border outline-ring/50;
   }
+  button, [role="button"], [role="switch"] {
+    @apply cursor-pointer;
+  }
   html {
     @apply font-sans h-full;
   }

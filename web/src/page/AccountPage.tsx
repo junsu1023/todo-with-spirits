@@ -99,7 +99,7 @@ export function AccountPage() {
 
 			{/* 탈퇴하기 */}
 			<Dialog>
-				<DialogTrigger className="self-start text-xs text-gray-300 underline-offset-2 transition-colors hover:text-gray-400 hover:underline cursor-pointer">
+				<DialogTrigger className="self-start text-xs text-gray-300 underline-offset-2 transition-colors hover:text-gray-400 hover:underline">
 					탈퇴하기
 				</DialogTrigger>
 				<DialogPopup className="max-w-sm">
@@ -115,11 +115,11 @@ export function AccountPage() {
 								type="button"
 								onClick={() => withdraw()}
 								disabled={isWithdrawing}
-								className="flex-1 rounded-xl bg-red-500 py-3 text-sm font-semibold text-white transition-opacity hover:bg-red-600 disabled:opacity-50 cursor-pointer"
+								className="flex-1 rounded-xl bg-red-500 py-3 text-sm font-semibold text-white transition-opacity hover:bg-red-600 disabled:opacity-50"
 							>
 								{isWithdrawing ? '처리 중...' : '그래도 할래요'}
 							</button>
-							<DialogClose className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 cursor-pointer">
+							<DialogClose className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">
 								안 할래요
 							</DialogClose>
 						</div>
@@ -132,7 +132,7 @@ export function AccountPage() {
 				type="button"
 				onClick={() => save({ nickname: nickname.trim() })}
 				disabled={!isDirty || !isValid || isPending}
-				className="w-full rounded-xl cursor-pointer bg-[#B286FD] py-3.5 text-sm font-semibold text-white transition-opacity disabled:opacity-40"
+				className="w-full rounded-xl bg-[#B286FD] py-3.5 text-sm font-semibold text-white transition-opacity disabled:opacity-40"
 			>
 				{isPending ? '저장 중...' : '저장'}
 			</button>

@@ -2,7 +2,7 @@ import { ChevronRight, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const BASE_CLASS =
-	'cursor-pointer flex w-full items-center gap-4 rounded-xl bg-white px-5 py-4 text-left ring-1 ring-gray-100 transition-colors hover:bg-gray-50'
+	'flex w-full items-center gap-4 rounded-xl bg-white px-5 py-4 text-left ring-1 ring-gray-100 transition-colors hover:bg-gray-50'
 
 export function SettingRow({
 	icon: Icon,
