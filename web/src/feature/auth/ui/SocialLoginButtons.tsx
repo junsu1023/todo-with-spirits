@@ -9,7 +9,7 @@ function initKakao(): boolean {
 		return false
 	}
 	if (!window.Kakao.isInitialized()) {
-		window.Kakao.init(import.meta.env.VITE_KAKAO_APP_KEY as string)
+		window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY as string)
 	}
 	return true
 }
