@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { signupApi } from '@/feature/auth/api/mutate'
+import { checkEmailApi } from '@/feature/auth/api/query'
 import {
 	type SignupFormValues,
 	signupSchema,
@@ -18,10 +19,37 @@ export function JoinPage() {
 		register,
 		handleSubmit,
 		setError,
+		getValues,
+		trigger,
 		formState: { errors },
 	} = useForm<SignupFormValues>({
 		resolver: zodResolver(signupSchema),
 	})
+
+	const handleEmailBlur = async () => {
+		const valid = await trigger('email')
+		if (!valid) return
+
+		const email = getValues('email')
+		try {
+			const res = await checkEmailApi(email)
+			if (res.result !== 'success') return
+
+			if (res.detail.registered) {
+				const provider = res.detail.provider
+				setError('email', {
+					message:
+						provider === 'KAKAO'
+							? '이미 카카오 계정으로 가입된 이메일입니다.'
+							: provider === 'GOOGLE'
+								? '이미 구글 계정으로 가입된 이메일입니다.'
+								: '이미 사용 중인 이메일입니다.',
+				})
+			}
+		} catch {
+			// 네트워크 오류 시 blur 검증 스킵, 서버 응답에서 처리
+		}
+	}
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: signupApi,
@@ -60,7 +88,7 @@ export function JoinPage() {
 		},
 	})
 
-	const onSubmit = (values: SignupFormValues) => {
+	const onSubmit = ({ passwordConfirm: _, ...values }: SignupFormValues) => {
 		mutate(values)
 	}
 
@@ -87,7 +115,7 @@ export function JoinPage() {
 							type="email"
 							placeholder="example@email.com"
 							aria-invalid={!!errors.email}
-							{...register('email')}
+							{...register('email', { onBlur: handleEmailBlur })}
 						/>
 						{errors.email && (
 							<p className="text-xs text-red-400">{errors.email.message}</p>
@@ -110,6 +138,27 @@ export function JoinPage() {
 						/>
 						{errors.password && (
 							<p className="text-xs text-red-400">{errors.password.message}</p>
+						)}
+					</div>
+
+					<div className="flex flex-col gap-1.5">
+						<label
+							htmlFor="passwordConfirm"
+							className="text-sm font-medium text-gray-700"
+						>
+							비밀번호 확인 <span className="text-red-400">*</span>
+						</label>
+						<Input
+							id="passwordConfirm"
+							type="password"
+							placeholder="비밀번호를 한 번 더 입력해주세요"
+							aria-invalid={!!errors.passwordConfirm}
+							{...register('passwordConfirm')}
+						/>
+						{errors.passwordConfirm && (
+							<p className="text-xs text-red-400">
+								{errors.passwordConfirm.message}
+							</p>
 						)}
 					</div>
 

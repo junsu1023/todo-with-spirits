@@ -34,3 +34,8 @@ export interface SignupResponse {
 	nickname: string
 	userId: number
 }
+
+export interface CheckEmailResponse {
+	provider: 'KAKAO' | 'GOOGLE' | null
+	registered: boolean
+}
