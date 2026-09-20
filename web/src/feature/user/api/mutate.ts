@@ -11,8 +11,7 @@ export const updateMe = (body: UpdateUserRequest, authToken?: string) =>
 		})
 		.json<ApiResponse<UserProfile>>()
 
-export const deleteMe = () =>
-	apiClient.delete('api/user/me').json<ApiResponse<null>>()
+export const deleteMe = () => apiClient.delete('api/user/me').then(() => {})
 
 export const sendVerificationEmailForMe = () =>
 	apiClient

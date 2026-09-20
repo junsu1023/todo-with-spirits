@@ -35,7 +35,7 @@ export function KakaoCallbackPage() {
 					},
 					body: new URLSearchParams({
 						grant_type: 'authorization_code',
-						client_id: import.meta.env.VITE_KAKAO_APP_KEY as string,
+						client_id: import.meta.env.VITE_KAKAO_REST_API_KEY as string,
 						redirect_uri: `${window.location.origin}/oauth/kakao`,
 						code: authCode,
 					}),

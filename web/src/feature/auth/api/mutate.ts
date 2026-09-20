@@ -10,7 +10,7 @@ import type {
 
 export const loginApi = (body: LoginFormValues) =>
 	apiClient
-		.post('api/auth/login', { json: body })
+		.post('api/auth/login', { json: body, throwHttpErrors: false })
 		.json<ApiResponse<loginResponse>>()
 
 export const logoutApi = () =>

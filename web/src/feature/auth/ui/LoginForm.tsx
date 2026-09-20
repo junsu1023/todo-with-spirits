@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
+import { PasswordInput } from '@/shared/ui/password-input'
 import { loginApi } from '../api/mutate'
 import { useAuthStore } from '../model/authStore'
 import { type LoginFormValues, loginSchema } from '../model/loginSchema'
@@ -23,7 +25,17 @@ export function LoginForm() {
     onSuccess: (res) => {
       if (res.result === 'success') {
         setAuth(res.detail)
+      } else {
+        const message = res.detail.description[0]?.message
+        if (message?.includes('credentials') || res.detail.errorCode === 'UNAUTHORIZED') {
+          toast.error('이메일 또는 비밀번호를 확인해주세요.')
+        } else {
+          toast.error(message ?? '로그인에 실패했습니다.')
+        }
       }
+    },
+    onError: () => {
+      toast.error('로그인에 실패했습니다. 잠시 후 다시 시도해주세요.')
     },
   })
 
@@ -58,9 +70,8 @@ export function LoginForm() {
         <label htmlFor="password" className="text-sm font-medium text-gray-700">
           비밀번호
         </label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="영문 + 숫자 조합 8자 이상"
           aria-invalid={!!errors.password}
           {...register('password')}

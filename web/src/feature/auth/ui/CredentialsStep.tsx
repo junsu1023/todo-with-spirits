@@ -11,6 +11,7 @@ import {
 } from '@/feature/auth/model/signupSchema'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
+import { PasswordInput } from '@/shared/ui/password-input'
 
 interface Props {
 	onVerificationSent: (email: string, password: string) => void
@@ -119,9 +120,8 @@ export function CredentialsStep({ onVerificationSent }: Props) {
 					>
 						비밀번호 <span className="text-red-400">*</span>
 					</label>
-					<Input
+					<PasswordInput
 						id="password"
-						type="password"
 						placeholder="영문 + 숫자 조합 8~20자"
 						aria-invalid={!!errors.password}
 						{...register('password')}
@@ -138,9 +138,8 @@ export function CredentialsStep({ onVerificationSent }: Props) {
 					>
 						비밀번호 확인 <span className="text-red-400">*</span>
 					</label>
-					<Input
+					<PasswordInput
 						id="passwordConfirm"
-						type="password"
 						placeholder="비밀번호를 한 번 더 입력해주세요"
 						aria-invalid={!!errors.passwordConfirm}
 						{...register('passwordConfirm')}
