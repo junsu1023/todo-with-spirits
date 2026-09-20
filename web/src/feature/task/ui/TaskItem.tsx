@@ -71,7 +71,7 @@ export function TaskItem({
 					onToggle={onToggle}
 				/>
 				<Accordion.Header render={<div />} className="flex min-w-0 flex-1">
-					<Accordion.Trigger className="flex w-full cursor-pointer flex-col text-left">
+					<Accordion.Trigger className="flex w-full flex-col text-left">
 						<span
 							className={`text-base ${
 								isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'

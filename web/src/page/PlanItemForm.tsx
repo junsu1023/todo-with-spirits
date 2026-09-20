@@ -70,7 +70,7 @@ function Toggle({
 			role="switch"
 			aria-checked={checked}
 			onClick={onChange}
-			className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
+			className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ${
 				checked ? 'bg-[#B286FD]' : 'bg-gray-200'
 			}`}
 		>

@@ -1,8 +1,8 @@
 import { type ApiResponse, apiClient } from '@/lib/api'
 import type { LoginFormValues } from '../model/loginSchema'
-import type { SignupFormValues } from '../model/signupSchema'
 import type {
 	loginResponse,
+	SignupRequest,
 	SignupResponse,
 	SocialLoginRequest,
 	SocialLoginResponse,
@@ -16,10 +16,23 @@ export const loginApi = (body: LoginFormValues) =>
 export const logoutApi = () =>
 	apiClient.post('api/auth/logout').json<ApiResponse<null>>()
 
-export const signupApi = (body: SignupFormValues) =>
+export const signupApi = (body: SignupRequest) =>
 	apiClient
 		.post('api/auth/signup', { json: body, throwHttpErrors: false })
 		.json<ApiResponse<SignupResponse>>()
+
+export const sendEmailVerificationApi = (email: string) =>
+	apiClient
+		.post('api/user/email/verify/send', {
+			json: { email },
+			throwHttpErrors: false,
+		})
+		.json<ApiResponse<null>>()
+
+export const verifyEmailCodeApi = (body: { email: string; code: number }) =>
+	apiClient
+		.post('api/user/email/verify', { json: body, throwHttpErrors: false })
+		.json<ApiResponse<null>>()
 
 export const socialLoginApi = (
 	providerAccessToken: string,

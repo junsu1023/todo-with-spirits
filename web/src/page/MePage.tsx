@@ -44,11 +44,33 @@ export function MePage() {
 								{me?.nickname?.[0]?.toUpperCase() ?? 'U'}
 							</AvatarFallback>
 						</Avatar>
-						<div className="flex flex-col items-center gap-0.5">
-							<span className="text-base font-semibold text-gray-800">
-								{me?.nickname ?? '-'}
-							</span>
-							<span className="text-xs text-gray-400">{me?.email ?? '-'}</span>
+						<div className="flex flex-col items-center gap-1">
+							<div className="flex items-center gap-1.5">
+								<span className="text-base font-semibold text-gray-800">
+									{me?.nickname ?? '-'}
+								</span>
+								{me?.role === 'ADMIN' && (
+									<span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-600">
+										관리자
+									</span>
+								)}
+							</div>
+							<div className="flex items-center gap-1.5">
+								<span className="text-xs text-gray-400">
+									{me?.email ??
+										(me?.loginType === 'SOCIAL' ? '이메일 없음' : '-')}
+								</span>
+								{me?.email && me.emailVerificationStatus === 'VERIFIED' && (
+									<span className="rounded-full bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-600">
+										인증
+									</span>
+								)}
+								{me?.email && me.emailVerificationStatus !== 'VERIFIED' && (
+									<span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-500">
+										미인증
+									</span>
+								)}
+							</div>
 						</div>
 						<Link
 							to={ROUTES.MYPAGE_SETTING_ACCOUNT}

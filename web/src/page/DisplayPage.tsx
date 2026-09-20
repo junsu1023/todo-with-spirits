@@ -47,7 +47,7 @@ export function DisplayPage() {
 					<Switch.Root
 						checked={setting?.[key] ?? false}
 						onCheckedChange={(checked) => mutate({ [key]: checked })}
-						className="relative flex h-6 w-11 cursor-pointer items-center rounded-full border-none bg-gray-200 transition-colors outline-none data-[checked]:bg-[#B286FD]"
+						className="relative flex h-6 w-11 items-center rounded-full border-none bg-gray-200 transition-colors outline-none data-[checked]:bg-[#B286FD]"
 					>
 						<Switch.Thumb className="block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform data-[checked]:translate-x-[22px]" />
 					</Switch.Root>
