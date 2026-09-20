@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import type { DayOfWeek } from '@/feature/task/model/type'
+import { calcDday } from '@/shared/lib/dday'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import type { ItemType, PlanItem } from './PlanPage'
 
@@ -49,13 +50,6 @@ function formatDateLabel(date: string, time?: string): string {
 	return base
 }
 
-function calcDday(date: string): number {
-	const today = new Date()
-	today.setHours(0, 0, 0, 0)
-	const target = new Date(date)
-	target.setHours(0, 0, 0, 0)
-	return Math.max(0, Math.ceil((target.getTime() - today.getTime()) / 86400000))
-}
 
 function Toggle({
 	checked,

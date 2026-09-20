@@ -23,6 +23,7 @@ import {
 	updateSchedule,
 } from '@/feature/task/api/mutate'
 import type { DayOfWeek } from '@/feature/task/model/type'
+import { calcDday, formatDday } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 import { PlanItemForm } from './PlanItemForm'
@@ -82,14 +83,8 @@ const LABEL_TO_CATEGORY: Record<string, Category> = {
 }
 
 function toPlanItem(item: CalendarItem): PlanItem {
-	const today = new Date()
-	today.setHours(0, 0, 0, 0)
 	const target = new Date(item.occurrenceDate)
-	target.setHours(0, 0, 0, 0)
-	const dday = Math.max(
-		0,
-		Math.ceil((target.getTime() - today.getTime()) / 86400000),
-	)
+	const dday = calcDday(item.occurrenceDate)
 
 	const weekdays = ['일', '월', '화', '수', '목', '금', '토']
 	const y = String(target.getFullYear()).slice(2)
@@ -195,7 +190,8 @@ function PlanCalendar({ selectedDate, onDateChange }: PlanCalendarProps) {
 		selectedDate.getMonth() === month &&
 		selectedDate.getDate() === day
 
-	const headerLabel = `${year}. ${String(month + 1).padStart(2, '0')}. 01 (${['일', '월', '화', '수', '목', '금', '토'][new Date(year, month, 1).getDay()]}요일)`
+	const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
+	const headerLabel = `${selectedDate.getFullYear()}. ${String(selectedDate.getMonth() + 1).padStart(2, '0')}. ${String(selectedDate.getDate()).padStart(2, '0')} (${WEEKDAYS_KO[selectedDate.getDay()]}요일)`
 
 	return (
 		<div className="flex flex-col gap-5">
@@ -296,11 +292,11 @@ const ACCENT: Record<ItemType, string> = {
 }
 
 function DdayBadge({ dday }: { dday: number }) {
-	const label = dday === 0 ? 'D-DAY' : `D-${dday}`
+	const label = formatDday(dday)
 	const isUrgent = dday === 0
 	return (
 		<span
-			className={`shrink-0 text-sm font-bold ${isUrgent ? 'text-[#B286FD]' : 'text-gray-400'}`}
+			className={`shrink-0 text-sm font-bold ${isUrgent ? 'text-[#B286FD]' : dday < 0 ? 'text-gray-300' : 'text-gray-400'}`}
 		>
 			{label}
 		</span>
@@ -401,7 +397,9 @@ function PlanTaskList({
 						/>
 
 						{/* Content */}
-						<div className="flex flex-1 flex-col gap-1.5 px-4 py-3">
+						<div
+							className="flex flex-1 flex-col gap-1.5 px-4 py-3"
+						>
 							{/* Title row */}
 							<div className="flex items-center gap-2">
 								<button
