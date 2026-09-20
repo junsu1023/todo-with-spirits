@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.Keep
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.domain.usecase.GetUserProfileUseCase
+import com.example.todowithspirits.util.ForestExitBus
 import com.example.todowithspirits.util.TaskRefreshBus
 import com.unity3d.player.UnityPlayer
 import com.unity3d.player.UnityPlayerGameActivity
@@ -30,6 +31,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
@@ -43,6 +45,7 @@ interface ForestHostDependencies {
     fun profile(): GetUserProfileUseCase
     fun calendar(): GetTaskCalendarUseCase
     fun taskRefreshBus(): TaskRefreshBus
+    fun forestExitBus(): ForestExitBus
 }
 
 /** The native curtain stays up until Unity has opened this authenticated account's save. */
@@ -106,7 +109,10 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
     override fun onResume() {
         super.onResume()
         resumed = true
-        if (::curtain.isInitialized && !closing) refresh()
+        // moveTaskToBack로만 나갔다 들어온 경우 인스턴스가 재사용되므로, 이전 종료 시점의
+        // closing 플래그를 여기서 풀어줘야 재진입 시 refresh()/dispatch()가 다시 동작한다.
+        closing = false
+        if (::curtain.isInitialized) refresh()
     }
 
     override fun onPause() { resumed = false; super.onPause() }
@@ -117,11 +123,6 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         super.onDestroy()
     }
 
-    @Deprecated("Android compatibility callback")
-    override fun onBackPressed() = requestForestClose()
-
-    // GameActivity(androidx.games:games-activity)는 뒤로가기 키를 onBackPressed()로 넘기지 않고
-    // dispatchKeyEvent에서 바로 네이티브 입력 큐로 전달해 소비해버린다. 여기서 먼저 가로채야 한다.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
             requestForestClose()
@@ -135,11 +136,20 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         if (!closing) {
             closing = true
             refreshJob?.cancel()
-            mUnityPlayer.unload()
+            dependencies.forestExitBus().notifyExited()
+            moveTaskToBack(true)
         }
     }
 
-    override fun onUnityPlayerUnloaded() = runOnUiThread { finish() }
+    override fun onUnityPlayerUnloaded() = runOnUiThread {
+        // Unity가 자체적으로(예: 인게임 종료 UI) unload를 트리거한 경우의 방어 처리.
+        if (!closing) {
+            closing = true
+            dependencies.forestExitBus().notifyExited()
+        }
+
+        moveTaskToBack(true)
+    }
 
     @Keep
     fun requestForestRefresh() = runOnUiThread { if (!closing) refresh() }
@@ -224,8 +234,12 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
                 val revisionKey = "revision:$nextAccount"
                 val revision = ForestHostSnapshot.nextRevision(preferences.getLong(revisionKey, 0), System.currentTimeMillis())
                 val confirmedAt = Instant.now().toString()
-                check(preferences.edit().putLong(revisionKey, revision).putString("confirmed:$nextAccount", confirmedAt).commit()) {
-                    "동기화 상태를 저장하지 못했어요."
+                // commit()은 디스크에 동기 기록될 때까지 블로킹된다. work가 Main.immediate라
+                // IO로 넘기지 않으면 메인 스레드가 그대로 막힌다(숲 종료 시 ANR의 원인).
+                withContext(Dispatchers.IO) {
+                    check(preferences.edit().putLong(revisionKey, revision).putString("confirmed:$nextAccount", confirmedAt).commit()) {
+                        "동기화 상태를 저장하지 못했어요."
+                    }
                 }
                 val items = JSONArray()
                 rows.forEach { row -> items.put(JSONObject().put("id", row.id).put("title", row.title).put("category", row.category).put("isHabit", row.isHabit).put("isCompleted", row.isCompleted)) }
@@ -262,26 +276,45 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
                 val data = JSONObject(request)
                 val expectedAccount = data.getString("accountId")
                 require(expectedAccount == accountId)
+
                 val requestedDates = data.getJSONArray("dates")
                 require(requestedDates.length() <= 90)
+
                 val dates = (0 until requestedDates.length()).map { LocalDate.parse(requestedDates.getString(it)) }.distinct().sorted()
                 if (dates.isEmpty()) return@launch
                 require(dates.last() < date)
                 require(java.time.temporal.ChronoUnit.DAYS.between(dates.first(), dates.last()) < 90)
+
                 val calendar = dependencies.calendar()(dates.first(), dates.last()).getOrThrow()
                 ensureActive()
                 if (closing || accountId != expectedAccount || activeSession != sessionKey()) return@launch
+
                 // Validate all requested days before sending any corrections.
                 val rowsByDate = dates.associateWith { day -> ForestHostSnapshot.items(day, calendar.items.filter { it.occurrenceDate == day }) }
                 for ((day, rows) in rowsByDate) {
                     ensureActive()
                     val key = "revision:$expectedAccount"
                     val revision = ForestHostSnapshot.nextRevision(preferences.getLong(key, 0), System.currentTimeMillis())
-                    check(preferences.edit().putLong(key, revision).commit())
+
+                    withContext(Dispatchers.IO) {
+                        check(preferences.edit().putLong(key, revision).commit())
+                    }
+
                     val items = JSONArray()
-                    rows.forEach { row -> items.put(JSONObject().put("id", row.id).put("title", row.title).put("category", row.category).put("isHabit", row.isHabit).put("isCompleted", row.isCompleted)) }
-                    val snapshot = JSONObject().put("schemaVersion", 1).put("accountId", expectedAccount).put("date", day.toString())
-                        .put("revision", revision).put("timeZone", ZoneId.systemDefault().id).put("items", items)
+                    rows.forEach { row ->
+                        items.put(JSONObject().put("id", row.id)
+                            .put("title", row.title)
+                            .put("category", row.category)
+                            .put("isHabit", row.isHabit)
+                            .put("isCompleted", row.isCompleted))
+                    }
+
+                    val snapshot = JSONObject()
+                        .put("schemaVersion", 1)
+                        .put("accountId", expectedAccount)
+                        .put("date", day.toString())
+                        .put("revision", revision)
+                        .put("timeZone", ZoneId.systemDefault().id).put("items", items)
                     UnityPlayer.UnitySendMessage("AppRoot", "ReceiveHistoricalTodoSnapshot", snapshot.toString())
                 }
             } catch (cancelled: CancellationException) {

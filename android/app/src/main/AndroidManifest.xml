@@ -53,7 +53,9 @@
         <activity
             android:name=".feature.forest.ForestUnityActivity"
             android:exported="false"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
+            android:taskAffinity="${applicationId}.forest"
+            android:excludeFromRecents="true"
             android:screenOrientation="fullSensor"
             android:hardwareAccelerated="false"
             android:resizeableActivity="true"
