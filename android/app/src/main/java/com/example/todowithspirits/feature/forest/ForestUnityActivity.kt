@@ -57,11 +57,10 @@ interface ForestHostDependencies {
  * AndroidManifest에서 android:process=":forest"로 호스트 앱과 별도 프로세스에서 실행된다.
  * GameActivity.onDestroy()의 네이티브 엔진 종료 대기(terminateNativeCode)가 메인 스레드를
  * 블로킹하는 현상이 실기기에서 여러 형태(직접 finish, moveTaskToBack 후 OS의 자체 trim,
- * 앱 백그라운드 전환 시 정리 등)로 반복 재현되어, 어떤 시점에 어떤 방식으로 이 액티비티를
- * 닫든 호스트(MainActivity)의 입력 처리가 함께 멈추는 것을 막을 수 없었다(실기기 ANR로
- * 5차례 확인). 별도 프로세스로 분리하면 이 블로킹은 숲 프로세스에만 영향을 주고 호스트
- * 프로세스의 메인 스레드는 전혀 블로킹되지 않으므로, 닫을 때 별다른 우회 없이 그냥
- * finish()를 호출한다. */
+ * 앱 백그라운드 전환 시 정리, 재진입과의 경합 등)로 반복 재현되어, finish()가 트리거하는
+ * "정상 종료 절차" 자체를 신뢰할 수 없었다(실기기 ANR로 6차례 확인). 별도 프로세스로
+ * 격리해둔 덕분에 정상 종료를 거칠 필요가 없어, 닫을 때는 Process.killProcess()로 이
+ * 프로세스를 즉시 강제 종료한다 — 호스트(MainActivity) 프로세스와는 무관하다. */
 @Keep
 class ForestUnityActivity : UnityPlayerGameActivity() {
     private val work = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -130,9 +129,6 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
     override fun onResume() {
         super.onResume()
         resumed = true
-        // moveTaskToBack로만 나갔다 들어온 경우 인스턴스가 재사용되므로, 이전 종료 시점의
-        // closing 플래그를 여기서 풀어줘야 재진입 시 refresh()/dispatch()가 다시 동작한다.
-        closing = false
         if (::curtain.isInitialized) refresh()
     }
 
@@ -157,22 +153,25 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         return super.dispatchKeyEvent(event)
     }
 
-    // finish()가 아니라 moveTaskToBack을 쓴다. 별도 프로세스(:forest)라 onDestroy()의 네이티브
-    // 종료 대기가 블로킹돼도 호스트 프로세스는 전혀 영향받지 않지만, 반복적으로 나갔다
-    // 들어왔다 할 때마다 매번 finish()로 인스턴스를 죽였다 새로 만들면 이 프로세스 자신의
-    // 메인 스레드에서 "이전 인스턴스의 onDestroy() 블로킹 중에 새 인스턴스의 onCreate()가
-    // 창을 못 띄워 포커스를 못 받는" 경합이 생겨 숲 프로세스 자체가 ANR날 수 있다(실기기로
-    // 확인). moveTaskToBack으로 인스턴스를 살려두고 재사용하면 이 경합 자체가 없어진다.
+    // finish()는 쓰지 않는다. finish()가 트리거하는 정상 종료 절차(Activity.onDestroy() →
+    // GameActivity.onDestroy() → terminateNativeCode())가 얼마나 걸릴지 예측할 수 없고
+    // (실기기에서 수 초~30초 이상 관측됨), moveTaskToBack으로 살려둬도 OS가 예측 불가한
+    // 시점에 자체 destroy시켜(recent-task-trimmed) 결국 같은 블로킹을 겪는다 — 이 블로킹이
+    // 재진입과 겹치면 같은 프로세스 안에서 새 인스턴스가 창 포커스를 못 받아 ANR로 이어지는
+    // 것을 실기기로 반복 확인했다. 별도 프로세스(:forest)로 격리해뒀으므로, 정상 종료 절차를
+    // 아예 거치지 않고 이 프로세스를 즉시 강제 종료한다 — 호스트(MainActivity) 프로세스와는
+    // 무관하고, 정리해야 할 공유 자원도 없어 안전하다.
     @Keep
     fun requestForestClose() = runOnUiThread {
         if (!closing) {
             closing = true
-            refreshJob?.cancel()
-            moveTaskToBack(true)
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
     }
 
-    override fun onUnityPlayerUnloaded() = runOnUiThread { moveTaskToBack(true) }
+    override fun onUnityPlayerUnloaded() = runOnUiThread {
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
 
     @Keep
     fun requestForestRefresh() = runOnUiThread { if (!closing) refresh() }

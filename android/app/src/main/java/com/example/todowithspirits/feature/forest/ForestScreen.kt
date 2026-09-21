@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
@@ -19,6 +15,16 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import kotlinx.coroutines.delay
+
+// ForestUnityActivity는 별도 프로세스(:forest)라 "닫는 중"이라는 상태를 companion object 등
+// 메모리 공유 방식으로는 이 프로세스(MainActivity)에 알릴 수 없다. 대신 이 프로세스 자신이
+// "Forest가 닫혔다"고 판단한 시각만 기록해두고, 그 직후 바로 재진입하려는 시도를 잠깐
+// 늦춘다 — Forest를 닫을 때는 항상 finish()하는데, 그 안의 네이티브 종료 대기가 끝나기 전에
+// 같은 프로세스에서 새 인스턴스가 창을 만들려 하면 포커스를 못 받아 ANR로 이어지기 때문이다.
+private object ForestCloseTracker {
+    @Volatile var lastCloseAtMs: Long = 0L
+}
 
 /** Unity는 별도 프로세스(:forest)의 전체 화면 Activity에서 렌더링되고, TODO 네비게이션은
  * 그 아래(별도 프로세스) 그대로 유지된다. ForestUnityActivity가 화면을 덮기 전까지
@@ -29,25 +35,23 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
  * Forest가 화면을 덮으며 한 번 ON_PAUSE된 뒤 다시 ON_RESUME되는 순간(Forest가 사라지고 이
  * 화면으로 돌아온 순간)을 "닫힘"으로 판단한다. LocalLifecycleOwner는 Navigation-Compose
  * 안에서 NavBackStackEntry 스코프 lifecycle을 돌려주므로 쓰지 않는다 — 실제 Activity가
- * moveTaskToBack으로 pause/resume되는 시점과 정확히 일치하지 않을 수 있기 때문이다. */
+ * pause/resume되는 시점과 정확히 일치하지 않을 수 있기 때문이다. */
 @Composable
 fun ForestScreen(onReturnToToday: () -> Unit) {
     val context = LocalContext.current
     val activity = LocalActivity.current
 
-    // 바텀바 탭 재진입 시 같은 Compose 세션 안에서 빠르게 여러 번 눌려도 startActivity가
-    // 겹쳐 호출되지 않도록 하는 로컬(같은 프로세스) 디바운스. 시간 기준이라 무한 로딩으로
-    // 이어지지 않는다(rememberSaveable 불리언 1회성 가드와 달리 재진입을 영구히 막지 않음).
-    var lastLaunchAtMs by rememberSaveable { mutableLongStateOf(0L) }
     LaunchedEffect(Unit) {
-        val now = System.currentTimeMillis()
-        if (now - lastLaunchAtMs > 2000) {
-            lastLaunchAtMs = now
-            context.startActivity(
-                Intent(context, ForestUnityActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        }
+        // Forest를 막 닫은 직후(이전 인스턴스의 finish()가 아직 onDestroy()를 끝내지 못했을
+        // 수 있는 구간)라면 새 startActivity를 잠깐 늦춰서, 같은(:forest) 프로세스 안에서
+        // 이전 인스턴스의 종료와 새 인스턴스의 창 생성이 겹치는 걸 피한다.
+        val minGapMs = 2000L
+        val elapsed = System.currentTimeMillis() - ForestCloseTracker.lastCloseAtMs
+        if (elapsed in 0 until minGapMs) delay(minGapMs - elapsed)
+        context.startActivity(
+            Intent(context, ForestUnityActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     DisposableEffect(activity) {
@@ -56,7 +60,10 @@ fun ForestScreen(onReturnToToday: () -> Unit) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> hasPaused = true
-                Lifecycle.Event.ON_RESUME -> if (hasPaused) onReturnToToday()
+                Lifecycle.Event.ON_RESUME -> if (hasPaused) {
+                    ForestCloseTracker.lastCloseAtMs = System.currentTimeMillis()
+                    onReturnToToday()
+                }
                 else -> {}
             }
         }
