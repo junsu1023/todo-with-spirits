@@ -60,7 +60,8 @@ fun TodayPlanSection(
     onCancelCompleteTask: (taskId: Long, date: LocalDate) -> Unit,
     onDeleteTask: (taskId: Long) -> Unit,
     onEditTask: (taskId: Long) -> Unit,
-    onPostponeTodo: (taskId: Long) -> Unit
+    onPostponeTodo: (taskId: Long) -> Unit,
+    navigateToPlan: () -> Unit
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -97,7 +98,8 @@ fun TodayPlanSection(
             Text(
                 text = stringResource(R.string.see_all_plan),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.systemGrey
+                color = SpiritTodoTheme.color.systemGrey,
+                modifier = Modifier.noRippleClickable(onClick = { navigateToPlan() })
             )
         }
 

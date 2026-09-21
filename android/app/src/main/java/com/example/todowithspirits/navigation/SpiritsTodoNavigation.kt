@@ -43,6 +43,7 @@ fun SpiritsTodoNavigation(
     val navigateToEditTask: (Long) -> Unit = { taskId ->
         navController.navigate("${Screen.Add.route}?taskId=$taskId")
     }
+    val navigateToPlan: () -> Unit = { navController.navigate(Screen.Plan.route) }
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
@@ -135,7 +136,8 @@ fun SpiritsTodoNavigation(
         composable(Screen.Today.route) {
             TodayScreen(
                 navigateToAlarm = navigateToAlarm,
-                navigateToEditTask = navigateToEditTask
+                navigateToEditTask = navigateToEditTask,
+                navigateToPlan = navigateToPlan
             )
         }
 

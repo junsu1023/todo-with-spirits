@@ -27,7 +27,8 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 fun TodayScreen(
     todayViewModel: TodayViewModel = hiltViewModel(),
     navigateToAlarm: () -> Unit,
-    navigateToEditTask: (Long) -> Unit
+    navigateToEditTask: (Long) -> Unit,
+    navigateToPlan: () -> Unit
 ) {
     val uiState by todayViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -73,7 +74,8 @@ fun TodayScreen(
                 onCancelCompleteTask = { taskId, date -> todayViewModel.cancelTaskCompletion(taskId, date) },
                 onDeleteTask = { taskId -> todayViewModel.deleteTask(taskId) },
                 onEditTask = navigateToEditTask,
-                onPostponeTodo = { taskId -> todayViewModel.postponeTodo(taskId) }
+                onPostponeTodo = { taskId -> todayViewModel.postponeTodo(taskId) },
+                navigateToPlan = { navigateToPlan() }
             )
         }
     }
