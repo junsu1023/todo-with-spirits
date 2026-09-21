@@ -55,6 +55,7 @@
             android:exported="false"
             android:launchMode="singleTask"
             android:taskAffinity="${applicationId}.forest"
+            android:process=":forest"
             android:excludeFromRecents="true"
             android:screenOrientation="fullSensor"
             android:hardwareAccelerated="false"
