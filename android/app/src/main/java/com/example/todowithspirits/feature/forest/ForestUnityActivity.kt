@@ -14,7 +14,8 @@ import android.widget.Toast
 import androidx.annotation.Keep
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.domain.usecase.GetUserProfileUseCase
-import com.example.todowithspirits.util.ForestExitBus
+import com.example.domain.usecase.RestoreSessionUseCase
+import com.example.core.auth.TokenHolder
 import com.example.todowithspirits.util.TaskRefreshBus
 import com.unity3d.player.UnityPlayer
 import com.unity3d.player.UnityPlayerGameActivity
@@ -45,10 +46,21 @@ interface ForestHostDependencies {
     fun profile(): GetUserProfileUseCase
     fun calendar(): GetTaskCalendarUseCase
     fun taskRefreshBus(): TaskRefreshBus
-    fun forestExitBus(): ForestExitBus
+    // AndroidManifest에서 android:process=":forest"로 별도 프로세스에서 실행되므로,
+    // 이 프로세스는 SplashScreen을 거치지 않는다. TokenHolder.awaitBootstrap()이
+    // AuthInterceptor에서 영원히 대기하지 않도록 여기서 직접 세션을 복원해야 한다.
+    fun restoreSession(): RestoreSessionUseCase
 }
 
-/** The native curtain stays up until Unity has opened this authenticated account's save. */
+/** The native curtain stays up until Unity has opened this authenticated account's save.
+ *
+ * AndroidManifest에서 android:process=":forest"로 호스트 앱과 별도 프로세스에서 실행된다.
+ * GameActivity.onDestroy()의 네이티브 엔진 종료 대기(terminateNativeCode)가 메인 스레드를
+ * 블로킹하는 현상이 실기기에서 여러 형태(직접 finish, moveTaskToBack 후 OS의 자체 trim,
+ * 앱 백그라운드 전환 시 정리, 재진입과의 경합 등)로 반복 재현되어, finish()가 트리거하는
+ * "정상 종료 절차" 자체를 신뢰할 수 없었다(실기기 ANR로 6차례 확인). 별도 프로세스로
+ * 격리해둔 덕분에 정상 종료를 거칠 필요가 없어, 닫을 때는 Process.killProcess()로 이
+ * 프로세스를 즉시 강제 종료한다 — 호스트(MainActivity) 프로세스와는 무관하다. */
 @Keep
 class ForestUnityActivity : UnityPlayerGameActivity() {
     private val work = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -97,6 +109,14 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         addContentView(curtain, ViewGroup.LayoutParams(-1, -1))
         // 진입/새로고침 중에는 로딩만 보여주고, 실제로 막혔을 때만(showActions=true) 재시도·돌아가기 버튼을 노출한다.
         showCurtain("정령과 만날 준비를 하고 있어요.")
+
+        // 이 프로세스는 Splash를 거치지 않으므로 여기서 직접 세션을 복원하고 부트스트랩
+        // 완료를 알려야, refresh()가 호출하는 API들이 AuthInterceptor에서 무한 대기하지 않는다.
+        work.launch {
+            runCatching { dependencies.restoreSession()() }
+            TokenHolder.markBootstrapCompleted()
+        }
+
         work.launch { dependencies.taskRefreshBus().events.collect { if (resumed) refresh() } }
         work.launch {
             delay(20000)
@@ -109,9 +129,6 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
     override fun onResume() {
         super.onResume()
         resumed = true
-        // moveTaskToBack로만 나갔다 들어온 경우 인스턴스가 재사용되므로, 이전 종료 시점의
-        // closing 플래그를 여기서 풀어줘야 재진입 시 refresh()/dispatch()가 다시 동작한다.
-        closing = false
         if (::curtain.isInitialized) refresh()
     }
 
@@ -123,6 +140,11 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         super.onDestroy()
     }
 
+    @Deprecated("Android compatibility callback")
+    override fun onBackPressed() = requestForestClose()
+
+    // GameActivity(androidx.games:games-activity)는 뒤로가기 키를 onBackPressed()로 넘기지 않고
+    // dispatchKeyEvent에서 바로 네이티브 입력 큐로 전달해 소비해버린다. 여기서 먼저 가로채야 한다.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
             requestForestClose()
@@ -131,24 +153,24 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
         return super.dispatchKeyEvent(event)
     }
 
+    // finish()는 쓰지 않는다. finish()가 트리거하는 정상 종료 절차(Activity.onDestroy() →
+    // GameActivity.onDestroy() → terminateNativeCode())가 얼마나 걸릴지 예측할 수 없고
+    // (실기기에서 수 초~30초 이상 관측됨), moveTaskToBack으로 살려둬도 OS가 예측 불가한
+    // 시점에 자체 destroy시켜(recent-task-trimmed) 결국 같은 블로킹을 겪는다 — 이 블로킹이
+    // 재진입과 겹치면 같은 프로세스 안에서 새 인스턴스가 창 포커스를 못 받아 ANR로 이어지는
+    // 것을 실기기로 반복 확인했다. 별도 프로세스(:forest)로 격리해뒀으므로, 정상 종료 절차를
+    // 아예 거치지 않고 이 프로세스를 즉시 강제 종료한다 — 호스트(MainActivity) 프로세스와는
+    // 무관하고, 정리해야 할 공유 자원도 없어 안전하다.
     @Keep
     fun requestForestClose() = runOnUiThread {
         if (!closing) {
             closing = true
-            refreshJob?.cancel()
-            dependencies.forestExitBus().notifyExited()
-            moveTaskToBack(true)
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
     }
 
     override fun onUnityPlayerUnloaded() = runOnUiThread {
-        // Unity가 자체적으로(예: 인게임 종료 UI) unload를 트리거한 경우의 방어 처리.
-        if (!closing) {
-            closing = true
-            dependencies.forestExitBus().notifyExited()
-        }
-
-        moveTaskToBack(true)
+        android.os.Process.killProcess(android.os.Process.myPid())
     }
 
     @Keep
@@ -235,7 +257,7 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
                 val revision = ForestHostSnapshot.nextRevision(preferences.getLong(revisionKey, 0), System.currentTimeMillis())
                 val confirmedAt = Instant.now().toString()
                 // commit()은 디스크에 동기 기록될 때까지 블로킹된다. work가 Main.immediate라
-                // IO로 넘기지 않으면 메인 스레드가 그대로 막힌다(숲 종료 시 ANR의 원인).
+                // IO로 넘기지 않으면 메인 스레드가 그대로 막힌다.
                 withContext(Dispatchers.IO) {
                     check(preferences.edit().putLong(revisionKey, revision).putString("confirmed:$nextAccount", confirmedAt).commit()) {
                         "동기화 상태를 저장하지 못했어요."
@@ -276,45 +298,26 @@ class ForestUnityActivity : UnityPlayerGameActivity() {
                 val data = JSONObject(request)
                 val expectedAccount = data.getString("accountId")
                 require(expectedAccount == accountId)
-
                 val requestedDates = data.getJSONArray("dates")
                 require(requestedDates.length() <= 90)
-
                 val dates = (0 until requestedDates.length()).map { LocalDate.parse(requestedDates.getString(it)) }.distinct().sorted()
                 if (dates.isEmpty()) return@launch
                 require(dates.last() < date)
                 require(java.time.temporal.ChronoUnit.DAYS.between(dates.first(), dates.last()) < 90)
-
                 val calendar = dependencies.calendar()(dates.first(), dates.last()).getOrThrow()
                 ensureActive()
                 if (closing || accountId != expectedAccount || activeSession != sessionKey()) return@launch
-
                 // Validate all requested days before sending any corrections.
                 val rowsByDate = dates.associateWith { day -> ForestHostSnapshot.items(day, calendar.items.filter { it.occurrenceDate == day }) }
                 for ((day, rows) in rowsByDate) {
                     ensureActive()
                     val key = "revision:$expectedAccount"
                     val revision = ForestHostSnapshot.nextRevision(preferences.getLong(key, 0), System.currentTimeMillis())
-
-                    withContext(Dispatchers.IO) {
-                        check(preferences.edit().putLong(key, revision).commit())
-                    }
-
+                    withContext(Dispatchers.IO) { check(preferences.edit().putLong(key, revision).commit()) }
                     val items = JSONArray()
-                    rows.forEach { row ->
-                        items.put(JSONObject().put("id", row.id)
-                            .put("title", row.title)
-                            .put("category", row.category)
-                            .put("isHabit", row.isHabit)
-                            .put("isCompleted", row.isCompleted))
-                    }
-
-                    val snapshot = JSONObject()
-                        .put("schemaVersion", 1)
-                        .put("accountId", expectedAccount)
-                        .put("date", day.toString())
-                        .put("revision", revision)
-                        .put("timeZone", ZoneId.systemDefault().id).put("items", items)
+                    rows.forEach { row -> items.put(JSONObject().put("id", row.id).put("title", row.title).put("category", row.category).put("isHabit", row.isHabit).put("isCompleted", row.isCompleted)) }
+                    val snapshot = JSONObject().put("schemaVersion", 1).put("accountId", expectedAccount).put("date", day.toString())
+                        .put("revision", revision).put("timeZone", ZoneId.systemDefault().id).put("items", items)
                     UnityPlayer.UnitySendMessage("AppRoot", "ReceiveHistoricalTodoSnapshot", snapshot.toString())
                 }
             } catch (cancelled: CancellationException) {
