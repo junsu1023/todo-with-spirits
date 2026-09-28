@@ -4,6 +4,7 @@
   "references": [
     "TodoSpirits.Core",
     "TodoSpirits.Runtime",
+    "TodoSpirits.ArtKit.Runtime",
     "Unity.InputSystem",
     "Unity.ugui"
   ],
