@@ -127,16 +127,18 @@ namespace TodoSpirits.Runtime
 
             _saveData = _saveRepository.Load() ?? new PrototypeSaveData();
             NormalizeSaveData();
+            MigrateForestCompletionOwnership();
             if (_lifeCycleEnabled)
             {
                 try
                 {
                     InitializeLifeCycle();
                     _currentRecord = FindRecord(CurrentDateKey, CurrentSpiritState.SpiritId);
-                    if (_currentRecord == null)
+                    if (_saveData.Forest.Enabled) RestoreForestCurrentRecord();
+                    else if (_currentRecord == null)
                     {
                         _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey,
-                            _todoCompletionSource.GetCompletedTasks(CurrentDateKey));
+                            CompletionInput(CurrentDateKey));
                         _saveData.Records.Add(_currentRecord);
                     }
                     _saveRepository.Save(_saveData);
@@ -249,6 +251,7 @@ namespace TodoSpirits.Runtime
         {
             EnsureInitialized();
             _currentRecord = FindRecord(CurrentDateKey, CurrentSpiritState.SpiritId);
+            if (_saveData.Forest.Enabled && !HasActiveForestCompanion) return _currentRecord;
             return _currentRecord ?? CreateCurrentRecord();
         }
 
@@ -363,7 +366,7 @@ namespace TodoSpirits.Runtime
 
         private DailyCompanionRecord CreateCurrentRecord()
         {
-            var completedTasks = _todoCompletionSource.GetCompletedTasks(CurrentDateKey);
+            var completedTasks = CompletionInput(CurrentDateKey);
             var record = BuildRecord(
                 _saveData,
                 CurrentSpiritState,
@@ -386,6 +389,11 @@ namespace TodoSpirits.Runtime
                 ? new List<CompletedTask>()
                 : new List<CompletedTask>(completedTasks);
             var classifications = _taskClassifier.Classify(tasks, saveData.ClassificationMemory);
+            if (saveData.Forest.Enabled)
+                for (int i = 0; i < tasks.Count; i++)
+                    if (tasks[i].UserCategory == UserTaskCategory.Unspecified)
+                        classifications[i] = new TaskClassification(tasks[i].TaskId, UserTaskCategory.Unspecified,
+                            "미정", 1f, Array.Empty<SpiritActionId>(), "미정은 생활 유형을 추론하지 않고 완료 사실만 보존합니다.");
             var historyRecords = BuildHistoryInputRecords(
                 saveData,
                 baseSpiritState,
@@ -402,15 +410,19 @@ namespace TodoSpirits.Runtime
                 historyState,
                 SimulationVersion,
                 _lifeCycleEnabled ? GetGiftActionCandidates(date, baseSpiritState.SpiritId) : null,
-                _lifeCycleEnabled ? CurrentLife.ActiveProject?.Action : null);
+                _lifeCycleEnabled ? CurrentLife.ActiveProject?.Action : null,
+                saveData.Forest.Enabled ? 2 : int.MaxValue);
 
             if (_lifeCycleEnabled)
             {
                 SpiritDayPresentation.Apply(report.SpiritDay, baseSpiritState.SpiritId);
                 report.SpiritDay.Location = CompanionStagePresentation.PlaceName(CurrentLife.Stage, report.SpiritDay.PrimaryAction);
             }
-            var essenceReward = EssenceRewardCalculator.Calculate(tasks.Count);
-            var rewardBand = EssenceRewardCalculator.GetBand(tasks.Count);
+            int rewardCount = saveData.Forest.Enabled
+                ? saveData.Forest.Todos.FindAll(t => !t.Archived && t.CompletedDates.Contains(date)).Count
+                : tasks.Count;
+            var essenceReward = EssenceRewardCalculator.Calculate(rewardCount);
+            var rewardBand = EssenceRewardCalculator.GetBand(rewardCount);
             var grantedDelta = saveData.EssenceWallet.ApplyReward(
                 date,
                 essenceReward,

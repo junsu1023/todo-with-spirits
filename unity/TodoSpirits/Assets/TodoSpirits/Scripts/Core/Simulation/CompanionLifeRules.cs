@@ -66,6 +66,22 @@ namespace TodoSpirits.Core
             life.FinalizedDates.Add(record.Date);
             if (record.CompletedTasks == null || record.CompletedTasks.Count == 0) return true;
             life.ActivityDays++;
+            // The forest edition keeps category facts in daily records. A specialty is an explicit choice.
+            // Unspecified tasks grant an activity day without inventing a rest/learning pattern.
+            if (life.Story.Enabled)
+            {
+                if (record.CompletedTasks.Exists(t => t.UserCategory != UserTaskCategory.Unspecified)) {
+                    var forestAction = record.SpiritDay.PrimaryAction;
+                    life.CurrentActionStreak = life.ActivityDays > 1 && forestAction == life.LastAction ? life.CurrentActionStreak + 1 : 1;
+                    life.LastAction = forestAction;
+                    var forestCount = life.Actions.Find(item => item.Action == forestAction);
+                    if (forestCount == null) { forestCount = new LifeActionCount { Action = forestAction }; life.Actions.Add(forestCount); }
+                    forestCount.Count++;
+                    forestCount.LongestStreak = Math.Max(forestCount.LongestStreak, life.CurrentActionStreak);
+                }
+                ForestStoryRules.UpdateStage(life);
+                return true;
+            }
             var action = record.SpiritDay.PrimaryAction;
             life.CurrentActionStreak = life.ActivityDays > 1 && action == life.LastAction ? life.CurrentActionStreak + 1 : 1;
             life.LastAction = action;
@@ -109,6 +125,7 @@ namespace TodoSpirits.Core
 
         private static void TryAdvance(CompanionLife life)
         {
+            if (life.Story.Enabled) { ForestStoryRules.UpdateStage(life); return; }
             if (life.Stage == CompanionStage.Adult) return;
             int index = (int)life.Stage;
             int elapsed = life.ActivityDays - life.StageStartedAtActivityDay;
@@ -175,13 +192,20 @@ namespace TodoSpirits.Core
         public static void Name(CompanionLife life, string name)
         {
             if (life.Farewell != FarewellStep.Naming) throw new InvalidOperationException("회고 후 이름을 지어 주세요.");
+            SetName(life, name);
+            life.Farewell = FarewellStep.LastCompanionship;
+        }
+
+        public static void SetName(CompanionLife life, string name)
+        {
+            if (life.Farewell == FarewellStep.Independent) throw new InvalidOperationException("지금 함께하는 정령의 이름을 지어 주세요.");
             string value = (name ?? string.Empty).Trim();
             int length = new StringInfo(value).LengthInTextElements;
             if (length < 1 || length > 12) throw new ArgumentException("이름은 1~12자로 입력해 주세요.");
             foreach (char c in value) if (char.IsControl(c) || c == '<' || c == '>')
                 throw new ArgumentException("이름에는 줄바꿈이나 꺾쇠를 넣을 수 없습니다.");
             life.Name = value;
-            life.Farewell = FarewellStep.LastCompanionship;
+            life.NamingOffered = true;
         }
 
         public static void ObserveNamedCompanion(CompanionLife life)

@@ -46,17 +46,21 @@ namespace TodoSpirits.Runtime
         public bool SynchronizeLifeDate(DateTime localToday)
         {
             EnsureInitialized();
-            if (!_lifeCycleEnabled || localToday.Date <= CurrentDate || CurrentLife.Farewell == FarewellStep.Independent) return false;
+            if (!_lifeCycleEnabled || localToday.Date <= CurrentDate ||
+                (!_saveData.Forest.Enabled && CurrentLife.Farewell == FarewellStep.Independent)) return false;
             MutateLife(() => {
                 // Finalize only the day actually loaded. Absent days never receive invented TODOs or rewards.
-                CompanionLifeRules.FinalizeDay(CurrentLife, _currentRecord);
+                if (_currentRecord != null && CurrentLife.Farewell != FarewellStep.Independent)
+                    CompanionLifeRules.FinalizeDay(CurrentLife, _currentRecord);
                 CurrentDate = localToday.Date;
                 _saveData.SessionDate = CurrentDateKey;
                 BindLifeSpirit();
                 SetLifeDayPreset();
-                _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey,
-                    _todoCompletionSource.GetCompletedTasks(CurrentDateKey));
-                _saveData.Records.Add(_currentRecord);
+                if (_saveData.Forest.Enabled) RestoreForestCurrentRecord();
+                else {
+                    _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey, CompletionInput(CurrentDateKey));
+                    _saveData.Records.Add(_currentRecord);
+                }
             });
             return true;
         }
@@ -72,7 +76,7 @@ namespace TodoSpirits.Runtime
                 _saveData.SessionDate = CurrentDateKey;
                 BindLifeSpirit();
                 SetLifeDayPreset();
-                var tasks = _todoCompletionSource.GetCompletedTasks(CurrentDateKey);
+                var tasks = CompletionInput(CurrentDateKey);
                 _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey, tasks);
                 _saveData.Records.Add(_currentRecord);
             });
@@ -92,26 +96,43 @@ namespace TodoSpirits.Runtime
         public void ObserveNamedCompanion() => MutateLife(() => CompanionLifeRules.ObserveNamedCompanion(CurrentLife));
         public void LetCompanionLeave() => MutateLife(() => {
             if (PendingTrip != null) throw new InvalidOperationException("여행에서 돌아온 뒤 독립을 배웅해 주세요.");
+            if (_saveData.Forest.Enabled && _currentRecord != null)
+                CompanionLifeRules.FinalizeDay(CurrentLife, _currentRecord);
             CompanionLifeRules.Leave(CurrentLife, CurrentDateKey);
         });
 
-        public DailyCompanionRecord SelectNextEgg(int egg)
+        public DailyCompanionRecord SelectNextEgg(int egg, DateTime? localToday = null)
         {
             MutateLife(() => {
                 if (CurrentLife.Farewell != FarewellStep.Independent)
                     throw new InvalidOperationException("현재 정령의 독립 후 알을 선택할 수 있습니다.");
-                // Next cycle starts next day so one account activity date cannot belong to two companions.
-                var nextDate = CurrentDate.AddDays(1);
+                // Forest occurrence ownership permits a real same-day handoff without replaying growth.
+                var nextDate = _saveData.Forest.Enabled ? CurrentDate : CurrentDate.AddDays(1);
+                if (localToday.HasValue && nextDate < localToday.Value.Date) nextDate = localToday.Value.Date;
                 var next = CompanionLifeRules.CreateFromEgg("companion-" + Guid.NewGuid().ToString("N"), ToDateKey(nextDate), egg);
+                next.Story.Enabled = _saveData.Forest.Enabled;
+                if (_saveData.Forest.Enabled && !IsHostConnected && nextDate > CurrentDate)
+                {
+                    // One-day tasks still awaiting completion must stay reachable after the handoff.
+                    // CompletedDates and archived daily snapshots keep their original ownership;
+                    // connected TODO apps remain authoritative for their own task dates.
+                    string departingDate = CurrentDateKey;
+                    string arrivingDate = ToDateKey(nextDate);
+                    foreach (var todo in _saveData.Forest.Todos)
+                        if (!todo.Archived && !todo.Habit && todo.CreatedOn == departingDate && !todo.CompletedDates.Contains(departingDate))
+                            todo.CreatedOn = arrivingDate;
+                }
                 CurrentDate = nextDate;
                 _saveData.Companions.Add(next);
                 _saveData.ActiveCompanionId = next.SpiritId;
                 _saveData.SessionDate = CurrentDateKey;
                 BindLifeSpirit();
                 SetLifeDayPreset();
+                if (_saveData.Forest.Enabled) AssignForestCompletionOwnership(CurrentDateKey);
                 _currentRecord = BuildRecord(_saveData, CurrentSpiritState, CurrentDateKey,
-                    _todoCompletionSource.GetCompletedTasks(CurrentDateKey));
+                    CompletionInput(CurrentDateKey));
                 _saveData.Records.Add(_currentRecord);
+                if (_saveData.Forest.Enabled && (!IsHostConnected || _saveData.Forest.HostDate == CurrentDateKey)) CaptureForestDay();
             });
             return _currentRecord;
         }
