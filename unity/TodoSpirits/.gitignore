@@ -67,3 +67,12 @@ AGENT.md
 [Aa]ssets/[Pp]lugins/[Rr]oslyn/
 [Aa]ssets/[Pp]lugins/[Rr]oslyn.meta
 MCPForUnity.*.csproj
+
+# Local Android library exports and device validation outputs
+/[Ee]xports/
+/[Vv]alidation/
+
+# Local art handoff and prototype backups
+/ArtHandoffBackups/
+/Documentation/PrototypeBackups/
+/Documentation/ArtKitBackups/
