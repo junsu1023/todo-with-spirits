@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-09-17",
+  "unity": "6000.3.16f1",
+  "save": "Temp/forest-polish-v3-qa.json",
+  "isolatedSaveAssertedBeforeMutations": true,
+  "normalUserSaveMutated": false,
+  "viewports": [
+    "540x1000",
+    "360x640"
+  ],
+  "tests": {
+    "failed": 0,
+    "skipped": 0,
+    "passed": 76,
+    "total": 76
+  },
+  "checks": [
+    "empty day has no invented tasks",
+    "explicit TODO completion and story choice",
+    "date journal contains original task title category habit",
+    "title draft restored after close and reopen",
+    "14 activity day adulthood",
+    "12 character Korean name",
+    "pending trip prevents departure and opens journey state",
+    "trip claimed and memory shown",
+    "independence and next egg",
+    "reunion after two activity days",
+    "letter and Artisan wind chime saved",
+    "restart preserves two companions two decorations reunion and new todo",
+    "six gift sprites render with transparent gutters",
+    "blanket gift charged 15 essence",
+    "trip preparation text overflow scan returned 0"
+  ],
+  "consoleErrorsAfterUiQa": 0,
+  "limitations": [
+    "no Android device IME safe area lifecycle performance validation",
+    "native TODO app sender and embedding integration not validated",
+    "not a store signed AAB upload",
+    "session drafts do not survive app restart"
+  ]
+}

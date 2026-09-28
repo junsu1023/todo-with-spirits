@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-09-17",
+  "path": "Builds/Forest/TodoSpirits-Forest-release.apk",
+  "bytes": 65920371,
+  "sha256": "9C84E5FBA6C9413EB2F71F55A277197DFDB893F3695F7E623EA4D6790F50EB6E",
+  "package": "com.DefaultCompany.TodoSpirits",
+  "versionName": "1.0",
+  "versionCode": 1,
+  "minimumSdk": 25,
+  "targetSdk": 36,
+  "abi": "arm64-v8a",
+  "debuggable": false,
+  "shaderWarnings": 970,
+  "pipelineDisabledPlayerWarning": 1,
+  "storeUpload": false
+}

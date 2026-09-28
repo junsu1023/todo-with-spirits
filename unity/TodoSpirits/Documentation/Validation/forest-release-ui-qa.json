@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-17",
+  "unity": "6000.3.16f1",
+  "save": "Temp/forest-release-ui-qa.json",
+  "screens": [
+    "540x1000",
+    "360x640"
+  ],
+  "checks": [
+    "Empty title keeps modal and displays error",
+    "Todo row opens edit form and persists long Korean title",
+    "Text preferredHeight fits inspected Today Album Reunion screens",
+    "Scroll position 250 remains 250 after Render",
+    "360x640 EventSystem raycast hits Tab1",
+    "14 activity days reaches AdultReveal",
+    "Pending trip remains accessible from adult screen",
+    "TripReturn claim clears pending trip",
+    "12 Korean character name stored via input sheet",
+    "Farewell and egg choice produce second companion",
+    "Reunion requires explicit claim and cannot be claimed again",
+    "Album letter appears in received month and opens again",
+    "Reduced motion updates actor and saved preference",
+    "Restart restored two companions, 12-character name, claimed reunion, two equipped decorations and reduced-motion preference",
+    "Prefab has four character poses and six prop sprites",
+    "Fresh play session reports zero Console errors"
+  ],
+  "deviceKeyboardTested": false,
+  "nativeEmbeddingTested": false
+}

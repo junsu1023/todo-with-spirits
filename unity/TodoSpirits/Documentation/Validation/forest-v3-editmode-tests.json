@@ -1,0 +1,545 @@
+{
+  "status": "completed",
+  "duration": 1.11,
+  "summary": {
+    "total": 76,
+    "passed": 76,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.DiverseObservedLife_ReachesAdultIn28ActivityDays",
+      "Status": "Passed",
+      "Duration": 0.0171281,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.EggSelection_HasStableUniqueTraits_AndAllEightAreReachable",
+      "Status": "Passed",
+      "Duration": 0.0053615,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.Farewell_RequiresReflectionNameAndNamedMainVisit",
+      "Status": "Passed",
+      "Duration": 0.0067525,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.Finalization_IsIdempotent_AndEmptyDaysDoNotGrow",
+      "Status": "Passed",
+      "Duration": 0.0003832,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.OngoingProject_UsesActualPatternAndOnlyMatchingActiveDaysAdvanceIt",
+      "Status": "Passed",
+      "Duration": 0.0009864,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.RejectsWrongSpiritAndOutOfOrderRecordsWithoutMutation",
+      "Status": "Passed",
+      "Duration": 0.0003256,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.SingleActivityWithoutEvents_AdvancesBy42ActivityDays",
+      "Status": "Passed",
+      "Duration": 0.0003717,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.CompanionLifeRulesTests.TravelStories_AreStableAndPreparationsFavorTheirTheme",
+      "Status": "Passed",
+      "Duration": 0.002695,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.ApplyCompletedTaskCount_GrantsOnlyDifferenceFromHighestDailyReward",
+      "Status": "Passed",
+      "Duration": 0.0017034,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(0,0,None)",
+      "Status": "Passed",
+      "Duration": 0.0003607,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(1,10,OneTask)",
+      "Status": "Passed",
+      "Duration": 5.95E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(2,18,TwoToThreeTasks)",
+      "Status": "Passed",
+      "Duration": 3.69E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(3,18,TwoToThreeTasks)",
+      "Status": "Passed",
+      "Duration": 3.33E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(4,25,FourOrMoreTasks)",
+      "Status": "Passed",
+      "Duration": 3.05E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.EssenceRewardCalculatorTests.Calculate_UsesPrototypeBands(99,25,FourOrMoreTasks)",
+      "Status": "Passed",
+      "Duration": 4.48E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(WorkStudy,CraftRepair)",
+      "Status": "Passed",
+      "Duration": 0.0033606,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Health,WalkForest)",
+      "Status": "Passed",
+      "Duration": 0.0001031,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Living,CraftRepair)",
+      "Status": "Passed",
+      "Duration": 5.99E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Relationships,SocialTea)",
+      "Status": "Passed",
+      "Duration": 5.42E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(SelfDevelopment,ReadRecords)",
+      "Status": "Passed",
+      "Duration": 5.31E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Hobby,CraftRepair)",
+      "Status": "Passed",
+      "Duration": 5.09E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(RestMind,Rest)",
+      "Status": "Passed",
+      "Duration": 7.47E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Assets,ReadRecords)",
+      "Status": "Passed",
+      "Duration": 5.38E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllCategoriesHaveDefaults(Economy,ReadRecords)",
+      "Status": "Passed",
+      "Duration": 5.17E-05,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.AllEightTemperamentsAffectScoresAndHaveDistinctReadableDescriptions",
+      "Status": "Passed",
+      "Duration": 0.0079828,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.DailyPresentationVariesAcrossDaysWithoutChangingSelectedAction",
+      "Status": "Passed",
+      "Duration": 0.0010299,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.GrowthExpandsPlacesWithoutChangingActionAndHintsNeedActualPattern",
+      "Status": "Passed",
+      "Duration": 0.0006882,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.InvalidMemoryFallsBackAndExactIdentityWinsOverTitle",
+      "Status": "Passed",
+      "Duration": 0.0011673,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.RememberedCorrectionWinsOverRoutineAndKeywords",
+      "Status": "Passed",
+      "Duration": 0.0005321,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.PrototypeCoverageTests.ThirdTemperamentIsIncludedInScoring",
+      "Status": "Passed",
+      "Duration": 0.0023581,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.DayGeneration_IsIndependentOfDebugVisitOrder",
+      "Status": "Passed",
+      "Duration": 0.0026906,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.Generate_ActiveProfileUsesResolvedDialogue",
+      "Status": "Passed",
+      "Duration": 0.0004518,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.Generate_SameInputDifferentProfileChangesCandidateWeightAndReason",
+      "Status": "Passed",
+      "Duration": 0.0005685,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.Generate_SameInputsProduceSameDay",
+      "Status": "Passed",
+      "Duration": 0.0004774,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.Generate_TaskOrderingDoesNotChangeStableSelection",
+      "Status": "Passed",
+      "Duration": 0.0003357,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Core.Tests.SpiritDayGeneratorTests.Generate_WithNoTasksFallsBackToRest",
+      "Status": "Passed",
+      "Duration": 0.0004922,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.ClassificationMemoryPersistsWithoutRerollAndRollsBackOnFailure",
+      "Status": "Passed",
+      "Duration": 0.0113048,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.CompleteCycle_ReloadsNamedAdultAndPreservesArchiveAfterEgg",
+      "Status": "Passed",
+      "Duration": 0.0899888,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.DailyPresentationIsPreservedAcrossSaveReload",
+      "Status": "Passed",
+      "Duration": 0.0005906,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.Decoration_RequiresOwnership_PersistsAndRollsBackFailedPurchase",
+      "Status": "Passed",
+      "Duration": 0.0036735,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.FailedSave_RollsBackDateRewardsAndLifeProgress",
+      "Status": "Passed",
+      "Duration": 0.0009926,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.FirstMeetingLocationIsSavedAndSurvivesReload",
+      "Status": "Passed",
+      "Duration": 0.0004888,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.Gift_ChangesLaterCandidatesWithoutRerollingToday_AndExpires",
+      "Status": "Passed",
+      "Duration": 0.0041401,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.InitialSaveFailure_DoesNotExposeInitializedState_AndRetryGrantsOnce",
+      "Status": "Passed",
+      "Duration": 0.0007684,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.LifeMode_DoesNotFabricatePriorHistoryOrAllowDemoOverwrite",
+      "Status": "Passed",
+      "Duration": 0.0012459,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.OngoingProject_IsSavedAndAddsCandidateWithoutChangingTaskClassification",
+      "Status": "Passed",
+      "Duration": 0.0243686,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.RealDateRollover_FinalizesOnlyKnownDay_AndDoesNotRewindOrDuplicate",
+      "Status": "Passed",
+      "Duration": 0.001688,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.RoutineClassificationSurvivesRestartAndUsesStableRoutineIdentity",
+      "Status": "Passed",
+      "Duration": 0.0009789,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.Travel_SurvivesReload_RequiresFourHours_AndCannotBeClaimedTwice(0)",
+      "Status": "Passed",
+      "Duration": 0.0120056,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.Travel_SurvivesReload_RequiresFourHours_AndCannotBeClaimedTwice(1)",
+      "Status": "Passed",
+      "Duration": 0.003017,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.CompanionSessionTests.Travel_SurvivesReload_RequiresFourHours_AndCannotBeClaimedTwice(2)",
+      "Status": "Passed",
+      "Duration": 0.0032744,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.ChoiceResultAndNextEpisodeDependOnPriorChoice",
+      "Status": "Passed",
+      "Duration": 0.005382,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.EditingCompletedTodoUpdatesTodaysRecordWithoutDuplicatingCompletionOrReward",
+      "Status": "Passed",
+      "Duration": 0.0036001,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.EditingEarlierHabitIntoTodayTaskPreservesPreviousRecordAndRemainsVisibleToday",
+      "Status": "Passed",
+      "Duration": 0.0069186,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.FailedEditSaveRestoresTodoRecordRewardAndRecurringStartDate",
+      "Status": "Passed",
+      "Duration": 0.0019447,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.FailedNextEggSaveRollsBackTaskTransferDateAndCompanionTogether",
+      "Status": "Passed",
+      "Duration": 0.0027384,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.FourteenActualDaysChoicesFarewellAndReunionSurviveReload",
+      "Status": "Passed",
+      "Duration": 0.0276402,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.HabitRecursUncheckedAndAbsenceDoesNotFabricateActivity",
+      "Status": "Passed",
+      "Duration": 0.0009968,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.HostRejectsCrossAccountUnknownCategoryAndWrongDateWithoutMutation",
+      "Status": "Passed",
+      "Duration": 0.0025406,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.HostRejectsLocalJournalOverwriteAndRollsBackFailedSave",
+      "Status": "Passed",
+      "Duration": 0.0008683,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.HostRevisionReplayCancellationAndReloadAreIdempotent",
+      "Status": "Passed",
+      "Duration": 0.0011611,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.InvalidTodoEditsLeaveSavedAndActiveStateUnchanged",
+      "Status": "Passed",
+      "Duration": 0.0024299,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.MixedUnspecifiedTaskDoesNotBecomeEvidenceForKnownCategory",
+      "Status": "Passed",
+      "Duration": 0.0023749,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.NextEggCarriesOnlyTodaysUnfinishedLocalOneOffWithoutChangingCompletedHistory",
+      "Status": "Passed",
+      "Duration": 0.0067079,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.NextEggDoesNotRescheduleHostTasksAndWaitsForAuthoritativeNextSnapshot",
+      "Status": "Passed",
+      "Duration": 0.0027799,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.ReturningToChooseNextEggCarriesUnfinishedTaskToActualReturnDateWithoutInventingCompletions",
+      "Status": "Passed",
+      "Duration": 0.0015511,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.SaveFailureRollsBackTodoAndRewardTogether",
+      "Status": "Passed",
+      "Duration": 0.0007885,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.StartEmptyAndToggleNeverFarmsRewardsAndPersistsCancellation",
+      "Status": "Passed",
+      "Duration": 0.0011694,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.ForestSessionTests.UnspecifiedDoesNotInventLifestyleButGrantsGrowth",
+      "Status": "Passed",
+      "Duration": 0.0009387,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.JsonSpiritSaveRepositoryTests.CorruptPrimary_RecoversBackupAndDoesNotOverwriteItWithCorruption",
+      "Status": "Passed",
+      "Duration": 0.0269087,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.JsonSpiritSaveRepositoryTests.MissingPrimary_RecoversBackup_WhileUnrecoverableDataIsPreserved",
+      "Status": "Passed",
+      "Duration": 0.010815,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.JsonSpiritSaveRepositoryTests.Save_ReplacesWholeFileAndRetainsPreviousVersion",
+      "Status": "Passed",
+      "Duration": 0.008807,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.PrototypeApplicationServiceTests.RegenerateCurrentDay_DoesNotGrantDuplicateReward",
+      "Status": "Passed",
+      "Duration": 0.0014469,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.PrototypeApplicationServiceTests.ResetDemoSave_RestoresProfileADay1AndFreshRewardState",
+      "Status": "Passed",
+      "Duration": 0.0019127,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.PrototypeApplicationServiceTests.SelectDay3_MatchesSequentialVisit_WhenPriorDemoRecordsAreMissing",
+      "Status": "Passed",
+      "Duration": 0.0008874,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "TodoSpirits.Runtime.Tests.PrototypeApplicationServiceTests.SelectDay3_TransientPriorSimulation_DoesNotPersistOrGrantRewards",
+      "Status": "Passed",
+      "Duration": 0.0006108,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}
