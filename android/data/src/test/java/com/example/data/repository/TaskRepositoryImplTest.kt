@@ -122,8 +122,9 @@ class TaskRepositoryImplTest {
 
         val error = result.exceptionOrNull()
         assertTrue(error is FieldValidationException)
+        // ApiCallExtensions.toApiException()이 ApiErrorMessageTranslator로 한국어로 치환해둔다.
         assertEquals(
-            mapOf("originalDate" to "originalDate is required for routines"),
+            mapOf("originalDate" to "루틴을 미루기 위해서는 기존 일자가 필요합니다."),
             (error as FieldValidationException).fieldErrors
         )
     }
@@ -153,7 +154,7 @@ class TaskRepositoryImplTest {
         val error = result.exceptionOrNull()
         assertTrue(error is FieldValidationException)
         assertTrue((error as FieldValidationException).fieldErrors.isEmpty())
-        assertEquals("Not found schedule or routine.", error.message)
+        assertEquals("일정이나 루틴을 찾을 수 없습니다.", error.message)
     }
 
     // description이 아예 없는(필드별 사유가 없는) 일반 에러는 변환하지 않고 ApiException 그대로 둔다.
