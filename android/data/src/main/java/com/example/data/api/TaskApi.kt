@@ -4,6 +4,7 @@ import com.example.data.constant.URLConstant
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
+import com.example.data.request.PostponeTaskRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.DeleteTaskResponse
@@ -61,4 +62,10 @@ interface TaskApi {
         @Path("taskId") taskId: Long,
         @Body request: UpdateRoutineRequest
     ): Response<ApiResponse<RoutineDetailResponse>>
+
+    @PATCH(URLConstant.TASK.TASK_POSTPONE)
+    suspend fun postponeTask(
+        @Path("taskId") taskId: Long,
+        @Body request: PostponeTaskRequest
+    ): Response<ApiResponse<Unit?>>
 }

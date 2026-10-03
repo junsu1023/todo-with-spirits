@@ -46,6 +46,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    // 유닛 테스트에서 apiCall/apiCallUnit이 찍는 android.util.Log 호출이
+    // "not mocked"로 죽지 않도록 기본값(0/null/false)을 반환하게 한다.
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -67,6 +75,7 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

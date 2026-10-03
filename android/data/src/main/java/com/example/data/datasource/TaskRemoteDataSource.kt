@@ -6,6 +6,7 @@ import com.example.data.network.apiCallUnit
 import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
+import com.example.data.request.PostponeTaskRequest
 import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DeleteTaskResponse
 import com.example.data.response.RoutineDetailResponse
@@ -41,4 +42,7 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun updateRoutine(taskId: Long, request: UpdateRoutineRequest): Result<RoutineDetailResponse> =
         apiCall { taskApi.updateRoutine(taskId, request) }
+
+    suspend fun postponeTask(taskId: Long, request: PostponeTaskRequest): Result<Unit> =
+        apiCallUnit { taskApi.postponeTask(taskId, request) }
 }

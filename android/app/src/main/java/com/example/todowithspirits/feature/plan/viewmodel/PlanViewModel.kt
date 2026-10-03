@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.plan.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.exception.FieldValidationException
 import com.example.domain.model.CategoryOption
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
@@ -10,6 +11,7 @@ import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
+import com.example.domain.usecase.PostponeTaskUseCase
 import com.example.todowithspirits.feature.plan.model.PlanItemData
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.plan.state.DayPlanEvents
@@ -32,6 +34,7 @@ class PlanViewModel @Inject constructor(
     private val deleteTasksUseCase: DeleteTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
+    private val postponeTaskUseCase: PostponeTaskUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(PlanUiState())
@@ -137,6 +140,25 @@ class PlanViewModel @Inject constructor(
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "완료 취소에 실패했습니다")
+                }
+        }
+    }
+
+    // schedule은 originalDate가 서버에서 무시되므로 null로 넘긴다.
+    // routine은 originalDate(미룰 발생일)가 required.
+    fun postponeTask(taskId: Long, originalDate: LocalDate?, newDate: LocalDate) {
+        viewModelScope.launchWithLoading {
+            postponeTaskUseCase(taskId, originalDate = originalDate, newDate = newDate)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                }
+                .onFailure { error ->
+                    val message = if (error is FieldValidationException) {
+                        error.fieldErrors.values.firstOrNull() ?: error.message
+                    } else {
+                        error.localizedMessage
+                    } ?: "미루기에 실패했습니다"
+                    emitErrorMsg(message)
                 }
         }
     }
