@@ -2,6 +2,7 @@ package com.example.data.network
 
 import android.util.Log
 import com.example.data.error.ApiErrorCode
+import com.example.data.error.ApiErrorMessageTranslator
 import com.example.data.error.ApiException
 import com.example.data.response.ApiErrorResponse
 import com.example.data.response.ApiResponse
@@ -73,12 +74,23 @@ private fun Response<*>.toApiException(): ApiException {
     val errorDetail = errorBody()?.string()?.let {
         runCatching { errorBodyGson.fromJson(it, ApiErrorResponse::class.java) }.getOrNull()
     }?.detail
+    val rawErrorCode = errorDetail?.errorCode ?: "UNKNOWN"
+
+    // 서버 메시지는 영어라 그대로 보여줄 수 없어서, ApiException을 만드는 이 한 곳에서
+    // 한국어로 치환해둔다. 이후 ApiException.message/fieldErrors를 쓰는 모든 ViewModel은
+    // 번역 여부를 신경 쓸 필요가 없다. 매핑이 없는 메시지는 원문 그대로 둔다.
+    val translatedFieldErrors = errorDetail?.description.orEmpty().map { field ->
+        field.copy(message = ApiErrorMessageTranslator.translate(field.message, rawErrorCode) ?: field.message)
+    }
+
+    val message = translatedFieldErrors.firstOrNull()?.message
+        ?: ApiErrorMessageTranslator.translate(null, rawErrorCode)
+        ?: message().ifBlank { "요청 처리 중 오류가 발생했습니다" }
 
     return ApiException(
         httpStatus = errorDetail?.status ?: code(),
-        errorCode = ApiErrorCode.from(errorDetail?.errorCode ?: "UNKNOWN"),
-        fieldErrors = errorDetail?.description.orEmpty(),
-        message = errorDetail?.description?.firstOrNull()?.message
-            ?: message().ifBlank { "요청 처리 중 오류가 발생했습니다" }
+        errorCode = ApiErrorCode.from(rawErrorCode),
+        fieldErrors = translatedFieldErrors,
+        message = message
     )
 }
