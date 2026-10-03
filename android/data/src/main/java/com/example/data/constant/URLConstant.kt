@@ -19,6 +19,10 @@ object URLConstant {
         const val TASK_DELETE = TASK
         const val TASK_SCHEDULE_DETAIL = "$TASK/schedule/{taskId}"
         const val TASK_ROUTINE_DETAIL = "$TASK/routine/{taskId}"
+        // 문서엔 "/api/{taskId}/postpone"(=/task 세그먼트 없음)로 적혀 있었으나 실제 호출 시
+        // 서버가 404 성격의 "No static resource" 500을 반환해 존재하지 않는 경로임을 과거에 확인했다.
+        // 다른 TASK 엔드포인트와 동일한 패턴으로 적용.
+        const val TASK_POSTPONE = "$TASK/{taskId}/postpone"
     }
 
     object LOGIN {
