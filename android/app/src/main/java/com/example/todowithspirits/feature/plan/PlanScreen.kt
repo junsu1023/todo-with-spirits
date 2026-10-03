@@ -247,7 +247,14 @@ fun PlanScreen(
                         item = item,
                         onDelete = { planViewModel.deleteTask(item.id.toLong()) },
                         onEdit = { navigateToEditTask(item.id.toLong()) },
-                        onPostpone = {},
+                        onPostpone = {
+                            val date = item.endDate ?: uiState.selectedDate
+                            planViewModel.postponeTask(
+                                taskId = item.id.toLong(),
+                                originalDate = if (item.type == PlanType.ROUTINE) date else null,
+                                newDate = date.plusDays(1)
+                            )
+                        },
                         onToggleComplete = {
                             if(item.isDone) {
                                 planViewModel.cancelTaskCompletion(item.id.toLong(), uiState.selectedDate)

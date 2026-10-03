@@ -6,14 +6,12 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
+import com.example.domain.exception.FieldValidationException
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.domain.usecase.GetTaskUseCase
-import com.example.domain.usecase.UpdateTodoUseCase
-import com.example.todowithspirits.feature.add.viewmodel.concatenating
-import com.example.todowithspirits.feature.add.viewmodel.toNewTodo
+import com.example.domain.usecase.PostponeTaskUseCase
 import com.example.todowithspirits.feature.plan.model.PlanType
 import com.example.todowithspirits.feature.today.state.RoutineItem
 import com.example.todowithspirits.feature.today.state.SpiritInfo
@@ -37,8 +35,7 @@ class TodayViewModel @Inject constructor(
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
     private val deleteTasksUseCase: DeleteTasksUseCase,
-    private val getTaskUseCase: GetTaskUseCase,
-    private val updateTodoUseCase: UpdateTodoUseCase,
+    private val postponeTaskUseCase: PostponeTaskUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(TodayUiState(spiritInfo = SpiritInfo("루미", 99, 5555, 9999, 999)))
@@ -128,28 +125,29 @@ class TodayViewModel @Inject constructor(
         }
     }
 
-    fun postponeTodo(taskId: Long, onSuccess: () -> Unit = {}) {
+    // originalDate: routine은 필수(미룰 발생일), schedule은 무시된다.
+    // newDate/newTime: null이면 서버가 기존 값을 유지한다.
+    fun postponeTodo(
+        taskId: Long,
+        originalDate: LocalDate? = null,
+        newDate: LocalDate? = null,
+        newTime: LocalTime? = null,
+        onSuccess: () -> Unit = {}
+    ) {
         viewModelScope.launchWithLoading {
-            getTaskUseCase(taskId)
-                .onSuccess { task ->
-                    val postponedEndDateTime = Pair(
-                        (task.endDate ?: LocalDate.now()).plusDays(1),
-                        task.endTime ?: LocalTime.of(0, 0, 0)
-                    ).concatenating()
-
-                    updateTodoUseCase(taskId, task.toNewTodo(postponedEndDateTime))
-                        .onSuccess {
-                            taskRefreshBus.notifyTaskChanged()
-                            onSuccess()
-                        }
-                        .onFailure {
-                            Log.e(TAG, "postponeTodo update failed!", it)
-                            emitErrorMsg(it.localizedMessage ?: "미루기에 실패했습니다")
-                        }
+            postponeTaskUseCase(taskId, originalDate, newDate, newTime)
+                .onSuccess {
+                    taskRefreshBus.notifyTaskChanged()
+                    onSuccess()
                 }
-                .onFailure {
-                    Log.e(TAG, "postponeTodo load failed!", it)
-                    emitErrorMsg(it.localizedMessage ?: "플랜 정보를 불러오지 못했습니다")
+                .onFailure { error ->
+                    Log.e(TAG, "postponeTodo failed!", error)
+                    val message = if (error is FieldValidationException) {
+                        error.fieldErrors.values.firstOrNull() ?: error.message
+                    } else {
+                        error.localizedMessage
+                    } ?: "미루기에 실패했습니다"
+                    emitErrorMsg(message)
                 }
         }
     }

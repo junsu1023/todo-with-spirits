@@ -60,7 +60,7 @@ fun TodayPlanSection(
     onCancelCompleteTask: (taskId: Long, date: LocalDate) -> Unit,
     onDeleteTask: (taskId: Long) -> Unit,
     onEditTask: (taskId: Long) -> Unit,
-    onPostponeTodo: (taskId: Long) -> Unit,
+    onPostponeTodo: (taskId: Long, originalDate: LocalDate?, newDate: LocalDate) -> Unit,
     navigateToPlan: () -> Unit
 ) {
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy. MM. dd (EEEE)", Locale.KOREAN) }
@@ -227,7 +227,8 @@ fun TodayPlanSection(
                 selectedTodo = null
             },
             onPostpone = {
-                onPostponeTodo(todo.taskId)
+                // schedule은 originalDate가 서버에서 무시되므로 null로 넘기고, 발생일 기준 하루 미룬다.
+                onPostponeTodo(todo.taskId, null, (todo.dueDate ?: selectedDate).plusDays(1))
                 selectedTodo = null
             },
             onEdit = {
@@ -249,7 +250,12 @@ fun TodayPlanSection(
                 onDeleteTask(routine.taskId)
                 selectedRoutine = null
             },
-            onPostpone = { selectedRoutine = null },
+            onPostpone = {
+                // routine은 originalDate(미룰 발생일)가 required.
+                val date = routine.dueDate ?: selectedDate
+                onPostponeTodo(routine.taskId, date, date.plusDays(1))
+                selectedRoutine = null
+            },
             onEdit = {
                 onEditTask(routine.taskId)
                 selectedRoutine = null
