@@ -90,3 +90,7 @@ public class Spirit {
         this.updatedAt = LocalDateTime.now();
     }
 }
+
+    public void updateName(String spiritName) {
+        this.spiritName = spiritName;
+    }

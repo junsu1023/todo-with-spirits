@@ -2,13 +2,13 @@ package com.oow.todowithspirit.service;
 
 import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
-import com.oow.todowithspirit.domain.spirit.Spirit;
-import com.oow.todowithspirit.domain.spirit.SpiritRepository;
+import com.oow.todowithspirit.domain.spirit.*;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
 import com.oow.todowithspirit.dto.spirit.SpiritResponse;
 import com.oow.todowithspirit.dto.spirit.UpdateRepresentativeSpiritRequest;
+import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +79,18 @@ public class SpiritService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
 
         user.setRepresentativeSpiritId(targetSpirit.getId());
+    }
+
+    @Transactional
+    public void updateSpiritName(Long userId, Long spiritId, UpdateSpiritNameRequest request) {
+        Spirit spirit = spiritRepository.findById(spiritId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Spirit not found"));
+
+        if (!spirit.getUser().getId().equals(userId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "You do not own this spirit");
+        }
+
+        spirit.updateName(request.getSpiritName());
     }
 
     /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */
