@@ -88,6 +88,23 @@ export interface CreateRoutineRequest {
 	memo?: string
 }
 
+export interface PostponeTaskRequest {
+	taskId: number
+	originalDate?: string
+	newDate?: string | null
+	newTime?: string | null
+}
+
+export interface PostponeTaskResponse {
+	taskId: number
+	originalDate: string
+	postponedDate: string
+	postponedTime: string
+	postponeCount: number
+	maxPostponeCount: number
+	remainingPostponeCount: number
+}
+
 export interface DeleteTaskRequest {
 	taskIds: number[]
 }

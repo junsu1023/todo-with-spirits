@@ -3,17 +3,21 @@ import { Accordion } from '@base-ui/react/accordion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { getTaskCalendar } from '@/entity/task/api/query'
 import type { CalendarItem, RepeatType } from '@/entity/task/model/type'
 import {
 	completeTask,
 	deleteTasks,
+	postponeTask,
 	uncompleteTask,
 	updateSchedule,
 } from '@/feature/task/api/mutate'
+import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
 import { TaskEditForm } from '@/feature/task/ui/TaskEditForm'
 import { TaskInputDock } from '@/feature/task/ui/TaskInputDock'
 import { TaskItem } from '@/feature/task/ui/TaskItem'
+import { addDays } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { Dialog, DialogPopup } from '@/shared/ui/dialog'
 
@@ -86,6 +90,25 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 			if (res.result === 'success') invalidate()
 		},
 	})
+
+	const { mutate: postponeItem } = useMutation({
+		mutationFn: postponeTask,
+		onSuccess: (res) => {
+			if (res.result === 'success') invalidate()
+			else toast.error(getPostponeErrorMessage(res.detail))
+		},
+		onError: () => toast.error('미루기에 실패했어요. 잠시 후 다시 시도해주세요.'),
+	})
+
+	// todo: n일 미루기 또는 날짜 선택 UX/UI 필요 (현재는 1일 고정, 시간은 기존 값 유지)
+	const handlePostpone = (item: CalendarItem) =>
+		postponeItem({
+			taskId: item.taskId,
+			// 루틴은 originalDate 필수 (변경 전 발생일)
+			originalDate:
+				item.taskType === 'ROUTINE' ? item.occurrenceDate : undefined,
+			newDate: addDays(item.occurrenceDate, 1),
+		})
 
 	const { mutate: toggleImportant } = useMutation({
 		mutationFn: updateSchedule,
@@ -164,7 +187,7 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 											? uncompleteItem({ taskId: todo.taskId, date: dateStr })
 											: completeItem({ taskId: todo.taskId, date: dateStr })
 									}
-									onPostpone={() => {}}
+									onPostpone={() => handlePostpone(todo)}
 									onEdit={() => openEdit(todo)}
 									onDelete={() => deleteTask({ taskIds: [todo.taskId] })}
 									subtitle={
@@ -229,7 +252,7 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 												})
 											: completeItem({ taskId: routine.taskId, date: dateStr })
 									}
-									onPostpone={() => {}}
+									onPostpone={() => handlePostpone(routine)}
 									onEdit={() => openEdit(routine)}
 									onDelete={() => deleteTask({ taskIds: [routine.taskId] })}
 									subtitle={
