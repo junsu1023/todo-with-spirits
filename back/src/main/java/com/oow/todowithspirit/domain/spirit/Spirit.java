@@ -6,13 +6,19 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Table(name = "spirits")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Spirit {
+
+    // 성장기간(활동일 기준): 최소 4주(28일) ~ 최대 6주(42일). 구간이 대칭이라 평균이 자연히 5주(35일)가 됨
+    private static final int MIN_GROWTH_DAYS = 28;
+    private static final int MAX_GROWTH_DAYS = 42;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,19 +52,54 @@ public class Spirit {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "egg_option_id")
+    private Long eggOptionId;
+
+    @Column(name = "target_growth_days", nullable = false)
+    private int targetGrowthDays = MIN_GROWTH_DAYS + (MAX_GROWTH_DAYS - MIN_GROWTH_DAYS) / 2;
+
+    @Column(name = "active_days_count", nullable = false)
+    private int activeDaysCount = 0;
+
+    @Column(name = "last_active_date")
+    private LocalDate lastActiveDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private SpiritStatus status = SpiritStatus.GROWING;
+
+    @Column(name = "matured_at")
+    private LocalDateTime maturedAt;
+
+    @Column(name = "departed_at")
+    private LocalDateTime departedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "career_growth_type", length = 20)
+    private GrowthType careerGrowthType;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     public Spirit(User user) {
         this.user = user;
+        this.targetGrowthDays = rollTargetGrowthDays();
     }
 
     public Spirit(User user, String imageUrl) {
-        this.user = user;
+        this(user);
         this.imageUrl = imageUrl;
     }
 
-    // 경험치 획득 및 진화
+    public Spirit(User user, String imageUrl, Long eggOptionId) {
+        this(user, imageUrl);
+        this.eggOptionId = eggOptionId;
+    }
+
+    // 경험치 획득 (진로 판단용 축적치. 더 이상 이 값만으로 성장 단계가 오르지 않음)
     public void addExp(int amount, GrowthType type) {
         this.exp += amount;
         switch (type) {
@@ -66,10 +107,6 @@ public class Spirit {
             case ENERGY -> this.energyExp += amount;
             case CONSISTENCY -> this.consistencyExp += amount;
             case CREATIVITY -> this.creativityExp += amount;
-        }
-        // 만렙 경험치가 100일 때 진화
-        if (this.exp >= this.stage * 100) {
-            this.stage++;
         }
         this.updatedAt = LocalDateTime.now();
     }
@@ -83,14 +120,62 @@ public class Spirit {
             case CONSISTENCY -> this.consistencyExp = Math.max(0, this.consistencyExp - amount);
             case CREATIVITY -> this.creativityExp = Math.max(0, this.creativityExp - amount);
         }
-
-        // (선택) 만약 경험치가 깎여서 이전 레벨로 강등(Level Down)되는 로직이 필요하다면 여기에 추가
-        // 일반적으로 게임 기획상 레벨 강등은 스트레스를 주어 구현하지 않는 경우가 많습니다.
-
+        // 완료를 취소해도 이미 쌓인 생활 기록(활동일)은 되돌리지 않음 (퇴보 없음)
         this.updatedAt = LocalDateTime.now();
     }
-}
+
+    /**
+     * 오늘(activityDate) 생활 기록이 처음 생겼음을 반영한다.
+     * 같은 날짜가 이미 반영된 경우 아무 일도 하지 않는다. 호출 전 해당 날짜의 중복 여부는 호출자가 판단한다.
+     * @return 이번 기록으로 성체가 되었는지 여부
+     */
+    public boolean recordActiveDay(LocalDate activityDate) {
+        if (status != SpiritStatus.GROWING) {
+            return false;
+        }
+
+        this.activeDaysCount++;
+        if (lastActiveDate == null || activityDate.isAfter(lastActiveDate)) {
+            this.lastActiveDate = activityDate;
+        }
+        this.updatedAt = LocalDateTime.now();
+
+        if (activeDaysCount >= targetGrowthDays) {
+            matureIntoAdult();
+            return true;
+        }
+        return false;
+    }
+
+    private void matureIntoAdult() {
+        this.status = SpiritStatus.ADULT;
+        this.maturedAt = LocalDateTime.now();
+        this.careerGrowthType = dominantGrowthType();
+        this.stage++;
+    }
+
+    private GrowthType dominantGrowthType() {
+        int max = Math.max(Math.max(focusExp, energyExp), Math.max(consistencyExp, creativityExp));
+        if (max == focusExp) {
+            return GrowthType.FOCUS;
+        } else if (max == energyExp) {
+            return GrowthType.ENERGY;
+        } else if (max == consistencyExp) {
+            return GrowthType.CONSISTENCY;
+        }
+        return GrowthType.CREATIVITY;
+    }
+
+    public void depart() {
+        this.status = SpiritStatus.DEPARTED;
+        this.departedAt = LocalDateTime.now();
+    }
 
     public void updateName(String spiritName) {
         this.spiritName = spiritName;
     }
+
+    private static int rollTargetGrowthDays() {
+        return ThreadLocalRandom.current().nextInt(MIN_GROWTH_DAYS, MAX_GROWTH_DAYS + 1);
+    }
+}

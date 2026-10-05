@@ -33,6 +33,7 @@ public class TaskService {
     private final RoutineCompletionRepository routineCompletionRepository;
     private final TaskPostponementRepository taskPostponementRepository;
     private final SpiritService spiritService;
+    private final SpiritGrowthService spiritGrowthService;
 
     // =========================================================
     // 생성
@@ -229,7 +230,8 @@ public class TaskService {
                             "Monthly routines can only be postponed within the current month");
                 }
             }
-            default -> throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Unsupported repeat type for postpone");
+            default ->
+                    throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Unsupported repeat type for postpone");
         }
     }
 
@@ -465,6 +467,7 @@ public class TaskService {
         // 대표 정령 경험치 증가 (없으면 자동 생성)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
         spirit.addExp(task.getGrowthValue(), task.getGrowthType());
+        spiritGrowthService.recordActivity(spirit, completionDate);
     }
 
     @Transactional
