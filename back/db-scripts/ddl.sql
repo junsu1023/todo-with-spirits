@@ -16,6 +16,9 @@
 -- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
 -- CREATE TYPE card_type AS ENUM ('TODAY', 'MONTHLY');
 -- CREATE TYPE card_status AS ENUM ('PROCESSING', 'READY', 'FAILED');
+-- CREATE TYPE spirit_status AS ENUM ('GROWING', 'ADULT', 'DEPARTED');
+-- CREATE TYPE spirit_temperament AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
+-- CREATE TYPE spirit_action_place AS ENUM ('BOOKSHELF', 'WORKBENCH', 'FRONT_YARD', 'TEA_TABLE', 'BED');
 
 -- ============================================================
 --  2. 사용자 관련 테이블
@@ -139,6 +142,157 @@ CREATE TABLE spirit_interactions
     CONSTRAINT fk_interactions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+-- ------------------------------------------------------------
+--  3-1. 정령 육성(알 선택 ~ 성장 ~ 성체) 시스템
+-- ------------------------------------------------------------
+
+-- 알 마스터 (초기 튜토리얼 이후 3~5개 중 1개 선택)
+-- 콘텐츠(이름/설명/이미지)는 기획 확정 전까지 TBD. 최소 1개는 튜토리얼 기본알로 시드 필요
+CREATE TABLE spirit_egg_options
+(
+    id          BIGSERIAL PRIMARY KEY,
+    code        VARCHAR(30)  NOT NULL UNIQUE,
+    egg_name    VARCHAR(50)  NOT NULL,
+    description TEXT,
+    image_url   TEXT,
+    is_tutorial BOOLEAN      NOT NULL DEFAULT FALSE, -- 최초 가입 튜토리얼에서 고정 제공되는 알인지
+    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
+    sort_order  INT          NOT NULL DEFAULT 0
+);
+
+-- 유저에게 제시된 알 선택지 (재조회 시 같은 3~5개가 유지되도록 offer를 고정)
+CREATE TABLE spirit_egg_offers
+(
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       BIGINT  NOT NULL,
+    egg_option_id BIGINT  NOT NULL,
+    is_selected   BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_egg_offers_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_egg_offers_option FOREIGN KEY (egg_option_id) REFERENCES spirit_egg_options (id)
+);
+
+CREATE INDEX idx_egg_offers_user ON spirit_egg_offers (user_id, created_at DESC);
+
+-- 정령별 선천기질 (2~3개 부여, 화면에는 수치가 아닌 태그로만 노출)
+CREATE TABLE spirit_temperaments
+(
+    id          BIGSERIAL PRIMARY KEY,
+    spirit_id   BIGINT      NOT NULL,
+    temperament VARCHAR(20) NOT NULL, -- spirit_temperament ENUM
+    created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_spirit_temperaments_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT uq_spirit_temperament UNIQUE (spirit_id, temperament)
+);
+
+-- 행동장소 마스터 (5곳 고정)
+CREATE TABLE spirit_action_places
+(
+    id                     BIGSERIAL PRIMARY KEY,
+    code                   VARCHAR(30) NOT NULL UNIQUE, -- spirit_action_place ENUM
+    place_name             VARCHAR(50) NOT NULL,
+    representative_action  VARCHAR(50) NOT NULL,
+    sort_order             INT         NOT NULL DEFAULT 0
+);
+
+-- 장소별 행동예시 (오브젝트 설치 여부에 따라 노출되는 행동 구분)
+CREATE TABLE spirit_place_actions
+(
+    id              BIGSERIAL PRIMARY KEY,
+    place_id        BIGINT      NOT NULL,
+    action_text     VARCHAR(50) NOT NULL,
+    requires_object BOOLEAN     NOT NULL DEFAULT FALSE, -- 해당 장소의 오브젝트(가구)가 설치되어 있어야 노출되는 행동인지
+    sort_order      INT         NOT NULL DEFAULT 0,
+    CONSTRAINT fk_spirit_place_actions_place FOREIGN KEY (place_id) REFERENCES spirit_action_places (id) ON DELETE CASCADE
+);
+
+-- 카테고리별 정령 표현 문구 (TODO 완료 시 category 기준으로 노출)
+CREATE TABLE category_spirit_actions
+(
+    id          BIGSERIAL PRIMARY KEY,
+    category    VARCHAR(20)  NOT NULL, -- category_type ENUM 재사용
+    action_text VARCHAR(100) NOT NULL,
+    sort_order  INT          NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_category_spirit_actions_category ON category_spirit_actions (category);
+
+-- 정령의 집/숲 오브젝트(가구) 마스터
+CREATE TABLE spirit_home_objects
+(
+    id          BIGSERIAL PRIMARY KEY,
+    code        VARCHAR(30) NOT NULL UNIQUE,
+    object_name VARCHAR(50) NOT NULL,
+    place_id    BIGINT      NOT NULL,
+    icon_url    TEXT,
+    CONSTRAINT fk_spirit_home_objects_place FOREIGN KEY (place_id) REFERENCES spirit_action_places (id)
+);
+
+-- 유저가 설치한 오브젝트 (정령 세대가 바뀌어도 유지되는 "집"/"숲" 자산 = 남은 장식)
+CREATE TABLE user_spirit_home_objects
+(
+    id           BIGSERIAL PRIMARY KEY,
+    user_id      BIGINT  NOT NULL,
+    object_id    BIGINT  NOT NULL,
+    installed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_home_objects_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_home_objects_object FOREIGN KEY (object_id) REFERENCES spirit_home_objects (id),
+    CONSTRAINT uq_user_home_object UNIQUE (user_id, object_id)
+);
+
+-- 정령이 실제로 수행한 장소/행동 로그(spirit_action_logs)는 tasks 테이블을 참조하므로
+-- 4번 섹션(tasks 정의) 이후로 옮겨 정의함
+
+-- 정령의 하루 기록 (일별 플레이버 로그)
+CREATE TABLE spirit_daily_logs
+(
+    id         BIGSERIAL PRIMARY KEY,
+    spirit_id  BIGINT NOT NULL,
+    log_date   DATE   NOT NULL,
+    content    TEXT   NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_spirit_daily_logs_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT uq_spirit_daily_log UNIQUE (spirit_id, log_date)
+);
+
+-- 성체가 된 정령이 보낸 편지
+CREATE TABLE spirit_letters
+(
+    id       BIGSERIAL PRIMARY KEY,
+    spirit_id BIGINT NOT NULL,
+    user_id  BIGINT NOT NULL,
+    content  TEXT   NOT NULL,
+    sent_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    read_at  TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_spirit_letters_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT fk_spirit_letters_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- 성체가 된 정령이 여행에서 얻은 발견물
+CREATE TABLE spirit_discoveries
+(
+    id            BIGSERIAL PRIMARY KEY,
+    spirit_id     BIGINT       NOT NULL,
+    user_id       BIGINT       NOT NULL,
+    item_name     VARCHAR(100) NOT NULL,
+    description   TEXT,
+    icon_url      TEXT,
+    discovered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_spirit_discoveries_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT fk_spirit_discoveries_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- spirits 테이블 확장: 알/성장(활동일 기준)/생애주기/진로
+ALTER TABLE spirits
+    ADD COLUMN egg_option_id      BIGINT REFERENCES spirit_egg_options (id),
+    ADD COLUMN target_growth_days INT         NOT NULL DEFAULT 35, -- 개체별 목표 성장기간(활동일 기준). 28~42 사이 랜덤 부여, 평균 35
+    ADD COLUMN active_days_count  INT         NOT NULL DEFAULT 0,  -- TODO/루틴을 완료해 생활기록이 생긴 날짜 수. 누적만 되고 감소하지 않음
+    ADD COLUMN last_active_date   DATE,                            -- active_days_count 하루 중복 증가 방지용
+    ADD COLUMN status             VARCHAR(20) NOT NULL DEFAULT 'GROWING', -- spirit_status ENUM
+    ADD COLUMN matured_at         TIMESTAMP WITH TIME ZONE,        -- 성체(ADULT)가 된 시점
+    ADD COLUMN departed_at        TIMESTAMP WITH TIME ZONE,        -- 여행을 떠나 이력으로 남은(DEPARTED) 시점
+    ADD COLUMN career_growth_type VARCHAR(20);                     -- 성체가 될 때 확정되는 진로. growth_type ENUM 재사용 (exp가 가장 높은 축)
+
 -- ============================================================
 --  4. To-do, schedule, habit 관련 테이블
 -- ============================================================
@@ -171,6 +325,23 @@ CREATE TABLE tasks
     updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_tasks_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- 정령이 실제로 수행한 장소/행동 로그 (자주 했던 행동 및 장소 집계용). tasks를 참조하므로 여기서 정의
+CREATE TABLE spirit_action_logs
+(
+    id          BIGSERIAL PRIMARY KEY,
+    spirit_id   BIGINT NOT NULL,
+    place_id    BIGINT NOT NULL,
+    action_id   BIGINT,          -- spirit_place_actions FK. 카테고리 문구 기반으로 발생한 경우 null
+    task_id     BIGINT,          -- 이 행동을 유발한 TODO/루틴. 정령 자체 행동인 경우 null
+    occurred_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_spirit_action_logs_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT fk_spirit_action_logs_place FOREIGN KEY (place_id) REFERENCES spirit_action_places (id),
+    CONSTRAINT fk_spirit_action_logs_action FOREIGN KEY (action_id) REFERENCES spirit_place_actions (id),
+    CONSTRAINT fk_spirit_action_logs_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_spirit_action_logs_spirit ON spirit_action_logs (spirit_id, occurred_at DESC);
 
 -- 매주 반복 요일 (WEEKLY)
 CREATE TABLE IF NOT EXISTS task_repeat_days_of_week
