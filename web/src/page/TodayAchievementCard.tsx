@@ -8,7 +8,14 @@ const cx = SIZE / 2
 const cy = SIZE / 2
 
 function CircularRing({ percentage }: { percentage: number }) {
-  const filled = (CIRCUMFERENCE * Math.min(percentage, 97)) / 100
+  const isFull = percentage >= 100
+  // 100% 미만은 round cap이 시작점과 겹치지 않도록 stroke 두께만큼 여유를 둔다
+  const filled = isFull
+    ? CIRCUMFERENCE
+    : Math.min(
+        (CIRCUMFERENCE * Math.max(percentage, 0)) / 100,
+        CIRCUMFERENCE - STROKE_WIDTH,
+      )
   const offset = CIRCUMFERENCE - filled
 
   return (
@@ -36,7 +43,7 @@ function CircularRing({ percentage }: { percentage: number }) {
         strokeWidth={STROKE_WIDTH}
         strokeDasharray={CIRCUMFERENCE}
         strokeDashoffset={offset}
-        strokeLinecap="round"
+        strokeLinecap={isFull ? 'butt' : 'round'}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
     </svg>
