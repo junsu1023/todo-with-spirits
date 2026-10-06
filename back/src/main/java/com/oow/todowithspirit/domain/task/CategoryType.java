@@ -12,7 +12,7 @@ public enum CategoryType {
     WORK_STUDY(GrowthType.FOCUS, "학업/커리어"),
     HEALTH(GrowthType.ENERGY, "건강"),
     LIFE(GrowthType.CONSISTENCY, "생활"),
-    RELATIONSHIP(GrowthType.CONSISTENCY, "인관관계/약속"),
+    RELATIONSHIP(GrowthType.CONSISTENCY, "인간관계/약속"),
     GROWTH(GrowthType.CREATIVITY, "자기계발"),
     HOBBY(GrowthType.CREATIVITY, "취미"),
     REST(GrowthType.ENERGY, "휴식/마인드"),
