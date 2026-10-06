@@ -1,11 +1,7 @@
 package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
-import com.oow.todowithspirit.dto.spirit.EggOfferResponse;
-import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
-import com.oow.todowithspirit.dto.spirit.SpiritResponse;
-import com.oow.todowithspirit.dto.spirit.UpdateRepresentativeSpiritRequest;
-import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
+import com.oow.todowithspirit.dto.spirit.*;
 import com.oow.todowithspirit.service.SpiritEggService;
 import com.oow.todowithspirit.service.SpiritService;
 import jakarta.validation.Valid;
@@ -65,4 +61,10 @@ public class SpiritController {
         return ResponseEntity.ok(ApiResponse.success(spiritEggService.getOrCreateOffers(userId)));
     }
 
+    @PostMapping("/egg-options/{offerId}")
+    public ResponseEntity<ApiResponse<RepresentativeSpiritResponse>> selectEggOption(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long offerId) {
+        return ResponseEntity.ok(ApiResponse.success(spiritEggService.selectEgg(userId, offerId)));
+    }
 }

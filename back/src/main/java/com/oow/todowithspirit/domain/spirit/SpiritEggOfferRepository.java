@@ -9,4 +9,6 @@ import java.util.List;
 public interface SpiritEggOfferRepository extends JpaRepository<SpiritEggOffer, Long> {
 
     List<SpiritEggOffer> findAllByUserIdAndSelectedFalseOrderByIdAsc(Long userId);
+
+    void deleteAllByUserIdAndSelectedFalse(Long userId);
 }

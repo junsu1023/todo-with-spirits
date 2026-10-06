@@ -12,16 +12,26 @@ import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SpiritService {
 
+    private static final String DEFAULT_IMAGE_URL = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치 변경
+    private static final int MIN_TEMPERAMENTS = 2;
+    private static final int MAX_TEMPERAMENTS = 3;
+
     private final SpiritRepository spiritRepository;
     private final UserRepository userRepository; // 유저의 대표 정령 ID를 가져오기 위함
+    private final SpiritEggOptionRepository spiritEggOptionRepository;
+    private final SpiritTemperamentTagRepository spiritTemperamentTagRepository;
 
     /**
      * 사용자가 보유한 정령 목록 조회
@@ -39,7 +49,7 @@ public class SpiritService {
 
         // 3. 대표 정령 여부를 판별하며 DTO 맵핑
         return spirits.stream()
-                .map(spirit -> SpiritResponse.of(spirit, repSpiritId))
+                .map(spirit -> SpiritResponse.of(spirit, repSpiritId, temperamentsOf(spirit.getId())))
                 .toList();
     }
 
@@ -60,7 +70,7 @@ public class SpiritService {
         Spirit spirit = spiritRepository.findById(repSpiritId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
 
-        return RepresentativeSpiritResponse.from(spirit);
+        return RepresentativeSpiritResponse.from(spirit, temperamentsOf(spirit.getId()));
     }
 
     @Transactional
@@ -94,6 +104,7 @@ public class SpiritService {
     }
 
     /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */
+    @Transactional
     public Spirit getOrCreateRepresentativeSpirit(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -107,15 +118,57 @@ public class SpiritService {
     }
 
     /**
-     * 기본 정령 생성 헬퍼 로직
+     * 기본 정령 생성 헬퍼 로직.
+     * 최초 가입 시 알 선택 없이 튜토리얼 알(is_tutorial=true)로 자동 배정한다.
      */
+    @Transactional
     public Spirit createDefaultSpirit(User user) {
-        String defaultImageUrl = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치 변경
-        Spirit defaultSpirit = new Spirit(user, defaultImageUrl);
-        spiritRepository.save(defaultSpirit);
+        Spirit defaultSpirit = spiritEggOptionRepository.findFirstByIsTutorialTrueAndIsActiveTrue()
+                .map(egg -> new Spirit(user, StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL, egg.getId()))
+                .orElseGet(() -> new Spirit(user, DEFAULT_IMAGE_URL));
 
+        spiritRepository.save(defaultSpirit);
+        assignRandomTemperaments(defaultSpirit.getId());
         user.setRepresentativeSpiritId(defaultSpirit.getId());
 
         return defaultSpirit;
+    }
+
+    /**
+     * 알 선택으로 새 정령을 생성한다. 이미 성장 중인 정령이 있으면 새로 만들 수 없다.
+     */
+    @Transactional
+    public Spirit createFromEggOption(User user, SpiritEggOption egg) {
+        if (spiritRepository.existsByUserIdAndStatus(user.getId(), SpiritStatus.GROWING)) {
+            throw new ApiException(ErrorCode.ALREADY_COMPLETED, "이미 성장 중인 정령이 있습니다");
+        }
+
+        String imageUrl = StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL;
+        Spirit spirit = new Spirit(user, imageUrl, egg.getId());
+        spiritRepository.save(spirit);
+        assignRandomTemperaments(spirit.getId());
+        user.setRepresentativeSpiritId(spirit.getId());
+
+        return spirit;
+    }
+
+    private void assignRandomTemperaments(Long spiritId) {
+        List<SpiritTemperament> pool = new ArrayList<>(List.of(SpiritTemperament.values()));
+        Collections.shuffle(pool);
+        int count = ThreadLocalRandom.current().nextInt(MIN_TEMPERAMENTS, MAX_TEMPERAMENTS + 1);
+        pool.stream()
+                .limit(count)
+                .forEach(temperament -> spiritTemperamentTagRepository.save(new SpiritTemperamentTag(spiritId, temperament)));
+    }
+
+    @Transactional(readOnly = true)
+    public RepresentativeSpiritResponse toResponse(Spirit spirit) {
+        return RepresentativeSpiritResponse.from(spirit, temperamentsOf(spirit.getId()));
+    }
+
+    private List<SpiritTemperament> temperamentsOf(Long spiritId) {
+        return spiritTemperamentTagRepository.findAllBySpiritId(spiritId).stream()
+                .map(SpiritTemperamentTag::getTemperament)
+                .toList();
     }
 }

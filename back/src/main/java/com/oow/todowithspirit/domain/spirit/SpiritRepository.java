@@ -10,4 +10,6 @@ public interface SpiritRepository extends JpaRepository<Spirit, Long> {
 
     // 특정 유저가 보유한 모든 정령 목록 조회
     List<Spirit> findAllByUserIdOrderByIdDesc(Long userId);
+
+    boolean existsByUserIdAndStatus(Long userId, SpiritStatus status);
 }

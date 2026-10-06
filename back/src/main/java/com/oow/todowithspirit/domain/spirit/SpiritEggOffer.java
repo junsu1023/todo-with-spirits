@@ -36,4 +36,8 @@ public class SpiritEggOffer {
         offer.createdAt = LocalDateTime.now();
         return offer;
     }
+
+    public void select() {
+        this.selected = true;
+    }
 }
