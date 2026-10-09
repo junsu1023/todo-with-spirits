@@ -1,5 +1,21 @@
 import { Crown } from 'lucide-react'
-import type { BarDatum } from '../model/mock'
+import type { ReactNode } from 'react'
+
+export interface BarDatum {
+	key: string
+	label: string
+	subLabel?: string
+	/** null이면 아직 오지 않은 기간 → '?' 표시 */
+	value: number | null
+	tooltip?: ReactNode
+}
+
+const MIN_BAR_HEIGHT = 4
+
+const findBestIndex = (data: BarDatum[]) => {
+	const max = Math.max(0, ...data.map((d) => d.value ?? 0))
+	return max > 0 ? data.findIndex((d) => d.value === max) : -1
+}
 
 export function RecordBarChart({
 	data,
@@ -8,19 +24,18 @@ export function RecordBarChart({
 	data: BarDatum[]
 	height?: number
 }) {
-	const max = Math.max(...data.map((d) => d.value), 1)
-	const bestIndex = data.findIndex((d) => d.value === max)
+	const max = Math.max(1, ...data.map((d) => d.value ?? 0))
+	const bestIndex = findBestIndex(data)
 
 	return (
-		<div className="flex items-end gap-3" style={{ height: height + 48 }}>
+		<div className="flex items-end gap-2" style={{ height: height + 48 }}>
 			{data.map((d, i) => {
-				const isBest = i === bestIndex && d.value > 0
-				const barHeight = Math.max((d.value / max) * height, 4)
-				const hasTooltip = d.todo || d.routine
+				const isBest = i === bestIndex
+				const barHeight = Math.max(((d.value ?? 0) / max) * height, MIN_BAR_HEIGHT)
 
 				return (
 					<div
-						key={`${d.label}-${d.subLabel ?? ''}`}
+						key={d.key}
 						className="group relative flex flex-1 flex-col items-center gap-1"
 					>
 						{isBest ? (
@@ -29,12 +44,12 @@ export function RecordBarChart({
 							<span className="h-4" />
 						)}
 						<span className="text-xs font-medium text-gray-500">
-							{d.value > 0 ? d.value : ''}
+							{d.value ?? '?'}
 						</span>
 						<div
 							className={`w-full max-w-12 rounded-t-md transition-colors ${
 								isBest ? 'bg-brand-light' : 'bg-gray-200'
-							} group-hover:bg-brand`}
+							} ${d.value === null ? 'opacity-40' : 'group-hover:bg-brand'}`}
 							style={{ height: barHeight }}
 						/>
 						<span className="mt-1 text-xs text-gray-500">{d.label}</span>
@@ -42,10 +57,9 @@ export function RecordBarChart({
 							<span className="text-[10px] text-gray-400">{d.subLabel}</span>
 						)}
 
-						{hasTooltip && (
+						{d.tooltip && (
 							<div className="pointer-events-none absolute -top-2 left-1/2 z-10 hidden -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg bg-white px-3 py-2 text-xs shadow-md ring-1 ring-gray-100 group-hover:block">
-								<p className="text-[#48CAD9]">To do {d.todo ?? '-'}</p>
-								<p className="text-[#8FC21F]">루틴 {d.routine ?? '-'}</p>
+								{d.tooltip}
 							</div>
 						)}
 					</div>

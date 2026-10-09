@@ -1,4 +1,10 @@
 export { getMonthlyRecord, getTodayRecord, getWeeklyRecord } from './api/query'
+export {
+	formatShortDate,
+	getWeekRange,
+	shiftMonth,
+	shiftWeek,
+} from './lib/date'
 export type {
 	DailyRecordDetail,
 	MonthlyRecordDetail,

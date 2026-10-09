@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { Card } from '@/shared/ui/card'
 import { getTodayRecord } from '../api/query'
 import { DailyRecordSkeleton } from './DailyRecordSkeleton'
 import { DailyReportCard } from './DailyReportCard'
+import { RecordErrorCard } from './RecordStatusCard'
 import { TodayRewardCard } from './TodayRewardCard'
 
 interface RecordDailyReportProps {
@@ -22,11 +22,7 @@ export function RecordDailyReport({
 	if (isPending) return <DailyRecordSkeleton />
 
 	if (data?.result !== 'success') {
-		return (
-			<Card className="items-center p-10 text-sm text-gray-400">
-				데일리 리포트를 불러오지 못했어요.
-			</Card>
-		)
+		return <RecordErrorCard message="데일리 리포트를 불러오지 못했어요." />
 	}
 
 	const record = data.detail

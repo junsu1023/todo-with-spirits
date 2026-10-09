@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import {
+	formatShortDate,
+	getWeekRange,
 	RecordDailyReport,
 	RecordMonthlyReport,
 	RecordPeriodNav,
 	RecordWeeklyReport,
+	shiftMonth,
+	shiftWeek,
 } from '@/entity/record'
 import { getCurrentSpirit } from '@/entity/spirit'
 
@@ -17,35 +21,19 @@ const WEEKDAYS_KO = ['일', '월', '화', '수', '목', '금', '토']
 const formatDayLabel = (date: Date) =>
 	`${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')} (${WEEKDAYS_KO[date.getDay()]})`
 
-const noop = () => {}
-
-function PeriodNavByTab({ tab }: { tab: RecordTab }) {
-	switch (tab) {
-		case '일간':
-			return (
-				<RecordPeriodNav
-					label={formatDayLabel(new Date())}
-					// todo: today API에 date 파라미터가 없어 날짜 이동 불가 → API 지원 시 주석 해제
-					// onPrev={() => setDate(addDays(date, -1))}
-					// onNext={() => setDate(addDays(date, 1))}
-				/>
-			)
-		case '주간':
-			// todo: 주간 API 연동 시 실제 기간/이동 처리 (현재 mock 라벨)
-			return (
-				<RecordPeriodNav
-					label="6월 1주 · 26년 6월 1일 ~ 26년 6월 6일"
-					onPrev={noop}
-					onNext={noop}
-				/>
-			)
-		case '월간':
-			// todo: 월간 API 연동 시 실제 기간/이동 처리 (현재 mock 라벨)
-			return <RecordPeriodNav label="2026년 6월" onPrev={noop} onNext={noop} />
-	}
+const formatWeekLabel = (date: Date) => {
+	const { start, end } = getWeekRange(date)
+	return `${formatShortDate(start)} ~ ${formatShortDate(end)}`
 }
 
-function ReportByTab({ tab }: { tab: RecordTab }) {
+const formatMonthLabel = (date: Date) =>
+	`${date.getFullYear()}년 ${date.getMonth() + 1}월`
+
+export function RecordPage() {
+	const [tab, setTab] = useState<RecordTab>('일간')
+	const [weekDate, setWeekDate] = useState(() => new Date())
+	const [monthDate, setMonthDate] = useState(() => new Date())
+
 	// record API에 정령 정보가 없어 대표 정령 조회 사용 (TodaySpiritCard와 캐시 공유)
 	const { data: spiritData } = useQuery({
 		queryKey: ['spirit', 'current'],
@@ -53,23 +41,41 @@ function ReportByTab({ tab }: { tab: RecordTab }) {
 	})
 	const spirit = spiritData?.result === 'success' ? spiritData.detail : null
 
-	switch (tab) {
-		case '일간':
-			return (
-				<RecordDailyReport
-					spiritName={spirit?.spiritName}
-					spiritImageUrl={spirit?.imageUrl}
-				/>
-			)
-		case '주간':
-			return <RecordWeeklyReport />
-		case '월간':
-			return <RecordMonthlyReport />
-	}
-}
+	const periodNav = {
+		일간: (
+			<RecordPeriodNav
+				label={formatDayLabel(new Date())}
+				// todo: today API에 date 파라미터가 없어 날짜 이동 불가 → API 지원 시 주석 해제
+				// onPrev={() => setDate(addDays(date, -1))}
+				// onNext={() => setDate(addDays(date, 1))}
+			/>
+		),
+		주간: (
+			<RecordPeriodNav
+				label={formatWeekLabel(weekDate)}
+				onPrev={() => setWeekDate((d) => shiftWeek(d, -1))}
+				onNext={() => setWeekDate((d) => shiftWeek(d, 1))}
+			/>
+		),
+		월간: (
+			<RecordPeriodNav
+				label={formatMonthLabel(monthDate)}
+				onPrev={() => setMonthDate((d) => shiftMonth(d, -1))}
+				onNext={() => setMonthDate((d) => shiftMonth(d, 1))}
+			/>
+		),
+	} satisfies Record<RecordTab, ReactNode>
 
-export function RecordPage() {
-	const [tab, setTab] = useState<RecordTab>('일간')
+	const report = {
+		일간: (
+			<RecordDailyReport
+				spiritName={spirit?.spiritName}
+				spiritImageUrl={spirit?.imageUrl}
+			/>
+		),
+		주간: <RecordWeeklyReport date={weekDate} />,
+		월간: <RecordMonthlyReport date={monthDate} spiritImageUrl={spirit?.imageUrl} />,
+	} satisfies Record<RecordTab, ReactNode>
 
 	return (
 		<main className="flex h-screen flex-col gap-5 overflow-y-auto p-4 md:p-6">
@@ -91,12 +97,10 @@ export function RecordPage() {
 						</button>
 					))}
 				</div>
-				<PeriodNavByTab tab={tab} />
+				{periodNav[tab]}
 			</div>
 
-			<div className="min-h-0 flex-1">
-				<ReportByTab tab={tab} />
-			</div>
+			<div className="min-h-0 flex-1">{report[tab]}</div>
 		</main>
 	)
 }
