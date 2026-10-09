@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import type { CalendarItem } from '@/entity/task'
 import { getTaskCalendar } from '@/entity/task'
 import type { Category } from '@/entity/task/model/type'
+import { PlanItemForm } from '@/feature/task'
 import {
 	completeTask,
 	createRoutine,
@@ -25,36 +26,18 @@ import {
 	updateSchedule,
 } from '@/feature/task/api/mutate'
 import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
-import type { DayOfWeek } from '@/feature/task/model/type'
+import type {
+	DayOfWeek,
+	ItemType,
+	PlanItem,
+} from '@/feature/task/model/type'
 import { addDays, calcDday, formatDday } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
-import { PlanItemForm } from './PlanItemForm'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type ItemType = 'todo' | 'routine'
 type PlanTab = '전체' | 'To do' | '루틴'
-
-export interface PlanItem {
-	id: number
-	type: ItemType
-	title: string
-	starred: boolean
-	completed: boolean
-	dday: number
-	dateLabel: string
-	date?: string
-	time?: string
-	category?: string
-	isPublic?: boolean
-	repeatType?: 'DAILY' | 'WEEKLY' | 'MONTHLY'
-	repeatDaysOfWeek?: string[]
-	repeatDaysOfMonth?: number[]
-	excludeHolidays?: boolean
-	memo?: string
-	tags: string[]
-}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

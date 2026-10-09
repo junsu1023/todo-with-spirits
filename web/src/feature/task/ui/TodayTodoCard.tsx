@@ -12,11 +12,11 @@ import {
 	postponeTask,
 	uncompleteTask,
 	updateSchedule,
-} from '@/feature/task/api/mutate'
-import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
-import { TaskEditForm } from '@/feature/task/ui/TaskEditForm'
-import { TaskInputDock } from '@/feature/task/ui/TaskInputDock'
-import { TaskItem } from '@/feature/task/ui/TaskItem'
+} from '../api/mutate'
+import { getPostponeErrorMessage } from '../model/postponeErrorMessage'
+import { TaskEditForm } from './TaskEditForm'
+import { TaskInputDock } from './TaskInputDock'
+import { TaskItem } from './TaskItem'
 import { addDays } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { Dialog, DialogPopup } from '@/shared/ui/dialog'

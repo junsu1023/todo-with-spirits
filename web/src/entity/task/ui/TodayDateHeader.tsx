@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getTaskCalendar } from '@/entity/task'
+import { getTaskCalendar } from '../api/query'
 import { ROUTES } from '@/shared/routes'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']

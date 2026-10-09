@@ -8,10 +8,9 @@ import {
 	X,
 } from 'lucide-react'
 import { useState } from 'react'
-import type { DayOfWeek } from '@/feature/task/model/type'
+import type { DayOfWeek, ItemType, PlanItem } from '../model/type'
 import { calcDday } from '@/shared/lib/dday'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
-import type { ItemType, PlanItem } from './PlanPage'
 
 const DAYS: { label: string; value: DayOfWeek }[] = [
 	{ label: '일', value: 'SUNDAY' },
