@@ -1,4 +1,5 @@
 export { getTaskCalendar, getTaskSchedule } from './api/query'
+export { CATEGORY_LABEL } from './model/category'
 export type { CalendarDetail, CalendarItem } from './model/type'
 export { TodayAchievementCard } from './ui/TodayAchievementCard'
 export { TodayDateHeader } from './ui/TodayDateHeader'
