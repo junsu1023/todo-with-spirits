@@ -1,14 +1,10 @@
 import { Star, X } from 'lucide-react'
-import { WEEKLY_MOCK, type WeekRecordStatus } from './recordMock'
-import {
-	CategoryRanking,
-	MissedCategory,
-	RecordBarChart,
-	RecordCard,
-	RecordHeadline,
-	RecordStat,
-	RecordTip,
-} from './RecordShared'
+import { WEEKLY_MOCK, type WeekRecordStatus } from '../model/mock'
+import { CategoryRanking, MissedCategory } from './CategoryRanking'
+import { RecordBarChart } from './RecordBarChart'
+import { RecordCard, RecordHeadline } from './RecordCard'
+import { RecordStat } from './RecordStat'
+import { RecordTip } from './RecordTip'
 
 function WeekRecord({ records }: { records: WeekRecordStatus[] }) {
 	return (

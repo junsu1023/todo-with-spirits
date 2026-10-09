@@ -1,14 +1,10 @@
 import { Sparkles } from 'lucide-react'
 import sampleSpiritImage from '@/shared/assets/sample-spirit.png'
-import { MONTHLY_MOCK } from './recordMock'
-import {
-	CategoryRanking,
-	MissedCategory,
-	RecordBarChart,
-	RecordCard,
-	RecordHeadline,
-	RecordStat,
-} from './RecordShared'
+import { MONTHLY_MOCK } from '../model/mock'
+import { CategoryRanking, MissedCategory } from './CategoryRanking'
+import { RecordBarChart } from './RecordBarChart'
+import { RecordCard, RecordHeadline } from './RecordCard'
+import { RecordStat } from './RecordStat'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 

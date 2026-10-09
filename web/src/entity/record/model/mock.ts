@@ -17,23 +17,6 @@ export interface BarDatum {
 
 export type WeekRecordStatus = 'success' | 'fail' | 'none'
 
-export const DAILY_MOCK = {
-	headline: '다 잘해 진짜!',
-	message: '루미랑 남은 4개도 끝내볼까요?',
-	goalDone: 6,
-	goalTotal: 10,
-	todo: { done: 2, total: 2 },
-	routine: { done: 2, total: 2 },
-	retryGoalCount: 5,
-	rewards: [
-		{ kind: '달성 미션', title: '오늘 플랜 5개 이상 완료', exp: 20 },
-		{ kind: '연기 스트릭', title: '미뤘던 목표 2개 완료', exp: 20 },
-		{ kind: '히든 미션', title: '정령의 호감도 +10 쌓기', exp: 100 },
-		{ kind: '히든 미션', title: '정령의 호감도 +10 쌓기', exp: 100 },
-		{ kind: '달성 미션', title: '루틴 3일 연속 완료', exp: 30 },
-	],
-}
-
 export const WEEKLY_MOCK = {
 	headline: '버티면 승리에요',
 	message: '이번주도 너무 잘하고 있어요!',
