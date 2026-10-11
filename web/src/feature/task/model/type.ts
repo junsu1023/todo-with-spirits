@@ -88,10 +88,51 @@ export interface CreateRoutineRequest {
 	memo?: string
 }
 
+export interface PostponeTaskRequest {
+	taskId: number
+	originalDate?: string
+	newDate?: string | null
+	newTime?: string | null
+}
+
+export interface PostponeTaskResponse {
+	taskId: number
+	originalDate: string
+	postponedDate: string
+	postponedTime: string
+	postponeCount: number
+	maxPostponeCount: number
+	remainingPostponeCount: number
+}
+
 export interface DeleteTaskRequest {
 	taskIds: number[]
 }
 
 export interface DeleteTaskResponse {
 	deletedCount: number
+}
+
+// ─── Plan 화면 표시용 ─────────────────────────────────────────────────────────
+
+export type ItemType = 'todo' | 'routine'
+
+export interface PlanItem {
+	id: number
+	type: ItemType
+	title: string
+	starred: boolean
+	completed: boolean
+	dday: number
+	dateLabel: string
+	date?: string
+	time?: string
+	category?: string
+	isPublic?: boolean
+	repeatType?: 'DAILY' | 'WEEKLY' | 'MONTHLY'
+	repeatDaysOfWeek?: string[]
+	repeatDaysOfMonth?: number[]
+	excludeHolidays?: boolean
+	memo?: string
+	tags: string[]
 }

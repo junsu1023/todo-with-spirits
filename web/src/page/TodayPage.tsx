@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { TodaySpiritCard } from '@/entity/spirit'
-import { TodayAchievementCard } from './TodayAchievementCard'
-import { TodayDateHeader } from './TodayDateHeader'
-import { TodayTodoCard } from './TodayTodoCard'
+import { TodayAchievementCard, TodayDateHeader } from '@/entity/task'
+import { TodayTodoCard } from '@/feature/task'
 
 function toDateString(date: Date) {
 	const y = date.getFullYear()

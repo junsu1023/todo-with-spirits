@@ -5,6 +5,8 @@ import type {
 	CreateScheduleRequest,
 	DeleteTaskRequest,
 	DeleteTaskResponse,
+	PostponeTaskRequest,
+	PostponeTaskResponse,
 	RoutineDetail,
 	UpdateRoutineRequest,
 	UpdateScheduleRequest,
@@ -56,7 +58,15 @@ export const uncompleteTask = ({
 		})
 		.json<ApiResponse<null>>()
 
-export const deleteTasks = (body: DeleteTaskRequest) =>
+export const postponeTask = ({ taskId, ...body }: PostponeTaskRequest) =>
+	apiClient
+		.patch(`api/task/${taskId}/postpone`, {
+			json: body,
+			throwHttpErrors: false,
+		})
+		.json<ApiResponse<PostponeTaskResponse>>()
+
+export const deleteTasks =(body: DeleteTaskRequest) =>
 	apiClient
 		.delete('api/task', { json: body })
 		.json<ApiResponse<DeleteTaskResponse>>()

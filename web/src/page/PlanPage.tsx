@@ -10,48 +10,34 @@ import {
 	Trash2,
 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import type { CalendarItem } from '@/entity/task'
 import { getTaskCalendar } from '@/entity/task'
 import type { Category } from '@/entity/task/model/type'
+import { PlanItemForm } from '@/feature/task'
 import {
 	completeTask,
 	createRoutine,
 	createSchedule,
 	deleteTasks,
+	postponeTask,
 	uncompleteTask,
 	updateRoutine,
 	updateSchedule,
 } from '@/feature/task/api/mutate'
-import type { DayOfWeek } from '@/feature/task/model/type'
-import { calcDday, formatDday } from '@/shared/lib/dday'
+import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
+import type {
+	DayOfWeek,
+	ItemType,
+	PlanItem,
+} from '@/feature/task/model/type'
+import { addDays, calcDday, formatDday } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
-import { PlanItemForm } from './PlanItemForm'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type ItemType = 'todo' | 'routine'
 type PlanTab = '전체' | 'To do' | '루틴'
-
-export interface PlanItem {
-	id: number
-	type: ItemType
-	title: string
-	starred: boolean
-	completed: boolean
-	dday: number
-	dateLabel: string
-	date?: string
-	time?: string
-	category?: string
-	isPublic?: boolean
-	repeatType?: 'DAILY' | 'WEEKLY' | 'MONTHLY'
-	repeatDaysOfWeek?: string[]
-	repeatDaysOfMonth?: number[]
-	excludeHolidays?: boolean
-	memo?: string
-	tags: string[]
-}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -607,6 +593,30 @@ export function PlanPage() {
 		},
 	})
 
+	const { mutate: postponeMutate } = useMutation({
+		mutationFn: postponeTask,
+		onSuccess: (res) => {
+			if (res.result === 'success') {
+				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
+			} else {
+				toast.error(getPostponeErrorMessage(res.detail))
+			}
+		},
+		onError: () => toast.error('미루기에 실패했어요. 잠시 후 다시 시도해주세요.'),
+	})
+
+	// todo: n일 미루기 또는 날짜 선택 UX/UI 필요 (현재는 1일 고정, 시간은 기존 값 유지)
+	const handlePostpone = (id: number) => {
+		const item = items.find((i) => i.id === id)
+		if (!item?.date) return
+		postponeMutate({
+			taskId: id,
+			// 루틴은 originalDate 필수 (변경 전 발생일)
+			originalDate: item.type === 'routine' ? item.date : undefined,
+			newDate: addDays(item.date, 1),
+		})
+	}
+
 	const handleDelete = (id: number) => {
 		deleteTasksMutate({ taskIds: [id] })
 	}
@@ -746,7 +756,7 @@ export function PlanPage() {
 							onToggle={toggleCompleted}
 							onEdit={setEditingId}
 							onDelete={handleDelete}
-							onPostpone={() => {}}
+							onPostpone={handlePostpone}
 							onAdd={() => setIsAdding(true)}
 						/>
 					)}
