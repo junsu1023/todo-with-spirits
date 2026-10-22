@@ -40,13 +40,6 @@ object URLConstant {
         const val EMAIL_VERIFY = "$USER/email/verify" // 이메일 인증코드 검증 (미인증유저 -> 인증유저)
     }
 
-    object RECORD {
-        private const val RECORD = "$API/record"
-        const val RECORD_TODAY = "$RECORD/today"
-        const val RECORD_WEEKLY = "$RECORD/weekly"
-        const val RECORD_MONTHLY = "$RECORD/monthly"
-    }
-
     object NOTIFICATION {
         const val NOTIFICATION = "$API/notification"
         const val NOTIFICATION_READ = "$NOTIFICATION/{alarmId}/read"
