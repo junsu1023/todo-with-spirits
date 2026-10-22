@@ -21,7 +21,6 @@ import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
-import com.example.todowithspirits.feature.calendar.PlanDetailScreen
 import com.example.todowithspirits.feature.calendar.CalendarScreen
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
@@ -52,9 +51,6 @@ fun SpiritsTodoNavigation(
     val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
     val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToChangePassword: () -> Unit = { navController.navigate(Screen.ChangePassword.route) }
-    val navigateToDetail: (Int) -> Unit = { itemId ->
-        navController.navigate("${Screen.PlanDetail.route}/$itemId")
-    }
     val navigateToLogout: () -> Unit = {
         navController.navigate(Screen.Login.route) {
             popUpTo(0) { inclusive = true }
@@ -153,22 +149,8 @@ fun SpiritsTodoNavigation(
         composable(Screen.Calendar.route) {
             CalendarScreen(
                 navigateToAdd = navigateToAdd,
-                navigateToDetail = navigateToDetail,
                 navigateToEditTask = navigateToEditTask,
                 navigateToAlarm = navigateToAlarm
-            )
-        }
-
-        composable(
-            route = "${Screen.PlanDetail.route}/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getInt("itemId") ?: return@composable
-
-            PlanDetailScreen(
-                itemId = itemId,
-                onBack = { navController.popBackStack() },
-                navigateToAdd = { navigateToEditTask(itemId.toLong()) }
             )
         }
 

@@ -9,7 +9,6 @@ import java.time.YearMonth
 
 @Immutable
 data class CalendarUiState(
-    val selectedTab: String = "전체",
     val isHidden: Boolean = false,
     val selectedDate: LocalDate = LocalDate.now(),
     val calendarMonth: YearMonth = YearMonth.now(),

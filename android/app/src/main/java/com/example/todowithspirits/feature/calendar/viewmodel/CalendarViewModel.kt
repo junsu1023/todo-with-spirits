@@ -2,8 +2,6 @@ package com.example.todowithspirits.feature.calendar.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
-import com.example.domain.exception.FieldValidationException
-import com.example.domain.model.CategoryOption
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.TaskType
@@ -11,7 +9,6 @@ import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.domain.usecase.PostponeTaskUseCase
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.PlanType
 import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
@@ -34,7 +31,6 @@ class CalendarViewModel @Inject constructor(
     private val deleteTasksUseCase: DeleteTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
-    private val postponeTaskUseCase: PostponeTaskUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
@@ -62,14 +58,6 @@ class CalendarViewModel @Inject constructor(
 
         _uiState.update { it.copy(calendarMonth = month) }
         loadCalendarEvents()
-    }
-
-    fun setSelectedTab(tab: String) {
-        viewModelScope.launchWithLoading {
-            _uiState.update {
-                it.copy(selectedTab = tab)
-            }
-        }
     }
 
     fun setHiddenState(hidden: Boolean) {
@@ -144,25 +132,6 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    // schedule은 originalDate가 서버에서 무시되므로 null로 넘긴다.
-    // routine은 originalDate(미룰 발생일)가 required.
-    fun postponeTask(taskId: Long, originalDate: LocalDate?, newDate: LocalDate) {
-        viewModelScope.launchWithLoading {
-            postponeTaskUseCase(taskId, originalDate = originalDate, newDate = newDate)
-                .onSuccess {
-                    taskRefreshBus.notifyTaskChanged()
-                }
-                .onFailure { error ->
-                    val message = if (error is FieldValidationException) {
-                        error.fieldErrors.values.firstOrNull() ?: error.message
-                    } else {
-                        error.localizedMessage
-                    } ?: "미루기에 실패했습니다"
-                    emitErrorMsg(message)
-                }
-        }
-    }
-
     fun loadCalendarEvents() {
         viewModelScope.launchWithLoading {
             val month = _uiState.value.calendarMonth
@@ -199,9 +168,5 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     isDone = isCompleted,
     endDate = occurrenceDate,
     endTime = endTime,
-    isAllDay = isAllDay,
-    memo = memo ?: "",
-    category = CategoryOption.entries.find { it.name == category }
-        ?.takeIf { it != CategoryOption.NONE }
-        ?.displayName
+    isAllDay = isAllDay
 )

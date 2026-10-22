@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,9 +39,7 @@ import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
-import com.example.todowithspirits.feature.calendar.component.PlanListItem
-import com.example.todowithspirits.feature.calendar.component.PlanSearchArea
-import com.example.todowithspirits.feature.calendar.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.PlanType
 import com.example.todowithspirits.feature.calendar.viewmodel.CalendarViewModel
@@ -51,7 +51,6 @@ import java.time.LocalTime
 fun CalendarScreen(
     calendarViewModel: CalendarViewModel = hiltViewModel(),
     navigateToAdd: () -> Unit,
-    navigateToDetail: (Int) -> Unit,
     navigateToEditTask: (Long) -> Unit,
     navigateToAlarm: () -> Unit
 ) {
@@ -73,24 +72,16 @@ fun CalendarScreen(
             )
         }
     }
-    val todoLabel = stringResource(R.string.todo)
-    val routineLabel = stringResource(R.string.routine)
     val sortOptions = remember(uiState.isHidden) {
         PlanSortOption.entries
             .filter { !(uiState.isHidden && it == PlanSortOption.COMPLETE) }
             .map { it.displayName }
     }
-    val filteredPlans = remember(uiState.plans, uiState.isHidden, uiState.selectedTab, todoLabel, routineLabel) {
-        uiState.plans.filter { item ->
-            val doneFilter = !uiState.isHidden || !item.isDone
-            val tabFilter = when (uiState.selectedTab) {
-                todoLabel -> item.type == PlanType.TODO
-                routineLabel -> item.type == PlanType.ROUTINE
-                else -> true
-            }
-            doneFilter && tabFilter
-        }
+    val filteredPlans = remember(uiState.plans, uiState.isHidden) {
+        uiState.plans.filter { item -> !uiState.isHidden || !item.isDone }
     }
+    // 한 번에 하나의 카드만 펼친다.
+    var expandedTaskId by remember { mutableStateOf<Int?>(null) }
     val sortedPlans = remember(filteredPlans, uiState.sortOption) {
         when (uiState.sortOption) {
             PlanSortOption.DEADLINE -> filteredPlans.sortedWith(
@@ -127,10 +118,6 @@ fun CalendarScreen(
             Column {
                 Spacer(modifier = Modifier.height(10.dp))
 
-                PlanSearchArea()
-
-                Spacer(modifier = Modifier.height(14.dp))
-
                 CalendarView(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
@@ -151,13 +138,6 @@ fun CalendarScreen(
                 AddPlanButton(navigateToAdd = navigateToAdd)
 
                 Spacer(modifier = Modifier.height(26.dp))
-
-                UnderlinePlanTabs(
-                    selectedTab = uiState.selectedTab,
-                    onTabSelected = { calendarViewModel.setSelectedTab(it) }
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
             }
         }
 
@@ -243,17 +223,11 @@ fun CalendarScreen(
         } else {
             items(sortedPlans, key = { it.id }) { item ->
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    PlanListItem(
+                    CalendarTaskItem(
                         item = item,
-                        onDelete = { calendarViewModel.deleteTask(item.id.toLong()) },
-                        onEdit = { navigateToEditTask(item.id.toLong()) },
-                        onPostpone = {
-                            val date = item.endDate ?: uiState.selectedDate
-                            calendarViewModel.postponeTask(
-                                taskId = item.id.toLong(),
-                                originalDate = if (item.type == PlanType.ROUTINE) date else null,
-                                newDate = date.plusDays(1)
-                            )
+                        isExpanded = expandedTaskId == item.id,
+                        onToggleExpanded = {
+                            expandedTaskId = if (expandedTaskId == item.id) null else item.id
                         },
                         onToggleComplete = {
                             if(item.isDone) {
@@ -262,8 +236,8 @@ fun CalendarScreen(
                                 calendarViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
                             }
                         },
-                        navigateToDetail = { navigateToDetail(item.id) },
-                        resetKey = uiState.selectedTab to uiState.sortOption
+                        onDelete = { calendarViewModel.deleteTask(item.id.toLong()) },
+                        onEdit = { navigateToEditTask(item.id.toLong()) }
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))

@@ -13,10 +13,5 @@ data class PlanItemData(
     val isDone: Boolean,
     val endDate: LocalDate?,
     val endTime: LocalTime?,
-    val isAllDay: Boolean = false,
-    val memo: String = "",
-    val category: String? = null,
-    val repeatInfo: String? = null,
-    val isPublic: Boolean = false,
-    val notificationMinutes: Int? = null
+    val isAllDay: Boolean = false
 )
