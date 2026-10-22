@@ -25,7 +25,6 @@ import com.example.todowithspirits.feature.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.search.SearchRoute
 import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
-import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
@@ -169,10 +168,6 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.Forest.route) {
             ForestScreen(onReturnToHome = navigateToHome)
-        }
-
-        composable(Screen.Record.route) {
-            RecordScreen(navigateToAlarm = navigateToAlarm)
         }
 
         composable(
