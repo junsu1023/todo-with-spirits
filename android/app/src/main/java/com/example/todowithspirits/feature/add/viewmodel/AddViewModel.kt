@@ -52,6 +52,12 @@ class AddViewModel @Inject constructor(
             is AddEvent.TimeEnabledChanged -> _uiState.update { it.copy(isTimeEnabled = event.isEnabled) }
             is AddEvent.DueTimeChanged -> _uiState.update { it.copy(dueTime = event.time) }
             is AddEvent.RepeatOptionChanged -> _uiState.update { it.copy(repeatOption = event.option) }
+            is AddEvent.WeekDayToggled -> _uiState.update {
+                it.copy(selectedWeekDays = it.selectedWeekDays.toggle(event.day))
+            }
+            is AddEvent.MonthDayToggled -> _uiState.update {
+                it.copy(selectedMonthDays = it.selectedMonthDays.toggle(event.day))
+            }
             is AddEvent.AlarmOptionChanged -> _uiState.update { it.copy(alarmOption = event.option) }
             AddEvent.ConfirmClicked -> if (_uiState.value.isEditMode) updateTodo() else createTodo()
         }
@@ -123,6 +129,8 @@ class AddViewModel @Inject constructor(
         viewModelScope.launch { _effect.send(effect) }
     }
 }
+
+private fun <T> Set<T>.toggle(item: T): Set<T> = if (item in this) this - item else this + item
 
 private fun AddUiState.toNewTodo(): NewTodo = NewTodo(
     title = title.trim(),

@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.add
+package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,15 +24,13 @@ import com.example.domain.model.AlarmOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.TimeWheelPicker
-import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
-import com.example.todowithspirits.feature.add.component.SettingDateItem
-import com.example.todowithspirits.feature.add.component.SettingDivider
-import com.example.todowithspirits.feature.add.component.SettingGroup
-import com.example.todowithspirits.feature.add.component.SettingSelectorItem
-import com.example.todowithspirits.feature.add.component.SettingSwitchItem
 import com.example.todowithspirits.feature.add.state.AddEvent
 import com.example.todowithspirits.feature.add.state.AddUiState
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+// 피그마: "23 : 59"
+private val TimeValueFormatter = DateTimeFormatter.ofPattern("HH : mm")
 
 // 중요 카드 + 날짜/시간/반복/알림 카드
 @Composable
@@ -41,6 +43,8 @@ fun TodoForm(
     val repeatLabels = repeatOptions.map { it.displayName }
     val alarmOptions = AlarmOption.entries
     val alarmLabels = alarmOptions.map { it.displayName }
+
+    var isTimePickerOpen by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxWidth()) {
         SettingGroup {
@@ -68,10 +72,17 @@ fun TodoForm(
                 icon = painterResource(R.drawable.todo_clock2),
                 label = stringResource(R.string.time),
                 checked = uiState.isTimeEnabled,
-                onCheckedChange = { onEvent(AddEvent.TimeEnabledChanged(it)) },
+                onCheckedChange = { enabled ->
+                    // 켜면 시간을 고를 수 있게 휠을 바로 펼친다.
+                    isTimePickerOpen = enabled
+                    onEvent(AddEvent.TimeEnabledChanged(enabled))
+                },
+                valueText = if (uiState.isTimeEnabled) uiState.dueTime.format(TimeValueFormatter) else null,
+                isValueHighlighted = isTimePickerOpen,
+                onValueClick = { isTimePickerOpen = !isTimePickerOpen },
                 subContent = {
                     AnimatedVisibility(
-                        visible = uiState.isTimeEnabled,
+                        visible = uiState.isTimeEnabled && isTimePickerOpen,
                         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
                         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
                     ) {
@@ -100,6 +111,22 @@ fun TodoForm(
                 options = repeatLabels,
                 onOptionSelected = { label ->
                     repeatOptions.getOrNull(repeatLabels.indexOf(label))?.let { onEvent(AddEvent.RepeatOptionChanged(it)) }
+                },
+                isValueHighlighted = uiState.repeatOption == RepeatOption.WEEKLY || uiState.repeatOption == RepeatOption.MONTHLY,
+                subContent = {
+                    when (uiState.repeatOption) {
+                        RepeatOption.WEEKLY -> DayOfWeekSelector(
+                            selectedDays = uiState.selectedWeekDays,
+                            onDayToggled = { onEvent(AddEvent.WeekDayToggled(it)) },
+                            modifier = Modifier.padding(start = 10.dp, top = 12.dp, end = 10.dp)
+                        )
+                        RepeatOption.MONTHLY -> MonthlyCalendarView(
+                            selectedDays = uiState.selectedMonthDays,
+                            onDayToggled = { onEvent(AddEvent.MonthDayToggled(it)) },
+                            modifier = Modifier.padding(start = 12.dp, top = 16.dp, end = 12.dp)
+                        )
+                        else -> Unit
+                    }
                 }
             )
 

@@ -2,6 +2,7 @@ package com.example.todowithspirits.feature.add.state
 
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.RepeatOption
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -13,6 +14,8 @@ sealed interface AddEvent {
     data class TimeEnabledChanged(val isEnabled: Boolean) : AddEvent
     data class DueTimeChanged(val time: LocalTime) : AddEvent
     data class RepeatOptionChanged(val option: RepeatOption) : AddEvent
+    data class WeekDayToggled(val day: DayOfWeek) : AddEvent
+    data class MonthDayToggled(val day: Int) : AddEvent
     data class AlarmOptionChanged(val option: AlarmOption) : AddEvent
     data object ConfirmClicked : AddEvent
 }

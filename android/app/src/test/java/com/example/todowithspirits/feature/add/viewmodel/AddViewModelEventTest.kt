@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.add.viewmodel
 
 import com.example.domain.model.AlarmOption
+import com.example.domain.model.RepeatOption
 import com.example.domain.model.Task
 import com.example.domain.usecase.CreateTodoUseCase
 import com.example.domain.usecase.GetTaskUseCase
@@ -24,6 +25,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -125,5 +127,21 @@ class AddViewModelEventTest {
 
         assertNull(viewModel.uiState.value.editingTaskId)
         assertEquals(AddEffect.NavigateBack, viewModel.effect.first())
+    }
+
+    @Test fun weekAndMonthDaysToggleOnAndOff() = runTest(testDispatcher) {
+        val viewModel = buildViewModel(FakeTaskRepository())
+
+        viewModel.onEvent(AddEvent.RepeatOptionChanged(RepeatOption.WEEKLY))
+        viewModel.onEvent(AddEvent.WeekDayToggled(DayOfWeek.MONDAY))
+        viewModel.onEvent(AddEvent.WeekDayToggled(DayOfWeek.WEDNESDAY))
+        viewModel.onEvent(AddEvent.WeekDayToggled(DayOfWeek.MONDAY))
+        assertEquals(setOf(DayOfWeek.WEDNESDAY), viewModel.uiState.value.selectedWeekDays)
+
+        viewModel.onEvent(AddEvent.RepeatOptionChanged(RepeatOption.MONTHLY))
+        viewModel.onEvent(AddEvent.MonthDayToggled(1))
+        viewModel.onEvent(AddEvent.MonthDayToggled(19))
+        assertEquals(setOf(1, 19), viewModel.uiState.value.selectedMonthDays)
+        assertEquals(RepeatOption.MONTHLY, viewModel.uiState.value.repeatOption)
     }
 }

@@ -4,8 +4,7 @@ enum class RepeatOption(val displayName: String) {
     NONE("없음"),
     DAILY("매일"),
     WEEKLY("매주"),
-    MONTHLY("매월"),
-    YEARLY("매년");
+    MONTHLY("매월");
 
     companion object {
         fun fromDisplayName(name: String): RepeatOption {
