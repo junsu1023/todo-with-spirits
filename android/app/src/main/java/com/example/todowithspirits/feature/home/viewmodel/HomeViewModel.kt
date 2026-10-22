@@ -44,6 +44,12 @@ class HomeViewModel @Inject constructor() : BaseViewModel() {
             is HomeEvent.TodayTaskClicked -> _uiState.update { it.copy(selectedTaskId = event.id) }
             HomeEvent.TodayTaskDetailDismissed -> closeTaskDetail()
             is HomeEvent.TodayTaskDeleteClicked -> deleteTodayTask(event.id)
+            HomeEvent.SpiritClicked -> toggleSpiritMenu()
+            HomeEvent.SpiritMenuAddClicked -> {
+                // 화면을 옮기므로 메뉴는 닫아 두고, 돌아왔을 때 접힌 상태로 보이게 한다.
+                _uiState.update { it.copy(isSpiritMenuVisible = false) }
+                sendEffect(HomeEffect.NavigateToCalendar)
+            }
             is HomeEvent.TodayTaskEditClicked -> {
                 closeTaskDetail()
                 sendEffect(HomeEffect.NavigateToEditTask(event.id))
@@ -62,6 +68,16 @@ class HomeViewModel @Inject constructor() : BaseViewModel() {
                 todayTasks = state.todayTasks.map { task ->
                     if (task.id == id) task.copy(isCompleted = isCompleted) else task
                 }
+            )
+        }
+    }
+
+    // 정령을 누르면 펼쳐진 오늘 일정을 접고, 정령 위 아이콘 메뉴를 열고 닫는다.
+    private fun toggleSpiritMenu() {
+        _uiState.update {
+            it.copy(
+                isTodayTasksExpanded = false,
+                isSpiritMenuVisible = !it.isSpiritMenuVisible
             )
         }
     }

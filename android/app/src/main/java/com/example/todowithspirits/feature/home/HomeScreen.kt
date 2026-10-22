@@ -144,6 +144,9 @@ fun HomeScreen(
                     SpiritStage(
                         spiritName = uiState.spiritInfo.name,
                         message = "오늘 하루도 힘차게!",
+                        isMenuVisible = uiState.isSpiritMenuVisible,
+                        onSpiritClick = { onEvent(HomeEvent.SpiritClicked) },
+                        onMenuAddClick = { onEvent(HomeEvent.SpiritMenuAddClicked) },
                         modifier = Modifier.weight(1f)
                     )
                 }

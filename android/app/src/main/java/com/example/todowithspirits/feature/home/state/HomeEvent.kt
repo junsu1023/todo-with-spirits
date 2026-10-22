@@ -11,4 +11,6 @@ sealed interface HomeEvent {
     data object TodayTaskDetailDismissed : HomeEvent
     data class TodayTaskDeleteClicked(val id: Long) : HomeEvent
     data class TodayTaskEditClicked(val id: Long) : HomeEvent
+    data object SpiritClicked : HomeEvent
+    data object SpiritMenuAddClicked : HomeEvent
 }
