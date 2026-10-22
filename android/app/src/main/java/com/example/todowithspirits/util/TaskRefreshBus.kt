@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /*
-루틴/할 일 등 Task가 생성·변경될 때마다 이를 구독 중인 화면(Today 등)에 알려
+루틴/할 일 등 Task가 생성·변경될 때마다 이를 구독 중인 화면(Home 등)에 알려
 목록을 다시 불러오게 하기 위한 앱 전역 이벤트 버스.
 */
 @Singleton

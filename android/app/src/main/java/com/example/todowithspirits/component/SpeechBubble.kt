@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
  *
  * @param tailHorizontalBias 꼬리의 가로 위치(0f = 왼쪽 끝, 1f = 오른쪽 끝).
  * @param tailHeight 본문 아래로 내려오는 꼬리 높이. 컴포저블 전체 높이 = 본문 + 이 값.
+ * @param tailTipOffset 꼬리 끝이 꼬리 밑변 왼쪽 점에서 가로로 떨어진 거리. 0이면 왼쪽 변이 수직인 직각 꼬리.
  */
 @Composable
 fun SpeechBubble(
@@ -41,10 +42,11 @@ fun SpeechBubble(
     cornerRadius: Dp = 18.dp,
     tailWidth: Dp = 10.dp,
     tailHeight: Dp = 12.dp,
-    tailHorizontalBias: Float = 0.6f
+    tailHorizontalBias: Float = 0.6f,
+    tailTipOffset: Dp = 0.dp
 ) {
-    val shape = remember(cornerRadius, tailWidth, tailHeight, tailHorizontalBias) {
-        SpeechBubbleShape(cornerRadius, tailWidth, tailHeight, tailHorizontalBias)
+    val shape = remember(cornerRadius, tailWidth, tailHeight, tailHorizontalBias, tailTipOffset) {
+        SpeechBubbleShape(cornerRadius, tailWidth, tailHeight, tailHorizontalBias, tailTipOffset)
     }
 
     Box(
@@ -70,7 +72,8 @@ private class SpeechBubbleShape(
     private val cornerRadius: Dp,
     private val tailWidth: Dp,
     private val tailHeight: Dp,
-    private val tailHorizontalBias: Float
+    private val tailHorizontalBias: Float,
+    private val tailTipOffset: Dp
 ) : Shape {
     override fun createOutline(
         size: Size,
@@ -80,6 +83,7 @@ private class SpeechBubbleShape(
         val cr = with(density) { cornerRadius.toPx() }
         val tw = with(density) { tailWidth.toPx() }
         val th = with(density) { tailHeight.toPx() }
+        val tipOffset = with(density) { tailTipOffset.toPx() }
         val bodyBottom = (size.height - th).coerceAtLeast(0f)
 
         val minTipX = cr
@@ -97,7 +101,7 @@ private class SpeechBubbleShape(
                 )
             )
             moveTo(tipX, bodyBottom)
-            lineTo(tipX, size.height)
+            lineTo(tipX + tipOffset, size.height)
             lineTo(tipX + tw, bodyBottom)
             close()
         }

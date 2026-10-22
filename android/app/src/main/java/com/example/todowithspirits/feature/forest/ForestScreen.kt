@@ -37,7 +37,7 @@ private object ForestCloseTracker {
  * 안에서 NavBackStackEntry 스코프 lifecycle을 돌려주므로 쓰지 않는다 — 실제 Activity가
  * pause/resume되는 시점과 정확히 일치하지 않을 수 있기 때문이다. */
 @Composable
-fun ForestScreen(onReturnToToday: () -> Unit) {
+fun ForestScreen(onReturnToHome: () -> Unit) {
     val context = LocalContext.current
     val activity = LocalActivity.current
 
@@ -62,7 +62,7 @@ fun ForestScreen(onReturnToToday: () -> Unit) {
                 Lifecycle.Event.ON_PAUSE -> hasPaused = true
                 Lifecycle.Event.ON_RESUME -> if (hasPaused) {
                     ForestCloseTracker.lastCloseAtMs = System.currentTimeMillis()
-                    onReturnToToday()
+                    onReturnToHome()
                 }
                 else -> {}
             }
