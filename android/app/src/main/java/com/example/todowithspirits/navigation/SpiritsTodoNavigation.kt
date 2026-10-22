@@ -145,7 +145,8 @@ fun SpiritsTodoNavigation(
                 navigateToAlarm = navigateToAlarm,
                 navigateToMyPage = { navigateFromHome(Screen.MyPage.route) },
                 navigateToForest = { navigateFromHome(Screen.Forest.route) },
-                navigateToCalendar = { navigateFromHome(Screen.Plan.route) }
+                navigateToCalendar = { navigateFromHome(Screen.Plan.route) },
+                navigateToEditTask = navigateToEditTask
             )
         }
 

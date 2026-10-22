@@ -35,6 +35,7 @@ import com.example.todowithspirits.feature.home.component.HomeBottomButtons
 import com.example.todowithspirits.feature.home.component.HomeStatusChipRow
 import com.example.todowithspirits.feature.home.component.HomeTodaySummaryCard
 import com.example.todowithspirits.feature.home.component.SpiritStage
+import com.example.todowithspirits.feature.home.component.TodoDetailPopup
 import com.example.todowithspirits.feature.home.state.HomeEffect
 import com.example.todowithspirits.feature.home.state.HomeEvent
 import com.example.todowithspirits.feature.home.state.HomeUiState
@@ -55,6 +56,7 @@ fun HomeRoute(
     navigateToMyPage: () -> Unit,
     navigateToForest: () -> Unit,
     navigateToCalendar: () -> Unit,
+    navigateToEditTask: (Long) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
@@ -66,6 +68,7 @@ fun HomeRoute(
             HomeEffect.NavigateToAlarm -> navigateToAlarm()
             HomeEffect.NavigateToForest -> navigateToForest()
             HomeEffect.NavigateToCalendar -> navigateToCalendar()
+            is HomeEffect.NavigateToEditTask -> navigateToEditTask(effect.taskId)
         }
     }
 
@@ -154,6 +157,7 @@ fun HomeScreen(
                     onTaskCompletionChange = { id, isCompleted ->
                         onEvent(HomeEvent.TodayTaskCompletionChanged(id, isCompleted))
                     },
+                    onTaskClick = { id -> onEvent(HomeEvent.TodayTaskClicked(id)) },
                     onCollapsedHeightChanged = { todayCardCollapsedHeight = it },
                     modifier = Modifier.padding(
                         start = HomeHorizontalMargin,
@@ -170,6 +174,15 @@ fun HomeScreen(
             onCalendarClick = { onEvent(HomeEvent.CalendarButtonClicked) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+
+        uiState.selectedTask?.let { task ->
+            TodoDetailPopup(
+                task = task,
+                onDismiss = { onEvent(HomeEvent.TodayTaskDetailDismissed) },
+                onDelete = { onEvent(HomeEvent.TodayTaskDeleteClicked(task.id)) },
+                onEdit = { onEvent(HomeEvent.TodayTaskEditClicked(task.id)) }
+            )
+        }
 
         LoadingOverlay(isLoading = isLoading)
     }

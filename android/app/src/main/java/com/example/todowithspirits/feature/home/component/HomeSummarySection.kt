@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,8 +44,8 @@ import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.home.state.HomeTodayTask
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-private val TodayTaskItemHeight = 36.dp
-private const val TODAY_TASK_MAX_VISIBLE = 8
+// home3: 펼친 카드 244 = 접힌 94 + 목록 150. 넘치면 목록이 스크롤된다.
+private val TodayTaskListMaxHeight = 150.dp
 
 // 피그마의 숫자 박스 높이 (폰트 위아래 여백을 뺀 글자 높이)
 private val CompletedCountBoxHeight = 39.dp
@@ -62,6 +63,7 @@ fun HomeTodaySummaryCard(
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
     onTaskCompletionChange: (id: Long, isCompleted: Boolean) -> Unit,
+    onTaskClick: (id: Long) -> Unit,
     onCollapsedHeightChanged: (Dp) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,17 +132,18 @@ fun HomeTodaySummaryCard(
         }
 
         if (isExpanded) {
-            // Note: 펼친 상태 디자인 프레임을 받으면 목록 모양을 교체한다.
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = TodayTaskItemHeight * TODAY_TASK_MAX_VISIBLE)
-                    .padding(bottom = 12.dp)
+                    .heightIn(max = TodayTaskListMaxHeight),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(items = tasks, key = { it.id }) { task ->
                     HomeTodayTaskItem(
                         task = task,
-                        onCompletionChange = { onTaskCompletionChange(task.id, it) }
+                        onCompletionChange = { onTaskCompletionChange(task.id, it) },
+                        onClick = { onTaskClick(task.id) }
                     )
                 }
             }
@@ -163,43 +166,52 @@ private fun Modifier.baselineAtBottom(height: Dp) = layout { measurable, constra
     }
 }
 
+// 체크 영역은 완료 전환, 나머지(제목) 영역은 상세 팝업을 연다.
 @Composable
 private fun HomeTodayTaskItem(
     task: HomeTodayTask,
-    onCompletionChange: (Boolean) -> Unit
+    onCompletionChange: (Boolean) -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(TodayTaskItemHeight)
-            .noRippleClickable { onCompletionChange(!task.isCompleted) },
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // 완료 상태 디자인이 없어 이전 오늘 일정과 같은 체크 아이콘을 쓴다.
         SpiritsTodoCheckbox(
             modifier = Modifier.size(20.dp),
             checked = task.isCompleted,
             onCheckedChange = onCompletionChange,
-            checkedIcon = painterResource(R.drawable.todo_check_pp),
-            uncheckedIcon = painterResource(R.drawable.todo_check_up)
+            checkedIcon = painterResource(R.drawable.todo_icon_check_pp),
+            uncheckedIcon = painterResource(R.drawable.ic_check_circle_empty)
         )
 
-        Text(
-            text = task.title,
-            fontSize = 14.sp,
-            color = if (task.isCompleted) SpiritTodoTheme.color.systemGrey else SpiritTodoTheme.color.todoTextMain,
-            textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-
-        if (task.isImportant) {
-            Image(
-                painter = painterResource(R.drawable.fi_rr_color_star),
-                contentDescription = null,
-                modifier = Modifier.size(14.dp)
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .height(20.dp)
+                .noRippleClickable(onClick = onClick)
+                .padding(start = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = task.title,
+                fontSize = 14.sp,
+                color = if (task.isCompleted) SpiritTodoTheme.color.systemGrey else SpiritTodoTheme.color.todoTextMain,
+                textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
             )
+
+            if (task.isImportant) {
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_color_star),
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
         }
     }
 }
