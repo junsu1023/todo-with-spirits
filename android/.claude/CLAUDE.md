@@ -10,7 +10,11 @@ MVVM에 Event / Effect를 더한 MVI 단방향 흐름을 쓴다. 세부 규칙�
 
 피그마 디자인을 코드에 반영할 때는 `figma-ui-refactor` 커맨드(`.claude/commands/figma-ui-refactor.md`)의 절차를 따른다.
 
-화면별 작업 명세는 `.claude/tasks/`에 둔다. 해당 화면을 작업할 때는 먼저 명세를 읽고, "결정 필요" 항목이 남아 있으면 사용자에게 확인한 뒤 진행한다. 화면 구현이 끝나면 명세는 지운다. (진행 중인 명세 없음)
+화면별 작업 명세는 `.claude/tasks/`에 둔다. 해당 화면을 작업할 때는 먼저 명세를 읽고, "결정 필요" 항목이 남아 있으면 사용자에게 확인한 뒤 진행한다. 화면 구현이 끝나면 명세는 지운다.
+
+| 작업 | 명세 |
+| --- | --- |
+| Calendar1~3 — Plan → Calendar 전환, 캘린더 화면 리뉴얼 | [tasks/CALENDAR-calendar.md](tasks/CALENDAR-calendar.md) |
 
 ### 1. 수정 범위 — UI만
 

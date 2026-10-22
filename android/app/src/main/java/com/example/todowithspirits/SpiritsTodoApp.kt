@@ -25,7 +25,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
 
 // 홈 하단 버튼으로 들어가는 화면. 뒤로가기 시 홈으로 돌아간다.
-private val homeButtonRoutes = setOf(Screen.Forest.route, Screen.Plan.route)
+private val homeButtonRoutes = setOf(Screen.Forest.route, Screen.Calendar.route)
 
 // mainViewModel은 앱 시작 시 시스템 상태 확인(init)을 위해 생성만 한다.
 @Suppress("UNUSED_PARAMETER")

@@ -41,6 +41,7 @@ fun SpiritsTodoDropdown(
     dropdownGap: Dp = 0.dp,
     itemVerticalPadding: Dp = 12.dp,
     unselectedOptionColor: Color = SpiritTodoTheme.color.todoTextMain,
+    selectedOptionColor: Color = SpiritTodoTheme.color.mainTextAndStroke,
     anchor: @Composable (expand: () -> Unit) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -75,7 +76,7 @@ fun SpiritsTodoDropdown(
                             ) {
                                 Text(
                                     text = option,
-                                    color = if (option == value) SpiritTodoTheme.color.mainTextAndStroke else unselectedOptionColor,
+                                    color = if (option == value) selectedOptionColor else unselectedOptionColor,
                                     fontSize = 14.sp,
                                     textAlign = TextAlign.Center
                                 )

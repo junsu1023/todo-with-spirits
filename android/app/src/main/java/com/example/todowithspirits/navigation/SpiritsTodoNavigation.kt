@@ -1,5 +1,6 @@
 package com.example.todowithspirits.navigation
 
+import android.net.Uri
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
@@ -21,8 +22,9 @@ import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
-import com.example.todowithspirits.feature.plan.PlanDetailScreen
-import com.example.todowithspirits.feature.plan.PlanScreen
+import com.example.todowithspirits.feature.calendar.CalendarRoute
+import com.example.todowithspirits.feature.search.SearchRoute
+import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
@@ -52,9 +54,6 @@ fun SpiritsTodoNavigation(
     val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
     val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToChangePassword: () -> Unit = { navController.navigate(Screen.ChangePassword.route) }
-    val navigateToDetail: (Int) -> Unit = { itemId ->
-        navController.navigate("${Screen.PlanDetail.route}/$itemId")
-    }
     val navigateToLogout: () -> Unit = {
         navController.navigate(Screen.Login.route) {
             popUpTo(0) { inclusive = true }
@@ -145,31 +144,27 @@ fun SpiritsTodoNavigation(
                 navigateToAlarm = navigateToAlarm,
                 navigateToMyPage = { navigateFromHome(Screen.MyPage.route) },
                 navigateToForest = { navigateFromHome(Screen.Forest.route) },
-                navigateToCalendar = { navigateFromHome(Screen.Plan.route) },
+                navigateToCalendar = { navigateFromHome(Screen.Calendar.route) },
                 navigateToEditTask = navigateToEditTask
             )
         }
 
-        composable(Screen.Plan.route) {
-            PlanScreen(
+        composable(Screen.Calendar.route) {
+            CalendarRoute(
                 navigateToAdd = navigateToAdd,
-                navigateToDetail = navigateToDetail,
                 navigateToEditTask = navigateToEditTask,
-                navigateToAlarm = navigateToAlarm
+                navigateBack = onBack,
+                navigateToSearch = { query ->
+                    navController.navigate("${Screen.Search.route}?$SEARCH_QUERY_ARG=${Uri.encode(query)}")
+                }
             )
         }
 
         composable(
-            route = "${Screen.PlanDetail.route}/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getInt("itemId") ?: return@composable
-
-            PlanDetailScreen(
-                itemId = itemId,
-                onBack = { navController.popBackStack() },
-                navigateToAdd = { navigateToEditTask(itemId.toLong()) }
-            )
+            route = "${Screen.Search.route}?$SEARCH_QUERY_ARG={$SEARCH_QUERY_ARG}",
+            arguments = listOf(navArgument(SEARCH_QUERY_ARG) { type = NavType.StringType; defaultValue = "" })
+        ) {
+            SearchRoute(navigateBack = onBack)
         }
 
         composable(Screen.Forest.route) {
