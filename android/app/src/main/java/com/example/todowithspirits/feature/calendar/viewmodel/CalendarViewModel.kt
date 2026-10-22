@@ -3,16 +3,16 @@ package com.example.todowithspirits.feature.calendar.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.PlanSortOption
-import com.example.domain.model.TaskSummary
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.toPlanItemData
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
 import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
+import com.example.todowithspirits.util.RecentSearchStore
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -35,7 +35,8 @@ class CalendarViewModel @Inject constructor(
     private val deleteTasksUseCase: DeleteTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
-    private val taskRefreshBus: TaskRefreshBus
+    private val taskRefreshBus: TaskRefreshBus,
+    private val recentSearchStore: RecentSearchStore
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> get() = _uiState.asStateFlow()
@@ -52,6 +53,10 @@ class CalendarViewModel @Inject constructor(
                 loadPlans()
                 loadCalendarEvents()
             }
+            .launchIn(viewModelScope)
+
+        recentSearchStore.searches
+            .onEach { searches -> _uiState.update { it.copy(recentSearches = searches) } }
             .launchIn(viewModelScope)
     }
 
@@ -74,34 +79,23 @@ class CalendarViewModel @Inject constructor(
             is CalendarEvent.SearchInputChanged -> _uiState.update { it.copy(searchInput = event.input) }
             CalendarEvent.SearchSubmitted -> search(_uiState.value.searchInput)
             is CalendarEvent.RecentSearchClicked -> search(event.query)
-            is CalendarEvent.RecentSearchRemoved -> _uiState.update {
-                it.copy(recentSearches = it.recentSearches - event.query)
-            }
-            CalendarEvent.RecentSearchesCleared -> _uiState.update { it.copy(recentSearches = emptyList()) }
-            CalendarEvent.SearchResultCleared -> _uiState.update { it.copy(appliedQuery = null, expandedTaskId = null) }
+            is CalendarEvent.RecentSearchRemoved -> recentSearchStore.remove(event.query)
+            CalendarEvent.RecentSearchesCleared -> recentSearchStore.clear()
         }
     }
 
-    // 최근 검색어는 앱 실행 중에만 유지한다. (맨 앞에 추가, 중복 제거, 최대 10개)
+    // 검색어를 최근 검색에 남기고 패널을 닫은 뒤 일정 검색 화면으로 이동한다.
     private fun search(input: String) {
         val query = input.trim()
         if (query.isEmpty()) return
 
-        _uiState.update {
-            it.copy(
-                isSearchOpen = false,
-                searchInput = "",
-                appliedQuery = query,
-                expandedTaskId = null,
-                recentSearches = (listOf(query) + it.recentSearches.filterNot { recent -> recent == query })
-                    .take(MAX_RECENT_SEARCHES)
-            )
-        }
+        recentSearchStore.add(query)
+        _uiState.update { it.copy(isSearchOpen = false, searchInput = "") }
+        sendEffect(CalendarEffect.NavigateToSearch(query))
     }
 
     private fun selectDate(date: LocalDate) {
-        // 날짜를 고르면 검색 결과에서 그 날짜의 일정으로 돌아간다.
-        _uiState.update { it.copy(selectedDate = date, expandedTaskId = null, appliedQuery = null) }
+        _uiState.update { it.copy(selectedDate = date, expandedTaskId = null) }
         loadPlans()
     }
 
@@ -198,12 +192,7 @@ class CalendarViewModel @Inject constructor(
                             DayPlanEvents(importantCount = items.count { it.isImportant })
                         }
 
-                    _uiState.update {
-                        it.copy(
-                            calendarEvents = events,
-                            monthPlans = calendar.items.map { item -> item.toPlanItemData() }
-                        )
-                    }
+                    _uiState.update { it.copy(calendarEvents = events) }
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "캘린더 일정을 불러오지 못했습니다")
@@ -211,15 +200,3 @@ class CalendarViewModel @Inject constructor(
         }
     }
 }
-
-private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
-    id = taskId.toInt(),
-    title = title,
-    isImportant = isImportant,
-    isDone = isCompleted,
-    endDate = occurrenceDate,
-    endTime = endTime,
-    isAllDay = isAllDay
-)
-
-private const val MAX_RECENT_SEARCHES = 10

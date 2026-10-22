@@ -17,12 +17,13 @@
 | 3 | Calendar 화면 MVI 전환 (Event / Effect, Route / Screen 분리) | 완료 |
 | 4 | 나머지 Calendar1·2 디자인 (헤더, 캘린더, 일정 추가, 완료 제외/정렬, 일정 없음) | 완료 |
 | 5 | Calendar3 검색 | 완료 |
+| 6 | 일정 검색 결과 화면 (캡처 기준) — 캘린더 안 검색 결과 표시를 대체 | 완료 |
 
 `:data`, `:domain` 수정 금지. (`PlanSortOption`의 표시 이름은 domain 값이라 UI에서 따로 매핑)
 
 ## 결정 사항 (사용자 확인 완료)
 
-- **검색**: domain에 검색 API가 없어 UI + **불러온 이번 달 일정에서 제목 검색**. 최근 검색어는 앱 실행 중에만 유지(ViewModel 메모리).
+- **검색**: domain에 검색 API가 없어, 기존 일정 조회(`GetTaskCalendarUseCase`)로 불러온 일정에서 제목 검색. 범위는 처음엔 이번 달 → 결과 화면 도입 후 오늘 기준 앞뒤 1년. 최근 검색어는 앱 실행 중에만 유지.
 - **빠진 기능**: 스와이프 미루기, D-Day, 카테고리 표시, 상세 화면(`PlanDetailScreen`/`PlanDetailViewModel`, `Screen.PlanDetail`) 제거. 미루기 테스트(`CalendarViewModelPostponeTest`)도 함께 정리.
 - 할 일 / 루틴 탭(`UnderlinePlanTabs`), 기존 검색창(`PlanSearchArea`) 제거.
 - `PlanItemData`의 안 쓰이게 된 필드(`memo`, `category`, `repeatInfo`, `isPublic`, `notificationMinutes`)와 리소스(`fi_rr_arrow_right`, `fi_rr_pencil`, `fi_rr_trash`, `todo_important`, `todo_quote_open_2(_color)`, 문자열 `search_plan`) 제거.
@@ -104,10 +105,27 @@
 | 딤 | 패널 아래 화면 | `dimColor` (스크린샷 기준) |
 
 - **동작 (MVI)**: 검색 아이콘 → `SearchOpened`, X/딤 클릭/뒤로가기 → `SearchClosed`, 입력 → `SearchQueryChanged`, 키보드 검색 → `SearchSubmitted` (최근 검색 맨 앞에 추가, 중복 제거, 최대 10개), 칩 클릭 → 그 검색어로 검색, 칩 X → 삭제, 전체삭제 → 모두 삭제.
-- 날짜를 고르면 검색 결과를 해제하고 그 날짜의 일정으로 돌아간다. 검색 결과에는 같은 루틴이 날짜별로 나올 수 있어 목록 키는 `id + 날짜`.
-- 검색 결과 완료 체크는 그 일정의 날짜 기준으로 처리한다.
-- 결과 없음: "검색 결과 없음".
-- 검색 결과: 패널을 닫고 목록 자리에 이번 달 일정 중 제목에 검색어가 들어간 일정을 보여준다. 완료 제외/정렬 줄 왼쪽에 `'검색어' 검색 결과`와 해제(X)를 둔다. (결과 화면 디자인 없음 → 기존 스타일 재사용)
+- 검색하면 "6. 일정 검색 결과 화면"으로 이동한다. (처음에 만든 캘린더 안 결과 표시는 6단계에서 제거)
+
+## 6. 일정 검색 결과 화면 (캡처 기준, Figma 호출 한도로 수치는 캡처 610px → 360dp 환산)
+
+- **흐름**: 캘린더 검색 패널에서 검색(검색 아이콘 / 키보드 검색 / 최근 검색어) → 최근 검색에 추가, 패널 닫기 → **일정 검색 화면**으로 이동. 결과 화면 검색창에서 다시 검색 가능, 뒤로가기 → 캘린더.
+- 캘린더 화면 안에 결과를 보여주던 방식(`appliedQuery`, 결과 해제 줄)은 제거.
+- **검색 범위**: 이번 달 → **오늘 기준 앞뒤 1년** (`GetTaskCalendarUseCase`로 불러와 제목 필터, 검색 API 없음). 날짜·시간 오름차순.
+- **최근 검색어**: 두 화면이 함께 쓰도록 앱 메모리 저장소(`util/RecentSearchStore`, `@Singleton`)로 이동. 앱 실행 중에만 유지.
+
+| 요소 | 캡처 | 적용 |
+| --- | --- | --- |
+| 헤더 | 뒤로가기 + "일정 검색" | `TitleHeader`, `todo_back1` 26 |
+| 검색창 | 헤더 아래 10, h ≈ 40, 흰 영역 + 아래 그림자 | 캘린더 검색창(`CalendarSearchField`) 재사용, 아래 여백 12 |
+| 날짜 열 | 왼쪽 18, 폭 ≈ 59, "5월" ≈ 11sp + "29" ≈ 18sp, `#857563`/`#8F8170` | 폭 60, 월 12sp `onSurfaceColor5`, 일 18sp `todoTextMain` (두 자리) |
+| 결과 카드 | `#FAFAFA`, radius ≈ 6, h 40, 왼쪽 10, 14sp `#857563` + 중요 별 14, 카드 사이 7 | `systemBackground`, radius 6, h 40, 사이 8 |
+| 같은 달 다른 날짜 사이 | ≈ 23 | 24 |
+| 달이 바뀔 때 | 구분선(옅은 회색) 위아래 ≈ 18 / 22 | `surfaceColor4` 1dp, 위아래 20 |
+| 연도가 바뀔 때 | 구분선 아래 "2027년도" ≈ 16sp | 올해와 다른 연도의 첫 그룹 앞에 `yyyy년도` 16sp `todoTextMain` |
+| 결과 없음 | 없음 | `todo_empty` + "검색 결과 없음" |
+
+- 결과 카드 클릭 동작은 캡처에 없어 **클릭 없음**.
 
 ## 검증 체크리스트
 
@@ -116,6 +134,6 @@
 - [ ] 일정 추가 → 추가 화면, 완료 체크·삭제·수정 동작
 - [ ] 완료 제외, 정렬 3종 동작 (완료 제외 시 완료 순 숨김)
 - [ ] 일정 없을 때 Calendar2 모양
-- [ ] 검색 열기/닫기, 검색 결과, 최근 검색 추가·삭제·전체삭제
+- [ ] 검색 열기/닫기, 검색 → 일정 검색 화면 이동, 결과 묶음(날짜/달/연도), 최근 검색 추가·삭제·전체삭제
 - [ ] 일정 추가 화면의 날짜 선택 캘린더 모양 변화 없음
 - [ ] `./gradlew :app:assembleDebug`, `./gradlew :app:testDebugUnitTest` 통과

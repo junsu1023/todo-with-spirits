@@ -53,7 +53,8 @@ fun CalendarSearchPanel(
         CalendarSearchField(
             value = input,
             onValueChange = onInputChange,
-            onSubmit = onSubmit
+            onSubmit = onSubmit,
+            autoFocus = true
         )
 
         if (recentSearches.isNotEmpty()) {
@@ -95,17 +96,22 @@ fun CalendarSearchPanel(
     }
 }
 
+// 캘린더 검색 패널과 일정 검색 화면이 함께 쓰는 검색창. 검색 아이콘 / 키보드 검색으로 onSubmit.
 @Composable
-private fun CalendarSearchField(
+fun CalendarSearchField(
     value: String,
     onValueChange: (String) -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
+    autoFocus: Boolean = false
 ) {
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    if (autoFocus) {
+        LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(42.dp)
             .border(1.dp, SpiritTodoTheme.color.onSurfaceColor2, RoundedCornerShape(6.dp))

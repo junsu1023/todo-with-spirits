@@ -10,6 +10,7 @@ import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.testutil.FakeTaskRepository
+import com.example.todowithspirits.util.RecentSearchStore
 import com.example.todowithspirits.util.TaskRefreshBus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +34,7 @@ import java.time.LocalDate
 class CalendarViewModelEventTest {
     private val testDispatcher = StandardTestDispatcher()
     private val today = LocalDate.of(2026, 10, 13)
+    private val recentSearchStore = RecentSearchStore()
 
     @Before
     fun setUp() {
@@ -65,7 +67,8 @@ class CalendarViewModelEventTest {
             deleteTasksUseCase = DeleteTasksUseCase(repository),
             completeTaskUseCase = CompleteTaskUseCase(repository),
             cancelTaskCompletionUseCase = CancelTaskCompletionUseCase(repository),
-            taskRefreshBus = TaskRefreshBus()
+            taskRefreshBus = TaskRefreshBus(),
+            recentSearchStore = recentSearchStore
         )
     }
 
@@ -130,49 +133,49 @@ class CalendarViewModelEventTest {
         assertNull(viewModel.uiState.value.expandedTaskId)
     }
 
-    @Test fun searchSubmittedShowsMonthResultsAndRecordsRecentSearch() = runTest(testDispatcher) {
-        val viewModel = buildViewModel(task(1, "팀 미팅"), task(2, "운동"), task(3, "미팅 준비"))
+    @Test fun searchSubmittedRecordsRecentSearchAndNavigatesToSearch() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
         advanceUntilIdle()
 
         viewModel.onEvent(CalendarEvent.SearchClicked)
         viewModel.onEvent(CalendarEvent.SearchInputChanged(" 미팅 "))
         viewModel.onEvent(CalendarEvent.SearchSubmitted)
+        advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertFalse(state.isSearchOpen)
-        assertEquals("미팅", state.appliedQuery)
-        assertEquals(setOf(1, 3), state.visiblePlans.map { it.id }.toSet())
-        assertEquals(listOf("미팅"), state.recentSearches)
+        assertFalse(viewModel.uiState.value.isSearchOpen)
+        assertEquals(listOf("미팅"), viewModel.uiState.value.recentSearches)
+        assertEquals(CalendarEffect.NavigateToSearch("미팅"), viewModel.effect.first())
+    }
+
+    @Test fun blankSearchIsIgnored() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        advanceUntilIdle()
+
+        viewModel.onEvent(CalendarEvent.SearchInputChanged("   "))
+        viewModel.onEvent(CalendarEvent.SearchSubmitted)
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.recentSearches.isEmpty())
     }
 
     @Test fun recentSearchesMoveToFrontWithoutDuplicatesAndCanBeRemoved() = runTest(testDispatcher) {
         val viewModel = buildViewModel()
         advanceUntilIdle()
 
-        listOf("마감", "미팅", "마감").forEach {
+        listOf("마감", "미팅").forEach {
             viewModel.onEvent(CalendarEvent.SearchInputChanged(it))
             viewModel.onEvent(CalendarEvent.SearchSubmitted)
         }
+        viewModel.onEvent(CalendarEvent.RecentSearchClicked("마감"))
+        advanceUntilIdle()
         assertEquals(listOf("마감", "미팅"), viewModel.uiState.value.recentSearches)
 
         viewModel.onEvent(CalendarEvent.RecentSearchRemoved("마감"))
+        advanceUntilIdle()
         assertEquals(listOf("미팅"), viewModel.uiState.value.recentSearches)
 
         viewModel.onEvent(CalendarEvent.RecentSearchesCleared)
-        assertTrue(viewModel.uiState.value.recentSearches.isEmpty())
-    }
-
-    @Test fun dateSelectedOrResultClearedLeavesSearchResults() = runTest(testDispatcher) {
-        val viewModel = buildViewModel(task(1, "팀 미팅"))
         advanceUntilIdle()
-        viewModel.onEvent(CalendarEvent.RecentSearchClicked("미팅"))
-        assertEquals("미팅", viewModel.uiState.value.appliedQuery)
-
-        viewModel.onEvent(CalendarEvent.SearchResultCleared)
-        assertNull(viewModel.uiState.value.appliedQuery)
-
-        viewModel.onEvent(CalendarEvent.RecentSearchClicked("미팅"))
-        viewModel.onEvent(CalendarEvent.DateSelected(today))
-        assertNull(viewModel.uiState.value.appliedQuery)
+        assertTrue(viewModel.uiState.value.recentSearches.isEmpty())
     }
 }

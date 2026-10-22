@@ -145,7 +145,8 @@
     <string name="search_placeholder">검색어 입력</string>
     <string name="recent_search">최근 검색</string>
     <string name="clear_all">전체삭제</string>
-    <string name="search_result_format">\'%s\' 검색 결과</string>
+    <string name="calendar_search_title">일정 검색</string>
+    <string name="year_format">%d년도</string>
     <string name="search_no_result">검색 결과 없음</string>
     <string name="empty_plans">예정된 일정 없음</string>
     <string name="empty_alarm">알림이 없습니다</string>

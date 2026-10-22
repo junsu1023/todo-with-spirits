@@ -61,6 +61,7 @@ fun CalendarRoute(
     navigateToAdd: () -> Unit,
     navigateToEditTask: (Long) -> Unit,
     navigateBack: () -> Unit,
+    navigateToSearch: (String) -> Unit,
     calendarViewModel: CalendarViewModel = hiltViewModel()
 ) {
     val uiState by calendarViewModel.uiState.collectAsStateWithLifecycle()
@@ -71,6 +72,7 @@ fun CalendarRoute(
             CalendarEffect.NavigateBack -> navigateBack()
             CalendarEffect.NavigateToAdd -> navigateToAdd()
             is CalendarEffect.NavigateToEditTask -> navigateToEditTask(effect.taskId)
+            is CalendarEffect.NavigateToSearch -> navigateToSearch(effect.query)
         }
     }
 
@@ -100,8 +102,6 @@ fun CalendarScreen(
         }
     }
     val visiblePlans = uiState.visiblePlans
-
-    val listPlans = uiState.listPlans
 
     BackHandler(enabled = uiState.isSearchOpen) { onEvent(CalendarEvent.SearchClosed) }
 
@@ -170,17 +170,7 @@ fun CalendarScreen(
                     }
                 }
 
-                uiState.appliedQuery?.let { query ->
-                    item {
-                        SearchResultRow(
-                            query = query,
-                            onClear = { onEvent(CalendarEvent.SearchResultCleared) },
-                            modifier = Modifier.padding(start = CalendarHorizontalMargin, top = 28.dp, end = CalendarHorizontalMargin)
-                        )
-                    }
-                }
-
-                if (listPlans.isNotEmpty()) {
+                if (uiState.plans.isNotEmpty()) {
                     item {
                         CalendarListOptionRow(
                             isHidden = uiState.isHidden,
@@ -213,15 +203,14 @@ fun CalendarScreen(
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Text(
-                                text = stringResource(if (uiState.appliedQuery != null) R.string.search_no_result else R.string.empty_plans),
+                                text = stringResource(R.string.empty_plans),
                                 fontSize = 14.sp,
                                 color = SpiritTodoTheme.color.systemGrey
                             )
                         }
                     }
                 } else {
-                    // 검색 결과에는 같은 루틴이 날짜별로 여러 번 나올 수 있어 날짜까지 키에 넣는다.
-                    items(visiblePlans, key = { "${it.id}_${it.endDate}" }) { item ->
+                    items(visiblePlans, key = { it.id }) { item ->
                         CalendarTaskItem(
                             item = item,
                             isExpanded = uiState.expandedTaskId == item.id,
@@ -271,35 +260,6 @@ fun CalendarScreen(
     }
 
     LoadingOverlay(isLoading = isLoading)
-}
-
-@Composable
-private fun SearchResultRow(
-    query: String,
-    onClear: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(R.string.search_result_format, query),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = SpiritTodoTheme.color.todoTextMain
-        )
-
-        Image(
-            painter = painterResource(R.drawable.todo_cross),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey),
-            modifier = Modifier
-                .size(14.dp)
-                .noRippleClickable(onClick = onClear)
-        )
-    }
 }
 
 // 완료 제외 체크 + 정렬 드롭다운

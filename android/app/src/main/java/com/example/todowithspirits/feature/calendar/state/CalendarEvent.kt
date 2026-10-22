@@ -22,5 +22,4 @@ sealed interface CalendarEvent {
     data class RecentSearchClicked(val query: String) : CalendarEvent
     data class RecentSearchRemoved(val query: String) : CalendarEvent
     data object RecentSearchesCleared : CalendarEvent
-    data object SearchResultCleared : CalendarEvent
 }

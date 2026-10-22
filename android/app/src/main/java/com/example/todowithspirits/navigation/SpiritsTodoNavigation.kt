@@ -1,5 +1,6 @@
 package com.example.todowithspirits.navigation
 
+import android.net.Uri
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
@@ -22,6 +23,8 @@ import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.calendar.CalendarRoute
+import com.example.todowithspirits.feature.calendar.CalendarSearchRoute
+import com.example.todowithspirits.feature.calendar.viewmodel.CALENDAR_SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
@@ -150,8 +153,18 @@ fun SpiritsTodoNavigation(
             CalendarRoute(
                 navigateToAdd = navigateToAdd,
                 navigateToEditTask = navigateToEditTask,
-                navigateBack = onBack
+                navigateBack = onBack,
+                navigateToSearch = { query ->
+                    navController.navigate("${Screen.CalendarSearch.route}?$CALENDAR_SEARCH_QUERY_ARG=${Uri.encode(query)}")
+                }
             )
+        }
+
+        composable(
+            route = "${Screen.CalendarSearch.route}?$CALENDAR_SEARCH_QUERY_ARG={$CALENDAR_SEARCH_QUERY_ARG}",
+            arguments = listOf(navArgument(CALENDAR_SEARCH_QUERY_ARG) { type = NavType.StringType; defaultValue = "" })
+        ) {
+            CalendarSearchRoute(navigateBack = onBack)
         }
 
         composable(Screen.Forest.route) {
