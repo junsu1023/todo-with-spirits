@@ -2,6 +2,7 @@
 
 - 피그마: https://www.figma.com/design/jx4S6NqQs4g5s15fG9zSuR/OOW?node-id=2616-20545
   - 노드 `2616:20545`, 이름 **`home1`** (MAIN_RE_01 묶음 중 하나), 프레임 360 × 791 → 1px = 1dp
+  - 노드 `2619:20655`, 이름 **`home3`**: 오늘 일정 펼친 상태 + 일정 상세 팝업
   - 프레임 밖에 걸친 요소(`Group 90` 캘린더, `Rectangle 33`, `Rectangle 4337`)는 무시한다.
 - 관련 규칙: [CLAUDE.md](../CLAUDE.md), [rules/architecture-mvi.md](../rules/architecture-mvi.md), 커맨드 `.claude/commands/figma-ui-refactor.md`, `.claude/commands/feature-rename.md`
 
@@ -13,9 +14,10 @@
 | 2 | home1 레이아웃 반영 (헤더, 오늘 일정 카드, 상태 칩, 말풍선, 정령, 언덕 배경) | 완료 (기기 확인 전) |
 | 3 | 정령 좌우 이동 + 끝에서 좌우 반전 | 완료 (기기 확인 전) |
 | 4 | 정령 클릭 시 바운스 | 완료 (기기 확인 전) |
-| 5 | 오늘 일정 카드 펼침 (화살표) + 임시 데이터 | 완료 (기기 확인 전) — 펼친 상태 프레임 받으면 디자인 교체 |
+| 5 | 오늘 일정 카드 펼침 (화살표) + 임시 데이터 | 완료 (기기 확인 전) |
 | 6 | 하단 탭바 제거 → 홈 화면 안의 임시 버튼 3개 (홈 / 정령의숲 / 캘린더) | 완료 (기기 확인 전) |
 | 8 | 빠른 추가 FAB 제거 (피그마에서 빠짐) | 완료 (기기 확인 전) |
+| 9 | 펼친 목록을 home3 디자인으로 교체, 체크 → 완료 토글 / 텍스트 → 상세 팝업 | 완료 (기기 확인 전) |
 | 7 | Home 화면 MVI 전환 (Event / Effect) | 완료 (기기 확인 전) |
 
 `:data`, `:domain` 수정 금지.
@@ -149,44 +151,73 @@
 
 [rules/architecture-mvi.md](../rules/architecture-mvi.md)를 따른다.
 
-- `state/HomeEvent.kt`: `SettingClicked`, `AlarmClicked`, `ForestButtonClicked`, `CalendarButtonClicked`, `TodayTasksToggled`, `TodayTaskCompletionChanged(id, isCompleted)`
-- `state/HomeEffect.kt`: `NavigateToMyPage`, `NavigateToAlarm`, `NavigateToForest`, `NavigateToCalendar`
+- `state/HomeEvent.kt`: `SettingClicked`, `AlarmClicked`, `ForestButtonClicked`, `CalendarButtonClicked`, `TodayTasksToggled`, `TodayTaskCompletionChanged(id, isCompleted)`, `TodayTaskClicked(id)`, `TodayTaskDetailDismissed`, `TodayTaskDeleteClicked(id)`, `TodayTaskEditClicked(id)`
+- `state/HomeEffect.kt`: `NavigateToMyPage`, `NavigateToAlarm`, `NavigateToForest`, `NavigateToCalendar`, `NavigateToEditTask(id)`
 - 카드의 완료 수 / 전체 수 / 중요 일정 수는 `HomeScreen`에서 계산하지 않고 `HomeUiState`에 담는다.
 - `HomeRoute`(ViewModel 연결, Effect 처리) / `HomeScreen(uiState, isLoading, onEvent)`로 나눈다. 네비게이션 그래프는 `HomeRoute`를 호출한다.
 - 정령 이동·바운스, 말풍선 위치는 화면 표현 상태라 `SpiritStage` 안의 로컬 상태로 둔다.
 - `util/ObserveAsEffect.kt`를 이번에 만든다.
-- `HomeRoute`는 쓰지 않게 된 `navigateToEditTask`, `navigateToPlan`을 받지 않는다.
-- 테스트: `HomeViewModelEventTest` (펼침 토글, 완료 변경과 개수, 설정·알림 Effect).
+- `HomeRoute`는 `navigateToAlarm`, `navigateToMyPage`, `navigateToForest`, `navigateToCalendar`, `navigateToEditTask`를 받는다.
+- 테스트: `HomeViewModelEventTest` (펼침 토글, 완료 변경과 개수, 설정·알림·하단 버튼 Effect, 상세 팝업 열기/닫기/삭제/수정).
 
 ## 7. 오늘 일정 펼침 (임시 데이터)
 
-펼친 상태 디자인 프레임이 아직 없어 기존 컴포넌트로 단순하게 만들고, 프레임을 받으면 교체한다.
-
-- **데이터**: 실제 API 대신 임시 데이터로 채운다. 필드는 우선 `title`, `isCompleted`, `isImportant` (+ 목록 key와 완료 토글용 `id`).
-  - 모델 `HomeTodayTask` (`state/HomeUiState.kt`), 임시 목록은 `HomeViewModel`의 `TempTodayTasks` 상수 (`// TODO: 임시 데이터` 표시).
-  - 카드의 완료 수 / 전체 수, 상태 칩의 중요·완료 수도 같은 임시 목록에서 계산한다. (펼친 목록과 숫자가 어긋나지 않도록)
-  - 실제 데이터로 바꿀 때는 `HomeViewModel`에서 `GetTaskCalendarUseCase`로 오늘 일정/루틴을 불러와 `HomeTodayTask`로 매핑한다. (`TaskSummary`의 `title`, `isCompleted`, `isImportant`, 루틴은 `isImportant = false`)
+- **데이터**: 실제 API 대신 임시 데이터. 필드 `id`, `title`, `isCompleted`, `isImportant`, 상세 팝업용 `date`, `time`(nullable).
+  - 모델 `HomeTodayTask` (`state/HomeUiState.kt`), 임시 목록은 `HomeViewModel`의 `TempTodayTasks` (`// TODO: 임시 데이터`).
+  - 카드의 완료 수 / 전체 수, 상태 칩의 중요·완료 수도 같은 임시 목록에서 계산한다.
+  - 실제 데이터로 바꿀 때는 `GetTaskCalendarUseCase`로 오늘 일정/루틴을 불러와 `HomeTodayTask`로 매핑한다.
 - **동작 (MVI)**
-  - 화살표 클릭 → `HomeEvent.TodayTasksToggled` → `HomeUiState.isTodayTasksExpanded` 반전.
-  - 체크박스 클릭 → `HomeEvent.TodayTaskCompletionChanged(id, isCompleted)` → 임시 목록의 `isCompleted` 갱신 (서버 호출 없음).
-- **모양**
-  - 카드가 아래로 늘어나며 칩과 정령 영역 **위에 겹쳐서** 펼쳐진다. (밀어내면 정령 영역이 줄어 말풍선이 잘리므로) 접힌 부분 높이는 측정해서 그만큼 아래 콘텐츠 자리를 비운다. (시스템 글자 크기가 커져도 겹치지 않게)
-  - 펼침/접힘은 `animateContentSize`, 화살표는 180° 회전.
-  - 목록: 숫자 줄 아래 12, 항목 높이 36, 최대 높이 288(8개)을 넘으면 스크롤.
-  - 항목: `SpiritsTodoCheckbox`(`todo_check_pp` / `todo_check_up`, 20) + 간격 8 + 제목 14sp `todoTextMain`(완료 시 `systemGrey` + 취소선) + 중요하면 끝에 `fi_rr_color_star` 14.
+  - 화살표(카드) 클릭 → `TodayTasksToggled` → `isTodayTasksExpanded` 반전.
+  - 체크 클릭 → `TodayTaskCompletionChanged(id, isCompleted)` → 완료/미완료 전환 (임시 데이터라 서버 호출 없음).
+  - 텍스트(행) 클릭 → `TodayTaskClicked(id)` → 상세 팝업 (아래 8).
+- **모양 (home3)**
+  - 카드가 아래로 늘어나며 칩과 정령 영역 **위에 겹쳐서** 펼쳐진다. 접힌 부분 높이를 측정해 그만큼 아래 콘텐츠 자리를 비운다.
+  - 펼친 카드 높이 244 = 접힌 94 + 목록 150. 목록은 카드 하단까지 이어지고 넘치면 스크롤 (`heightIn(max = 150)`).
+
+| 요소 | 피그마 | 적용 |
+| --- | --- | --- |
+| 숫자 줄 → 첫 항목 | 198 → 217.24 (접힌 부분 하단 패딩 12 포함) | 목록 상단 패딩 8 |
+| 항목 간격 | 12 | `spacedBy(12)` |
+| 체크 | 20, 미완료: 테두리 1 `#BCBCBC` 원 | 미완료 신규 `R.drawable.ic_check_circle_empty`, 완료는 디자인 없음 → 기존 `todo_icon_check_pp` (이전 오늘 일정과 동일) |
+| 체크 → 제목 | 30 − 20 = 10 | 10 |
+| 제목 | 14sp Regular `#857563` | `todoTextMain`, 완료 시 `systemGrey` + 취소선 (디자인 없음, 이전 동작 유지) |
+| 별 | 제목 바로 뒤 gap 4, 14, `#D7BFFF` | `fi_rr_color_star` |
+| 화살표 | 펼치면 180° 회전 | 그대로 |
+
+## 8. 일정 상세 팝업 (home3)
+
+기존 `TodoDetailBottomSheet`(하단 시트)를 가운데 팝업으로 바꾼다. 이전 구현은 git 히스토리(`feature/today/component/TodoDetailBottomSheet.kt`, `dade00c`)에 있다.
+
+- **빠진 기능**: 미루기 버튼, D-Day, 메모, 닫기(X) 버튼. → 삭제 / 수정만 남음
+- **표시**: `Dialog` + 창 dim `dimColor`(검정 20%, 피그마 `Rectangle 4347`). 상태바·하단 버튼까지 전부 딤. 바깥 터치 / 뒤로가기로 닫힘.
+
+| 요소 | 피그마 | 적용 |
+| --- | --- | --- |
+| 팝업 | w 274, 흰색, radius 8, padding 18, 화면 가운데 | 그대로, `surfaceColor1` |
+| 제목 | 16sp SemiBold `#8F8170` + 중요하면 별 14 (gap 4) | `onSurfaceColor5`, `fi_rr_color_star` |
+| 제목 → 날짜 | 4 | 4 |
+| 날짜 | `10월 17일 (토) 17시 50분`, 14sp `#BCBCBC` | `M월 d일 (E) H시 m분` (시간 없으면 날짜만), `systemGrey` |
+| 날짜 → 버튼 | 12 | 12 |
+| 버튼 | 2개, h 56, radius 6, 테두리 0.5, 사이 6.7 | `weight(1f)`, 사이 8, 테두리 0.5 그대로 |
+| 삭제 (왼쪽) | 테두리·글자 `#F49191`, 휴지통 20, 12sp Medium, gap 4 | `systemRed`, `todo_trash` |
+| 수정 (오른쪽) | 테두리·글자 `#857563`, 연필 20 | `todoTextMain`, `todo_pencil` |
+
+- **동작 (MVI)**
+  - 닫기 → `TodayTaskDetailDismissed` → `selectedTaskId = null`
+  - 삭제 → `TodayTaskDeleteClicked(id)` → 임시 목록에서 제거 후 닫기 (실제 데이터 연결 시 `DeleteTasksUseCase`)
+  - 수정 → `TodayTaskEditClicked(id)` → 닫기 + `HomeEffect.NavigateToEditTask(id)` → 기존 `navigateToEditTask` (일정 수정 화면)
+  - 임시 데이터의 id는 서버에 없는 값이라, 실제 데이터 연결 전까지 수정 화면은 일정을 불러오지 못한다.
 
 ## 화면에서 빠지는 것 (제거 완료)
 
 - home1에 없는 `SpiritSection`(레벨/경험치), `BadgeSection`(`BadgeAndAchievementRow`), `TodayPlanSection`, `TodoDetailBottomSheet` 파일 삭제.
 - `HomeViewModel`: 쓰지 않게 된 `loadTask`, `loadWeekEvents`, `loadTodayAchievement`, `setSelectedDate`, `completeTask`, `cancelTaskCompletion`, `deleteTask`, `postponeTodo`, `TaskRefreshBus` 구독과 UseCase 주입 삭제. `HomeViewModelPostponeTest` 삭제 (미루기는 Plan 화면과 `PlanViewModelPostponeTest`에 남아 있음).
 - `HomeUiState`: `todos`, `routines`, `weekEvents`, `todayAchievementRate`, `TodoItem`, `RoutineItem`, `SpiritInfo`의 레벨/경험치 필드 삭제.
-- 삭제한 코드만 쓰던 리소스는 다른 화면 디자인에서 쓸 수 있어 남겨둠.
-  - 하단 탭바·빠른 추가: `home/plan/forest/record/my_page_selected·status`, `fi_rr_up_down`, `todo_clock`, `todo_important_26`, `todo_plus`, 문자열 `plan`, `record`, `my_page`
-  - 이전 홈 구성: `temp_badge`, `todo_arrow`, `todo_arrow2`, `todo_icon_check_bl/gn/pp`, 문자열 `delete`, `modify`, `growth_badge`, `see_all_plan`, `today_completion_rate`
+- 앱 전체에서 쓰이지 않는 리소스 정리: drawable 24개(`*_selected`/`*_status` 탭 아이콘, `temp_app_icon`, `temp_badge`, `todo_arrow`, `todo_arrow2`, `todo_clock`, `todo_plus`, `todo_icon_check_bl/gn` 등), `strings.xml` 문자열 30개.
 
 ## 결정 필요
 
-1. **펼친 상태 프레임 링크** — 임시 디자인 교체, 실제 데이터 연결 시점.
+1. **실제 데이터 연결 시점** — 오늘 일정은 아직 임시 데이터.
 2. **Record 화면 진입 경로**: 하단 버튼에서 빠져 지금은 들어갈 방법이 없다.
 3. **하단 버튼 아이콘** 디자인 (받으면 임시 버튼 교체).
 4. 말풍선 문구가 고정("오늘 하루도 힘차게!")인지, 상황에 따라 바뀌는지.
@@ -199,6 +230,7 @@
 - [ ] 오늘 일정 숫자(완료 수 / 전체)가 잘리지 않음
 - [ ] 빠른 추가 FAB가 사라짐, 정령의숲·캘린더에서 뒤로가기 시 홈
 - [ ] 화살표로 오늘 일정 펼침/접힘, 체크 시 완료 표시와 카드·칩 숫자 갱신
+- [ ] 일정 텍스트 클릭 → 화면 전체 딤 + 상세 팝업, 바깥 터치/뒤로가기로 닫힘, 삭제 시 목록에서 사라짐, 수정 시 수정 화면 이동
 - [ ] 설정 아이콘 → 마이페이지 → 뒤로가기 시 홈
 - [ ] 뒤로가기 처리(`SpiritsTodoApp.kt`) 정상
 - [ ] 정령: 오른쪽 끝 → 반전 → 왼쪽, 왼쪽 끝 → 반전 → 오른쪽, 진행 방향을 바라봄
