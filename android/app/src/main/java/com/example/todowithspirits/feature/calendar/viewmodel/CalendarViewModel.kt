@@ -66,14 +66,42 @@ class CalendarViewModel @Inject constructor(
             is CalendarEvent.TaskClicked -> _uiState.update {
                 it.copy(expandedTaskId = if (it.expandedTaskId == event.taskId) null else event.taskId)
             }
-            is CalendarEvent.TaskCompletionToggled -> toggleTaskCompletion(event.taskId.toLong(), event.isDone)
+            is CalendarEvent.TaskCompletionToggled -> toggleTaskCompletion(event.taskId.toLong(), event.isDone, event.date)
             is CalendarEvent.TaskDeleteClicked -> deleteTask(event.taskId.toLong())
             is CalendarEvent.TaskEditClicked -> sendEffect(CalendarEffect.NavigateToEditTask(event.taskId.toLong()))
+            CalendarEvent.SearchClicked -> _uiState.update { it.copy(isSearchOpen = true) }
+            CalendarEvent.SearchClosed -> _uiState.update { it.copy(isSearchOpen = false, searchInput = "") }
+            is CalendarEvent.SearchInputChanged -> _uiState.update { it.copy(searchInput = event.input) }
+            CalendarEvent.SearchSubmitted -> search(_uiState.value.searchInput)
+            is CalendarEvent.RecentSearchClicked -> search(event.query)
+            is CalendarEvent.RecentSearchRemoved -> _uiState.update {
+                it.copy(recentSearches = it.recentSearches - event.query)
+            }
+            CalendarEvent.RecentSearchesCleared -> _uiState.update { it.copy(recentSearches = emptyList()) }
+            CalendarEvent.SearchResultCleared -> _uiState.update { it.copy(appliedQuery = null, expandedTaskId = null) }
+        }
+    }
+
+    // 최근 검색어는 앱 실행 중에만 유지한다. (맨 앞에 추가, 중복 제거, 최대 10개)
+    private fun search(input: String) {
+        val query = input.trim()
+        if (query.isEmpty()) return
+
+        _uiState.update {
+            it.copy(
+                isSearchOpen = false,
+                searchInput = "",
+                appliedQuery = query,
+                expandedTaskId = null,
+                recentSearches = (listOf(query) + it.recentSearches.filterNot { recent -> recent == query })
+                    .take(MAX_RECENT_SEARCHES)
+            )
         }
     }
 
     private fun selectDate(date: LocalDate) {
-        _uiState.update { it.copy(selectedDate = date, expandedTaskId = null) }
+        // 날짜를 고르면 검색 결과에서 그 날짜의 일정으로 돌아간다.
+        _uiState.update { it.copy(selectedDate = date, expandedTaskId = null, appliedQuery = null) }
         loadPlans()
     }
 
@@ -97,8 +125,8 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    private fun toggleTaskCompletion(taskId: Long, isDone: Boolean) {
-        val date = _uiState.value.selectedDate
+    private fun toggleTaskCompletion(taskId: Long, isDone: Boolean, taskDate: LocalDate?) {
+        val date = taskDate ?: _uiState.value.selectedDate
         if (isDone) cancelTaskCompletion(taskId, date) else completeTask(taskId, date)
     }
 
@@ -170,7 +198,12 @@ class CalendarViewModel @Inject constructor(
                             DayPlanEvents(importantCount = items.count { it.isImportant })
                         }
 
-                    _uiState.update { it.copy(calendarEvents = events) }
+                    _uiState.update {
+                        it.copy(
+                            calendarEvents = events,
+                            monthPlans = calendar.items.map { item -> item.toPlanItemData() }
+                        )
+                    }
                 }
                 .onFailure {
                     emitErrorMsg(it.localizedMessage ?: "캘린더 일정을 불러오지 못했습니다")
@@ -188,3 +221,5 @@ private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     endTime = endTime,
     isAllDay = isAllDay
 )
+
+private const val MAX_RECENT_SEARCHES = 10

@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.calendar
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,6 +44,7 @@ import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
+import com.example.todowithspirits.feature.calendar.component.CalendarSearchPanel
 import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
 import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
@@ -97,111 +101,204 @@ fun CalendarScreen(
     }
     val visiblePlans = uiState.visiblePlans
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
+    val listPlans = uiState.listPlans
+
+    BackHandler(enabled = uiState.isSearchOpen) { onEvent(CalendarEvent.SearchClosed) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SpiritTodoTheme.color.surfaceColor1)
+    ) {
+        TitleHeader(
+            title = stringResource(R.string.calendar),
+            leftComposable = {
+                Image(
+                    painter = painterResource(R.drawable.todo_back1),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(26.dp)
+                        .noRippleClickable { onEvent(CalendarEvent.BackClicked) }
+                )
+            },
+            rightComposable = {
+                if (uiState.isSearchOpen) {
+                    Image(
+                        painter = painterResource(R.drawable.todo_cross),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.fi_rr_search),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .noRippleClickable { onEvent(CalendarEvent.SearchClicked) }
+                    )
+                }
+            }
+        )
+
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(SpiritTodoTheme.color.surfaceColor1)
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            item {
-                TitleHeader(
-                    title = stringResource(R.string.calendar),
-                    leftComposable = {
-                        Image(
-                            painter = painterResource(R.drawable.todo_back1),
-                            contentDescription = null,
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    Column(modifier = Modifier.padding(horizontal = CalendarHorizontalMargin)) {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        CalendarView(
                             modifier = Modifier
-                                .size(26.dp)
-                                .noRippleClickable { onEvent(CalendarEvent.BackClicked) }
+                                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(8.dp))
+                                .padding(top = 10.dp),
+                            selectedDate = uiState.selectedDate,
+                            onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
+                            eventData = calendarEventData,
+                            onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
+                            style = CalendarViewDefaults.calendarScreenStyle()
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        AddPlanButton(onClick = { onEvent(CalendarEvent.AddClicked) })
+                    }
+                }
+
+                uiState.appliedQuery?.let { query ->
+                    item {
+                        SearchResultRow(
+                            query = query,
+                            onClear = { onEvent(CalendarEvent.SearchResultCleared) },
+                            modifier = Modifier.padding(start = CalendarHorizontalMargin, top = 28.dp, end = CalendarHorizontalMargin)
                         )
                     }
-                )
-            }
-
-            item {
-                Column(modifier = Modifier.padding(horizontal = CalendarHorizontalMargin)) {
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    CalendarView(
-                        modifier = Modifier
-                            .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(8.dp))
-                            .padding(top = 10.dp),
-                        selectedDate = uiState.selectedDate,
-                        onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
-                        eventData = calendarEventData,
-                        onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
-                        style = CalendarViewDefaults.calendarScreenStyle()
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    AddPlanButton(onClick = { onEvent(CalendarEvent.AddClicked) })
                 }
-            }
 
-            if (uiState.plans.isNotEmpty()) {
-                item {
-                    CalendarListOptionRow(
-                        isHidden = uiState.isHidden,
-                        sortOption = uiState.sortOption,
-                        sortOptions = uiState.sortOptions,
-                        onEvent = onEvent,
-                        modifier = Modifier.padding(
-                            start = CalendarHorizontalMargin,
-                            top = 28.dp,
-                            end = CalendarHorizontalMargin,
-                            bottom = 16.dp
+                if (listPlans.isNotEmpty()) {
+                    item {
+                        CalendarListOptionRow(
+                            isHidden = uiState.isHidden,
+                            sortOption = uiState.sortOption,
+                            sortOptions = uiState.sortOptions,
+                            onEvent = onEvent,
+                            modifier = Modifier.padding(
+                                start = CalendarHorizontalMargin,
+                                top = 28.dp,
+                                end = CalendarHorizontalMargin,
+                                bottom = 16.dp
+                            )
                         )
-                    )
+                    }
+                }
+
+                if (visiblePlans.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 56.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.todo_empty),
+                                contentDescription = null
+                            )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = stringResource(if (uiState.appliedQuery != null) R.string.search_no_result else R.string.empty_plans),
+                                fontSize = 14.sp,
+                                color = SpiritTodoTheme.color.systemGrey
+                            )
+                        }
+                    }
+                } else {
+                    // 검색 결과에는 같은 루틴이 날짜별로 여러 번 나올 수 있어 날짜까지 키에 넣는다.
+                    items(visiblePlans, key = { "${it.id}_${it.endDate}" }) { item ->
+                        CalendarTaskItem(
+                            item = item,
+                            isExpanded = uiState.expandedTaskId == item.id,
+                            onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
+                            onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone, item.endDate)) },
+                            onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
+                            onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) },
+                            modifier = Modifier.padding(
+                                start = CalendarHorizontalMargin,
+                                end = CalendarHorizontalMargin,
+                                bottom = 10.dp
+                            )
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
 
-            if (visiblePlans.isEmpty()) {
-                item {
-                    Column(
+            if (uiState.isSearchOpen) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    CalendarSearchPanel(
+                        input = uiState.searchInput,
+                        recentSearches = uiState.recentSearches,
+                        onInputChange = { onEvent(CalendarEvent.SearchInputChanged(it)) },
+                        onSubmit = { onEvent(CalendarEvent.SearchSubmitted) },
+                        onRecentClick = { onEvent(CalendarEvent.RecentSearchClicked(it)) },
+                        onRecentRemove = { onEvent(CalendarEvent.RecentSearchRemoved(it)) },
+                        onRecentClear = { onEvent(CalendarEvent.RecentSearchesCleared) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 56.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.todo_empty),
-                            contentDescription = null
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        Text(
-                            text = stringResource(R.string.empty_plans),
-                            fontSize = 14.sp,
-                            color = SpiritTodoTheme.color.systemGrey
-                        )
-                    }
-                }
-            } else {
-                items(visiblePlans, key = { it.id }) { item ->
-                    CalendarTaskItem(
-                        item = item,
-                        isExpanded = uiState.expandedTaskId == item.id,
-                        onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
-                        onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone)) },
-                        onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
-                        onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) },
-                        modifier = Modifier.padding(
-                            start = CalendarHorizontalMargin,
-                            end = CalendarHorizontalMargin,
-                            bottom = 10.dp
-                        )
+                            .shadow(8.dp)
+                            .background(SpiritTodoTheme.color.surfaceColor1)
                     )
-                }
 
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(SpiritTodoTheme.color.dimColor)
+                            .noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
+                    )
                 }
             }
         }
+    }
 
-        LoadingOverlay(isLoading = isLoading)
+    LoadingOverlay(isLoading = isLoading)
+}
+
+@Composable
+private fun SearchResultRow(
+    query: String,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.search_result_format, query),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = SpiritTodoTheme.color.todoTextMain
+        )
+
+        Image(
+            painter = painterResource(R.drawable.todo_cross),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey),
+            modifier = Modifier
+                .size(14.dp)
+                .noRippleClickable(onClick = onClear)
+        )
     }
 }
 
