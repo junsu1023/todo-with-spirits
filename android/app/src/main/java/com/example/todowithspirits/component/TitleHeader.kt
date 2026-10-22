@@ -9,16 +9,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -31,7 +34,8 @@ fun TitleHeader(
     onLeftIconClick: (() -> Unit)? = null,
     onRightIconClick: (() -> Unit)? = null,
     isAlarm: Boolean = false,
-    rightComposable: (@Composable () -> Unit)? = null
+    rightComposable: (@Composable () -> Unit)? = null,
+    leftComposable: (@Composable () -> Unit)? = null
 ) {
     Box(
         modifier = Modifier
@@ -49,6 +53,10 @@ fun TitleHeader(
                     .align(Alignment.CenterStart)
                     .noRippleClickable { onLeftIconClick?.invoke() }
             )
+        } else if (leftComposable != null) {
+            Box(modifier = Modifier.align(Alignment.CenterStart)) {
+                leftComposable()
+            }
         }
 
         if (title != null) {
@@ -91,14 +99,17 @@ fun TitleHeader(
 fun AlarmIconSection(
     alarmIconRes: Int,
     onAlarmClick: () -> Unit,
-    msgCnt: Int
+    msgCnt: Int,
+    iconSize: Dp = Dp.Unspecified,
+    badgeColor: Color = SpiritTodoTheme.color.mainArea
 ) {
     Box(
         modifier = Modifier.noRippleClickable { onAlarmClick() }
     ) {
         Image(
             painter = painterResource(alarmIconRes),
-            contentDescription = null
+            contentDescription = null,
+            modifier = if (iconSize != Dp.Unspecified) Modifier.size(iconSize) else Modifier
         )
 
         Box(
@@ -107,7 +118,7 @@ fun AlarmIconSection(
                 .offset(x = 10.dp, y = -5.dp)
                 .widthIn(24.dp)
                 .heightIn(13.dp)
-                .background(SpiritTodoTheme.color.mainArea, RoundedCornerShape(14.dp))
+                .background(badgeColor, RoundedCornerShape(14.dp))
                 .padding(2.dp),
             contentAlignment = Alignment.Center
         ) {

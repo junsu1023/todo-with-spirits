@@ -31,7 +31,7 @@ import com.example.todowithspirits.feature.login.EmailLoginScreen
 import com.example.todowithspirits.feature.login.LoginScreen
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
-import com.example.todowithspirits.feature.today.TodayScreen
+import com.example.todowithspirits.feature.home.HomeRoute
 import com.example.todowithspirits.util.ToastUtil
 
 @Composable
@@ -43,7 +43,6 @@ fun SpiritsTodoNavigation(
     val navigateToEditTask: (Long) -> Unit = { taskId ->
         navController.navigate("${Screen.Add.route}?taskId=$taskId")
     }
-    val navigateToPlan: () -> Unit = { navController.navigate(Screen.Plan.route) }
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
     val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
@@ -61,9 +60,17 @@ fun SpiritsTodoNavigation(
             popUpTo(0) { inclusive = true }
         }
     }
-    val navigateToToday: () -> Unit = {
-        navController.navigate(Screen.Today.route) {
-            popUpTo(Screen.Today.route) { saveState = true }
+    val navigateToHome: () -> Unit = {
+        navController.navigate(Screen.Home.route) {
+            popUpTo(Screen.Home.route) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+    // 홈에서 다른 화면으로 갈 때: 홈을 백스택에 남기고 상태를 저장/복원한다.
+    val navigateFromHome: (String) -> Unit = { route ->
+        navController.navigate(route) {
+            popUpTo(Screen.Home.route) { saveState = true }
             launchSingleTop = true
             restoreState = true
         }
@@ -91,7 +98,7 @@ fun SpiritsTodoNavigation(
         composable(Screen.Splash.route) {
             SplashScreen(
                 onSplashFinished = { isLoggedIn ->
-                    val destination = if (isLoggedIn) Screen.Today.route else Screen.Login.route
+                    val destination = if (isLoggedIn) Screen.Home.route else Screen.Login.route
                     navController.navigate(destination) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
@@ -104,7 +111,7 @@ fun SpiritsTodoNavigation(
                 onSignUpClick = { navController.navigate(Screen.SignUp.route) },
                 onEmailLoginClick = { navController.navigate(Screen.EmailLogin.route) },
                 onLoginSuccess = {
-                    navController.navigate(Screen.Today.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
@@ -115,7 +122,7 @@ fun SpiritsTodoNavigation(
             EmailLoginScreen(
                 onBack = onBack,
                 onLoginSuccess = {
-                    navController.navigate(Screen.Today.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
@@ -126,18 +133,19 @@ fun SpiritsTodoNavigation(
             SignUpScreen(
                 onBack = onBack,
                 onSignUpSuccess = {
-                    navController.navigate(Screen.Today.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(Screen.Today.route) {
-            TodayScreen(
+        composable(Screen.Home.route) {
+            HomeRoute(
                 navigateToAlarm = navigateToAlarm,
-                navigateToEditTask = navigateToEditTask,
-                navigateToPlan = navigateToPlan
+                navigateToMyPage = { navigateFromHome(Screen.MyPage.route) },
+                navigateToForest = { navigateFromHome(Screen.Forest.route) },
+                navigateToCalendar = { navigateFromHome(Screen.Plan.route) }
             )
         }
 
@@ -164,7 +172,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Forest.route) {
-            ForestScreen(onReturnToToday = navigateToToday)
+            ForestScreen(onReturnToHome = navigateToHome)
         }
 
         composable(Screen.Record.route) {
