@@ -30,7 +30,7 @@ MVVM에 Event / Effect를 더한 MVI 단방향 흐름을 쓴다. 세부 규칙�
 새 Composable을 만들기 전에 아래 순서로 재사용 가능한 것이 있는지 먼저 찾는다.
 
 1. `app/src/main/java/com/example/todowithspirits/component/` — 앱 공통 컴포넌트
-   (예: `SpiritsTodoPrimaryButton`, `SpiritsTodoSwitch`, `SpiritsTodoCheckbox`, `TitleHeader`, `SelectionTabs`, `PillBadge`, `SettingsRow`, `SettingActionRow`, `PlainTextField`, `PasswordField`, `SpiritsTodoDropdown`, `CalendarView`, `MonthlyCalendarView`, `TimeWheelPicker`, `SpeechBubble`, `LoadingOverlay` 등)
+   (예: `SpiritsTodoPrimaryButton`, `SpiritsTodoSwitch`, `SpiritsTodoCheckbox`, `TitleHeader`, `SelectionTabs`, `SettingsRow`, `SettingActionRow`, `PlainTextField`, `PasswordField`, `SpiritsTodoDropdown`, `CalendarView`, `MonthlyCalendarView`, `TimeWheelPicker`, `SpeechBubble`, `LoadingOverlay` 등)
 2. `feature/<화면>/component/` — 해당 화면 전용 컴포넌트
 3. 다른 feature의 `component/` — 비슷한 UI가 있으면 공통 `component/`로 옮겨 함께 사용하는 것을 고려
 
