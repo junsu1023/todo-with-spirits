@@ -5,4 +5,5 @@ sealed interface HomeEffect {
     data object NavigateToAlarm : HomeEffect
     data object NavigateToForest : HomeEffect
     data object NavigateToCalendar : HomeEffect
+    data class NavigateToEditTask(val taskId: Long) : HomeEffect
 }

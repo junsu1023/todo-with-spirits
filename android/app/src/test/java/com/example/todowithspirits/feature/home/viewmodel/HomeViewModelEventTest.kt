@@ -93,4 +93,41 @@ class HomeViewModelEventTest {
         advanceUntilIdle()
         assertEquals(HomeEffect.NavigateToCalendar, viewModel.effect.first())
     }
+
+    @Test fun todayTaskClickedOpensDetailAndDismissCloses() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        val target = viewModel.uiState.value.todayTasks.first()
+
+        viewModel.onEvent(HomeEvent.TodayTaskClicked(target.id))
+        assertEquals(target, viewModel.uiState.value.selectedTask)
+
+        viewModel.onEvent(HomeEvent.TodayTaskDetailDismissed)
+        assertEquals(null, viewModel.uiState.value.selectedTask)
+    }
+
+    @Test fun todayTaskDeleteClickedRemovesTaskAndClosesDetail() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        val target = viewModel.uiState.value.todayTasks.first()
+        val totalBefore = viewModel.uiState.value.todayTotalCount
+
+        viewModel.onEvent(HomeEvent.TodayTaskClicked(target.id))
+        viewModel.onEvent(HomeEvent.TodayTaskDeleteClicked(target.id))
+
+        val state = viewModel.uiState.value
+        assertTrue(state.todayTasks.none { it.id == target.id })
+        assertEquals(totalBefore - 1, state.todayTotalCount)
+        assertEquals(null, state.selectedTask)
+    }
+
+    @Test fun todayTaskEditClickedClosesDetailAndSendsNavigateToEditTask() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        val target = viewModel.uiState.value.todayTasks.first()
+
+        viewModel.onEvent(HomeEvent.TodayTaskClicked(target.id))
+        viewModel.onEvent(HomeEvent.TodayTaskEditClicked(target.id))
+        advanceUntilIdle()
+
+        assertEquals(null, viewModel.uiState.value.selectedTask)
+        assertEquals(HomeEffect.NavigateToEditTask(target.id), viewModel.effect.first())
+    }
 }
