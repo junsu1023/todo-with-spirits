@@ -1,14 +1,11 @@
 package com.example.data.api
 
 import com.example.data.constant.URLConstant
-import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
-import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.DeleteTaskResponse
-import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import retrofit2.Response
@@ -33,9 +30,6 @@ interface TaskApi {
     @POST(URLConstant.TASK.TASK_SCHEDULE)
     suspend fun createTodo(@Body request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>>
 
-    @POST(URLConstant.TASK.TASK_ROUTINE)
-    suspend fun createRoutine(@Body request: CreateRoutineRequest): Response<ApiResponse<TaskDetailResponse>>
-
     @POST(URLConstant.TASK.TASK_COMPLETE)
     suspend fun completeTask(
         @Path("taskId") taskId: Long,
@@ -56,12 +50,6 @@ interface TaskApi {
         @Path("taskId") taskId: Long,
         @Body request: CreateTodoRequest
     ): Response<ApiResponse<TaskDetailResponse>>
-
-    @PATCH(URLConstant.TASK.TASK_ROUTINE_DETAIL)
-    suspend fun updateRoutine(
-        @Path("taskId") taskId: Long,
-        @Body request: UpdateRoutineRequest
-    ): Response<ApiResponse<RoutineDetailResponse>>
 
     @PATCH(URLConstant.TASK.TASK_POSTPONE)
     suspend fun postponeTask(

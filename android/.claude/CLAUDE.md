@@ -15,6 +15,7 @@ MVVM에 Event / Effect를 더한 MVI 단방향 흐름을 쓴다. 세부 규칙�
 | 작업 | 명세 |
 | --- | --- |
 | Calendar1~3 — Plan → Calendar 전환, 캘린더 화면 리뉴얼 | [tasks/CALENDAR-calendar.md](tasks/CALENDAR-calendar.md) |
+| 일정 추가 — 루틴 제거, 디자인 반영 | [tasks/ADD-add.md](tasks/ADD-add.md) |
 
 ### 1. 수정 범위 — UI만
 
@@ -30,7 +31,7 @@ MVVM에 Event / Effect를 더한 MVI 단방향 흐름을 쓴다. 세부 규칙�
 새 Composable을 만들기 전에 아래 순서로 재사용 가능한 것이 있는지 먼저 찾는다.
 
 1. `app/src/main/java/com/example/todowithspirits/component/` — 앱 공통 컴포넌트
-   (예: `SpiritsTodoPrimaryButton`, `SpiritsTodoSwitch`, `SpiritsTodoCheckbox`, `TitleHeader`, `SelectionTabs`, `SettingsRow`, `SettingActionRow`, `PlainTextField`, `PasswordField`, `SpiritsTodoDropdown`, `CalendarView`, `MonthlyCalendarView`, `TimeWheelPicker`, `SpeechBubble`, `LoadingOverlay` 등)
+   (예: `SpiritsTodoPrimaryButton`, `SpiritsTodoSwitch`, `SpiritsTodoCheckbox`, `TitleHeader`, `SettingsRow`, `SettingActionRow`, `PlainTextField`, `PasswordField`, `SpiritsTodoDropdown`, `CalendarView`, `TimeWheelPicker`, `SpeechBubble`, `LoadingOverlay` 등)
 2. `feature/<화면>/component/` — 해당 화면 전용 컴포넌트
 3. 다른 feature의 `component/` — 비슷한 UI가 있으면 공통 `component/`로 옮겨 함께 사용하는 것을 고려
 

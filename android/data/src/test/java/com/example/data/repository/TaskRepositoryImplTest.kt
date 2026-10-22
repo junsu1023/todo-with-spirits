@@ -4,14 +4,11 @@ import com.example.data.api.TaskApi
 import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.error.ApiErrorCode
 import com.example.data.error.ApiException
-import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
-import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.DeleteTaskResponse
-import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.domain.exception.FieldValidationException
@@ -42,12 +39,10 @@ class TaskRepositoryImplTest {
         override suspend fun getTask(taskId: Long): Response<ApiResponse<TaskDetailResponse>> = error("not used")
         override suspend fun getTaskCalendar(from: String?, to: String?): Response<ApiResponse<TaskCalendarResponse>> = error("not used")
         override suspend fun createTodo(request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
-        override suspend fun createRoutine(request: CreateRoutineRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
         override suspend fun completeTask(taskId: Long, date: String): Response<ApiResponse<Unit?>> = error("not used")
         override suspend fun cancelTaskCompletion(taskId: Long, date: String): Response<ApiResponse<Unit?>> = error("not used")
         override suspend fun deleteTasks(request: DeleteTaskRequest): Response<ApiResponse<DeleteTaskResponse>> = error("not used")
         override suspend fun updateTodo(taskId: Long, request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
-        override suspend fun updateRoutine(taskId: Long, request: UpdateRoutineRequest): Response<ApiResponse<RoutineDetailResponse>> = error("not used")
 
         override suspend fun postponeTask(taskId: Long, request: PostponeTaskRequest): Response<ApiResponse<Unit?>> {
             lastTaskId = taskId

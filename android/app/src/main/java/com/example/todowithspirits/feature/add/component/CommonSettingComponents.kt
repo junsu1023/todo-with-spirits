@@ -1,17 +1,24 @@
 package com.example.todowithspirits.feature.add.component
 
 import androidx.compose.animation.AnimatedVisibility
+import java.time.DayOfWeek
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -31,20 +38,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
@@ -52,10 +51,12 @@ import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
+import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanDateWithDayFormatter
-import java.time.DayOfWeek
 import java.time.LocalDate
+
+private val SettingRowHorizontalPadding = 12.dp
 
 @Composable
 fun SettingGroup(
@@ -70,6 +71,7 @@ fun SettingGroup(
     }
 }
 
+// 일정 추가 설정 한 줄: 아이콘 20 + 라벨 + 오른쪽 값/컨트롤. 높이 50 (세로 패딩 12 + 컨트롤 26)
 @Composable
 fun BaseSettingRow(
     icon: Painter,
@@ -81,26 +83,28 @@ fun BaseSettingRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = 12.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = SettingRowHorizontalPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = icon,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Text(
                 text = label,
                 modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SpiritTodoTheme.color.todoTextMain,
-                    fontWeight = FontWeight.Medium
+                    color = SpiritTodoTheme.color.todoTextMain
                 )
             )
 
@@ -116,12 +120,19 @@ fun BaseSettingRow(
     }
 }
 
+/**
+ * @param valueText 스위치 왼쪽에 보여줄 값 (예: 켜진 시간). 누르면 [onValueClick].
+ * @param isValueHighlighted 값을 강조(분홍)할지. 예: 시간 휠이 펼쳐진 상태
+ */
 @Composable
 fun SettingSwitchItem(
     icon: Painter,
     label: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    valueText: String? = null,
+    isValueHighlighted: Boolean = false,
+    onValueClick: () -> Unit = {},
     subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     BaseSettingRow(
@@ -129,12 +140,28 @@ fun SettingSwitchItem(
         label = label,
         subContent = subContent,
         action = {
-            SpiritsTodoSwitch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier.width(52.dp).height(26.dp),
-                thumbSize = 22.dp
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (valueText != null) {
+                    Text(
+                        text = valueText,
+                        fontSize = 16.sp,
+                        color = if (isValueHighlighted) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.systemGrey,
+                        modifier = Modifier.noRippleClickable(onClick = onValueClick)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                SpiritsTodoSwitch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange,
+                    modifier = Modifier
+                        .width(44.dp)
+                        .height(22.dp),
+                    thumbSize = 18.dp,
+                    checkedColor = SpiritTodoTheme.color.pointPink
+                )
+            }
         }
     )
 }
@@ -153,14 +180,17 @@ fun SettingCheckboxItem(
             SpiritsTodoCheckbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                checkedIcon = painterResource(R.drawable.todo_check_pp),
-                uncheckedIcon = painterResource(R.drawable.todo_check_up),
-                modifier = Modifier.size(26.dp)
+                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
+                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off),
+                modifier = Modifier.size(20.dp)
             )
         }
     )
 }
 
+/**
+ * @param isValueHighlighted 값을 강조(분홍)할지. 예: 반복 매주/매월로 아래 선택 영역이 펼쳐진 상태
+ */
 @Composable
 fun SettingSelectorItem(
     icon: Painter,
@@ -168,6 +198,7 @@ fun SettingSelectorItem(
     value: String,
     options: List<String>,
     onOptionSelected: (String) -> Unit,
+    isValueHighlighted: Boolean = false,
     subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     BaseSettingRow(
@@ -178,18 +209,17 @@ fun SettingSelectorItem(
             SpiritsTodoDropdown(
                 value = value,
                 options = options,
-                onOptionSelected = onOptionSelected
+                onOptionSelected = onOptionSelected,
+                selectedOptionColor = SpiritTodoTheme.color.pointPink
             ) { expand ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .clickable { expand() }
+                    modifier = Modifier.noRippleClickable { expand() }
                 ) {
                     Text(
                         text = value,
-                        fontSize = 16.sp,
-                        color = SpiritTodoTheme.color.todoTextMain
+                        fontSize = 14.sp,
+                        color = if (isValueHighlighted) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.todoTextMain
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
@@ -197,7 +227,7 @@ fun SettingSelectorItem(
                     Image(
                         painter = painterResource(R.drawable.expand_icon),
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(12.dp)
                     )
                 }
             }
@@ -213,7 +243,6 @@ fun SettingDateItem(
     onDateSelected: (LocalDate) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val dateFormatter = KoreanDateWithDayFormatter
 
     BaseSettingRow(
         icon = icon,
@@ -237,15 +266,16 @@ fun SettingDateItem(
         },
         action = {
             Text(
-                text = date.format(dateFormatter),
+                text = date.format(KoreanDateWithDayFormatter),
                 fontSize = 16.sp,
-                color = if(expanded) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.todoTextMain,
+                color = if (expanded) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.todoTextMain,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
     )
 }
 
+// 반복 '매주'에서 요일 선택. 누른 채로 좌우로 끌면 지나간 요일을 한 번에 켜거나 끈다.
 @Composable
 fun DayOfWeekSelector(
     selectedDays: Set<DayOfWeek>,
@@ -269,7 +299,6 @@ fun DayOfWeekSelector(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
             .pointerInput(Unit) {
                 val currentSelected = BooleanArray(weekDays.size)
                 var lastIndex = -1
@@ -348,7 +377,7 @@ fun DayOfWeekSelector(
                     }
                     .border(
                         width = if(isSelected) 1.dp else 0.dp,
-                        color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.transparent,
+                        color = if(isSelected) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.transparent,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
@@ -359,7 +388,7 @@ fun DayOfWeekSelector(
             ) {
                 Text(
                     text = label,
-                    color = if(isSelected) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
+                    color = if(isSelected) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.onSurfaceColor8,
                     fontSize = 16.sp
                 )
             }
@@ -370,7 +399,7 @@ fun DayOfWeekSelector(
 @Composable
 fun SettingDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 10.dp),
         thickness = 0.8.dp,
         color = SpiritTodoTheme.color.onSurfaceColor2
     )

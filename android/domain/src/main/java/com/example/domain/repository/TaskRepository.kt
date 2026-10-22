@@ -1,8 +1,6 @@
 package com.example.domain.repository
 
-import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
-import com.example.domain.model.Routine
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import java.time.LocalDate
@@ -15,8 +13,6 @@ interface TaskRepository {
 
     suspend fun createTodo(todo: NewTodo): Result<Task>
 
-    suspend fun createRoutine(routine: NewRoutine): Result<Task>
-
     suspend fun completeTask(taskId: Long, date: LocalDate): Result<Unit>
 
     suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit>
@@ -24,8 +20,6 @@ interface TaskRepository {
     suspend fun deleteTasks(taskIds: List<Long>): Result<Int>
 
     suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task>
-
-    suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Routine>
 
     // originalDate: routine은 필수(미룰 발생일), schedule은 무시된다.
     // newDate/newTime: null이면 서버가 기존 값을 유지한다.
