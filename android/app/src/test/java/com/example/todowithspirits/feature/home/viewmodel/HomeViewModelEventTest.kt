@@ -130,4 +130,28 @@ class HomeViewModelEventTest {
         assertEquals(null, viewModel.uiState.value.selectedTask)
         assertEquals(HomeEffect.NavigateToEditTask(target.id), viewModel.effect.first())
     }
+
+    @Test fun spiritClickedCollapsesTodayTasksAndTogglesMenu() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        viewModel.onEvent(HomeEvent.TodayTasksToggled)
+        assertTrue(viewModel.uiState.value.isTodayTasksExpanded)
+
+        viewModel.onEvent(HomeEvent.SpiritClicked)
+        assertFalse(viewModel.uiState.value.isTodayTasksExpanded)
+        assertTrue(viewModel.uiState.value.isSpiritMenuVisible)
+
+        viewModel.onEvent(HomeEvent.SpiritClicked)
+        assertFalse(viewModel.uiState.value.isSpiritMenuVisible)
+    }
+
+    @Test fun spiritMenuAddClickedClosesMenuAndSendsNavigateToCalendar() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        viewModel.onEvent(HomeEvent.SpiritClicked)
+
+        viewModel.onEvent(HomeEvent.SpiritMenuAddClicked)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isSpiritMenuVisible)
+        assertEquals(HomeEffect.NavigateToCalendar, viewModel.effect.first())
+    }
 }

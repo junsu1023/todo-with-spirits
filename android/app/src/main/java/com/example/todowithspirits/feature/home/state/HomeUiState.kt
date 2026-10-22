@@ -10,7 +10,8 @@ data class HomeUiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val todayTasks: List<HomeTodayTask> = emptyList(),
     val isTodayTasksExpanded: Boolean = false,
-    val selectedTaskId: Long? = null
+    val selectedTaskId: Long? = null,
+    val isSpiritMenuVisible: Boolean = false
 ) {
     // 상세 팝업에 띄울 일정. null이면 팝업을 닫는다.
     val selectedTask: HomeTodayTask? get() = selectedTaskId?.let { id -> todayTasks.find { it.id == id } }
