@@ -1,14 +1,14 @@
-package com.example.todowithspirits.feature.plan.state
+package com.example.todowithspirits.feature.calendar.state
 
 import androidx.compose.runtime.Immutable
 import com.example.domain.model.PlanSortOption
-import com.example.todowithspirits.feature.plan.model.PlanItemData
-import com.example.todowithspirits.feature.plan.model.PlanType
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.PlanType
 import java.time.LocalDate
 import java.time.YearMonth
 
 @Immutable
-data class PlanUiState(
+data class CalendarUiState(
     val selectedTab: String = "전체",
     val isHidden: Boolean = false,
     val selectedDate: LocalDate = LocalDate.now(),

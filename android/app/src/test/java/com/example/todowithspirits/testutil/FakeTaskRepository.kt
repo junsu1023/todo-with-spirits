@@ -10,7 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import java.time.LocalDate
 import java.time.LocalTime
 
-// ViewModel 테스트용 TaskRepository 더블. PlanViewModel이 init{}에서
+// ViewModel 테스트용 TaskRepository 더블. CalendarViewModel이 init{}에서
 // 곧바로 getTaskCalendar를 호출하므로, 기본값을 빈 캘린더 성공 응답으로 둬서 postpone 외
 // 호출이 테스트를 방해하지 않게 한다.
 class FakeTaskRepository : TaskRepository {

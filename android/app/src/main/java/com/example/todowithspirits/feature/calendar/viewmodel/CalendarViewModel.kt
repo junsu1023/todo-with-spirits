@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.viewmodel
+package com.example.todowithspirits.feature.calendar.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
@@ -12,10 +12,10 @@ import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.domain.usecase.PostponeTaskUseCase
-import com.example.todowithspirits.feature.plan.model.PlanItemData
-import com.example.todowithspirits.feature.plan.model.PlanType
-import com.example.todowithspirits.feature.plan.state.DayPlanEvents
-import com.example.todowithspirits.feature.plan.state.PlanUiState
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.PlanType
+import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
+import com.example.todowithspirits.feature.calendar.state.CalendarUiState
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
-class PlanViewModel @Inject constructor(
+class CalendarViewModel @Inject constructor(
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
     private val deleteTasksUseCase: DeleteTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
@@ -37,8 +37,8 @@ class PlanViewModel @Inject constructor(
     private val postponeTaskUseCase: PostponeTaskUseCase,
     private val taskRefreshBus: TaskRefreshBus
 ) : BaseViewModel() {
-    private val _uiState = MutableStateFlow(PlanUiState())
-    val uiState: StateFlow<PlanUiState> get() = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(CalendarUiState())
+    val uiState: StateFlow<CalendarUiState> get() = _uiState.asStateFlow()
 
     init {
         loadPlans()

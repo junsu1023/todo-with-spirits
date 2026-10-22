@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.component
+package com.example.todowithspirits.feature.calendar.component
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
@@ -48,8 +48,8 @@ import androidx.compose.ui.unit.sp
 import com.example.domain.model.CategoryOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.plan.model.PlanItemData
-import com.example.todowithspirits.feature.plan.model.PlanType
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.PlanType
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlinx.coroutines.launch
 import java.time.LocalDate

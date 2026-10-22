@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.component
+package com.example.todowithspirits.feature.calendar.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

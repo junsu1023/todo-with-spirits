@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.viewmodel
+package com.example.todowithspirits.feature.calendar.viewmodel
 
 import com.example.domain.exception.FieldValidationException
 import com.example.domain.usecase.CancelTaskCompletionUseCase
@@ -26,9 +26,9 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-// PlanListItem의 fi_rr_arrow_right(미루기) 아이콘이 거쳐가는 PlanViewModel.postponeTask를 검증한다.
+// PlanListItem의 fi_rr_arrow_right(미루기) 아이콘이 거쳐가는 CalendarViewModel.postponeTask를 검증한다.
 @OptIn(ExperimentalCoroutinesApi::class)
-class PlanViewModelPostponeTest {
+class CalendarViewModelPostponeTest {
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -41,7 +41,7 @@ class PlanViewModelPostponeTest {
         Dispatchers.resetMain()
     }
 
-    private fun buildViewModel(repository: FakeTaskRepository) = PlanViewModel(
+    private fun buildViewModel(repository: FakeTaskRepository) = CalendarViewModel(
         getTaskCalendarUseCase = GetTaskCalendarUseCase(repository),
         deleteTasksUseCase = DeleteTasksUseCase(repository),
         completeTaskUseCase = CompleteTaskUseCase(repository),

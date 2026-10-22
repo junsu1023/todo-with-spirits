@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan
+package com.example.todowithspirits.feature.calendar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,27 +36,27 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.plan.component.AddPlanButton
-import com.example.todowithspirits.feature.plan.component.PlanListItem
-import com.example.todowithspirits.feature.plan.component.PlanSearchArea
-import com.example.todowithspirits.feature.plan.component.UnderlinePlanTabs
-import com.example.todowithspirits.feature.plan.model.PlanItemData
-import com.example.todowithspirits.feature.plan.model.PlanType
-import com.example.todowithspirits.feature.plan.viewmodel.PlanViewModel
+import com.example.todowithspirits.feature.calendar.component.AddPlanButton
+import com.example.todowithspirits.feature.calendar.component.PlanListItem
+import com.example.todowithspirits.feature.calendar.component.PlanSearchArea
+import com.example.todowithspirits.feature.calendar.component.UnderlinePlanTabs
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.PlanType
+import com.example.todowithspirits.feature.calendar.viewmodel.CalendarViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
-fun PlanScreen(
-    planViewModel: PlanViewModel = hiltViewModel(),
+fun CalendarScreen(
+    calendarViewModel: CalendarViewModel = hiltViewModel(),
     navigateToAdd: () -> Unit,
     navigateToDetail: (Int) -> Unit,
     navigateToEditTask: (Long) -> Unit,
     navigateToAlarm: () -> Unit
 ) {
-    val uiState by planViewModel.uiState.collectAsStateWithLifecycle()
-    val isLoading by planViewModel.isLoading.collectAsStateWithLifecycle()
+    val uiState by calendarViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by calendarViewModel.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val todoColor = SpiritTodoTheme.color.surfaceColor8
     val routineColor = SpiritTodoTheme.color.surfaceColor9
@@ -140,10 +140,10 @@ fun PlanScreen(
                         )
                         .padding(vertical = 16.dp),
                     selectedDate = uiState.selectedDate,
-                    onDateSelected = { planViewModel.setSelectedDate(it) },
+                    onDateSelected = { calendarViewModel.setSelectedDate(it) },
                     showSelectedDateInHeader = true,
                     eventData = calendarEventData,
-                    onMonthChanged = { planViewModel.setCalendarMonth(it) }
+                    onMonthChanged = { calendarViewModel.setCalendarMonth(it) }
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -154,7 +154,7 @@ fun PlanScreen(
 
                 UnderlinePlanTabs(
                     selectedTab = uiState.selectedTab,
-                    onTabSelected = { planViewModel.setSelectedTab(it) }
+                    onTabSelected = { calendarViewModel.setSelectedTab(it) }
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -174,7 +174,7 @@ fun PlanScreen(
                             text = stringResource(R.string.hide_completion),
                             color = if (uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
                             fontSize = 14.sp,
-                            modifier = Modifier.noRippleClickable { planViewModel.setHiddenState(!uiState.isHidden) }
+                            modifier = Modifier.noRippleClickable { calendarViewModel.setHiddenState(!uiState.isHidden) }
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -183,7 +183,7 @@ fun PlanScreen(
                             value = uiState.sortOption.displayName,
                             options = sortOptions,
                             onOptionSelected = {
-                                planViewModel.setSortOption(
+                                calendarViewModel.setSortOption(
                                     PlanSortOption.fromDisplayName(
                                         it
                                     )
@@ -245,11 +245,11 @@ fun PlanScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     PlanListItem(
                         item = item,
-                        onDelete = { planViewModel.deleteTask(item.id.toLong()) },
+                        onDelete = { calendarViewModel.deleteTask(item.id.toLong()) },
                         onEdit = { navigateToEditTask(item.id.toLong()) },
                         onPostpone = {
                             val date = item.endDate ?: uiState.selectedDate
-                            planViewModel.postponeTask(
+                            calendarViewModel.postponeTask(
                                 taskId = item.id.toLong(),
                                 originalDate = if (item.type == PlanType.ROUTINE) date else null,
                                 newDate = date.plusDays(1)
@@ -257,9 +257,9 @@ fun PlanScreen(
                         },
                         onToggleComplete = {
                             if(item.isDone) {
-                                planViewModel.cancelTaskCompletion(item.id.toLong(), uiState.selectedDate)
+                                calendarViewModel.cancelTaskCompletion(item.id.toLong(), uiState.selectedDate)
                             } else {
-                                planViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
+                                calendarViewModel.completeTask(item.id.toLong(), uiState.selectedDate)
                             }
                         },
                         navigateToDetail = { navigateToDetail(item.id) },

@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan
+package com.example.todowithspirits.feature.calendar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,8 +40,8 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.add.viewmodel.toAlarmOption
-import com.example.todowithspirits.feature.plan.model.PlanType
-import com.example.todowithspirits.feature.plan.viewmodel.PlanDetailViewModel
+import com.example.todowithspirits.feature.calendar.model.PlanType
+import com.example.todowithspirits.feature.calendar.viewmodel.PlanDetailViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.format.DateTimeFormatter

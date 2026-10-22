@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.component
+package com.example.todowithspirits.feature.calendar.component
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring

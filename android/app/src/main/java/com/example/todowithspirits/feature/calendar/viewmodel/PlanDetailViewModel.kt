@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.viewmodel
+package com.example.todowithspirits.feature.calendar.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
@@ -9,8 +9,8 @@ import com.example.domain.model.Task
 import com.example.domain.model.TaskType
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskUseCase
-import com.example.todowithspirits.feature.plan.model.PlanItemData
-import com.example.todowithspirits.feature.plan.model.PlanType
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.model.PlanType
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

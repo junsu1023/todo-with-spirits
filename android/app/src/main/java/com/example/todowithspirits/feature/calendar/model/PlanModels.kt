@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.plan.model
+package com.example.todowithspirits.feature.calendar.model
 
 import java.time.LocalDate
 import java.time.LocalTime
