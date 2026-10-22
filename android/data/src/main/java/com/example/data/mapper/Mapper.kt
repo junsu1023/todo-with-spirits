@@ -1,14 +1,11 @@
 package com.example.data.mapper
 
-import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
-import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DisplaySettingResponse
 import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.NotificationItemResponse
 import com.example.data.response.NotificationPageResponse
-import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
 import com.example.data.response.TaskCalendarResponse
@@ -17,17 +14,14 @@ import com.example.data.response.TaskListItemResponse
 import com.example.data.response.UserProfileResponse
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.AppLanguage
-import com.example.domain.model.CategoryOption
 import com.example.domain.model.DisplaySetting
 import com.example.domain.model.EmailAvailability
 import com.example.domain.model.LoginSession
 import com.example.domain.model.LoginType
-import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.NotificationCategory
 import com.example.domain.model.NotificationItem
 import com.example.domain.model.NotificationPage
-import com.example.domain.model.Routine
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
@@ -130,55 +124,9 @@ fun NewTodo.toRequest(): CreateTodoRequest = CreateTodoRequest(
     endDateTime = endDateTime,
     isImportant = isImportant,
     notificationType = notificationType.toApiValue(),
-    category = category.toApiValue(),
-    isPublic = isPublic,
-    memo = memo
-)
-
-fun NewRoutine.toRequest(): CreateRoutineRequest = CreateRoutineRequest(
-    title = title,
-    repeatType = repeatType.name,
-    repeatEndDate = repeatEndDate?.toString(),
-    repeatDaysOfWeek = repeatDaysOfWeek.map { it.name }.ifEmpty { null },
-    repeatDaysOfMonth = repeatDaysOfMonth.ifEmpty { null },
-    notification = notification.toApiValue(),
-    isPublic = isPublic,
-    memo = memo
-)
-
-fun NewRoutine.toUpdateRequest(): UpdateRoutineRequest = UpdateRoutineRequest(
-    title = title,
-    repeatType = repeatType.name,
-    category = category.toApiValue(),
-    repeatEndDate = repeatEndDate?.toString(),
-    repeatDaysOfWeek = repeatDaysOfWeek.map { it.name }.ifEmpty { null },
-    repeatDaysOfMonth = repeatDaysOfMonth.ifEmpty { null },
-    notificationType = notification.toApiValue(),
-    isPublic = isPublic,
-    excludeHoliday = excludeHoliday,
-    memo = memo
-)
-
-fun RoutineDetailResponse.toDomain(): Routine = Routine(
     category = category,
-    completedAt = completedAt?.let { LocalDateTime.parse(it) },
-    createdAt = LocalDateTime.parse(createdAt),
-    excludeHoliday = excludeHoliday,
-    growthType = growthType,
-    growthValue = growthValue,
-    isCompleted = isCompleted,
     isPublic = isPublic,
-    memo = memo ?: "",
-    notificationAt = notificationAt?.let { LocalDateTime.parse(it) },
-    notificationMinutes = notificationMinutes,
-    repeatDaysOfMonth = repeatDaysOfMonth,
-    repeatDaysOfWeek = repeatDaysOfWeek.map { DayOfWeek.valueOf(it) },
-    repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
-    repeatType = repeatType,
-    taskId = taskId,
-    taskType = taskType,
-    title = title,
-    updatedAt = LocalDateTime.parse(updatedAt)
+    memo = memo
 )
 
 fun NotificationPageResponse.toDomain(): NotificationPage = NotificationPage(
@@ -220,5 +168,3 @@ fun UserProfileResponse.toDomain(): UserProfile = UserProfile(
 )
 
 private fun AlarmOption.toApiValue(): String = this.toString()
-
-private fun CategoryOption.toApiValue(): String = this.toString()

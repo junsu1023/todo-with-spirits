@@ -35,13 +35,14 @@ fun SpiritsTodoSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    thumbSize: Dp
+    thumbSize: Dp,
+    checkedColor: Color = SpiritTodoTheme.color.mainArea
 ) {
     BoxWithConstraints(
         modifier = modifier
             .clip(CircleShape)
             .background(
-                if(checked) SpiritTodoTheme.color.mainArea else SpiritTodoTheme.color.surfaceColor15
+                if(checked) checkedColor else SpiritTodoTheme.color.surfaceColor15
             )
             .toggleable(
                 value = checked,
@@ -90,7 +91,8 @@ fun SpiritsTodoPrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    containerColor: Color = SpiritTodoTheme.color.mainArea
 ) {
     val throttledOnClick = rememberThrottledOnClick(onClick = onClick)
 
@@ -102,7 +104,7 @@ fun SpiritsTodoPrimaryButton(
             .height(44.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = SpiritTodoTheme.color.mainArea,
+            containerColor = containerColor,
             disabledContainerColor = SpiritTodoTheme.color.systemArea,
             disabledContentColor = SpiritTodoTheme.color.systemGrey
         )

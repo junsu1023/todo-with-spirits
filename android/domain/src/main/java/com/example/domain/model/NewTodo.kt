@@ -6,7 +6,7 @@ data class NewTodo(
     val endDateTime: String,
     val isImportant: Boolean = false,
     val notificationType: AlarmOption = AlarmOption.NONE,
-    val category: CategoryOption = CategoryOption.NONE,
+    val category: String,
     val isPublic: Boolean = false,
     val memo: String? = null
 )

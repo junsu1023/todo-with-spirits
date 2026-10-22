@@ -4,13 +4,10 @@ import com.example.data.datasource.TaskRemoteDataSource
 import com.example.data.error.ApiException
 import com.example.data.mapper.toDomain
 import com.example.data.mapper.toRequest
-import com.example.data.mapper.toUpdateRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
 import com.example.domain.exception.FieldValidationException
-import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
-import com.example.domain.model.Routine
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.repository.TaskRepository
@@ -33,10 +30,6 @@ class TaskRepositoryImpl @Inject constructor(
         return taskRemoteDataSource.createTodo(todo.toRequest()).mapCatching { it.toDomain() }
     }
 
-    override suspend fun createRoutine(routine: NewRoutine): Result<Task> {
-        return taskRemoteDataSource.createRoutine(routine.toRequest()).mapCatching { it.toDomain() }
-    }
-
     override suspend fun completeTask(taskId: Long, date: LocalDate): Result<Unit> {
         return taskRemoteDataSource.completeTask(taskId, date.toString())
     }
@@ -51,10 +44,6 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
         return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).mapCatching { it.toDomain() }
-    }
-
-    override suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Routine> {
-        return taskRemoteDataSource.updateRoutine(taskId, routine.toUpdateRequest()).mapCatching { it.toDomain() }
     }
 
     override suspend fun postponeTask(

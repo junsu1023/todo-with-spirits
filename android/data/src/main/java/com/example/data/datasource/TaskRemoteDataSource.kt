@@ -3,13 +3,10 @@ package com.example.data.datasource
 import com.example.data.api.TaskApi
 import com.example.data.network.apiCall
 import com.example.data.network.apiCallUnit
-import com.example.data.request.CreateRoutineRequest
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
-import com.example.data.request.UpdateRoutineRequest
 import com.example.data.response.DeleteTaskResponse
-import com.example.data.response.RoutineDetailResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskDetailResponse
 import javax.inject.Inject
@@ -25,9 +22,6 @@ class TaskRemoteDataSource @Inject constructor(
     suspend fun createTodo(request: CreateTodoRequest): Result<TaskDetailResponse> =
         apiCall { taskApi.createTodo(request) }
 
-    suspend fun createRoutine(request: CreateRoutineRequest): Result<TaskDetailResponse> =
-        apiCall { taskApi.createRoutine(request) }
-
     suspend fun completeTask(taskId: Long, date: String): Result<Unit> =
         apiCallUnit { taskApi.completeTask(taskId, date) }
 
@@ -39,9 +33,6 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun updateTodo(taskId: Long, request: CreateTodoRequest): Result<TaskDetailResponse> =
         apiCall { taskApi.updateTodo(taskId, request) }
-
-    suspend fun updateRoutine(taskId: Long, request: UpdateRoutineRequest): Result<RoutineDetailResponse> =
-        apiCall { taskApi.updateRoutine(taskId, request) }
 
     suspend fun postponeTask(taskId: Long, request: PostponeTaskRequest): Result<Unit> =
         apiCallUnit { taskApi.postponeTask(taskId, request) }

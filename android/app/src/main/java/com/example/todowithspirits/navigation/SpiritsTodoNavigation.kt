@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.auth.SessionExpiredNotifier
-import com.example.todowithspirits.feature.add.AddScreen
+import com.example.todowithspirits.feature.add.AddRoute
 import com.example.todowithspirits.feature.alarm.AlarmScreen
 import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
@@ -176,7 +176,7 @@ fun SpiritsTodoNavigation(
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getLong("taskId")?.takeIf { it != -1L }
 
-            AddScreen(taskId = taskId, onBack = onBack)
+            AddRoute(taskId = taskId, navigateBack = onBack)
         }
 
         composable(Screen.Alarm.route) {
