@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,10 +29,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
@@ -101,82 +100,82 @@ fun SearchScreen(
                 }
             )
 
+            // 헤더와 검색창은 같은 흰 배경으로 이어지고, 그 아래로만 그림자가 진다.
+            SearchField(
+                value = uiState.input,
+                onValueChange = { onEvent(SearchEvent.InputChanged(it)) },
+                onSubmit = { onEvent(SearchEvent.Submitted) },
+                modifier = Modifier.padding(start = SearchHorizontalMargin, top = 10.dp, end = SearchHorizontalMargin, bottom = 12.dp)
+            )
+
             Box(
                 modifier = Modifier
-                    .zIndex(1f)
                     .fillMaxWidth()
-                    .shadow(8.dp)
-                    .background(SpiritTodoTheme.color.surfaceColor1)
-                    .padding(start = SearchHorizontalMargin, top = 10.dp, end = SearchHorizontalMargin, bottom = 12.dp)
+                    .weight(1f)
             ) {
-                SearchField(
-                    value = uiState.input,
-                    onValueChange = { onEvent(SearchEvent.InputChanged(it)) },
-                    onSubmit = { onEvent(SearchEvent.Submitted) }
-                )
-            }
+                if (uiState.hasSearched && groups.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 56.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.todo_empty),
+                            contentDescription = null
+                        )
 
-            if (uiState.hasSearched && groups.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 56.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.todo_empty),
-                        contentDescription = null
-                    )
+                        Spacer(modifier = Modifier.height(6.dp))
 
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = stringResource(R.string.search_no_result),
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.systemGrey
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = SearchHorizontalMargin)
-                ) {
-                    itemsIndexed(groups, key = { _, group -> group.date.toString() }) { index, group ->
-                        val previous = groups.getOrNull(index - 1)?.date
-                        val isNewMonth = previous != null &&
-                            (previous.year != group.date.year || previous.month != group.date.month)
-                        val showYear = group.date.year != currentYear &&
-                            (previous == null || previous.year != group.date.year)
-
-                        Column {
-                            when {
-                                previous == null -> Spacer(Modifier.height(24.dp))
-                                isNewMonth -> {
-                                    Spacer(Modifier.height(20.dp))
-                                    HorizontalDivider(thickness = 1.dp, color = SpiritTodoTheme.color.surfaceColor4)
-                                    Spacer(Modifier.height(20.dp))
-                                }
-                                else -> Spacer(Modifier.height(24.dp))
-                            }
-
-                            if (showYear) {
-                                Text(
-                                    text = stringResource(R.string.year_format, group.date.year),
-                                    fontSize = 16.sp,
-                                    color = SpiritTodoTheme.color.todoTextMain
-                                )
-
-                                Spacer(Modifier.height(12.dp))
-                            }
-
-                            SearchDateGroupRow(group = group)
-                        }
+                        Text(
+                            text = stringResource(R.string.search_no_result),
+                            fontSize = 14.sp,
+                            color = SpiritTodoTheme.color.systemGrey
+                        )
                     }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = SearchHorizontalMargin)
+                    ) {
+                        itemsIndexed(groups, key = { _, group -> group.date.toString() }) { index, group ->
+                            val previous = groups.getOrNull(index - 1)?.date
+                            val isNewMonth = previous != null &&
+                                (previous.year != group.date.year || previous.month != group.date.month)
+                            val showYear = group.date.year != currentYear &&
+                                (previous == null || previous.year != group.date.year)
 
-                    item { Spacer(Modifier.height(24.dp)) }
+                            Column {
+                                when {
+                                    previous == null -> Spacer(Modifier.height(24.dp))
+                                    isNewMonth -> {
+                                        Spacer(Modifier.height(20.dp))
+                                        HorizontalDivider(thickness = 1.dp, color = SpiritTodoTheme.color.surfaceColor4)
+                                        Spacer(Modifier.height(20.dp))
+                                    }
+                                    else -> Spacer(Modifier.height(24.dp))
+                                }
+
+                                if (showYear) {
+                                    Text(
+                                        text = stringResource(R.string.year_format, group.date.year),
+                                        fontSize = 16.sp,
+                                        color = SpiritTodoTheme.color.todoTextMain
+                                    )
+
+                                    Spacer(Modifier.height(12.dp))
+                                }
+
+                                SearchDateGroupRow(group = group)
+                            }
+                        }
+
+                        item { Spacer(Modifier.height(24.dp)) }
+                    }
                 }
+
+                BottomShadow()
             }
         }
 

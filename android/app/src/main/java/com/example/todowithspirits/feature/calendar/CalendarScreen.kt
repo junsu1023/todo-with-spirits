@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,6 +34,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.CalendarViewDefaults
@@ -244,7 +244,6 @@ fun CalendarScreen(
                         onRecentClear = { onEvent(CalendarEvent.RecentSearchesCleared) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .shadow(8.dp)
                             .background(SpiritTodoTheme.color.surfaceColor1)
                     )
 
@@ -253,7 +252,9 @@ fun CalendarScreen(
                             .fillMaxSize()
                             .background(SpiritTodoTheme.color.dimColor)
                             .noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
-                    )
+                    ) {
+                        BottomShadow()
+                    }
                 }
             }
         }
