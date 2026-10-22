@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.calendar
+package com.example.todowithspirits.feature.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,13 +37,13 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.calendar.component.CalendarSearchField
+import com.example.todowithspirits.feature.search.component.SearchField
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchEffect
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchEvent
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchUiState
-import com.example.todowithspirits.feature.calendar.state.SearchDateGroup
-import com.example.todowithspirits.feature.calendar.viewmodel.CalendarSearchViewModel
+import com.example.todowithspirits.feature.search.state.SearchEffect
+import com.example.todowithspirits.feature.search.state.SearchEvent
+import com.example.todowithspirits.feature.search.state.SearchUiState
+import com.example.todowithspirits.feature.search.state.SearchDateGroup
+import com.example.todowithspirits.feature.search.viewmodel.SearchViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 import java.time.LocalDate
@@ -52,20 +52,20 @@ private val SearchHorizontalMargin = 18.dp
 private val DateColumnWidth = 60.dp
 
 @Composable
-fun CalendarSearchRoute(
+fun SearchRoute(
     navigateBack: () -> Unit,
-    viewModel: CalendarSearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            CalendarSearchEffect.NavigateBack -> navigateBack()
+            SearchEffect.NavigateBack -> navigateBack()
         }
     }
 
-    CalendarSearchScreen(
+    SearchScreen(
         uiState = uiState,
         isLoading = isLoading,
         onEvent = viewModel::onEvent
@@ -74,10 +74,10 @@ fun CalendarSearchRoute(
 
 // 일정 검색 결과 화면. 날짜별로 묶고, 달이 바뀌면 구분선, 올해가 아닌 연도는 연도 제목을 붙인다.
 @Composable
-fun CalendarSearchScreen(
-    uiState: CalendarSearchUiState,
+fun SearchScreen(
+    uiState: SearchUiState,
     isLoading: Boolean,
-    onEvent: (CalendarSearchEvent) -> Unit
+    onEvent: (SearchEvent) -> Unit
 ) {
     val currentYear = LocalDate.now().year
     val groups = uiState.dateGroups
@@ -89,14 +89,14 @@ fun CalendarSearchScreen(
                 .background(SpiritTodoTheme.color.surfaceColor1)
         ) {
             TitleHeader(
-                title = stringResource(R.string.calendar_search_title),
+                title = stringResource(R.string.search_title),
                 leftComposable = {
                     Image(
                         painter = painterResource(R.drawable.todo_back1),
                         contentDescription = null,
                         modifier = Modifier
                             .size(26.dp)
-                            .noRippleClickable { onEvent(CalendarSearchEvent.BackClicked) }
+                            .noRippleClickable { onEvent(SearchEvent.BackClicked) }
                     )
                 }
             )
@@ -109,10 +109,10 @@ fun CalendarSearchScreen(
                     .background(SpiritTodoTheme.color.surfaceColor1)
                     .padding(start = SearchHorizontalMargin, top = 10.dp, end = SearchHorizontalMargin, bottom = 12.dp)
             ) {
-                CalendarSearchField(
+                SearchField(
                     value = uiState.input,
-                    onValueChange = { onEvent(CalendarSearchEvent.InputChanged(it)) },
-                    onSubmit = { onEvent(CalendarSearchEvent.Submitted) }
+                    onValueChange = { onEvent(SearchEvent.InputChanged(it)) },
+                    onSubmit = { onEvent(SearchEvent.Submitted) }
                 )
             }
 

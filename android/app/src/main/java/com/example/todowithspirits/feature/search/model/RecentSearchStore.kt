@@ -1,4 +1,4 @@
-package com.example.todowithspirits.util
+package com.example.todowithspirits.feature.search.model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

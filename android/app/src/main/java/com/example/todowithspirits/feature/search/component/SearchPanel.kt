@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.calendar.component
+package com.example.todowithspirits.feature.search.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 // 캘린더 검색 패널 (피그마 Calendar3): 검색창 + 최근 검색어. 열리면 검색창에 바로 포커스한다.
 @Composable
-fun CalendarSearchPanel(
+fun SearchPanel(
     input: String,
     recentSearches: List<String>,
     onInputChange: (String) -> Unit,
@@ -50,7 +50,7 @@ fun CalendarSearchPanel(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(start = 18.dp, top = 10.dp, end = 18.dp, bottom = 24.dp)) {
-        CalendarSearchField(
+        SearchField(
             value = input,
             onValueChange = onInputChange,
             onSubmit = onSubmit,
@@ -98,7 +98,7 @@ fun CalendarSearchPanel(
 
 // 캘린더 검색 패널과 일정 검색 화면이 함께 쓰는 검색창. 검색 아이콘 / 키보드 검색으로 onSubmit.
 @Composable
-fun CalendarSearchField(
+fun SearchField(
     value: String,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,

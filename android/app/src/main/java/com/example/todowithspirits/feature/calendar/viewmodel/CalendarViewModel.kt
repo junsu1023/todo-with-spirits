@@ -12,7 +12,7 @@ import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
 import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
-import com.example.todowithspirits.util.RecentSearchStore
+import com.example.todowithspirits.feature.search.model.RecentSearchStore
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

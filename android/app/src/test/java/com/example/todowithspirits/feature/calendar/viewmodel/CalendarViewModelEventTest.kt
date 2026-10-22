@@ -10,7 +10,7 @@ import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.testutil.FakeTaskRepository
-import com.example.todowithspirits.util.RecentSearchStore
+import com.example.todowithspirits.feature.search.model.RecentSearchStore
 import com.example.todowithspirits.util.TaskRefreshBus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

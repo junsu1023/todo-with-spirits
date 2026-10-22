@@ -1,11 +1,11 @@
-package com.example.todowithspirits.feature.calendar.state
+package com.example.todowithspirits.feature.search.state
 
 import androidx.compose.runtime.Immutable
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import java.time.LocalDate
 
 @Immutable
-data class CalendarSearchUiState(
+data class SearchUiState(
     val input: String = "",
     val query: String = "",
     // 날짜·시간 오름차순으로 정렬된 검색 결과

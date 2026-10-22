@@ -23,8 +23,8 @@ import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.calendar.CalendarRoute
-import com.example.todowithspirits.feature.calendar.CalendarSearchRoute
-import com.example.todowithspirits.feature.calendar.viewmodel.CALENDAR_SEARCH_QUERY_ARG
+import com.example.todowithspirits.feature.search.SearchRoute
+import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
@@ -155,16 +155,16 @@ fun SpiritsTodoNavigation(
                 navigateToEditTask = navigateToEditTask,
                 navigateBack = onBack,
                 navigateToSearch = { query ->
-                    navController.navigate("${Screen.CalendarSearch.route}?$CALENDAR_SEARCH_QUERY_ARG=${Uri.encode(query)}")
+                    navController.navigate("${Screen.Search.route}?$SEARCH_QUERY_ARG=${Uri.encode(query)}")
                 }
             )
         }
 
         composable(
-            route = "${Screen.CalendarSearch.route}?$CALENDAR_SEARCH_QUERY_ARG={$CALENDAR_SEARCH_QUERY_ARG}",
-            arguments = listOf(navArgument(CALENDAR_SEARCH_QUERY_ARG) { type = NavType.StringType; defaultValue = "" })
+            route = "${Screen.Search.route}?$SEARCH_QUERY_ARG={$SEARCH_QUERY_ARG}",
+            arguments = listOf(navArgument(SEARCH_QUERY_ARG) { type = NavType.StringType; defaultValue = "" })
         ) {
-            CalendarSearchRoute(navigateBack = onBack)
+            SearchRoute(navigateBack = onBack)
         }
 
         composable(Screen.Forest.route) {

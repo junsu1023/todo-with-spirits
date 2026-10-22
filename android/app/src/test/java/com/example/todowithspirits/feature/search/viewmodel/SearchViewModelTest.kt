@@ -1,12 +1,12 @@
-package com.example.todowithspirits.feature.calendar.viewmodel
+package com.example.todowithspirits.feature.search.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskSummary
 import com.example.domain.usecase.GetTaskCalendarUseCase
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchEvent
+import com.example.todowithspirits.feature.search.state.SearchEvent
 import com.example.todowithspirits.testutil.FakeTaskRepository
-import com.example.todowithspirits.util.RecentSearchStore
+import com.example.todowithspirits.feature.search.model.RecentSearchStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -23,7 +23,7 @@ import java.time.LocalDate
 
 // 일정 검색 화면: 넘어온 검색어로 바로 검색하고, 날짜별로 묶는다.
 @OptIn(ExperimentalCoroutinesApi::class)
-class CalendarSearchViewModelTest {
+class SearchViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val recentSearchStore = RecentSearchStore()
 
@@ -44,7 +44,7 @@ class CalendarSearchViewModelTest {
         taskId = id, taskType = "SCHEDULE", title = title, updatedAt = date.atStartOfDay()
     )
 
-    private fun buildViewModel(query: String, vararg tasks: TaskSummary): CalendarSearchViewModel {
+    private fun buildViewModel(query: String, vararg tasks: TaskSummary): SearchViewModel {
         val repository = FakeTaskRepository().apply {
             taskCalendarResult = Result.success(
                 TaskCalendar(
@@ -53,8 +53,8 @@ class CalendarSearchViewModelTest {
                 )
             )
         }
-        return CalendarSearchViewModel(
-            savedStateHandle = SavedStateHandle(mapOf(CALENDAR_SEARCH_QUERY_ARG to query)),
+        return SearchViewModel(
+            savedStateHandle = SavedStateHandle(mapOf(SEARCH_QUERY_ARG to query)),
             getTaskCalendarUseCase = GetTaskCalendarUseCase(repository),
             recentSearchStore = recentSearchStore
         )
@@ -84,8 +84,8 @@ class CalendarSearchViewModelTest {
         val viewModel = buildViewModel("미팅", task(1, "미팅", date), task(2, "마감", date))
         advanceUntilIdle()
 
-        viewModel.onEvent(CalendarSearchEvent.InputChanged("마감"))
-        viewModel.onEvent(CalendarSearchEvent.Submitted)
+        viewModel.onEvent(SearchEvent.InputChanged("마감"))
+        viewModel.onEvent(SearchEvent.Submitted)
         advanceUntilIdle()
 
         assertEquals(listOf(2), viewModel.uiState.value.results.map { it.id })

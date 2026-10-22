@@ -44,7 +44,7 @@ import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
-import com.example.todowithspirits.feature.calendar.component.CalendarSearchPanel
+import com.example.todowithspirits.feature.search.component.SearchPanel
 import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
 import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
@@ -234,7 +234,7 @@ fun CalendarScreen(
 
             if (uiState.isSearchOpen) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    CalendarSearchPanel(
+                    SearchPanel(
                         input = uiState.searchInput,
                         recentSearches = uiState.recentSearches,
                         onInputChange = { onEvent(CalendarEvent.SearchInputChanged(it)) },

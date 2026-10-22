@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.calendar.viewmodel
+package com.example.todowithspirits.feature.search.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -6,10 +6,10 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.toPlanItemData
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchEffect
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchEvent
-import com.example.todowithspirits.feature.calendar.state.CalendarSearchUiState
-import com.example.todowithspirits.util.RecentSearchStore
+import com.example.todowithspirits.feature.search.state.SearchEffect
+import com.example.todowithspirits.feature.search.state.SearchEvent
+import com.example.todowithspirits.feature.search.state.SearchUiState
+import com.example.todowithspirits.feature.search.model.RecentSearchStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,35 +23,35 @@ import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
-const val CALENDAR_SEARCH_QUERY_ARG = "query"
+const val SEARCH_QUERY_ARG = "query"
 
 // domain에 검색 API가 없어, 오늘 기준 앞뒤 1년 일정을 불러와 제목으로 거른다.
 private const val SEARCH_RANGE_YEARS = 1L
 
 @HiltViewModel
-class CalendarSearchViewModel @Inject constructor(
+class SearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
     private val recentSearchStore: RecentSearchStore
 ) : BaseViewModel() {
-    private val _uiState = MutableStateFlow(CalendarSearchUiState())
-    val uiState: StateFlow<CalendarSearchUiState> get() = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SearchUiState())
+    val uiState: StateFlow<SearchUiState> get() = _uiState.asStateFlow()
 
-    private val _effect = Channel<CalendarSearchEffect>(Channel.BUFFERED)
-    val effect: Flow<CalendarSearchEffect> = _effect.receiveAsFlow()
+    private val _effect = Channel<SearchEffect>(Channel.BUFFERED)
+    val effect: Flow<SearchEffect> = _effect.receiveAsFlow()
 
     init {
         // 캘린더 화면에서 넘어온 검색어는 이미 최근 검색에 들어가 있다.
-        val query = savedStateHandle.get<String>(CALENDAR_SEARCH_QUERY_ARG).orEmpty()
+        val query = savedStateHandle.get<String>(SEARCH_QUERY_ARG).orEmpty()
         _uiState.update { it.copy(input = query) }
         search(query, addToRecent = false)
     }
 
-    fun onEvent(event: CalendarSearchEvent) {
+    fun onEvent(event: SearchEvent) {
         when (event) {
-            CalendarSearchEvent.BackClicked -> viewModelScope.launch { _effect.send(CalendarSearchEffect.NavigateBack) }
-            is CalendarSearchEvent.InputChanged -> _uiState.update { it.copy(input = event.input) }
-            CalendarSearchEvent.Submitted -> search(_uiState.value.input, addToRecent = true)
+            SearchEvent.BackClicked -> viewModelScope.launch { _effect.send(SearchEffect.NavigateBack) }
+            is SearchEvent.InputChanged -> _uiState.update { it.copy(input = event.input) }
+            SearchEvent.Submitted -> search(_uiState.value.input, addToRecent = true)
         }
     }
 
