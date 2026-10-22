@@ -3,7 +3,6 @@ package com.example.todowithspirits.feature.calendar.state
 import androidx.compose.runtime.Immutable
 import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
-import com.example.todowithspirits.feature.calendar.model.PlanType
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
@@ -42,8 +41,8 @@ data class CalendarUiState(
         }
 }
 
+// 일정이 있는 날만 맵에 들어간다. (점 표시)
 @Immutable
 data class DayPlanEvents(
-    val types: List<PlanType> = emptyList(),
     val importantCount: Int = 0
 )

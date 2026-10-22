@@ -48,7 +48,8 @@ fun CalendarTaskItem(
     onToggleExpanded: () -> Unit,
     onToggleComplete: () -> Unit,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val arrowRotation by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
@@ -56,7 +57,7 @@ fun CalendarTaskItem(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(SpiritTodoTheme.color.surfaceColor16, RoundedCornerShape(8.dp))
             .animateContentSize()

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -33,13 +34,15 @@ import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
+import com.example.todowithspirits.component.CalendarViewDefaults
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
 import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
-import com.example.todowithspirits.feature.calendar.model.PlanType
+import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
@@ -47,11 +50,13 @@ import com.example.todowithspirits.feature.calendar.viewmodel.CalendarViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 
+private val CalendarHorizontalMargin = 18.dp
+
 @Composable
 fun CalendarRoute(
     navigateToAdd: () -> Unit,
     navigateToEditTask: (Long) -> Unit,
-    navigateToAlarm: () -> Unit,
+    navigateBack: () -> Unit,
     calendarViewModel: CalendarViewModel = hiltViewModel()
 ) {
     val uiState by calendarViewModel.uiState.collectAsStateWithLifecycle()
@@ -59,7 +64,7 @@ fun CalendarRoute(
 
     ObserveAsEffect(calendarViewModel.effect) { effect ->
         when (effect) {
-            CalendarEffect.NavigateToAlarm -> navigateToAlarm()
+            CalendarEffect.NavigateBack -> navigateBack()
             CalendarEffect.NavigateToAdd -> navigateToAdd()
             is CalendarEffect.NavigateToEditTask -> navigateToEditTask(effect.taskId)
         }
@@ -79,15 +84,11 @@ fun CalendarScreen(
     onEvent: (CalendarEvent) -> Unit
 ) {
     val context = LocalContext.current
-    val todoColor = SpiritTodoTheme.color.surfaceColor8
-    val routineColor = SpiritTodoTheme.color.surfaceColor9
-    val calendarEventData = remember(uiState.calendarEvents, todoColor, routineColor) {
+    val dotColor = SpiritTodoTheme.color.pointPink
+    val calendarEventData = remember(uiState.calendarEvents, dotColor) {
         uiState.calendarEvents.mapValues { (_, events) ->
             CalendarDayEvent(
-                dotColors = buildList {
-                    if (events.types.contains(PlanType.TODO)) add(todoColor)
-                    if (events.types.contains(PlanType.ROUTINE)) add(routineColor)
-                },
+                dotColors = listOf(dotColor),
                 label = events.importantCount
                     .takeIf { it > 0 }
                     ?.let { context.getString(R.string.important_count, it) }
@@ -104,91 +105,54 @@ fun CalendarScreen(
         ) {
             item {
                 TitleHeader(
-                    title = stringResource(R.string.all_plan),
-                    rightIconRes = R.drawable.todo_alarm,
-                    onRightIconClick = { onEvent(CalendarEvent.AlarmClicked) },
-                    isAlarm = true
+                    title = stringResource(R.string.calendar),
+                    leftComposable = {
+                        Image(
+                            painter = painterResource(R.drawable.todo_back1),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(26.dp)
+                                .noRippleClickable { onEvent(CalendarEvent.BackClicked) }
+                        )
+                    }
                 )
             }
 
             item {
-                Column {
-                    Spacer(modifier = Modifier.height(10.dp))
+                Column(modifier = Modifier.padding(horizontal = CalendarHorizontalMargin)) {
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     CalendarView(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .background(
-                                SpiritTodoTheme.color.systemBackground,
-                                RoundedCornerShape(8.dp)
-                            )
-                            .padding(vertical = 16.dp),
+                            .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(8.dp))
+                            .padding(top = 10.dp),
                         selectedDate = uiState.selectedDate,
                         onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
-                        showSelectedDateInHeader = true,
                         eventData = calendarEventData,
-                        onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) }
+                        onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
+                        style = CalendarViewDefaults.calendarScreenStyle()
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    AddPlanButton(navigateToAdd = { onEvent(CalendarEvent.AddClicked) })
-
-                    Spacer(modifier = Modifier.height(26.dp))
+                    AddPlanButton(onClick = { onEvent(CalendarEvent.AddClicked) })
                 }
             }
 
             if (uiState.plans.isNotEmpty()) {
                 item {
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.hide_completion),
-                                color = if (uiState.isHidden) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.onSurfaceColor8,
-                                fontSize = 14.sp,
-                                modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.HideCompletedToggled) }
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            SpiritsTodoDropdown(
-                                value = uiState.sortOption.displayName,
-                                options = uiState.sortOptions.map { it.displayName },
-                                onOptionSelected = {
-                                    onEvent(CalendarEvent.SortOptionSelected(PlanSortOption.fromDisplayName(it)))
-                                },
-                                dropdownWidth = 96.dp,
-                                dropdownGap = 3.dp,
-                                itemVerticalPadding = 14.dp
-                            ) { expand ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.noRippleClickable { expand() }
-                                ) {
-                                    Text(
-                                        text = uiState.sortOption.displayName,
-                                        color = SpiritTodoTheme.color.todoTextMain,
-                                        fontSize = 14.sp
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-                                    Image(
-                                        painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(18.dp))
-                    }
+                    CalendarListOptionRow(
+                        isHidden = uiState.isHidden,
+                        sortOption = uiState.sortOption,
+                        sortOptions = uiState.sortOptions,
+                        onEvent = onEvent,
+                        modifier = Modifier.padding(
+                            start = CalendarHorizontalMargin,
+                            top = 28.dp,
+                            end = CalendarHorizontalMargin,
+                            bottom = 16.dp
+                        )
+                    )
                 }
             }
 
@@ -197,14 +161,15 @@ fun CalendarScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(150.dp),
-                        verticalArrangement = Arrangement.Center,
+                            .padding(top = 56.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(
                             painter = painterResource(R.drawable.todo_empty),
                             contentDescription = null
                         )
+
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
                             text = stringResource(R.string.empty_plans),
@@ -215,18 +180,19 @@ fun CalendarScreen(
                 }
             } else {
                 items(visiblePlans, key = { it.id }) { item ->
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        CalendarTaskItem(
-                            item = item,
-                            isExpanded = uiState.expandedTaskId == item.id,
-                            onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
-                            onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone)) },
-                            onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
-                            onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) }
+                    CalendarTaskItem(
+                        item = item,
+                        isExpanded = uiState.expandedTaskId == item.id,
+                        onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
+                        onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone)) },
+                        onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
+                        onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) },
+                        modifier = Modifier.padding(
+                            start = CalendarHorizontalMargin,
+                            end = CalendarHorizontalMargin,
+                            bottom = 10.dp
                         )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
+                    )
                 }
 
                 item {
@@ -236,5 +202,78 @@ fun CalendarScreen(
         }
 
         LoadingOverlay(isLoading = isLoading)
+    }
+}
+
+// 완료 제외 체크 + 정렬 드롭다운
+@Composable
+private fun CalendarListOptionRow(
+    isHidden: Boolean,
+    sortOption: PlanSortOption,
+    sortOptions: List<PlanSortOption>,
+    onEvent: (CalendarEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val sortLabels = sortOptions.map { stringResource(it.labelRes) }
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.HideCompletedToggled) },
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SpiritsTodoCheckbox(
+                modifier = Modifier.size(14.dp),
+                checked = isHidden,
+                onCheckedChange = { onEvent(CalendarEvent.HideCompletedToggled) },
+                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
+                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off)
+            )
+
+            Text(
+                text = stringResource(R.string.hide_completion),
+                color = SpiritTodoTheme.color.systemGrey,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SpiritsTodoDropdown(
+            value = stringResource(sortOption.labelRes),
+            options = sortLabels,
+            onOptionSelected = { label ->
+                sortOptions.getOrNull(sortLabels.indexOf(label))?.let {
+                    onEvent(CalendarEvent.SortOptionSelected(it))
+                }
+            },
+            dropdownWidth = 96.dp,
+            dropdownGap = 6.dp,
+            itemVerticalPadding = 10.dp,
+            selectedOptionColor = SpiritTodoTheme.color.pointPink
+        ) { expand ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.noRippleClickable { expand() }
+            ) {
+                Text(
+                    text = stringResource(sortOption.labelRes),
+                    color = SpiritTodoTheme.color.todoTextMain,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }

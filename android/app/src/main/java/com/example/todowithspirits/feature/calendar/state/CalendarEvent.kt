@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 sealed interface CalendarEvent {
-    data object AlarmClicked : CalendarEvent
+    data object BackClicked : CalendarEvent
     data object AddClicked : CalendarEvent
     data class DateSelected(val date: LocalDate) : CalendarEvent
     data class MonthChanged(val month: YearMonth) : CalendarEvent

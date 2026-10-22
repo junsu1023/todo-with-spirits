@@ -15,8 +15,8 @@
 | 1 | `plan` → `calendar` 이름 변경 (패키지, `CalendarScreen`/`CalendarViewModel`/`CalendarUiState`, `Screen.Calendar("calendar")`) | 완료 `c6eafbc` |
 | 2 | 일정 카드 교체(`CalendarTaskItem`) + 디자인에서 빠진 기능 제거 | 완료 |
 | 3 | Calendar 화면 MVI 전환 (Event / Effect, Route / Screen 분리) | 완료 |
-| 4 | 나머지 Calendar1·2 디자인 (헤더, 캘린더, 일정 추가, 완료 제외/정렬, 일정 없음) | 진행 |
-| 5 | Calendar3 검색 | 대기 |
+| 4 | 나머지 Calendar1·2 디자인 (헤더, 캘린더, 일정 추가, 완료 제외/정렬, 일정 없음) | 완료 |
+| 5 | Calendar3 검색 | 진행 |
 
 `:data`, `:domain` 수정 금지. (`PlanSortOption`의 표시 이름은 domain 값이라 UI에서 따로 매핑)
 

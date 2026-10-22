@@ -1,5 +1,6 @@
 package com.example.todowithspirits.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,12 +15,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
@@ -43,6 +47,106 @@ data class CalendarDayEvent(
     val label: String? = null
 )
 
+/**
+ * CalendarView의 모양. 기본값([CalendarViewDefaults.style])은 기존 모양이고,
+ * 화면마다 디자인이 다르면 [CalendarViewDefaults]에 스타일을 추가해 넘긴다.
+ */
+@Immutable
+data class CalendarViewStyle(
+    val monthTextSize: TextUnit,
+    val monthTextColor: Color,
+    @param:DrawableRes val prevIconRes: Int,
+    @param:DrawableRes val nextIconRes: Int,
+    val navIconSize: Dp,
+    val navIconTint: Color?,
+    val navIconGap: Dp,
+    val headerStartPadding: Dp,
+    val headerEndPadding: Dp,
+    val gridHorizontalPadding: Dp,
+    val weekdayTopPadding: Dp,
+    val weekdayBottomPadding: Dp,
+    val weekdayRowHeight: Dp,
+    val weekdayColor: Color,
+    val weekdayFontWeight: FontWeight,
+    val weekRowHeight: Dp,
+    val weekRowGap: Dp,
+    val dayBoxSize: Dp,
+    val dayBoxTopPadding: Dp,
+    val dayFontWeight: FontWeight,
+    val otherMonthFontSize: TextUnit,
+    val selectedCircleSize: Dp,
+    val selectedCircleColor: Color,
+    val selectedFontSize: TextUnit,
+    val selectedFontWeight: FontWeight,
+    val dotTopPadding: Dp,
+    val labelTopPadding: Dp
+)
+
+object CalendarViewDefaults {
+    @Composable
+    fun style() = CalendarViewStyle(
+        monthTextSize = 16.sp,
+        monthTextColor = SpiritTodoTheme.color.todoTextMain,
+        prevIconRes = R.drawable.left,
+        nextIconRes = R.drawable.right,
+        navIconSize = Dp.Unspecified,
+        navIconTint = null,
+        navIconGap = 16.dp,
+        headerStartPadding = 15.dp,
+        headerEndPadding = 14.dp,
+        gridHorizontalPadding = 0.dp,
+        weekdayTopPadding = 16.dp,
+        weekdayBottomPadding = 18.dp,
+        weekdayRowHeight = Dp.Unspecified,
+        weekdayColor = SpiritTodoTheme.color.onSurfaceColor9,
+        weekdayFontWeight = FontWeight.Normal,
+        weekRowHeight = 58.dp,
+        weekRowGap = 12.dp,
+        dayBoxSize = 32.dp,
+        dayBoxTopPadding = 0.dp,
+        dayFontWeight = FontWeight.Normal,
+        otherMonthFontSize = 12.sp,
+        selectedCircleSize = 18.dp,
+        selectedCircleColor = SpiritTodoTheme.color.mainArea,
+        selectedFontSize = 12.sp,
+        selectedFontWeight = FontWeight.SemiBold,
+        dotTopPadding = 0.dp,
+        labelTopPadding = 4.dp
+    )
+
+    // 캘린더 화면 (피그마 Calendar1)
+    @Composable
+    fun calendarScreenStyle() = style().copy(
+        monthTextSize = 20.sp,
+        monthTextColor = SpiritTodoTheme.color.pointPink,
+        prevIconRes = R.drawable.fi_rr_angle_small_left,
+        nextIconRes = R.drawable.fi_rr_angle_small_right,
+        navIconSize = 20.dp,
+        navIconTint = SpiritTodoTheme.color.onSurfaceColor5,
+        navIconGap = 14.dp,
+        headerStartPadding = 14.dp,
+        headerEndPadding = 8.dp,
+        gridHorizontalPadding = 8.dp,
+        weekdayTopPadding = 6.dp,
+        weekdayBottomPadding = 4.dp,
+        weekdayRowHeight = 25.dp,
+        weekdayColor = SpiritTodoTheme.color.onSurfaceColor8,
+        weekdayFontWeight = FontWeight.Medium,
+        weekRowHeight = 54.dp,
+        weekRowGap = 6.dp,
+        dayBoxSize = 16.dp,
+        dayBoxTopPadding = 2.dp,
+        dayFontWeight = FontWeight.Medium,
+        otherMonthFontSize = 10.sp,
+        selectedCircleSize = 14.dp,
+        selectedCircleColor = SpiritTodoTheme.color.pointPink,
+        selectedFontSize = 10.sp,
+        selectedFontWeight = FontWeight.Medium,
+        dotTopPadding = 4.dp,
+        labelTopPadding = 6.dp
+    )
+}
+
 // 좌우로 무한히 넘길 수 있도록 넉넉한 페이지 수를 잡고, 그 중앙을 기준 달(anchorMonth)로 삼는다.
 private const val CALENDAR_PAGE_COUNT = 100_000
 private const val CALENDAR_START_PAGE = CALENDAR_PAGE_COUNT / 2
@@ -56,7 +160,8 @@ fun CalendarView(
     showMonthNavigation: Boolean = true,
     showSelectedDateInHeader: Boolean = false,
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
-    onMonthChanged: (YearMonth) -> Unit = {}
+    onMonthChanged: (YearMonth) -> Unit = {},
+    style: CalendarViewStyle = CalendarViewDefaults.style()
 ) {
     val today = remember { LocalDate.now() }
     val selectedDateFormatter = KoreanDateWithDayFormatter
@@ -99,7 +204,7 @@ fun CalendarView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 15.dp, end = 14.dp),
+                    .padding(start = style.headerStartPadding, end = style.headerEndPadding),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -109,24 +214,29 @@ fun CalendarView(
                     } else {
                         stringResource(R.string.month, currentMonth.monthValue)
                     },
-                    fontSize = 16.sp,
+                    fontSize = style.monthTextSize,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.todoTextMain
+                    color = style.monthTextColor
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(style.navIconGap)) {
+                    val navIconModifier = if (style.navIconSize != Dp.Unspecified) Modifier.size(style.navIconSize) else Modifier
+                    val navIconColorFilter = style.navIconTint?.let { ColorFilter.tint(it) }
+
                     Image(
-                        painter = painterResource(R.drawable.left),
+                        painter = painterResource(style.prevIconRes),
                         contentDescription = null,
-                        modifier = Modifier.clickable(onClick = {
+                        colorFilter = navIconColorFilter,
+                        modifier = navIconModifier.clickable(onClick = {
                             scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
                         })
                     )
 
                     Image(
-                        painter = painterResource(R.drawable.right),
+                        painter = painterResource(style.nextIconRes),
                         contentDescription = null,
-                        modifier = Modifier.clickable(onClick = {
+                        colorFilter = navIconColorFilter,
+                        modifier = navIconModifier.clickable(onClick = {
                             scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                         })
                     )
@@ -137,7 +247,10 @@ fun CalendarView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 18.dp)
+                .padding(top = style.weekdayTopPadding, bottom = style.weekdayBottomPadding)
+                .padding(horizontal = style.gridHorizontalPadding)
+                .then(if (style.weekdayRowHeight != Dp.Unspecified) Modifier.height(style.weekdayRowHeight) else Modifier),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             val weekDays = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
             weekDays.forEach { day ->
@@ -146,7 +259,8 @@ fun CalendarView(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.onSurfaceColor9
+                    fontWeight = style.weekdayFontWeight,
+                    color = style.weekdayColor
                 )
             }
         }
@@ -163,8 +277,10 @@ fun CalendarView(
                 selectedDate = selectedDate,
                 eventData = eventData,
                 onDateSelected = onDateSelected,
+                style = style,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = style.gridHorizontalPadding)
                     .graphicsLayer {
                         // 현재 페이지 기준 이 페이지의 상대 위치 (-1 ~ 1)
                         val pageOffset = pagerState.offsetForPage(page)
@@ -204,6 +320,7 @@ private fun CalendarMonthGrid(
     selectedDate: LocalDate,
     eventData: Map<LocalDate, CalendarDayEvent>,
     onDateSelected: (LocalDate) -> Unit,
+    style: CalendarViewStyle,
     modifier: Modifier = Modifier
 ) {
     val calendarDays = remember(month) {
@@ -235,7 +352,7 @@ private fun CalendarMonthGrid(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(58.dp)
+                    .height(style.weekRowHeight)
             ) {
                 week.forEach { calendarDay ->
                     val date = calendarDay.date
@@ -251,14 +368,16 @@ private fun CalendarMonthGrid(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Box(
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier
+                                .padding(top = style.dayBoxTopPadding)
+                                .size(style.dayBoxSize),
                             contentAlignment = Alignment.Center
                         ) {
                             if (isSelected) {
                                 Box(
                                     modifier = Modifier
-                                        .size(18.dp)
-                                        .background(SpiritTodoTheme.color.mainArea, CircleShape)
+                                        .requiredSize(style.selectedCircleSize)
+                                        .background(style.selectedCircleColor, CircleShape)
                                 )
                             }
 
@@ -269,13 +388,21 @@ private fun CalendarMonthGrid(
                                     !calendarDay.isCurrentMonth -> SpiritTodoTheme.color.surfaceColor15
                                     else -> SpiritTodoTheme.color.todoTextMain
                                 },
-                                fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                fontSize = when {
+                                    isSelected -> style.selectedFontSize
+                                    !calendarDay.isCurrentMonth -> style.otherMonthFontSize
+                                    else -> 12.sp
+                                },
+                                fontWeight = if (isSelected) style.selectedFontWeight else style.dayFontWeight,
+                                softWrap = false
                             )
                         }
 
                         if (event != null && event.dotColors.isNotEmpty()) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Row(
+                                modifier = Modifier.padding(top = style.dotTopPadding),
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
                                 event.dotColors.forEach { dotColor ->
                                     Box(
                                         modifier = Modifier
@@ -289,7 +416,7 @@ private fun CalendarMonthGrid(
                         if (event?.label != null) {
                             Box(
                                 modifier = Modifier
-                                    .padding(top = 4.dp)
+                                    .padding(top = style.labelTopPadding)
                                     .background(SpiritTodoTheme.color.mainBackground, RoundedCornerShape(2.dp))
                                     .padding(horizontal = 4.dp)
                             ) {
@@ -306,7 +433,7 @@ private fun CalendarMonthGrid(
             }
 
             if (weekIdx != chunks.lastIndex) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(style.weekRowGap))
             }
         }
     }

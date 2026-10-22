@@ -4,13 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
-import com.example.domain.model.TaskType
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
-import com.example.todowithspirits.feature.calendar.model.PlanType
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
@@ -59,7 +57,7 @@ class CalendarViewModel @Inject constructor(
 
     fun onEvent(event: CalendarEvent) {
         when (event) {
-            CalendarEvent.AlarmClicked -> sendEffect(CalendarEffect.NavigateToAlarm)
+            CalendarEvent.BackClicked -> sendEffect(CalendarEffect.NavigateBack)
             CalendarEvent.AddClicked -> sendEffect(CalendarEffect.NavigateToAdd)
             is CalendarEvent.DateSelected -> selectDate(event.date)
             is CalendarEvent.MonthChanged -> changeMonth(event.month)
@@ -169,12 +167,7 @@ class CalendarViewModel @Inject constructor(
                     val events = calendar.items
                         .groupBy { it.occurrenceDate }
                         .mapValues { (_, items) ->
-                            DayPlanEvents(
-                                types = items.map {
-                                    if (it.taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO
-                                },
-                                importantCount = items.count { it.isImportant }
-                            )
+                            DayPlanEvents(importantCount = items.count { it.isImportant })
                         }
 
                     _uiState.update { it.copy(calendarEvents = events) }
@@ -189,7 +182,6 @@ class CalendarViewModel @Inject constructor(
 private fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     id = taskId.toInt(),
     title = title,
-    type = if (taskType == TaskType.ROUTINE.type) PlanType.ROUTINE else PlanType.TODO,
     isImportant = isImportant,
     isDone = isCompleted,
     endDate = occurrenceDate,

@@ -150,7 +150,7 @@ fun SpiritsTodoNavigation(
             CalendarRoute(
                 navigateToAdd = navigateToAdd,
                 navigateToEditTask = navigateToEditTask,
-                navigateToAlarm = navigateToAlarm
+                navigateBack = onBack
             )
         }
 
