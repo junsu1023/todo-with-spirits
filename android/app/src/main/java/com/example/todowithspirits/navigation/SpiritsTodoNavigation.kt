@@ -21,7 +21,7 @@ import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
 import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
-import com.example.todowithspirits.feature.calendar.CalendarScreen
+import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.record.RecordScreen
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
@@ -147,7 +147,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Calendar.route) {
-            CalendarScreen(
+            CalendarRoute(
                 navigateToAdd = navigateToAdd,
                 navigateToEditTask = navigateToEditTask,
                 navigateToAlarm = navigateToAlarm

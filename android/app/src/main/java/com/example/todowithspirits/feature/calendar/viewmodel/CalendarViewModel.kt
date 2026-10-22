@@ -11,16 +11,22 @@ import com.example.domain.usecase.DeleteTasksUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.PlanType
-import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
+import com.example.todowithspirits.feature.calendar.state.CalendarEffect
+import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
+import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
@@ -36,6 +42,9 @@ class CalendarViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> get() = _uiState.asStateFlow()
 
+    private val _effect = Channel<CalendarEffect>(Channel.BUFFERED)
+    val effect: Flow<CalendarEffect> = _effect.receiveAsFlow()
+
     init {
         loadPlans()
         loadCalendarEvents()
@@ -48,41 +57,58 @@ class CalendarViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun setSelectedDate(date: LocalDate) {
-        _uiState.update { it.copy(selectedDate = date) }
+    fun onEvent(event: CalendarEvent) {
+        when (event) {
+            CalendarEvent.AlarmClicked -> sendEffect(CalendarEffect.NavigateToAlarm)
+            CalendarEvent.AddClicked -> sendEffect(CalendarEffect.NavigateToAdd)
+            is CalendarEvent.DateSelected -> selectDate(event.date)
+            is CalendarEvent.MonthChanged -> changeMonth(event.month)
+            CalendarEvent.HideCompletedToggled -> toggleHideCompleted()
+            is CalendarEvent.SortOptionSelected -> _uiState.update { it.copy(sortOption = event.option) }
+            is CalendarEvent.TaskClicked -> _uiState.update {
+                it.copy(expandedTaskId = if (it.expandedTaskId == event.taskId) null else event.taskId)
+            }
+            is CalendarEvent.TaskCompletionToggled -> toggleTaskCompletion(event.taskId.toLong(), event.isDone)
+            is CalendarEvent.TaskDeleteClicked -> deleteTask(event.taskId.toLong())
+            is CalendarEvent.TaskEditClicked -> sendEffect(CalendarEffect.NavigateToEditTask(event.taskId.toLong()))
+        }
+    }
+
+    private fun selectDate(date: LocalDate) {
+        _uiState.update { it.copy(selectedDate = date, expandedTaskId = null) }
         loadPlans()
     }
 
-    fun setCalendarMonth(month: YearMonth) {
+    private fun changeMonth(month: YearMonth) {
         if (month == _uiState.value.calendarMonth) return
 
         _uiState.update { it.copy(calendarMonth = month) }
         loadCalendarEvents()
     }
 
-    fun setHiddenState(hidden: Boolean) {
-        viewModelScope.launchWithLoading {
-            _uiState.update {
-                val sortOption = if (hidden && it.sortOption == PlanSortOption.COMPLETE) {
-                    PlanSortOption.DEADLINE
-                } else {
-                    it.sortOption
-                }
-
-                it.copy(isHidden = hidden, sortOption = sortOption)
+    private fun toggleHideCompleted() {
+        _uiState.update {
+            val hidden = !it.isHidden
+            val sortOption = if (hidden && it.sortOption == PlanSortOption.COMPLETE) {
+                PlanSortOption.DEADLINE
+            } else {
+                it.sortOption
             }
+
+            it.copy(isHidden = hidden, sortOption = sortOption)
         }
     }
 
-    fun setSortOption(option: PlanSortOption) {
-        viewModelScope.launchWithLoading {
-            _uiState.update {
-                it.copy(sortOption = option)
-            }
-        }
+    private fun toggleTaskCompletion(taskId: Long, isDone: Boolean) {
+        val date = _uiState.value.selectedDate
+        if (isDone) cancelTaskCompletion(taskId, date) else completeTask(taskId, date)
     }
 
-    fun loadPlans() {
+    private fun sendEffect(effect: CalendarEffect) {
+        viewModelScope.launch { _effect.send(effect) }
+    }
+
+    private fun loadPlans() {
         viewModelScope.launchWithLoading {
             val selectedDate = _uiState.value.selectedDate
 
@@ -96,7 +122,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun deleteTask(taskId: Long) {
+    private fun deleteTask(taskId: Long) {
         viewModelScope.launchWithLoading {
             deleteTasksUseCase(listOf(taskId))
                 .onSuccess {
@@ -108,7 +134,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun completeTask(taskId: Long, date: LocalDate) {
+    private fun completeTask(taskId: Long, date: LocalDate) {
         viewModelScope.launchWithLoading {
             completeTaskUseCase(taskId, date)
                 .onSuccess {
@@ -120,7 +146,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun cancelTaskCompletion(taskId: Long, date: LocalDate) {
+    private fun cancelTaskCompletion(taskId: Long, date: LocalDate) {
         viewModelScope.launchWithLoading {
             cancelTaskCompletionUseCase(taskId, date)
                 .onSuccess {
@@ -132,7 +158,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun loadCalendarEvents() {
+    private fun loadCalendarEvents() {
         viewModelScope.launchWithLoading {
             val month = _uiState.value.calendarMonth
             val monthStart = month.atDay(1)
