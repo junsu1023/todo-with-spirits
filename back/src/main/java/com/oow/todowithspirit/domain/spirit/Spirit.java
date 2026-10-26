@@ -71,9 +71,6 @@ public class Spirit {
     @Column(name = "matured_at")
     private LocalDateTime maturedAt;
 
-    @Column(name = "departed_at")
-    private LocalDateTime departedAt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "career_growth_type", length = 20)
     private GrowthType careerGrowthType;
@@ -164,11 +161,6 @@ public class Spirit {
             return GrowthType.CONSISTENCY;
         }
         return GrowthType.CREATIVITY;
-    }
-
-    public void depart() {
-        this.status = SpiritStatus.DEPARTED;
-        this.departedAt = LocalDateTime.now();
     }
 
     public void updateName(String spiritName) {

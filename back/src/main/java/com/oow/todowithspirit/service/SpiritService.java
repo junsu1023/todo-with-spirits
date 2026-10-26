@@ -134,24 +134,6 @@ public class SpiritService {
         return defaultSpirit;
     }
 
-    /**
-     * 알 선택으로 새 정령을 생성한다. 이미 성장 중인 정령이 있으면 새로 만들 수 없다.
-     */
-    @Transactional
-    public Spirit createFromEggOption(User user, SpiritEggOption egg) {
-        if (spiritRepository.existsByUserIdAndStatus(user.getId(), SpiritStatus.GROWING)) {
-            throw new ApiException(ErrorCode.ALREADY_COMPLETED, "이미 성장 중인 정령이 있습니다");
-        }
-
-        String imageUrl = StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL;
-        Spirit spirit = new Spirit(user, imageUrl, egg.getId());
-        spiritRepository.save(spirit);
-        assignRandomTemperaments(spirit.getId());
-        user.setRepresentativeSpiritId(spirit.getId());
-
-        return spirit;
-    }
-
     private void assignRandomTemperaments(Long spiritId) {
         List<SpiritTemperament> pool = new ArrayList<>(List.of(SpiritTemperament.values()));
         Collections.shuffle(pool);
@@ -159,11 +141,6 @@ public class SpiritService {
         pool.stream()
                 .limit(count)
                 .forEach(temperament -> spiritTemperamentTagRepository.save(new SpiritTemperamentTag(spiritId, temperament)));
-    }
-
-    @Transactional(readOnly = true)
-    public RepresentativeSpiritResponse toResponse(Spirit spirit) {
-        return RepresentativeSpiritResponse.from(spirit, temperamentsOf(spirit.getId()));
     }
 
     private List<SpiritTemperament> temperamentsOf(Long spiritId) {
