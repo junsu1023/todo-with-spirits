@@ -474,6 +474,37 @@ CREATE TABLE user_achievements
 );
 
 -- ============================================================
+--  5-1. 재화 테이블
+-- ============================================================
+-- 단일 재화 잔액 (유저당 1행)
+CREATE TABLE currency_wallets
+(
+    user_id    BIGINT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    balance    BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 재화 지급/소비 이력 (원장). task_id+task_completion_date가 할 일 완료 보상의 멱등성 키
+-- (SCHEDULE은 사실상 한 번만, ROUTINE은 날짜별로 반복 지급되므로 둘의 조합이어야 함)
+CREATE TABLE currency_transactions
+(
+    id                    BIGSERIAL PRIMARY KEY,
+    user_id               BIGINT      NOT NULL,
+    amount                BIGINT      NOT NULL,           -- 양수: 지급, 음수: 소비
+    reason                VARCHAR(30) NOT NULL,            -- TASK_COMPLETE / DECORATION_PURCHASE / SPIRIT_MEET
+    task_id               BIGINT,                          -- TASK_COMPLETE 전용. 그 외 reason은 NULL
+    task_completion_date  DATE,                            -- TASK_COMPLETE 전용. 그 외 reason은 NULL
+    created_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_currency_transactions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_currency_transactions_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE SET NULL,
+    CONSTRAINT uq_currency_tx_task_completion UNIQUE (task_id, task_completion_date)
+);
+
+CREATE INDEX idx_currency_transactions_user ON currency_transactions (user_id, created_at DESC);
+
+-- ============================================================
 --  14. 공유 카드 테이블  (비동기 생성 → 202 Accepted 패턴)
 -- ============================================================
 CREATE TABLE share_cards

@@ -34,6 +34,7 @@ public class TaskService {
     private final TaskPostponementRepository taskPostponementRepository;
     private final SpiritService spiritService;
     private final SpiritGrowthService spiritGrowthService;
+    private final CurrencyService currencyService;
 
     // =========================================================
     // 생성
@@ -448,7 +449,7 @@ public class TaskService {
     // =========================================================
 
     @Transactional
-    public void completeTask(Long userId, Long taskId, LocalDate completionDate) {
+    public TaskCompleteResponse completeTask(Long userId, Long taskId, LocalDate completionDate) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
 
@@ -468,6 +469,12 @@ public class TaskService {
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
         spirit.addExp(task.getGrowthValue(), task.getGrowthType());
         spiritGrowthService.recordActivity(spirit, completionDate);
+
+        // 재화 지급 (taskId+completionDate 단위로 멱등. 중복 요청이면 0 반환)
+        long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
+        long balance = currencyService.getBalance(userId);
+
+        return new TaskCompleteResponse(earned, balance);
     }
 
     @Transactional
@@ -488,6 +495,9 @@ public class TaskService {
         // 대표 정령 경험치 차감 (없으면 자동 생성 후 차감)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
         spirit.decreaseExp(task.getGrowthValue(), task.getGrowthType());
+
+        // 지급됐던 재화 회수
+        currencyService.reverseTaskComplete(userId, taskId, completionDate);
     }
 
     /**

@@ -81,12 +81,12 @@ public class TaskController {
     // 완료 / 완료 취소
     // ==============================================
     @PostMapping("/{taskId}/complete")
-    public ResponseEntity<ApiResponse<Void>> completeRoutine(
+    public ResponseEntity<ApiResponse<TaskCompleteResponse>> completeRoutine(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        taskService.completeTask(userId, taskId, date);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        TaskCompleteResponse response = taskService.completeTask(userId, taskId, date);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @DeleteMapping("/{taskId}/complete")
