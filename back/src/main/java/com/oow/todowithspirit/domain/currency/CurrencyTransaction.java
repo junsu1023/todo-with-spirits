@@ -46,4 +46,13 @@ public class CurrencyTransaction extends BaseTimeEntity {
         transaction.taskCompletionDate = completionDate;
         return transaction;
     }
+
+    // task와 무관한 소비/지급 (장식 구매, 정령 만나기 등). taskId/taskCompletionDate는 null
+    public static CurrencyTransaction of(Long userId, long amount, CurrencyReason reason) {
+        CurrencyTransaction transaction = new CurrencyTransaction();
+        transaction.userId = userId;
+        transaction.amount = amount;
+        transaction.reason = reason;
+        return transaction;
+    }
 }

@@ -1,5 +1,7 @@
 package com.oow.todowithspirit.service;
 
+import com.oow.todowithspirit.common.exception.ApiException;
+import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.currency.CurrencyReason;
 import com.oow.todowithspirit.domain.currency.CurrencyTransaction;
 import com.oow.todowithspirit.domain.currency.CurrencyTransactionRepository;
@@ -63,6 +65,19 @@ public class CurrencyService {
                     currencyTransactionRepository.delete(transaction);
                     getOrCreateWallet(userId).debit(transaction.getAmount());
                 });
+    }
+
+    /**
+     * task와 무관한 재화 소비(장식 구매, 정령 만나기 등). 잔액이 모자라면 차감 없이 예외를 던진다.
+     */
+    @Transactional
+    public void debit(Long userId, long amount, CurrencyReason reason) {
+        if (getBalance(userId) < amount) {
+            throw new ApiException(ErrorCode.INSUFFICIENT_BALANCE, "잔액이 부족합니다");
+        }
+
+        currencyTransactionRepository.save(CurrencyTransaction.of(userId, -amount, reason));
+        getOrCreateWallet(userId).debit(amount);
     }
 
     private CurrencyWallet getOrCreateWallet(Long userId) {
