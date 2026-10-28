@@ -55,6 +55,9 @@ public class Spirit {
     @Column(name = "egg_option_id")
     private Long eggOptionId;
 
+    @Column(name = "variant_id")
+    private Long variantId;
+
     @Column(name = "target_growth_days", nullable = false)
     private int targetGrowthDays = MIN_GROWTH_DAYS + (MAX_GROWTH_DAYS - MIN_GROWTH_DAYS) / 2;
 
@@ -94,6 +97,12 @@ public class Spirit {
     public Spirit(User user, String imageUrl, Long eggOptionId) {
         this(user, imageUrl);
         this.eggOptionId = eggOptionId;
+    }
+
+    // "정령 만나기"로 뽑힌 외형으로 개체를 생성
+    public Spirit(User user, SpiritVariant variant) {
+        this(user, variant.getImageUrl());
+        this.variantId = variant.getId();
     }
 
     // 경험치 획득 (진로 판단용 축적치. 더 이상 이 값만으로 성장 단계가 오르지 않음)
