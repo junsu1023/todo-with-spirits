@@ -282,7 +282,35 @@ CREATE TABLE spirit_discoveries
     CONSTRAINT fk_spirit_discoveries_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- spirits 테이블 확장: 알/성장(활동일 기준)/생애주기/진로
+-- 정령 외형(스킨) 마스터. "정령 1종 · 상태 6가지"를 외형 6종으로 해석해 설계함
+-- unlock_metric=DEFAULT는 항상 해금(시드 필수). 그 외(HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE)는
+-- 버릇·추억·친밀도 데이터 모델이 아직 없어 자동 해금 평가 로직이 없음 — 수동으로 user_spirit_variant_unlocks에
+-- 행을 넣어야 해금됨 (추후 버릇/추억/친밀도 구현 시 자동 평가 로직 추가 예정)
+CREATE TABLE spirit_variants
+(
+    id                BIGSERIAL PRIMARY KEY,
+    code              VARCHAR(30)  NOT NULL UNIQUE,
+    variant_name      VARCHAR(50)  NOT NULL,
+    unlock_metric     VARCHAR(30)  NOT NULL, -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
+    unlock_threshold  INT          NOT NULL DEFAULT 0,
+    weight            INT          NOT NULL DEFAULT 1, -- 뽑기 가중치
+    sort_order        INT          NOT NULL DEFAULT 0,
+    asset_key         VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
+    image_url         TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
+    image_file_name   VARCHAR(150)
+);
+
+-- 유저별 정령 외형 해금 현황
+CREATE TABLE user_spirit_variant_unlocks
+(
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    variant_id  BIGINT NOT NULL REFERENCES spirit_variants (id),
+    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_user_variant_unlock UNIQUE (user_id, variant_id)
+);
+
+-- spirits 테이블 확장: 알/성장(활동일 기준)/생애주기/진로/외형
 ALTER TABLE spirits
     ADD COLUMN egg_option_id      BIGINT REFERENCES spirit_egg_options (id),
     ADD COLUMN target_growth_days INT         NOT NULL DEFAULT 35, -- 개체별 목표 성장기간(활동일 기준). 28~42 사이 랜덤 부여, 평균 35
@@ -291,7 +319,8 @@ ALTER TABLE spirits
     ADD COLUMN status             VARCHAR(20) NOT NULL DEFAULT 'GROWING', -- spirit_status ENUM
     ADD COLUMN matured_at         TIMESTAMP WITH TIME ZONE,        -- 성체(ADULT)가 된 시점
     ADD COLUMN departed_at        TIMESTAMP WITH TIME ZONE,        -- 여행을 떠나 이력으로 남은(DEPARTED) 시점
-    ADD COLUMN career_growth_type VARCHAR(20);                     -- 성체가 될 때 확정되는 진로. growth_type ENUM 재사용 (exp가 가장 높은 축)
+    ADD COLUMN career_growth_type VARCHAR(20),                     -- 성체가 될 때 확정되는 진로. growth_type ENUM 재사용 (exp가 가장 높은 축)
+    ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id); -- "정령 만나기"로 뽑힌 외형
 
 -- ============================================================
 --  4. To-do, schedule, habit 관련 테이블
@@ -503,6 +532,32 @@ CREATE TABLE currency_transactions
 );
 
 CREATE INDEX idx_currency_transactions_user ON currency_transactions (user_id, created_at DESC);
+
+-- ============================================================
+--  5-2. 장식(숲 꾸미기) 테이블
+-- ============================================================
+-- 장식 마스터. home-objects(무료)를 대체하는 유료 버전 — 재화로 구매해야 설치 가능
+CREATE TABLE decorations
+(
+    id               BIGSERIAL PRIMARY KEY,
+    code             VARCHAR(30)  NOT NULL UNIQUE,
+    decoration_name  VARCHAR(50)  NOT NULL,
+    price            BIGINT       NOT NULL,
+    asset_key        VARCHAR(100) NOT NULL,
+    image_url        TEXT,
+    image_file_name  VARCHAR(150)
+);
+
+-- 유저가 구매·설치한 장식
+CREATE TABLE user_decorations
+(
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       BIGINT  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    decoration_id BIGINT  NOT NULL REFERENCES decorations (id),
+    purchased_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_installed  BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT uq_user_decoration UNIQUE (user_id, decoration_id)
+);
 
 -- ============================================================
 --  14. 공유 카드 테이블  (비동기 생성 → 202 Accepted 패턴)
