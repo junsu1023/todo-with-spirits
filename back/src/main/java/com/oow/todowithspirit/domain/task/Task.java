@@ -113,16 +113,14 @@ public class Task extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    public static Task createSchedule(User user, String title, String memo, CategoryType category,
-                                      LocalDateTime endDateTime, boolean isAllDay,
-                                      boolean isImportant, Integer notificationMinutes, boolean isPublic) {
+    public static Task createSchedule(User user, String title, LocalDateTime endDateTime, boolean isAllDay,
+                                      boolean isImportant, Integer notificationMinutes) {
         LocalDate date = endDateTime.toLocalDate();
         Task task = new Task();
         task.user = user;
         task.taskType = TaskType.SCHEDULE;
         task.title = title;
-        task.memo = memo;
-        task.applyCategoryAndGrowthType(category);
+        task.applyCategoryAndGrowthType(null);
         task.startDate = date;
         task.startTime = null;
         task.endDate = date;
@@ -132,7 +130,7 @@ public class Task extends BaseTimeEntity {
         task.repeatType = RepeatType.NONE;
         task.notificationMinutes = notificationMinutes;
         task.notificationAt = computeScheduleNotificationAt(endDateTime, isAllDay, notificationMinutes);
-        task.isPublic = isPublic;
+        task.isPublic = false;
         return task;
     }
 
@@ -175,13 +173,10 @@ public class Task extends BaseTimeEntity {
         this.endTime = LocalTime.of(23, 59, 0);
     }
 
-    public void updateSchedule(String title, String memo, CategoryType category,
-                               LocalDateTime endDateTime, boolean isAllDay,
-                               boolean isImportant, Integer notificationMinutes, boolean isPublic) {
+    public void updateSchedule(String title, LocalDateTime endDateTime, boolean isAllDay,
+                               boolean isImportant, Integer notificationMinutes) {
         LocalDate date = endDateTime.toLocalDate();
         this.title = title;
-        this.memo = memo;
-        applyCategoryAndGrowthType(category);
         this.startDate = date;
         this.endDate = date;
         this.startTime = null;
@@ -190,7 +185,6 @@ public class Task extends BaseTimeEntity {
         this.isImportant = isImportant;
         this.notificationMinutes = notificationMinutes;
         this.notificationAt = computeScheduleNotificationAt(endDateTime, isAllDay, notificationMinutes);
-        this.isPublic = isPublic;
     }
 
     /**

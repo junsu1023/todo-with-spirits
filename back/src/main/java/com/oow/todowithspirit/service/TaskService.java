@@ -46,13 +46,10 @@ public class TaskService {
         Task task = Task.createSchedule(
                 user,
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getEndDateTime(),
                 Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                resolveNotificationMinutes(request.getNotificationType())
         );
         return ScheduleCreateResponse.from(taskRepository.save(task));
     }
@@ -122,13 +119,10 @@ public class TaskService {
 
         task.updateSchedule(
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getEndDateTime(),
                 Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                resolveNotificationMinutes(request.getNotificationType())
         );
 
         return ScheduleCreateResponse.from(task);
