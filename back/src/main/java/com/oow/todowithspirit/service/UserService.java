@@ -70,7 +70,6 @@ public class UserService {
         }
 
         user.updateEmail(newEmail);
-//        emailVerificationService.sendVerificationEmail(userId);
 
         List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(userId);
 

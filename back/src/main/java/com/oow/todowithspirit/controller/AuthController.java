@@ -8,22 +8,32 @@ import com.oow.todowithspirit.domain.auth.KakaoTokenValidator;
 import com.oow.todowithspirit.dto.auth.*;
 import com.oow.todowithspirit.service.AuthService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class AuthController {
 
     private final AuthService authService;
     private final KakaoTokenValidator kakaoTokenValidator;
     private final GoogleTokenValidator googleTokenValidator;
+
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponse<EmailCheckResponse>> checkEmail(
+            @Email(message = "Invalid email format") @NotBlank(message = "Email is required") @RequestParam String email) {
+        return ResponseEntity.ok(ApiResponse.success(authService.checkEmail(email)));
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse>> signup(@Valid @RequestBody SignupRequest request) {

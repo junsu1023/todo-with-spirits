@@ -1,9 +1,7 @@
 package com.oow.todowithspirit.controller;
 
 import com.oow.todowithspirit.common.response.ApiResponse;
-import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
-import com.oow.todowithspirit.dto.spirit.SpiritResponse;
-import com.oow.todowithspirit.dto.spirit.UpdateRepresentativeSpiritRequest;
+import com.oow.todowithspirit.dto.spirit.*;
 import com.oow.todowithspirit.service.SpiritService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +40,16 @@ public class SpiritController {
             @Valid @RequestBody UpdateRepresentativeSpiritRequest request) {
 
         spiritService.updateRepresentativeSpirit(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PatchMapping("/{spiritId}/name")
+    public ResponseEntity<ApiResponse<Void>> updateSpiritName(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long spiritId,
+            @Valid @RequestBody UpdateSpiritNameRequest request) {
+
+        spiritService.updateSpiritName(userId, spiritId, request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

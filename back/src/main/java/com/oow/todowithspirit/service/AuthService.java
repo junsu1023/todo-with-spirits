@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -32,8 +34,13 @@ public class AuthService {
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", "Email already in use");
+        userRepository.findByEmail(request.getEmail())
+                .ifPresent(existingUser -> {
+                    throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", buildLoginGuideMessage(existingUser));
+                });
+
+        if (!emailVerificationService.isVerified(request.getEmail())) {
+            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED, "email", "이메일 인증이 완료되지 않았습니다");
         }
 
         String nickname = StringUtils.hasText(request.getNickname())
@@ -45,9 +52,20 @@ public class AuthService {
         userRepository.save(user);
 
         spiritService.createDefaultSpirit(user);
-        emailVerificationService.sendVerificationEmail(user.getId());
+        emailVerificationService.consumeVerification(request.getEmail());
 
         return SignupResponse.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public EmailCheckResponse checkEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    List<OAuthProvider> providers = userSocialAccountRepository.findProvidersByUserId(user.getId());
+                    OAuthProvider provider = providers.isEmpty() ? null : providers.get(0);
+                    return EmailCheckResponse.of(provider);
+                })
+                .orElseGet(EmailCheckResponse::notRegistered);
     }
 
     @Transactional
@@ -110,11 +128,6 @@ public class AuthService {
         refreshTokenRepository.deleteAllByUserId(userId);
     }
 
-    @Transactional
-    public void verifyEmail(Long userId) {
-        emailVerificationService.sendVerificationEmail(userId);
-    }
-
     private User findOrCreate(SocialLoginRequest request, String verifiedEmail) {
         String providerLower = request.getProvider().toLowerCase();
         validateProvider(providerLower);
@@ -135,6 +148,14 @@ public class AuthService {
     }
 
     private User createSocialUser(SocialLoginRequest request, OAuthProvider provider, boolean isVerified) {
+        if (StringUtils.hasText(request.getEmail())) {
+            userRepository.findByEmail(request.getEmail())
+                    .ifPresent(existingUser -> {
+                        log.info("[createSocialUser] Email already registered under a different account, blocking signup");
+                        throw new ApiException(ErrorCode.DUPLICATE_EMAIL, "email", buildLoginGuideMessage(existingUser));
+                    });
+        }
+
         String nickname = StringUtils.hasText(request.getEmail())
                 ? request.getEmail().split("@")[0]
                 : generateDefaultNickname();
@@ -143,6 +164,17 @@ public class AuthService {
         userSocialAccountRepository.save(new UserSocialAccount(user, provider, request.getProviderUserId()));
         spiritService.createDefaultSpirit(user);
         return user;
+    }
+
+    private String buildLoginGuideMessage(User existingUser) {
+        List<String> methods = new ArrayList<>();
+        if (existingUser.getPassword() != null) {
+            methods.add("이메일/비밀번호");
+        }
+        userSocialAccountRepository.findProvidersByUserId(existingUser.getId())
+                .forEach(provider -> methods.add(provider.name()));
+
+        return "이미 가입된 이메일입니다. " + String.join(", ", methods) + " 로그인을 이용해주세요.";
     }
 
     private String generateDefaultNickname() {

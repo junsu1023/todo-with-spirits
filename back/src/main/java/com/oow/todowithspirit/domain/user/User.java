@@ -53,7 +53,8 @@ public class User extends BaseTimeEntity {
         user.nickname = nickname;
         user.role = UserRole.USER;
         user.isPremium = false;
-        user.emailVerificationStatus = EmailVerificationStatus.UNVERIFIED;
+        // 회원가입 이전에 이메일 인증을 완료해야 하므로 가입 시점에는 항상 인증된 상태
+        user.emailVerificationStatus = EmailVerificationStatus.VERIFIED;
         return user;
     }
 

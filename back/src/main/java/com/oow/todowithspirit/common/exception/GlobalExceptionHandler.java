@@ -3,6 +3,7 @@ package com.oow.todowithspirit.common.exception;
 import com.oow.todowithspirit.common.response.ApiResponse;
 import com.oow.todowithspirit.common.response.ErrorDetail;
 import com.oow.todowithspirit.common.response.FieldErrorInfo;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,6 +47,20 @@ public class GlobalExceptionHandler {
         List<FieldErrorInfo> errors = List.of(
                 FieldErrorInfo.of("Request body is missing or contains an invalid value")
         );
+
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.fail(
+                        ErrorDetail.of(400, ErrorCode.INVALID_PARAMETER.getCode(), errors)
+                ));
+    }
+
+    // @Validated 붙은 @RequestParam/@PathVariable 검증 실패
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<ErrorDetail>> handleConstraintViolation(ConstraintViolationException e) {
+        List<FieldErrorInfo> errors = e.getConstraintViolations().stream()
+                .map(cv -> FieldErrorInfo.of(cv.getPropertyPath().toString(), cv.getMessage()))
+                .collect(Collectors.toList());
 
         return ResponseEntity
                 .badRequest()

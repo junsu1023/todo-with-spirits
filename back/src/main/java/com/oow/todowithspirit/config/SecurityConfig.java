@@ -34,14 +34,15 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/auth/check-email",
                                 "/api/auth/signup",
                                 "/api/auth/login",
                                 "/api/auth/reissue",
                                 "/api/auth/social/login",
                                 "/api/health"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/user/email/verify").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/user/me/email/verify/resend", "/me/email/verify/resend").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/user/email/verify/send", "/api/user/email/verify").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user/me/email/verify/send", "/me/email/verify/send").authenticated()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
