@@ -1,0 +1,14 @@
+node_modules/
+.output/
+.wxt/
+stats.html
+stats-*.json
+web-ext.config.ts
+*.zip
+*.crx
+*.pem
+.env
+.env.*
+!.env.example
+.DS_Store
+.claude/settings.local.json

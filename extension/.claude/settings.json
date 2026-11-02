@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/back/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/android/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/unity/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/.github/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/.agents/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/.codex/**)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/README.md)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/.gitignore)",
+      "Edit(//Users/haejin/project/pet-project/todo-with-spirits/biome.json)",
+      "Read(//Users/haejin/project/pet-project/todo-with-spirits/web/.env)"
+    ],
+    "ask": ["Edit(//Users/haejin/project/pet-project/todo-with-spirits/web/**)"]
+  }
+}
