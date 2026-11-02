@@ -419,43 +419,6 @@ CREATE TABLE task_postponements
 CREATE INDEX idx_task_postponements_user_original_date ON task_postponements (user_id, original_date);
 CREATE INDEX idx_task_postponements_task_original_date ON task_postponements (task_id, original_date);
 
--- 일일 기록 테이블
-CREATE TABLE daily_records
-(
-    id                  BIGSERIAL PRIMARY KEY,
-    user_id             BIGINT        NOT NULL,
-    record_date         DATE          NOT NULL,
-    total_count         INT           NOT NULL   DEFAULT 0,
-    completed_count     INT           NOT NULL   DEFAULT 0,
-    completion_rate     NUMERIC(5, 2) NOT NULL   DEFAULT 0.00,
-    earned_growth_power INT           NOT NULL   DEFAULT 0,
-    interpretation      TEXT, -- 기록 화면 코멘트 (서버/AI 생성)
-    created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_daily_records_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT uq_daily_records_user_date UNIQUE (user_id, record_date)
-);
-
--- 월간 기록 테이블
-CREATE TABLE monthly_records
-(
-    id                       BIGSERIAL PRIMARY KEY,
-    user_id                  BIGINT        NOT NULL,
-    year                     INT           NOT NULL,
-    month                    INT           NOT NULL,
-    total_completed_count    INT           NOT NULL   DEFAULT 0,
-    completion_rate          NUMERIC(5, 2) NOT NULL   DEFAULT 0.00,
-    accumulated_growth_power INT           NOT NULL   DEFAULT 0,
-    top_growth_type          VARCHAR(20), -- growth_type ENUM
-    created_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_monthly_records_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT uq_monthly_records_user_ym UNIQUE (user_id, year, month),
-    CONSTRAINT chk_monthly_records_year CHECK (year BETWEEN 2000 AND 2100
-        ),
-    CONSTRAINT chk_monthly_records_month CHECK (month BETWEEN 1 AND 12)
-);
-
 -- 공휴일 테이블
 CREATE TABLE holiday
 (
@@ -650,10 +613,6 @@ CREATE INDEX idx_tasks_calendar_routine ON tasks (user_id, task_type, start_date
 CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
 -- 알림 발송 대상 조회 (알림 서비스용)
 CREATE INDEX idx_tasks_notification_at ON tasks (notification_at) WHERE notification_at IS NOT NULL;
-
--- 기록
-CREATE INDEX idx_daily_records_user_date ON daily_records (user_id, record_date);
-CREATE INDEX idx_monthly_records_user_ym ON monthly_records (user_id, year, month);
 
 -- 공유 카드 상태 조회
 CREATE INDEX idx_share_cards_user_status ON share_cards (user_id, card_status);
