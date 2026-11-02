@@ -16,7 +16,6 @@ public class TaskSummaryResponse {
     private Long taskId;
     private String taskType;
     private String title;
-    private String category;
 
     private LocalDate endDate;
     private LocalTime endTime;
@@ -27,9 +26,7 @@ public class TaskSummaryResponse {
     private LocalDate repeatEndDate;
 
     private Integer notificationMinutes;
-    private Boolean isPublic;
     private Boolean isCompleted;
-    private String memo;
     private LocalDateTime updatedAt;
 
     public static TaskSummaryResponse from(Task task) {
@@ -37,7 +34,6 @@ public class TaskSummaryResponse {
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
-                .category(task.getCategory() != null ? task.getCategory().name() : null)
                 .endDate(task.getEndDate())
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())
@@ -45,9 +41,7 @@ public class TaskSummaryResponse {
                 .repeatType(task.getRepeatType().name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .notificationMinutes(task.getNotificationMinutes())
-                .isPublic(task.isPublic())
                 .isCompleted(task.isCompleted())
-                .memo(task.getMemo())
                 .updatedAt(task.getUpdatedAt())
                 .build();
     }
@@ -57,7 +51,6 @@ public class TaskSummaryResponse {
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
-                .category(task.getCategory() != null ? task.getCategory().name() : null)
                 .endDate(targetDate)
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())
@@ -65,9 +58,7 @@ public class TaskSummaryResponse {
                 .repeatType(task.getRepeatType().name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .notificationMinutes(task.getNotificationMinutes())
-                .isPublic(task.isPublic())
                 .isCompleted(isCompleted) // 테이블 원본 값 x / 특정일 완료 상태 o
-                .memo(task.getMemo())
                 .updatedAt(task.getUpdatedAt())
                 .build();
     }

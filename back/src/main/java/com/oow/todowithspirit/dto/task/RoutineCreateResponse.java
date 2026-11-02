@@ -18,8 +18,6 @@ public class RoutineCreateResponse {
     private Long taskId;
     private String taskType;
     private String title;
-    private String memo;
-    private String category;
 
     // 반복
     private String repeatType;
@@ -31,7 +29,6 @@ public class RoutineCreateResponse {
     // 공통
     private Integer notificationMinutes;
     private LocalDateTime notificationAt;
-    private Boolean isPublic;
 
     // 성장
     private Integer growthValue;
@@ -56,8 +53,6 @@ public class RoutineCreateResponse {
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
-                .memo(task.getMemo())
-                .category(task.getCategory() != null ? task.getCategory().name() : null)
                 .repeatType(task.getRepeatType() != null ? task.getRepeatType().name() : RepeatType.NONE.name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .repeatDaysOfWeek(task.getRepeatDaysOfWeek().stream().map(DayOfWeek::name).toList())
@@ -65,7 +60,6 @@ public class RoutineCreateResponse {
                 .excludeHoliday(task.isExcludeHoliday())
                 .notificationMinutes(task.getNotificationMinutes())
                 .notificationAt(calculatedNotificationAt)
-                .isPublic(task.isPublic())
                 .growthValue(task.getGrowthValue())
                 .growthType(task.getGrowthType().name())
                 .isCompleted(task.isCompleted())

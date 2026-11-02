@@ -65,14 +65,11 @@ public class TaskService {
         Task task = Task.createRoutine(
                 user,
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
                 resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
         return RoutineCreateResponse.from(taskRepository.save(task));
@@ -94,14 +91,11 @@ public class TaskService {
 
         task.updateRoutine(
                 request.getTitle(),
-                request.getCategory(),
-                request.getMemo(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
                 resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
 
@@ -302,7 +296,7 @@ public class TaskService {
     // =========================================================
     @Transactional(readOnly = true)
     public CalendarTasksResponse getCalendarTasks(
-            Long userId, LocalDate from, LocalDate to, String category, String taskType) {
+            Long userId, LocalDate from, LocalDate to, String taskType) {
 
         if (from == null || to == null) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From and to dates are required.");
@@ -315,12 +309,6 @@ public class TaskService {
 
         // 1. 일정과 루틴 데이터를 통합 조회
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
-
-        if (category != null && !category.isBlank() && !"ALL".equalsIgnoreCase(category)) {
-            tasks = tasks.stream()
-                    .filter(t -> t.getCategory() != null && t.getCategory().name().equalsIgnoreCase(category))
-                    .toList();
-        }
 
         List<Task> schedules = Collections.emptyList();
         List<Task> routines = Collections.emptyList();

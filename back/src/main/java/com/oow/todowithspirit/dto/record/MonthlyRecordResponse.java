@@ -1,6 +1,5 @@
 package com.oow.todowithspirit.dto.record;
 
-import com.oow.todowithspirit.domain.task.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,15 +30,8 @@ public class MonthlyRecordResponse {
     private List<MonthlyComparisonItem> monthlyComparisons;
 
     // 4. 월간 분석
-    private String mainCategory;                 // 가장 많이 성장한 유형
-    private Integer mainCategoryPeerPercentile; // 백분율
-    private Double mainCategoryCompletionRate; // 예: 99.0 (달성률 99%)
     private String title;
     private String content;
-
-    // 5. 카테고리 분석
-    private List<CategoryStatItem> topCategories;
-    private CategoryStatItem bottomCategory;
 
     // --- Sub DTOs ---
 
@@ -62,15 +54,5 @@ public class MonthlyRecordResponse {
     public static class MonthlyComparisonItem {
         private int month;
         private double completedRate; // 월별 달성률
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class CategoryStatItem {
-        private CategoryType category;
-        private int completedCount;
-        private int totalCount;
     }
 }

@@ -332,8 +332,6 @@ CREATE TABLE tasks
     user_id              BIGINT       NOT NULL,
     task_type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
     title                VARCHAR(255) NOT NULL,
-    memo                 TEXT,
-    category             VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- category_type ENUM
     start_date           DATE         NOT NULL,
     start_time           TIME,                                    -- 종일 일정이면 null
     end_date             DATE,
@@ -345,7 +343,6 @@ CREATE TABLE tasks
     is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_all_day           BOOLEAN      NOT NULL    DEFAULT FALSE,
-    is_public            BOOLEAN      NOT NULL    DEFAULT FALSE,
     exclude_holiday      BOOLEAN      NOT NULL    DEFAULT FALSE,
     notification_minutes INT,
     notification_at      TIMESTAMP WITH TIME ZONE,                -- 알림 발송 기준 시각 (23:59 - notification_minutes)
@@ -409,7 +406,6 @@ CREATE TABLE task_postponements
     id             BIGSERIAL PRIMARY KEY,
     task_id        BIGINT      NOT NULL,
     user_id        BIGINT      NOT NULL,           -- 리포트 집계용 비정규화
-    category       VARCHAR(20) NOT NULL,           -- 리포트 집계용 비정규화 (postpone 시점 task.category 스냅샷)
     task_type      VARCHAR(20) NOT NULL,           -- SCHEDULE / ROUTINE
     original_date  DATE        NOT NULL,           -- ROUTINE: 반복 규칙상 원래 occurrence 날짜 / SCHEDULE: 최초 예정일 (둘 다 불변, 집계 키)
     postponed_date DATE        NOT NULL,           -- 이 이동으로 새로 정해진 날짜
@@ -652,7 +648,6 @@ CREATE INDEX idx_tasks_user_start_date ON tasks (user_id, start_date);
 -- 루틴 종료일 조건 최적화용 복합 인덱스 추가
 CREATE INDEX idx_tasks_calendar_routine ON tasks (user_id, task_type, start_date, repeat_end_date);
 CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
-CREATE INDEX idx_tasks_user_category ON tasks (user_id, category);
 -- 알림 발송 대상 조회 (알림 서비스용)
 CREATE INDEX idx_tasks_notification_at ON tasks (notification_at) WHERE notification_at IS NOT NULL;
 

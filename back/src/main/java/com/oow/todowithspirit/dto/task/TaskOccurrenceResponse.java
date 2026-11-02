@@ -23,15 +23,12 @@ public abstract class TaskOccurrenceResponse {
     private final Long taskId;
     private final String taskType;
     private final String title;
-    private final String memo;
-    private final String category;
 
     // 캘린더 전개를 위한 타겟 날짜 (공통)
     private final LocalDate occurrenceDate;
 
     // 공통 필드들
     private final Boolean isImportant;
-    private final Boolean isPublic;
     private final Integer notificationMinutes;
     protected LocalDateTime notificationAt;
 
@@ -49,11 +46,8 @@ public abstract class TaskOccurrenceResponse {
         this.taskId = task.getId();
         this.taskType = task.getTaskType().name();
         this.title = task.getTitle();
-        this.memo = task.getMemo();
-        this.category = task.getCategory() != null ? task.getCategory().name() : null;
         this.occurrenceDate = occurrenceDate;
         this.isImportant = task.isImportant();
-        this.isPublic = task.isPublic();
         this.notificationMinutes = task.getNotificationMinutes();
         this.notificationAt = task.getNotificationAt();
         this.growthValue = task.getGrowthValue();

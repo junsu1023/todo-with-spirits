@@ -36,13 +36,6 @@ public class Task extends BaseTimeEntity {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String memo;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private CategoryType category;
-
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -95,9 +88,6 @@ public class Task extends BaseTimeEntity {
     @Column(name = "notification_at")
     private LocalDateTime notificationAt;
 
-    @Column(name = "is_public", nullable = false)
-    private boolean isPublic;
-
     // 성장 (서버 계산)
     @Column(nullable = false)
     private int growthValue = 10;
@@ -105,6 +95,8 @@ public class Task extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "growth_type", nullable = true)
     private GrowthType growthType;
+
+    private static final GrowthType DEFAULT_GROWTH_TYPE = GrowthType.CONSISTENCY;
 
     // 완료
     @Column(name = "is_completed", nullable = false)
@@ -120,7 +112,7 @@ public class Task extends BaseTimeEntity {
         task.user = user;
         task.taskType = TaskType.SCHEDULE;
         task.title = title;
-        task.applyCategoryAndGrowthType(null);
+        task.growthType = DEFAULT_GROWTH_TYPE;
         task.startDate = date;
         task.startTime = null;
         task.endDate = date;
@@ -130,45 +122,37 @@ public class Task extends BaseTimeEntity {
         task.repeatType = RepeatType.NONE;
         task.notificationMinutes = notificationMinutes;
         task.notificationAt = computeScheduleNotificationAt(endDateTime, isAllDay, notificationMinutes);
-        task.isPublic = false;
         return task;
     }
 
-    public static Task createRoutine(User user, String title, String memo, CategoryType category,
-                                     RepeatType repeatType, LocalDate repeatEndDate,
+    public static Task createRoutine(User user, String title, RepeatType repeatType, LocalDate repeatEndDate,
                                      Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                                     Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
+                                     Integer notificationMinutes, boolean excludeHoliday) {
         Task task = new Task();
         task.user = user;
         task.taskType = TaskType.ROUTINE;
         task.title = title;
-        task.memo = memo;
-        task.applyCategoryAndGrowthType(category);
+        task.growthType = DEFAULT_GROWTH_TYPE;
         task.startDate = LocalDate.now();
         task.repeatType = repeatType;
         task.repeatEndDate = repeatEndDate;
         task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
         task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
         task.notificationMinutes = notificationMinutes;
-        task.isPublic = isPublic;
         task.excludeHoliday = excludeHoliday;
         task.endTime = LocalTime.of(23, 59, 0);
         return task;
     }
 
-    public void updateRoutine(String title, CategoryType category, String memo,
-                              RepeatType repeatType, LocalDate repeatEndDate,
+    public void updateRoutine(String title, RepeatType repeatType, LocalDate repeatEndDate,
                               Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                              Integer notificationMinutes, boolean isPublic, boolean excludeHoliday) {
+                              Integer notificationMinutes, boolean excludeHoliday) {
         this.title = title;
-        applyCategoryAndGrowthType(category);
-        this.memo = memo;
         this.repeatType = repeatType;
         this.repeatEndDate = repeatEndDate;
         this.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
         this.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
         this.notificationMinutes = notificationMinutes;
-        this.isPublic = isPublic;
         this.excludeHoliday = excludeHoliday;
         this.endTime = LocalTime.of(23, 59, 0);
     }
@@ -214,10 +198,5 @@ public class Task extends BaseTimeEntity {
         if (endDateTime == null || notificationMinutes == null) return null;
         LocalDateTime base = isAllDay ? endDateTime.toLocalDate().atTime(23, 59, 59) : endDateTime;
         return base.minusMinutes(notificationMinutes);
-    }
-
-    private void applyCategoryAndGrowthType(CategoryType category) {
-        this.category = category != null ? category : CategoryType.NONE;
-        this.growthType = this.category.getDefaultGrowthType();
     }
 }

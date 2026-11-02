@@ -141,7 +141,6 @@ public class RecordService {
 
         // 3. 일별 차트 및 주간 기록 아이콘 계산
         List<WeeklyRecordResponse.DailyBarChartItem> dailyCharts = new ArrayList<>();
-        Map<CategoryType, CategoryCounter> categoryMap = new HashMap<>();
 
         int totalPlanCount = 0;
         int completedPlanCount = 0;
@@ -157,12 +156,6 @@ public class RecordService {
 
             int scheduleTotal = daySchedules.size();
             int scheduleCompleted = (int) daySchedules.stream().filter(Task::isCompleted).count();
-
-            // 일정 카테고리 집계
-            for (Task schedule : daySchedules) {
-                CategoryType category = (schedule.getCategory() != null) ? schedule.getCategory() : CategoryType.NONE;
-                categoryMap.computeIfAbsent(category, CategoryCounter::new).add(schedule.isCompleted());
-            }
 
             // B. 당일 루틴(Routine) 전개 및 필터링
             int routineTotal = 0;
@@ -181,10 +174,6 @@ public class RecordService {
                     if (isCompleted) {
                         routineCompleted++;
                     }
-
-                    // 루틴 카테고리 집계 (전개된 Occurrence 단위로 카운트)
-                    CategoryType category = (routine.getCategory() != null) ? routine.getCategory() : CategoryType.NONE;
-                    categoryMap.computeIfAbsent(category, CategoryCounter::new).add(isCompleted);
                 }
             }
 
@@ -230,28 +219,6 @@ public class RecordService {
         double averageCompletionRate = totalPlanCount == 0 ? 0.0 :
                 Math.round(((double) completedPlanCount / totalPlanCount) * 1000) / 10.0;
 
-        // 4. 카테고리별 분석
-        List<WeeklyRecordResponse.CategoryStatItem> topCategories = categoryMap.values().stream()
-                .filter(c -> c.completedCount > 0)
-                .sorted((a, b) -> Integer.compare(b.completedCount, a.completedCount))
-                .limit(3)
-                .map(c -> WeeklyRecordResponse.CategoryStatItem.builder()
-                        .category(c.category)
-                        .completedCount(c.completedCount)
-                        .totalCount(c.totalCount)
-                        .build())
-                .toList();
-
-        WeeklyRecordResponse.CategoryStatItem bottomCategory = categoryMap.values().stream()
-                .filter(c -> c.getMissedCount() > 0)
-                .max(Comparator.comparingInt(CategoryCounter::getMissedCount))
-                .map(c -> WeeklyRecordResponse.CategoryStatItem.builder()
-                        .category(c.category)
-                        .completedCount(c.completedCount)
-                        .totalCount(c.totalCount)
-                        .build())
-                .orElse(null);
-
         return WeeklyRecordResponse.builder()
                 .week(date.get(WeekFields.of(Locale.KOREA).weekOfMonth()))
                 .message("일정과 중요한 일들의 비중이 높았던 정신없는 한 주 였네요! 그래도 미뤘던 플랜들은 다시 한 번 도전 해보면 어떨까요?")
@@ -260,8 +227,6 @@ public class RecordService {
                 .delayedCount(0) // todo: insert logic
                 .totalTaskCount(totalPlanCount)
                 .averageCompletionRate(averageCompletionRate)
-                .topCategories(topCategories)
-                .bottomCategory(bottomCategory)
                 .build();
     }
 
@@ -304,7 +269,6 @@ public class RecordService {
 
         // 4. 일별 순회 데이터 집계
         List<MonthlyRecordResponse.DailyHeatmapItem> dailyHeatmaps = new ArrayList<>();
-        Map<CategoryType, CategoryCounter> categoryMap = new HashMap<>();
         List<Double> dailyRates = new ArrayList<>();
 
         int totalMonthCompleted = 0;
@@ -321,11 +285,6 @@ public class RecordService {
 
             int scheduleTotal = daySchedules.size();
             int scheduleCompleted = (int) daySchedules.stream().filter(Task::isCompleted).count();
-
-            for (Task schedule : daySchedules) {
-                CategoryType category = (schedule.getCategory() != null) ? schedule.getCategory() : CategoryType.NONE;
-                categoryMap.computeIfAbsent(category, CategoryCounter::new).add(schedule.isCompleted());
-            }
 
             // B. 당일 루틴(Routine) 필터링 (미리 전개해둔 Map 활용)
             int routineTotal = 0;
@@ -344,9 +303,6 @@ public class RecordService {
                     if (isDone) {
                         routineCompleted++;
                     }
-
-                    CategoryType category = (routine.getCategory() != null) ? routine.getCategory() : CategoryType.NONE;
-                    categoryMap.computeIfAbsent(category, CategoryCounter::new).add(isDone);
                 }
             }
 
@@ -375,40 +331,7 @@ public class RecordService {
         double averageCompletionRate = dailyRates.isEmpty() ? 0.0 :
                 Math.round(dailyRates.stream().mapToDouble(Double::doubleValue).average().orElse(0.0) * 10.0) / 10.0;
 
-        // 6. 카테고리 분석 (Top 3 / Bottom 1)
-        List<MonthlyRecordResponse.CategoryStatItem> topCategories = categoryMap.values().stream()
-                .filter(c -> c.completedCount > 0)
-                .sorted((a, b) -> Integer.compare(b.completedCount, a.completedCount))
-                .limit(3)
-                .map(c -> MonthlyRecordResponse.CategoryStatItem.builder()
-                        .category(c.category)
-                        .completedCount(c.completedCount)
-                        .totalCount(c.totalCount)
-                        .build())
-                .toList();
-
-        MonthlyRecordResponse.CategoryStatItem bottomCategory = categoryMap.values().stream()
-                .filter(c -> c.getMissedCount() > 0)
-                .max(Comparator.comparingInt(CategoryCounter::getMissedCount))
-                .map(c -> MonthlyRecordResponse.CategoryStatItem.builder()
-                        .category(c.category)
-                        .completedCount(c.completedCount)
-                        .totalCount(c.totalCount)
-                        .build())
-                .orElse(null);
-
-        // 7. 월간 분석 지표 계산 (주력 분야명, 백분율, 주력 분야 달성률)
-        String mainCategory = topCategories.isEmpty() ? null : topCategories.get(0).getCategory().name();
-
-        Double mainCategoryCompletionRate = 0.0;
-        if (!topCategories.isEmpty() && topCategories.get(0).getTotalCount() > 0) {
-            MonthlyRecordResponse.CategoryStatItem top1 = topCategories.get(0);
-            mainCategoryCompletionRate = Math.round((top1.getCompletedCount() * 100.0 / top1.getTotalCount()) * 10.0) / 10.0;
-        }
-
-        Integer mainCategoryPeerPercentile = calculatePeerPercentile(userId, mainCategoryCompletionRate);
-
-        // 8. DTO 조립 및 반환
+        // 6. DTO 조립 및 반환
         return MonthlyRecordResponse.builder()
                 .year(year)
                 .month(month)
@@ -418,13 +341,8 @@ public class RecordService {
                 .averageCompletionRate(averageCompletionRate)
                 .dailyHeatmaps(dailyHeatmaps)
                 .monthlyComparisons(getYearlyComparisonData(userId, year))
-                .mainCategory(mainCategory)
-                .mainCategoryPeerPercentile(mainCategoryPeerPercentile)
-                .mainCategoryCompletionRate(mainCategoryCompletionRate)
                 .title("기분 좋은 몰입의 흔적 🌊")
                 .content("커리어 레벨업부터 취미 리프레시까지! 계획했던 핵심 루틴들을 뚝심 있게 지켜냈어요.")
-                .topCategories(topCategories)
-                .bottomCategory(bottomCategory)
                 .build();
     }
 
@@ -493,37 +411,11 @@ public class RecordService {
         return task.isCompleted();
     }
 
-    private static class CategoryCounter {
-        CategoryType category;
-        int completedCount = 0;
-        int totalCount = 0;
-
-        CategoryCounter(CategoryType category) {
-            this.category = category;
-        }
-
-        void add(boolean isCompleted) {
-            this.totalCount++;
-            if (isCompleted) {
-                this.completedCount++;
-            }
-        }
-
-        int getMissedCount() {
-            return totalCount - completedCount;
-        }
-    }
-
     // 해당 날짜에 일정이 존재하는지 검증
     private boolean isScheduleOnDate(Task schedule, LocalDate targetDate) {
         if (schedule.getEndDate() != null) {
             return schedule.getEndDate().equals(targetDate);
         }
         return schedule.getStartDate() != null && schedule.getStartDate().equals(targetDate);
-    }
-
-    private Integer calculatePeerPercentile(Long userId, double completionRate) {
-        // 또래 백분위 계산 산출 로직 (기본값 설정)
-        return 4;
     }
 }
