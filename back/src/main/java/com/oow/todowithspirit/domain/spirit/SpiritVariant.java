@@ -18,6 +18,10 @@ public class SpiritVariant {
     @Column(nullable = false, unique = true, length = 30)
     private String code;
 
+    // 이 외형이 속한 정령 종류 (spirit_species)
+    @Column(name = "species_id")
+    private Long speciesId;
+
     @Column(name = "variant_name", nullable = false, length = 50)
     private String variantName;
 

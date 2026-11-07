@@ -271,7 +271,21 @@ CREATE TABLE spirit_discoveries
     CONSTRAINT fk_spirit_discoveries_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- 정령 외형(스킨) 마스터. "정령 1종 · 상태 6가지"를 외형 6종으로 해석해 설계함
+-- 정령 종류 마스터 (정령도감의 한 칸). 종류마다 외형(spirit_variants)을 최대 6개 가지며,
+-- 사용자는 종류당 정령을 1마리만 보유한다
+CREATE TABLE spirit_species
+(
+    id              BIGSERIAL PRIMARY KEY,
+    code            VARCHAR(30)  NOT NULL UNIQUE,
+    species_name    VARCHAR(50)  NOT NULL,
+    description     TEXT,
+    sort_order      INT          NOT NULL DEFAULT 0,
+    asset_key       VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
+    image_url       TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
+    image_file_name VARCHAR(150)
+);
+
+-- 정령 외형(스킨) 마스터. 각 외형은 하나의 정령 종류에 속함
 -- unlock_metric=DEFAULT는 항상 해금(시드 필수). 그 외(HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE)는
 -- 버릇·추억·친밀도 데이터 모델이 아직 없어 자동 해금 평가 로직이 없음 — 수동으로 user_spirit_variant_unlocks에
 -- 행을 넣어야 해금됨 (추후 버릇/추억/친밀도 구현 시 자동 평가 로직 추가 예정)
@@ -279,6 +293,7 @@ CREATE TABLE spirit_variants
 (
     id                BIGSERIAL PRIMARY KEY,
     code              VARCHAR(30)  NOT NULL UNIQUE,
+    species_id        BIGINT       NOT NULL REFERENCES spirit_species (id),
     variant_name      VARCHAR(50)  NOT NULL,
     unlock_metric     VARCHAR(30)  NOT NULL, -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
     unlock_threshold  INT          NOT NULL DEFAULT 0,
@@ -309,7 +324,12 @@ ALTER TABLE spirits
     ADD COLUMN matured_at         TIMESTAMP WITH TIME ZONE,        -- 성체(ADULT)가 된 시점
     ADD COLUMN departed_at        TIMESTAMP WITH TIME ZONE,        -- 여행을 떠나 이력으로 남은(DEPARTED) 시점
     ADD COLUMN career_growth_type VARCHAR(20),                     -- 성체가 될 때 확정되는 진로. growth_type ENUM 재사용 (exp가 가장 높은 축)
-    ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id); -- "정령 만나기"로 뽑힌 외형
+    ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id), -- "정령 만나기"로 뽑힌 외형
+    ADD COLUMN species_id         BIGINT REFERENCES spirit_species (id),  -- 정령 종류 (종류당 1마리)
+    ADD COLUMN affection          INT         NOT NULL DEFAULT 0,         -- 호감도 0~100%. 할 일 완료 1회당 +1, 감소 없음. 단계(1~5)는 20%마다 1단계
+    ADD COLUMN is_important       BOOLEAN     NOT NULL DEFAULT FALSE;     -- 사용자가 지정한 중요 표시
+
+CREATE UNIQUE INDEX uq_spirits_user_species ON spirits (user_id, species_id);
 
 -- ============================================================
 --  4. To-do, schedule, habit 관련 테이블
