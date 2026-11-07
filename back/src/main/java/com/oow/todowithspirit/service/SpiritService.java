@@ -8,6 +8,7 @@ import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
 import com.oow.todowithspirit.dto.spirit.SpiritCollectionResponse;
 import com.oow.todowithspirit.dto.spirit.UpdateRepresentativeSpiritRequest;
+import com.oow.todowithspirit.dto.spirit.UpdateSpiritImportantRequest;
 import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -153,6 +154,18 @@ public class SpiritService {
         }
 
         spirit.updateName(request.getSpiritName());
+    }
+
+    @Transactional
+    public void updateSpiritImportant(Long userId, Long spiritId, UpdateSpiritImportantRequest request) {
+        Spirit spirit = spiritRepository.findById(spiritId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Spirit not found"));
+
+        if (!spirit.getUser().getId().equals(userId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "You do not own this spirit");
+        }
+
+        spirit.updateImportant(request.getIsImportant());
     }
 
     /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */

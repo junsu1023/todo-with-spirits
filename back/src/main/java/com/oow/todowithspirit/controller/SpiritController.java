@@ -52,4 +52,14 @@ public class SpiritController {
         spiritService.updateSpiritName(userId, spiritId, request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    @PatchMapping("/{spiritId}/important")
+    public ResponseEntity<ApiResponse<Void>> updateSpiritImportant(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long spiritId,
+            @Valid @RequestBody UpdateSpiritImportantRequest request) {
+
+        spiritService.updateSpiritImportant(userId, spiritId, request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

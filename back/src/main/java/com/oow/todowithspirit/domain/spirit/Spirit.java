@@ -134,6 +134,11 @@ public class Spirit {
         return Math.min(MAX_AFFECTION_LEVEL, affection / AFFECTION_PER_LEVEL + 1);
     }
 
+    public void updateImportant(boolean isImportant) {
+        this.isImportant = isImportant;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // 완료 여부 (다 자람 = 성체)
     public boolean isCompleted() {
         return status == SpiritStatus.ADULT;
