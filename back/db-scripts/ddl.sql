@@ -1,4 +1,9 @@
 -- ============================================================
+--  전체 스키마 (테이블 · 제약조건 · 인덱스)
+--  실행 순서: ddl.sql → master-data.sql
+-- ============================================================
+
+-- ============================================================
 --  1. ENUM 타입
 -- ============================================================
 
@@ -14,8 +19,6 @@
 -- CREATE TYPE achievement_type AS ENUM ('FIRST_CATEGORY_COMPLETE', 'CATEGORY_HALF_COMPLETE', 'CATEGORY_ALL_COMPLETE',
 -- 'TOTAL_COMPLTE_COUNT', 'HIDDEN_ACHIEVEMENT', 'STREAK', 'SPIRIT_LEVEL', 'USER_LEVEL', 'SPIRIT_MASTER', 'CATEGORY_MASTER','BADGE_COLLECTOR');
 -- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
--- CREATE TYPE card_type AS ENUM ('TODAY', 'MONTHLY');
--- CREATE TYPE card_status AS ENUM ('PROCESSING', 'READY', 'FAILED');
 -- CREATE TYPE spirit_status AS ENUM ('GROWING', 'ADULT', 'DEPARTED');
 -- CREATE TYPE spirit_temperament AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
 -- CREATE TYPE spirit_action_place AS ENUM ('BOOKSHELF', 'WORKBENCH', 'FRONT_YARD', 'TEA_TABLE', 'BED');
@@ -159,20 +162,6 @@ CREATE TABLE spirit_egg_options
     is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
     sort_order  INT          NOT NULL DEFAULT 0
 );
-
--- 유저에게 제시된 알 선택지 (재조회 시 같은 3~5개가 유지되도록 offer를 고정)
-CREATE TABLE spirit_egg_offers
-(
-    id            BIGSERIAL PRIMARY KEY,
-    user_id       BIGINT  NOT NULL,
-    egg_option_id BIGINT  NOT NULL,
-    is_selected   BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_egg_offers_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT fk_egg_offers_option FOREIGN KEY (egg_option_id) REFERENCES spirit_egg_options (id)
-);
-
-CREATE INDEX idx_egg_offers_user ON spirit_egg_offers (user_id, created_at DESC);
 
 -- 정령별 선천기질 (2~3개 부여, 화면에는 수치가 아닌 태그로만 노출)
 CREATE TABLE spirit_temperaments
@@ -333,7 +322,6 @@ CREATE TABLE tasks
     task_type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
     title                VARCHAR(255) NOT NULL,
     start_date           DATE         NOT NULL,
-    start_time           TIME,                                    -- 종일 일정이면 null
     end_date             DATE,
     end_time             TIME,
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
@@ -519,26 +507,6 @@ CREATE TABLE user_decorations
 );
 
 -- ============================================================
---  14. 공유 카드 테이블  (비동기 생성 → 202 Accepted 패턴)
--- ============================================================
-CREATE TABLE share_cards
-(
-    id           BIGSERIAL PRIMARY KEY,
-    user_id      BIGINT      NOT NULL,
-    card_type    VARCHAR(20) NOT NULL,
-    card_status  VARCHAR(20) NOT NULL     DEFAULT 'PROCESSING',
-    template_id  VARCHAR(100),
-    target_date  DATE, -- card_type = TODAY
-    target_year  INT,  -- card_type = MONTHLY
-    target_month INT,  -- card_type = MONTHLY
-    download_url TEXT, -- READY 상태가 되면 채워짐 (Presigned URL)
-    expires_at   TIMESTAMP WITH TIME ZONE,
-    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_share_cards_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
-
--- ============================================================
 --  15. 앱 설정 테이블
 -- ============================================================
 CREATE TABLE user_settings
@@ -548,7 +516,6 @@ CREATE TABLE user_settings
     dark_mode             BOOLEAN     NOT NULL     DEFAULT FALSE,
     language              VARCHAR(10) NOT NULL     DEFAULT 'SYSTEM', -- language ENUM (SYSTEM, KO, EN, JA, ZH)
     dday_display_enabled  BOOLEAN     NOT NULL     DEFAULT TRUE,     -- 플랜(task) 디데이 표시
-    auto_backup_enabled   BOOLEAN     NOT NULL     DEFAULT FALSE,
     created_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -613,9 +580,6 @@ CREATE INDEX idx_tasks_calendar_routine ON tasks (user_id, task_type, start_date
 CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
 -- 알림 발송 대상 조회 (알림 서비스용)
 CREATE INDEX idx_tasks_notification_at ON tasks (notification_at) WHERE notification_at IS NOT NULL;
-
--- 공유 카드 상태 조회
-CREATE INDEX idx_share_cards_user_status ON share_cards (user_id, card_status);
 
 -- 업적 진행 조회
 CREATE INDEX idx_user_achievements_user ON user_achievements (user_id);

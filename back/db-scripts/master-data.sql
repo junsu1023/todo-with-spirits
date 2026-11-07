@@ -1,8 +1,8 @@
 -- ============================================================
---  정령 육성 시스템 마스터 데이터 시드
+--  마스터 데이터
 --  대상: spirit_action_places, spirit_place_actions, category_spirit_actions,
---        spirit_home_objects, spirit_egg_options
---  전제: ddl.sql의 3-1. 정령 육성 시스템 테이블이 이미 생성되어 있어야 함
+--        spirit_home_objects, spirit_egg_options, spirit_variants, decorations
+--  전제: ddl.sql 이 먼저 실행되어 모든 테이블이 생성되어 있어야 함
 --
 --  재실행 주의:
 --   - spirit_egg_options / spirit_action_places / spirit_home_objects 는 code가 UNIQUE라서

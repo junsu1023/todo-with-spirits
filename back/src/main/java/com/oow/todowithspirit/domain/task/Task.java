@@ -39,9 +39,6 @@ public class Task extends BaseTimeEntity {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "start_time")
-    private LocalTime startTime;
-
     @Column(name = "end_date")
     private LocalDate endDate;
 
@@ -114,7 +111,6 @@ public class Task extends BaseTimeEntity {
         task.title = title;
         task.growthType = DEFAULT_GROWTH_TYPE;
         task.startDate = date;
-        task.startTime = null;
         task.endDate = date;
         task.endTime = isAllDay ? LocalTime.of(23, 59, 59) : endDateTime.toLocalTime();
         task.isAllDay = isAllDay;
@@ -163,7 +159,6 @@ public class Task extends BaseTimeEntity {
         this.title = title;
         this.startDate = date;
         this.endDate = date;
-        this.startTime = null;
         this.endTime = isAllDay ? LocalTime.of(23, 59, 59) : endDateTime.toLocalTime();
         this.isAllDay = isAllDay;
         this.isImportant = isImportant;
