@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public class TaskService {
 
     private static final EnumSet<RepeatType> HABIT_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
+    private static final int AFFECTION_PER_COMPLETION = 1; // 할 일 완료 1회당 대표 정령 호감도 +1%
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -455,6 +456,11 @@ public class TaskService {
         // 재화 지급 (taskId+completionDate 단위로 멱등. 중복 요청이면 0 반환)
         long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
         long balance = currencyService.getBalance(userId);
+
+        // 대표 정령 호감도 증가 (중복 완료 요청으로 재화가 지급되지 않은 경우는 제외). 완료 취소로 줄지 않음
+        if (earned > 0) {
+            spirit.increaseAffection(AFFECTION_PER_COMPLETION);
+        }
 
         return new TaskCompleteResponse(earned, balance);
     }

@@ -20,6 +20,7 @@ public class Spirit {
     private static final int MIN_GROWTH_DAYS = 28;
     private static final int MAX_GROWTH_DAYS = 42;
 
+    private static final int MAX_AFFECTION = 100;
     private static final int AFFECTION_PER_LEVEL = 20;
     private static final int MAX_AFFECTION_LEVEL = 5;
 
@@ -127,6 +128,12 @@ public class Spirit {
         if (variantId != null) {
             this.variantId = variantId;
         }
+    }
+
+    // 호감도 증가 (최대 100)
+    public void increaseAffection(int amount) {
+        this.affection = Math.min(MAX_AFFECTION, this.affection + amount);
+        this.updatedAt = LocalDateTime.now();
     }
 
     // 호감도 단계 (1~5): 0~19=1, 20~39=2, 40~59=3, 60~79=4, 80~100=5
