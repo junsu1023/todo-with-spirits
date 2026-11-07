@@ -10,6 +10,7 @@ import lombok.Getter;
 public class SpiritVariantResponse {
 
     private final Long id;
+    private final Long speciesId;
     private final String code;
     private final String name;
     private final AssetResponse image;
@@ -18,6 +19,7 @@ public class SpiritVariantResponse {
     public static SpiritVariantResponse of(SpiritVariant variant, boolean unlocked) {
         return new SpiritVariantResponse(
                 variant.getId(),
+                variant.getSpeciesId(),
                 variant.getCode(),
                 variant.getVariantName(),
                 AssetResponse.of(variant.getAssetKey(), variant.getImageUrl(), variant.getImageFileName()),
