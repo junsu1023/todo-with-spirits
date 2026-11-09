@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public class TaskService {
 
     private static final EnumSet<RepeatType> HABIT_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
+    private static final int AFFECTION_PER_COMPLETION = 1; // 할 일 완료 1회당 대표 정령 호감도 +1%
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -46,13 +47,10 @@ public class TaskService {
         Task task = Task.createSchedule(
                 user,
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getEndDateTime(),
                 Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                resolveNotificationMinutes(request.getNotificationType())
         );
         return ScheduleCreateResponse.from(taskRepository.save(task));
     }
@@ -68,14 +66,11 @@ public class TaskService {
         Task task = Task.createRoutine(
                 user,
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
                 resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
         return RoutineCreateResponse.from(taskRepository.save(task));
@@ -97,14 +92,11 @@ public class TaskService {
 
         task.updateRoutine(
                 request.getTitle(),
-                request.getCategory(),
-                request.getMemo(),
                 request.getRepeatType(),
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
                 resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
 
@@ -122,13 +114,10 @@ public class TaskService {
 
         task.updateSchedule(
                 request.getTitle(),
-                request.getMemo(),
-                request.getCategory(),
                 request.getEndDateTime(),
                 Boolean.TRUE.equals(request.getIsAllDay()),
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType()),
-                Boolean.TRUE.equals(request.getIsPublic())
+                resolveNotificationMinutes(request.getNotificationType())
         );
 
         return ScheduleCreateResponse.from(task);
@@ -308,7 +297,7 @@ public class TaskService {
     // =========================================================
     @Transactional(readOnly = true)
     public CalendarTasksResponse getCalendarTasks(
-            Long userId, LocalDate from, LocalDate to, String category, String taskType) {
+            Long userId, LocalDate from, LocalDate to, String taskType) {
 
         if (from == null || to == null) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From and to dates are required.");
@@ -321,12 +310,6 @@ public class TaskService {
 
         // 1. 일정과 루틴 데이터를 통합 조회
         List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
-
-        if (category != null && !category.isBlank() && !"ALL".equalsIgnoreCase(category)) {
-            tasks = tasks.stream()
-                    .filter(t -> t.getCategory() != null && t.getCategory().name().equalsIgnoreCase(category))
-                    .toList();
-        }
 
         List<Task> schedules = Collections.emptyList();
         List<Task> routines = Collections.emptyList();
@@ -473,6 +456,11 @@ public class TaskService {
         // 재화 지급 (taskId+completionDate 단위로 멱등. 중복 요청이면 0 반환)
         long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
         long balance = currencyService.getBalance(userId);
+
+        // 대표 정령 호감도 증가 (중복 완료 요청으로 재화가 지급되지 않은 경우는 제외). 완료 취소로 줄지 않음
+        if (earned > 0) {
+            spirit.increaseAffection(AFFECTION_PER_COMPLETION);
+        }
 
         return new TaskCompleteResponse(earned, balance);
     }

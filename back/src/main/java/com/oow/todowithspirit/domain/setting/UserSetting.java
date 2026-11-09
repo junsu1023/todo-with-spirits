@@ -30,17 +30,13 @@ public class UserSetting extends BaseTimeEntity {
     @Column(name = "dday_display_enabled", nullable = false)
     private boolean ddayDisplayEnabled;
 
-    @Column(name = "auto_backup_enabled", nullable = false)
-    private boolean autoBackupEnabled;
-
     @Builder
     public UserSetting(Long userId, Boolean darkMode, Language language,
-                        Boolean ddayDisplayEnabled, Boolean autoBackupEnabled) {
+                        Boolean ddayDisplayEnabled) {
         this.userId = userId;
         this.darkMode = darkMode != null ? darkMode : false;
         this.language = language != null ? language : Language.SYSTEM;
         this.ddayDisplayEnabled = ddayDisplayEnabled != null ? ddayDisplayEnabled : true;
-        this.autoBackupEnabled = autoBackupEnabled != null ? autoBackupEnabled : false;
     }
 
     public static UserSetting createDefault(Long userId) {

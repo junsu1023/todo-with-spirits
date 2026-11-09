@@ -9,4 +9,6 @@ import java.util.List;
 public interface SpiritVariantRepository extends JpaRepository<SpiritVariant, Long> {
 
     List<SpiritVariant> findAllByOrderBySortOrderAsc();
+
+    List<SpiritVariant> findAllBySpeciesIdOrderBySortOrderAsc(Long speciesId);
 }

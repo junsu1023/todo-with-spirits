@@ -20,6 +20,10 @@ public class Spirit {
     private static final int MIN_GROWTH_DAYS = 28;
     private static final int MAX_GROWTH_DAYS = 42;
 
+    private static final int MAX_AFFECTION = 100;
+    private static final int AFFECTION_PER_LEVEL = 20;
+    private static final int MAX_AFFECTION_LEVEL = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,6 +61,18 @@ public class Spirit {
 
     @Column(name = "variant_id")
     private Long variantId;
+
+    // 정령 종류 (spirit_species). 종류가 지정되지 않은 예전 정령은 null → 서비스에서 기본 종류로 취급
+    @Column(name = "species_id")
+    private Long speciesId;
+
+    // 호감도 (0~100%). 할 일 완료로만 오르고 줄어들지 않음
+    @Column(name = "affection", nullable = false, columnDefinition = "INT NOT NULL DEFAULT 0")
+    private int affection = 0;
+
+    // 사용자가 직접 지정하는 중요 표시
+    @Column(name = "is_important", nullable = false, columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
+    private boolean isImportant = false;
 
     @Column(name = "target_growth_days", nullable = false)
     private int targetGrowthDays = MIN_GROWTH_DAYS + (MAX_GROWTH_DAYS - MIN_GROWTH_DAYS) / 2;
@@ -99,10 +115,40 @@ public class Spirit {
         this.eggOptionId = eggOptionId;
     }
 
-    // "정령 만나기"로 뽑힌 외형으로 개체를 생성
+    // "정령 만나기"로 뽑힌 외형으로 개체를 생성 (외형이 속한 종류의 정령이 됨)
     public Spirit(User user, SpiritVariant variant) {
         this(user, variant.getImageUrl());
         this.variantId = variant.getId();
+        this.speciesId = variant.getSpeciesId();
+    }
+
+    // 종류·외형 지정 (알로 생성되는 첫 정령 등 외형 없이 만들어진 경우)
+    public void assignSpecies(Long speciesId, Long variantId) {
+        this.speciesId = speciesId;
+        if (variantId != null) {
+            this.variantId = variantId;
+        }
+    }
+
+    // 호감도 증가 (최대 100)
+    public void increaseAffection(int amount) {
+        this.affection = Math.min(MAX_AFFECTION, this.affection + amount);
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 호감도 단계 (1~5): 0~19=1, 20~39=2, 40~59=3, 60~79=4, 80~100=5
+    public int getAffectionLevel() {
+        return Math.min(MAX_AFFECTION_LEVEL, affection / AFFECTION_PER_LEVEL + 1);
+    }
+
+    public void updateImportant(boolean isImportant) {
+        this.isImportant = isImportant;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 완료 여부 (다 자람 = 성체)
+    public boolean isCompleted() {
+        return status == SpiritStatus.ADULT;
     }
 
     // 경험치 획득 (진로 판단용 축적치. 더 이상 이 값만으로 성장 단계가 오르지 않음)

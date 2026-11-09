@@ -16,8 +16,6 @@ public class ScheduleCreateResponse {
     private Long taskId;
     private String taskType;
     private String title;
-    private String memo;
-    private String category;
 
     // 일정 전용
     private Boolean isAllDay;
@@ -28,7 +26,6 @@ public class ScheduleCreateResponse {
     // 공통
     private Integer notificationMinutes;
     private LocalDateTime notificationAt;
-    private Boolean isPublic;
 
     // 성장
     private Integer growthValue;
@@ -47,15 +44,12 @@ public class ScheduleCreateResponse {
                 .taskId(task.getId())
                 .taskType(task.getTaskType().name())
                 .title(task.getTitle())
-                .memo(task.getMemo())
-                .category(task.getCategory() != null ? task.getCategory().name() : null)
                 .isAllDay(task.isAllDay())
                 .endDate(task.getEndDate())
                 .endTime(task.getEndTime())
                 .isImportant(task.isImportant())
                 .notificationMinutes(task.getNotificationMinutes())
                 .notificationAt(task.getNotificationAt())
-                .isPublic(task.isPublic())
                 .growthValue(task.getGrowthValue())
                 .growthType(task.getGrowthType().name())
                 .isCompleted(task.isCompleted())

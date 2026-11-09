@@ -107,9 +107,8 @@ public class TaskController {
             @AuthenticationPrincipal Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(required = false) String category,
             @RequestParam(required = false) String taskType) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to, category, taskType)));
+        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to, taskType)));
     }
 
     // ==============================================

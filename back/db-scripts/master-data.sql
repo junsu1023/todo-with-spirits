@@ -1,8 +1,8 @@
 -- ============================================================
---  정령 육성 시스템 마스터 데이터 시드
+--  마스터 데이터
 --  대상: spirit_action_places, spirit_place_actions, category_spirit_actions,
---        spirit_home_objects, spirit_egg_options
---  전제: ddl.sql의 3-1. 정령 육성 시스템 테이블이 이미 생성되어 있어야 함
+--        spirit_home_objects, spirit_egg_options, spirit_species, spirit_variants, decorations
+--  전제: ddl.sql 이 먼저 실행되어 모든 테이블이 생성되어 있어야 함
 --
 --  재실행 주의:
 --   - spirit_egg_options / spirit_action_places / spirit_home_objects 는 code가 UNIQUE라서
@@ -166,18 +166,30 @@ VALUES ('EGG_TUTORIAL', '맨 처음 만난 알', '튜토리얼에서 자동으�
 ON CONFLICT (code) DO NOTHING;
 
 -- ------------------------------------------------------------
+-- 6-0. 정령 종류 (spirit_species)
+-- 이름/이미지는 기획 확정 전 임시(placeholder) 콘텐츠. 첫 출시는 정령 1종
+-- ------------------------------------------------------------
+INSERT INTO spirit_species (code, species_name, description, sort_order, asset_key)
+VALUES ('BASIC', '기본 정령', '처음 만나는 정령', 0, 'spirit_species_basic')
+ON CONFLICT (code) DO NOTHING;
+
+-- ------------------------------------------------------------
 -- 6. 정령 외형 (spirit_variants)
 -- 이름/이미지는 기획 확정 전 임시(placeholder) 콘텐츠.
 -- DEFAULT 1개는 항상 해금 상태(unlock_metric=DEFAULT)이며, "정령 만나기" 풀이 비지 않도록 반드시 있어야 함.
 -- 나머지는 버릇/추억/친밀도 데이터 모델 구현 전까지는 자동 해금되지 않음(수동 시드 또는 추후 로직 필요)
 -- ------------------------------------------------------------
-INSERT INTO spirit_variants (code, variant_name, unlock_metric, unlock_threshold, weight, sort_order, asset_key)
-VALUES ('DEFAULT', '기본', 'DEFAULT', 0, 1, 0, 'spirit_variant_default'),
-       ('STARLIGHT', '별빛', 'HABIT_TYPE_COUNT', 3, 1, 1, 'spirit_variant_starlight'),
-       ('EMBER', '불씨', 'HABIT_TYPE_COUNT', 4, 1, 2, 'spirit_variant_ember'),
-       ('MOONSHADOW', '달그림자', 'MEMORY_COUNT', 5, 1, 3, 'spirit_variant_moonshadow'),
-       ('MIST', '물결', 'INTIMACY_STAGE', 2, 1, 4, 'spirit_variant_mist'),
-       ('FOREST', '숲빛', 'INTIMACY_STAGE', 3, 1, 5, 'spirit_variant_forest')
+INSERT INTO spirit_variants (code, species_id, variant_name, unlock_metric, unlock_threshold, weight, sort_order, asset_key)
+SELECT v.code, s.id, v.variant_name, v.unlock_metric, v.unlock_threshold, v.weight, v.sort_order, v.asset_key
+FROM (VALUES ('DEFAULT', '기본', 'DEFAULT', 0, 1, 0, 'spirit_variant_default'),
+             ('STARLIGHT', '별빛', 'HABIT_TYPE_COUNT', 3, 1, 1, 'spirit_variant_starlight'),
+             ('EMBER', '불씨', 'HABIT_TYPE_COUNT', 4, 1, 2, 'spirit_variant_ember'),
+             ('MOONSHADOW', '달그림자', 'MEMORY_COUNT', 5, 1, 3, 'spirit_variant_moonshadow'),
+             ('MIST', '물결', 'INTIMACY_STAGE', 2, 1, 4, 'spirit_variant_mist'),
+             ('FOREST', '숲빛', 'INTIMACY_STAGE', 3, 1, 5, 'spirit_variant_forest'))
+         AS v (code, variant_name, unlock_metric, unlock_threshold, weight, sort_order, asset_key)
+         CROSS JOIN spirit_species s
+WHERE s.code = 'BASIC'
 ON CONFLICT (code) DO NOTHING;
 
 -- ------------------------------------------------------------

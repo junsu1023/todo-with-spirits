@@ -18,11 +18,11 @@ public class SpiritController {
 
     private final SpiritService spiritService;
 
+    // 정령도감: 전체 정령 종류 + 보유 여부
     @GetMapping()
-    public ResponseEntity<ApiResponse<List<SpiritResponse>>> getMySpirits(
+    public ResponseEntity<ApiResponse<List<SpiritCollectionResponse>>> getSpiritCollection(
             @AuthenticationPrincipal Long userId) {
-        List<SpiritResponse> response = spiritService.getUserSpirits(userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(spiritService.getSpiritCollection(userId)));
     }
 
     @GetMapping("/current")
@@ -50,6 +50,16 @@ public class SpiritController {
             @Valid @RequestBody UpdateSpiritNameRequest request) {
 
         spiritService.updateSpiritName(userId, spiritId, request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PatchMapping("/{spiritId}/important")
+    public ResponseEntity<ApiResponse<Void>> updateSpiritImportant(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long spiritId,
+            @Valid @RequestBody UpdateSpiritImportantRequest request) {
+
+        spiritService.updateSpiritImportant(userId, spiritId, request);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

@@ -6,18 +6,19 @@ import com.oow.todowithspirit.domain.spirit.*;
 import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.spirit.RepresentativeSpiritResponse;
-import com.oow.todowithspirit.dto.spirit.SpiritResponse;
+import com.oow.todowithspirit.dto.spirit.SpiritCollectionResponse;
 import com.oow.todowithspirit.dto.spirit.UpdateRepresentativeSpiritRequest;
+import com.oow.todowithspirit.dto.spirit.UpdateSpiritImportantRequest;
 import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,25 +33,77 @@ public class SpiritService {
     private final UserRepository userRepository; // 유저의 대표 정령 ID를 가져오기 위함
     private final SpiritEggOptionRepository spiritEggOptionRepository;
     private final SpiritTemperamentTagRepository spiritTemperamentTagRepository;
+    private final SpiritSpeciesRepository spiritSpeciesRepository;
+    private final SpiritVariantRepository spiritVariantRepository;
 
     /**
-     * 사용자가 보유한 정령 목록 조회
-     * 대표 정령(isEquipped=true) 최우선 조회(朝會)
+     * 정령도감 조회.
+     * 전체 정령 종류를 정렬 순서대로 반환하고, 사용자가 보유한 종류는 그 정령의 호감도·중요·완료 여부를 함께 담는다.
      */
     @Transactional(readOnly = true)
-    public List<SpiritResponse> getUserSpirits(Long userId) {
-        // 1. 유저 정보 조회하여 대표 정령 ID 확보
+    public List<SpiritCollectionResponse> getSpiritCollection(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
         Long repSpiritId = user.getRepresentativeSpiritId();
 
-        // 2. 유저가 보유한 전체 정령 리스트 조회
-        List<Spirit> spirits = spiritRepository.findAllByUserIdOrderByIdDesc(userId);
+        Map<Long, Spirit> ownedBySpecies = ownedSpiritsBySpecies(userId, repSpiritId);
 
-        // 3. 대표 정령 여부를 판별하며 DTO 맵핑
-        return spirits.stream()
-                .map(spirit -> SpiritResponse.of(spirit, repSpiritId, temperamentsOf(spirit.getId())))
+        return spiritSpeciesRepository.findAllByOrderBySortOrderAsc().stream()
+                .map(species -> {
+                    Spirit spirit = ownedBySpecies.get(species.getId());
+                    return spirit == null
+                            ? SpiritCollectionResponse.notOwned(species)
+                            : SpiritCollectionResponse.owned(species, spirit, repSpiritId);
+                })
                 .toList();
+    }
+
+    /**
+     * 사용자가 보유한 정령을 종류별로 묶는다 (종류당 1마리).
+     * 종류가 지정되지 않은 예전 정령은 외형의 종류 → 기본 종류 순으로 귀속시킨다.
+     * 예전 데이터로 같은 종류의 정령이 여러 마리면 대표 정령 → 가장 먼저 만난 정령을 사용한다.
+     */
+    public Map<Long, Spirit> ownedSpiritsBySpecies(Long userId, Long representativeSpiritId) {
+        List<Spirit> spirits = spiritRepository.findAllByUserIdOrderByIdDesc(userId);
+        if (spirits.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<Long, Long> speciesByVariant = spiritVariantRepository.findAll().stream()
+                .filter(variant -> variant.getSpeciesId() != null)
+                .collect(Collectors.toMap(SpiritVariant::getId, SpiritVariant::getSpeciesId));
+        Long defaultSpeciesId = spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc()
+                .map(SpiritSpecies::getId)
+                .orElse(null);
+
+        Map<Long, Spirit> result = new HashMap<>();
+        // id 내림차순이므로 뒤에 오는(먼저 만난) 정령이 덮어쓰고, 대표 정령은 마지막에 우선 적용
+        for (Spirit spirit : spirits) {
+            Long speciesId = resolveSpeciesId(spirit, speciesByVariant, defaultSpeciesId);
+            if (speciesId != null) {
+                result.put(speciesId, spirit);
+            }
+        }
+        spirits.stream()
+                .filter(spirit -> spirit.getId().equals(representativeSpiritId))
+                .findFirst()
+                .ifPresent(rep -> {
+                    Long speciesId = resolveSpeciesId(rep, speciesByVariant, defaultSpeciesId);
+                    if (speciesId != null) {
+                        result.put(speciesId, rep);
+                    }
+                });
+        return result;
+    }
+
+    private Long resolveSpeciesId(Spirit spirit, Map<Long, Long> speciesByVariant, Long defaultSpeciesId) {
+        if (spirit.getSpeciesId() != null) {
+            return spirit.getSpeciesId();
+        }
+        if (spirit.getVariantId() != null && speciesByVariant.containsKey(spirit.getVariantId())) {
+            return speciesByVariant.get(spirit.getVariantId());
+        }
+        return defaultSpeciesId;
     }
 
     @Transactional(readOnly = true)
@@ -103,6 +156,18 @@ public class SpiritService {
         spirit.updateName(request.getSpiritName());
     }
 
+    @Transactional
+    public void updateSpiritImportant(Long userId, Long spiritId, UpdateSpiritImportantRequest request) {
+        Spirit spirit = spiritRepository.findById(spiritId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Spirit not found"));
+
+        if (!spirit.getUser().getId().equals(userId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "You do not own this spirit");
+        }
+
+        spirit.updateImportant(request.getIsImportant());
+    }
+
     /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */
     @Transactional
     public Spirit getOrCreateRepresentativeSpirit(Long userId) {
@@ -126,6 +191,16 @@ public class SpiritService {
         Spirit defaultSpirit = spiritEggOptionRepository.findFirstByIsTutorialTrueAndIsActiveTrue()
                 .map(egg -> new Spirit(user, StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL, egg.getId()))
                 .orElseGet(() -> new Spirit(user, DEFAULT_IMAGE_URL));
+
+        // 첫 정령은 기본 종류의 기본 외형으로 지정
+        spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc().ifPresent(species -> {
+            Long defaultVariantId = spiritVariantRepository.findAllBySpeciesIdOrderBySortOrderAsc(species.getId()).stream()
+                    .filter(SpiritVariant::isAlwaysUnlocked)
+                    .map(SpiritVariant::getId)
+                    .findFirst()
+                    .orElse(null);
+            defaultSpirit.assignSpecies(species.getId(), defaultVariantId);
+        });
 
         spiritRepository.save(defaultSpirit);
         assignRandomTemperaments(defaultSpirit.getId());

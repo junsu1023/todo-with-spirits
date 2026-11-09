@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface RoutineCompletionRepository extends JpaRepository<RoutineCompletion, Long> {
@@ -19,9 +18,6 @@ public interface RoutineCompletionRepository extends JpaRepository<RoutineComple
             @Param("from") LocalDate from,
             @Param("to") LocalDate to
     );
-
-    @Query("SELECT rc.task.id FROM RoutineCompletion rc WHERE rc.task.user.id = :userId AND rc.completionDate = :date")
-    Set<Long> findCompletedTaskIdsByUserIdAndDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     Optional<RoutineCompletion> findByTaskIdAndCompletionDate(Long taskId, LocalDate completionDate);
 
