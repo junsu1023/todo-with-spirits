@@ -34,7 +34,7 @@ public class TaskService {
     private final RoutineCompletionRepository routineCompletionRepository;
     private final TaskPostponementRepository taskPostponementRepository;
     private final SpiritService spiritService;
-    private final SpiritGrowthService spiritGrowthService;
+    private final SpiritActivityService spiritActivityService;
     private final CurrencyService currencyService;
 
     // =========================================================
@@ -451,7 +451,7 @@ public class TaskService {
         // 대표 정령 경험치 증가 (없으면 자동 생성)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
         spirit.addExp(task.getGrowthValue(), task.getGrowthType());
-        spiritGrowthService.recordActivity(spirit, completionDate);
+        spiritActivityService.recordActivity(spirit, completionDate);
 
         // 재화 지급 (taskId+completionDate 단위로 멱등. 중복 요청이면 0 반환)
         long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
