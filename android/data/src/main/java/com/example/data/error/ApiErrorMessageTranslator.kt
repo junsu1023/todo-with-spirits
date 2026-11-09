@@ -49,12 +49,18 @@ object ApiErrorMessageTranslator {
         "Task is not a routine" to "일정id로 루틴 생성 시도 - 개발용",
         "isAllDay is required" to "isAllDay는 필수 항목입니다.",
         "endDateTime is required" to "종료일자는 필수 항목입니다.",
-        "Task is not a schedule" to "루틴id로 일정 생성 시도 - 개발용"
+        "Task is not a schedule" to "루틴id로 일정 생성 시도 - 개발용",
+        "Spirit name is required" to "정령 이름을 입력하세요.",
+        "You do not own this spirit" to "보유하지 않은 정령입니다.",
+        "Decoration not found" to "장식을 찾을 수 없습니다.",
+        "You do not own this decoration" to "보유하지 않았거나 설치되지 않은 장식입니다.",
+        "Already installed" to "이미 설치된 장식입니다."
     )
 
     // 뒤에 가변 값(날짜 등)이 붙어 완전 일치가 안 되는 메시지를 위한 접두사 매핑.
     private val prefixTranslations: List<Pair<String, String>> = listOf(
         "Invalid routine date." to "유효하지 않은 날짜입니다.",
+        "Invalid schedule date." to "유효하지 않은 날짜입니다.",
         "Routine already completed on" to "이미 완료된 루틴입니다."
     )
 

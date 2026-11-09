@@ -5,8 +5,5 @@ data class NewTodo(
     val isAllDay: Boolean,
     val endDateTime: String,
     val isImportant: Boolean = false,
-    val notificationType: AlarmOption = AlarmOption.NONE,
-    val category: String,
-    val isPublic: Boolean = false,
-    val memo: String? = null
+    val notificationType: AlarmOption = AlarmOption.NONE
 )

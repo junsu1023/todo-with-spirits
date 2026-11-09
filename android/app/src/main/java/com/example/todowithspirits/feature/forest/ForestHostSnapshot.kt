@@ -14,7 +14,8 @@ internal data class ForestHostItem(
 
 /** Validation is atomic: never truncate a title or silently drop an occurrence. */
 internal object ForestHostSnapshot {
-    private val categories = setOf("NONE", "WORK_STUDY", "HEALTH", "LIFE", "RELATIONSHIP", "GROWTH", "HOBBY", "REST", "FINANCE")
+    // 서버가 일정 분야(category)를 더 이상 내려주지 않아, 숲에는 '미정'으로 전달한다.
+    private const val CATEGORY_NONE = "NONE"
 
     fun items(date: LocalDate, source: List<TaskSummary>): List<ForestHostItem> {
         require(source.size <= 50) { "오늘 일정이 50개를 넘어 숲에 연결하지 못했어요. 일정은 그대로 보관되어 있어요." }
@@ -22,11 +23,10 @@ internal object ForestHostSnapshot {
         return source.map { row ->
             require(row.occurrenceDate == date) { "오늘 날짜와 다른 일정이 포함되어 있어요." }
             require(row.taskType == "SCHEDULE" || row.taskType == "ROUTINE") { "지원하지 않는 일정 종류가 있어요." }
-            require(row.category in categories) { "확인할 수 없는 일정 분야가 있어요." }
             require(row.title.isNotBlank() && row.title.length <= 255 && row.title.none(Char::isISOControl)) { "일정 제목을 그대로 연결할 수 없어요. 제목을 확인해 주세요." }
             val id = "${row.taskType.lowercase(Locale.ROOT)}:${row.taskId}:$date"
             require(ids.add(id)) { "같은 일정이 중복해서 전달되었어요." }
-            ForestHostItem(id, row.title, row.category, row.taskType == "ROUTINE", row.isCompleted)
+            ForestHostItem(id, row.title, CATEGORY_NONE, row.taskType == "ROUTINE", row.isCompleted)
         }
     }
 

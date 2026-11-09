@@ -38,9 +38,10 @@ class SearchViewModelTest {
     }
 
     private fun task(id: Long, title: String, date: LocalDate) = TaskSummary(
-        category = "NONE", completedAt = null, createdAt = date.atStartOfDay(), endDate = date, endTime = null,
+        completedAt = null, createdAt = date.atStartOfDay(), endDate = date, endTime = null, excludeHoliday = false,
         growthType = null, growthValue = 0, isAllDay = true, isCompleted = false, isImportant = false,
-        isPublic = false, memo = null, notificationAt = null, notificationMinutes = null, occurrenceDate = date,
+        notificationAt = null, notificationMinutes = null, occurrenceDate = date,
+        repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
         taskId = id, taskType = "SCHEDULE", title = title, updatedAt = date.atStartOfDay()
     )
 

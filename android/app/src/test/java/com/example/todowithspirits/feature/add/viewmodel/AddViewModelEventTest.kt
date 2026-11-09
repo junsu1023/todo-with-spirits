@@ -46,10 +46,10 @@ class AddViewModelEventTest {
     }
 
     private fun task(id: Long, type: String = "SCHEDULE") = Task(
-        category = "GROWTH", completedAt = null, createdAt = date.atStartOfDay(), endDate = date,
-        endTime = LocalTime.of(9, 30), growthType = null, growthValue = 0, isAllDay = false, isCompleted = false,
-        isImportant = true, isPublic = true, memo = "메모", notificationMinutes = 30, repeatDaysOfMonth = emptyList(),
-        repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null, startDate = null, startTime = null,
+        completedAt = null, createdAt = date.atStartOfDay(), endDate = date, endTime = LocalTime.of(9, 30),
+        excludeHoliday = false, growthType = null, growthValue = 0, isAllDay = false, isCompleted = false,
+        isImportant = true, notificationAt = null, notificationMinutes = 30, occurrenceDate = null,
+        repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
         taskId = id, taskType = type, title = "성과 보고서 제출 마감", updatedAt = date.atStartOfDay()
     )
 
@@ -112,10 +112,8 @@ class AddViewModelEventTest {
         val (taskId, todo) = repository.lastUpdatedTodo!!
         assertEquals(7L, taskId)
         assertEquals("보고서 수정", todo.title)
-        // 카테고리는 화면에서 빠져 NONE으로 보내고, 공개 여부·메모는 불러온 그대로 보낸다.
-        assertEquals("NONE", todo.category)
-        assertTrue(todo.isPublic)
-        assertEquals("메모", todo.memo)
+        assertTrue(todo.isImportant)
+        assertEquals(AlarmOption.THIRTY_MINUTES, todo.notificationType)
     }
 
     @Test fun editingRoutineNavigatesBackWithoutLoading() = runTest(testDispatcher) {

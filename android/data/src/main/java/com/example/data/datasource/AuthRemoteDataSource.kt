@@ -13,6 +13,7 @@ import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
+import com.example.data.response.SubscriptionResponse
 import com.example.data.response.UserProfileResponse
 import javax.inject.Inject
 
@@ -50,6 +51,8 @@ class AuthRemoteDataSource @Inject constructor(
 
     suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfileResponse> =
         apiCall { authApi.updateUserProfile(UpdateUserProfileRequest(nickname, representativeSpiritId)) }
+
+    suspend fun getSubscription(): Result<SubscriptionResponse> = apiCall { authApi.getSubscription() }
 
     suspend fun resendEmailVerification(): Result<Unit> = apiCallUnit { authApi.resendEmailVerification() }
 

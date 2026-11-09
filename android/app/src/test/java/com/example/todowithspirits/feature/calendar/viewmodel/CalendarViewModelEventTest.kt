@@ -47,9 +47,10 @@ class CalendarViewModelEventTest {
     }
 
     private fun task(id: Long, title: String, completed: Boolean = false, important: Boolean = false) = TaskSummary(
-        category = "NONE", completedAt = null, createdAt = today.atStartOfDay(), endDate = today, endTime = null,
+        completedAt = null, createdAt = today.atStartOfDay(), endDate = today, endTime = null, excludeHoliday = false,
         growthType = null, growthValue = 0, isAllDay = true, isCompleted = completed, isImportant = important,
-        isPublic = false, memo = null, notificationAt = null, notificationMinutes = null, occurrenceDate = today,
+        notificationAt = null, notificationMinutes = null, occurrenceDate = today,
+        repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
         taskId = id, taskType = "SCHEDULE", title = title, updatedAt = today.atStartOfDay()
     )
 

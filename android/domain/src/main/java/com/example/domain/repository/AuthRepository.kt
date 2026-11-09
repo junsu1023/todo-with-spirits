@@ -6,6 +6,7 @@ import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
+import com.example.domain.model.Subscription
 import com.example.domain.model.UserProfile
 
 interface AuthRepository {
@@ -27,6 +28,8 @@ interface AuthRepository {
     suspend fun getUserProfile(): Result<UserProfile>
 
     suspend fun updateUserProfile(nickname: String? = null, representativeSpiritId: Long? = null): Result<UserProfile>
+
+    suspend fun getSubscription(): Result<Subscription>
 
     suspend fun resendEmailVerification(): Result<Unit>
 
