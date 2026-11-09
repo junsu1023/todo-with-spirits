@@ -47,9 +47,6 @@ import com.example.todowithspirits.util.ObserveAsEffect
 private val HomeHorizontalMargin = 18.dp
 private val HomeSectionGap = 10.dp
 
-// 첫 측정 전 기본값 (피그마 접힌 카드 높이)
-private val DefaultTodayCardHeight = 94.dp
-
 @Composable
 fun HomeRoute(
     navigateToAlarm: () -> Unit,
@@ -85,7 +82,7 @@ fun HomeScreen(
     isLoading: Boolean,
     onEvent: (HomeEvent) -> Unit
 ) {
-    var todayCardCollapsedHeight by remember { mutableStateOf(DefaultTodayCardHeight) }
+    var todayCardCollapsedHeight by remember { mutableStateOf(94.dp) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(

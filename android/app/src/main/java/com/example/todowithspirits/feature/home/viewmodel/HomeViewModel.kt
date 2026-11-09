@@ -2,36 +2,53 @@ package com.example.todowithspirits.feature.home.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.model.TaskSummary
+import com.example.domain.usecase.CancelTaskCompletionUseCase
+import com.example.domain.usecase.CompleteTaskUseCase
+import com.example.domain.usecase.DeleteTasksUseCase
+import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.todowithspirits.feature.home.state.HomeEffect
 import com.example.todowithspirits.feature.home.state.HomeEvent
 import com.example.todowithspirits.feature.home.state.HomeTodayTask
 import com.example.todowithspirits.feature.home.state.HomeUiState
 import com.example.todowithspirits.feature.home.state.SpiritInfo
+import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : BaseViewModel() {
-    private val _uiState = MutableStateFlow(
-        HomeUiState(
-            spiritInfo = SpiritInfo(name = "루미"),
-            todayTasks = TempTodayTasks
-        )
-    )
+class HomeViewModel @Inject constructor(
+    private val getTaskCalendarUseCase: GetTaskCalendarUseCase,
+    private val completeTaskUseCase: CompleteTaskUseCase,
+    private val cancelTaskCompletionUseCase: CancelTaskCompletionUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
+    private val taskRefreshBus: TaskRefreshBus
+) : BaseViewModel() {
+    private val _uiState = MutableStateFlow(HomeUiState(spiritInfo = SpiritInfo(name = "루미")))
     val uiState: StateFlow<HomeUiState> get() = _uiState.asStateFlow()
 
     private val _effect = Channel<HomeEffect>(Channel.BUFFERED)
     val effect: Flow<HomeEffect> = _effect.receiveAsFlow()
+
+    init {
+        loadTodayTasks()
+
+        // 다른 화면(추가/수정, 캘린더)에서 일정이 바뀌면 오늘 일정을 다시 불러온다.
+        taskRefreshBus.events
+            .onEach { loadTodayTasks() }
+            .launchIn(viewModelScope)
+    }
 
     fun onEvent(event: HomeEvent) {
         when (event) {
@@ -61,14 +78,42 @@ class HomeViewModel @Inject constructor() : BaseViewModel() {
         _uiState.update { it.copy(isTodayTasksExpanded = !it.isTodayTasksExpanded) }
     }
 
-    // 임시 데이터라 서버 호출 없이 상태만 바꾼다.
-    private fun changeTodayTaskCompletion(id: Long, isCompleted: Boolean) {
-        _uiState.update { state ->
-            state.copy(
-                todayTasks = state.todayTasks.map { task ->
-                    if (task.id == id) task.copy(isCompleted = isCompleted) else task
+    // 일정 및 루틴 목록 조회 API를 오늘 하루 범위(from = to = 오늘)로 호출한다.
+    private fun loadTodayTasks() {
+        viewModelScope.launchWithLoading {
+            val today = LocalDate.now()
+
+            getTaskCalendarUseCase(today, today)
+                .onSuccess { calendar ->
+                    _uiState.update { state ->
+                        state.copy(
+                            selectedDate = today,
+                            todayTasks = calendar.items.map { it.toHomeTodayTask() }
+                        )
+                    }
                 }
-            )
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "오늘 일정을 불러오지 못했습니다")
+                }
+        }
+    }
+
+    private fun changeTodayTaskCompletion(id: Long, isCompleted: Boolean) {
+        val date = _uiState.value.todayTasks.find { it.id == id }?.date ?: return
+
+        viewModelScope.launchWithLoading {
+            val result = if (isCompleted) {
+                completeTaskUseCase(id, date).map { }
+            } else {
+                cancelTaskCompletionUseCase(id, date)
+            }
+
+            result
+                .onSuccess { taskRefreshBus.notifyTaskChanged() }
+                .onFailure {
+                    val fallback = if (isCompleted) "완료 처리에 실패했습니다" else "완료 취소에 실패했습니다"
+                    emitErrorMsg(it.localizedMessage ?: fallback)
+                }
         }
     }
 
@@ -86,13 +131,15 @@ class HomeViewModel @Inject constructor() : BaseViewModel() {
         _uiState.update { it.copy(selectedTaskId = null) }
     }
 
-    // 임시 데이터라 서버 호출 없이 목록에서만 뺀다. (실제 데이터 연결 시 DeleteTasksUseCase)
     private fun deleteTodayTask(id: Long) {
-        _uiState.update { state ->
-            state.copy(
-                todayTasks = state.todayTasks.filterNot { it.id == id },
-                selectedTaskId = null
-            )
+        closeTaskDetail()
+
+        viewModelScope.launchWithLoading {
+            deleteTasksUseCase(listOf(id))
+                .onSuccess { taskRefreshBus.notifyTaskChanged() }
+                .onFailure {
+                    emitErrorMsg(it.localizedMessage ?: "삭제하지 못했습니다")
+                }
         }
     }
 
@@ -101,12 +148,12 @@ class HomeViewModel @Inject constructor() : BaseViewModel() {
     }
 }
 
-// TODO: 임시 데이터 - 실제 데이터 연결 시 GetTaskCalendarUseCase로 오늘 일정/루틴을 불러와 HomeTodayTask로 매핑해 교체
-private val TempTodayTasks = listOf(
-    HomeTodayTask(id = 1, title = "아침 스트레칭 10분", isCompleted = true, isImportant = false, date = LocalDate.now(), time = LocalTime.of(7, 30)),
-    HomeTodayTask(id = 2, title = "팀 회의 자료 정리", isCompleted = false, isImportant = true, date = LocalDate.now(), time = LocalTime.of(10, 0)),
-    HomeTodayTask(id = 3, title = "물 2L 마시기", isCompleted = true, isImportant = false, date = LocalDate.now()),
-    HomeTodayTask(id = 4, title = "병원 예약 확인", isCompleted = false, isImportant = true, date = LocalDate.now(), time = LocalTime.of(14, 20)),
-    HomeTodayTask(id = 5, title = "책 30쪽 읽기", isCompleted = false, isImportant = false, date = LocalDate.now()),
-    HomeTodayTask(id = 6, title = "저녁 장보기", isCompleted = false, isImportant = true, date = LocalDate.now(), time = LocalTime.of(17, 50))
+// 종일 일정과 루틴은 시간 없이 표시한다.
+private fun TaskSummary.toHomeTodayTask(): HomeTodayTask = HomeTodayTask(
+    id = taskId,
+    title = title,
+    isCompleted = isCompleted,
+    isImportant = isImportant,
+    date = occurrenceDate,
+    time = endTime.takeUnless { isAllDay }
 )
