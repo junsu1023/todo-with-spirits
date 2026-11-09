@@ -37,6 +37,7 @@ export interface CalendarItem {
   repeatDaysOfWeek?: string[]
   repeatDaysOfMonth?: number[]
   excludeHoliday?: boolean
+  notificationMinutes?: number | null
   completedAt?: string | null
   createdAt?: string
   updatedAt?: string
