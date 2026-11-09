@@ -282,7 +282,7 @@ CREATE TABLE spirit_species
     sort_order      INT          NOT NULL DEFAULT 0,
     asset_key       VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
     image_url       TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
-    image_file_name VARCHAR(150)
+    image_file_name VARCHAR(150) NOT NULL  -- 이미지 파일명 (asset_key 기반)
 );
 
 -- 정령 외형(스킨) 마스터. 각 외형은 하나의 정령 종류에 속함

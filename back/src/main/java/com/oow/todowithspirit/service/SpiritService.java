@@ -38,7 +38,7 @@ public class SpiritService {
 
     /**
      * 정령도감 조회.
-     * 전체 정령 종류를 정렬 순서대로 반환하고, 사용자가 보유한 종류는 그 정령의 호감도·중요·완료 여부를 함께 담는다.
+     * 전체 정령 종류를 정렬 순서대로 반환하고, 사용자가 보유한 종류는 그 정령의 호감도·중요 여부를 함께 담는다.
      */
     @Transactional(readOnly = true)
     public List<SpiritCollectionResponse> getSpiritCollection(Long userId) {

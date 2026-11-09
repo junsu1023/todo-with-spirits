@@ -169,8 +169,8 @@ ON CONFLICT (code) DO NOTHING;
 -- 6-0. 정령 종류 (spirit_species)
 -- 이름/이미지는 기획 확정 전 임시(placeholder) 콘텐츠. 첫 출시는 정령 1종
 -- ------------------------------------------------------------
-INSERT INTO spirit_species (code, species_name, description, sort_order, asset_key)
-VALUES ('BASIC', '기본 정령', '처음 만나는 정령', 0, 'spirit_species_basic')
+INSERT INTO spirit_species (code, species_name, description, sort_order, asset_key, image_file_name)
+VALUES ('BASIC', '기본 정령', '처음 만나는 정령', 0, 'spirit_species_basic', 'spirit_species_basic.png')
 ON CONFLICT (code) DO NOTHING;
 
 -- ------------------------------------------------------------
