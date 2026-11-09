@@ -20,11 +20,7 @@ data class AddUiState(
     val repeatOption: RepeatOption = RepeatOption.NONE,
     val selectedWeekDays: Set<DayOfWeek> = emptySet(),
     val selectedMonthDays: Set<Int> = emptySet(),
-    val alarmOption: AlarmOption = AlarmOption.NONE,
-
-    // 화면에서 편집하지 않지만, 수정할 때 기존 값이 지워지지 않도록 불러온 값을 그대로 보낸다.
-    val isPublic: Boolean = false,
-    val memo: String = ""
+    val alarmOption: AlarmOption = AlarmOption.NONE
 ) {
     val isEditMode: Boolean get() = editingTaskId != null
     val canConfirm: Boolean get() = title.isNotBlank()
