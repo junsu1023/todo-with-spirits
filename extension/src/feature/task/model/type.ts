@@ -55,3 +55,9 @@ export interface UpdateRoutineRequest {
   excludeHoliday: boolean
   notificationType: NotificationType
 }
+
+// 완료 시 지급된 재화. 이미 지급된 적 있으면 currencyEarned = 0 (android TaskCompletionResponse)
+export interface TaskCompletionResponse {
+  currencyEarned: number
+  balance: number
+}

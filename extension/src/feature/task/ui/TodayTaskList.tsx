@@ -70,7 +70,8 @@ export function TodayTaskList({ dateStr }: TodayTaskListProps) {
     queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
 
   const { mutate: toggleComplete } = useMutation({
-    mutationFn: (item: CalendarItem) =>
+    // 완료/해제 응답 타입이 달라서 공통 타입으로 맞춘다 (응답 값은 쓰지 않음)
+    mutationFn: (item: CalendarItem): Promise<ApiResponse<unknown>> =>
       item.isCompleted
         ? uncompleteTask({ taskId: item.taskId, date: dateStr })
         : completeTask({ taskId: item.taskId, date: dateStr }),
