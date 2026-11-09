@@ -91,7 +91,8 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 		mutate({
 			title: values.title,
 			isAllDay: values.isAllDay,
-			startDatetime: `${resolvedDate}T00:00:00`,
+			// 시작일시는 API에서 제거됨 (endDateTime 날짜로 저장)
+			// startDatetime: `${resolvedDate}T00:00:00`,
 			endDateTime,
 			isImportant: values.isImportant,
 		})

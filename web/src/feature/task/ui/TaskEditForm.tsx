@@ -1,31 +1,35 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import type { CalendarItem, Category } from '@/entity/task/model/type'
+import type { CalendarItem } from '@/entity/task/model/type'
 import { updateRoutine, updateSchedule } from '@/feature/task/api/mutate'
 import type { DayOfWeek } from '@/feature/task/model/type'
-import { DropdownSelect } from '@/shared/ui/dropdown-select'
+
+// 카테고리·공개 상태 선택이 빠지면서 사용 안 함
+// import { DropdownSelect } from '@/shared/ui/dropdown-select'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CATEGORY_OPTIONS: { label: string; value: Category }[] = [
-	{ label: '없음', value: 'NONE' },
-	{ label: '업무/커리어', value: 'WORK' },
-	{ label: '인간관계/약속', value: 'RELATIONSHIP' },
-	{ label: '자기계발', value: 'GROWTH' },
-	{ label: '건강', value: 'HEALTH' },
-	{ label: '취미', value: 'HOBBY' },
-	{ label: '금융', value: 'FINANCE' },
-	{ label: '기타', value: 'ETC' },
-]
-
-const CATEGORY_LABELS = CATEGORY_OPTIONS.map((o) => o.label)
-const labelToCategory = (label: string): Category =>
-	CATEGORY_OPTIONS.find((o) => o.label === label)?.value ?? 'NONE'
-const categoryToLabel = (cat: Category): string =>
-	CATEGORY_OPTIONS.find((o) => o.value === cat)?.label ?? '없음'
-
-const PUBLIC_OPTIONS = ['비공개', '공개']
+// 카테고리·공개 상태·메모는 할 일 API에서 제거됨 (entity/task/model/type.ts 참고)
+// todo: 백엔드에서 다시 제공하면 주석 해제
+// const CATEGORY_OPTIONS: { label: string; value: Category }[] = [
+// 	{ label: '없음', value: 'NONE' },
+// 	{ label: '업무/커리어', value: 'WORK' },
+// 	{ label: '인간관계/약속', value: 'RELATIONSHIP' },
+// 	{ label: '자기계발', value: 'GROWTH' },
+// 	{ label: '건강', value: 'HEALTH' },
+// 	{ label: '취미', value: 'HOBBY' },
+// 	{ label: '금융', value: 'FINANCE' },
+// 	{ label: '기타', value: 'ETC' },
+// ]
+//
+// const CATEGORY_LABELS = CATEGORY_OPTIONS.map((o) => o.label)
+// const labelToCategory = (label: string): Category =>
+// 	CATEGORY_OPTIONS.find((o) => o.label === label)?.value ?? 'NONE'
+// const categoryToLabel = (cat: Category): string =>
+// 	CATEGORY_OPTIONS.find((o) => o.value === cat)?.label ?? '없음'
+//
+// const PUBLIC_OPTIONS = ['비공개', '공개']
 
 const DAY_OPTIONS: { label: string; value: DayOfWeek }[] = [
 	{ label: '일', value: 'SUNDAY' },
@@ -145,9 +149,10 @@ export function TaskEditForm({
 
 	// common
 	const [title, setTitle] = useState(item.title)
-	const [category, setCategory] = useState<Category>(item.category ?? 'NONE')
-	const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
-	const [memo, setMemo] = useState(item.memo ?? '')
+	// 카테고리·공개 상태·메모는 API에서 제거됨
+	// const [category, setCategory] = useState<Category>(item.category ?? 'NONE')
+	// const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
+	// const [memo, setMemo] = useState(item.memo ?? '')
 
 	// schedule only
 	const [isImportant, setIsImportant] = useState(item.isImportant)
@@ -218,9 +223,9 @@ export function TaskEditForm({
 				...(repeatType === 'WEEKLY' && { repeatDaysOfWeek }),
 				...(repeatType === 'MONTHLY' && { repeatDaysOfMonth }),
 				excludeHoliday: excludeHolidays,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
+				// category,
+				// isPublic: isPublic === '공개',
+				// memo: memo.trim() || undefined,
 			})
 		} else {
 			const endDateTime = timeEnabled
@@ -232,9 +237,9 @@ export function TaskEditForm({
 				endDateTime,
 				isAllDay: !timeEnabled,
 				isImportant,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
+				// category,
+				// isPublic: isPublic === '공개',
+				// memo: memo.trim() || undefined,
 			})
 		}
 	}
@@ -333,8 +338,8 @@ export function TaskEditForm({
 							</div>
 						)}
 
-						{/* 공휴일 제외 */}
-						<div className="flex items-center gap-2 border-b border-gray-100 py-3">
+						{/* 공휴일 제외 (카테고리·공개 상태가 빠지면서 마지막 행이 되어 아래 구분선 제거) */}
+						<div className="flex items-center gap-2 py-3">
 							<Checkbox
 								checked={excludeHolidays}
 								onChange={() => setExcludeHolidays((v) => !v)}
@@ -342,6 +347,7 @@ export function TaskEditForm({
 							<span className="text-sm text-gray-500">공휴일 제외</span>
 						</div>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_LABELS}
@@ -357,6 +363,7 @@ export function TaskEditForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				) : (
 					<>
@@ -376,7 +383,8 @@ export function TaskEditForm({
 							/>
 						</FormRow>
 
-						<FormRow label="시간">
+						{/* 카테고리·공개 상태가 빠지면서 마지막 행 */}
+						<FormRow label="시간" last>
 							<div className="flex items-center gap-3">
 								{timeEnabled && (
 									<input
@@ -393,6 +401,7 @@ export function TaskEditForm({
 							</div>
 						</FormRow>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_LABELS}
@@ -408,11 +417,12 @@ export function TaskEditForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				)}
 			</div>
 
-			{/* 메모 */}
+			{/* 메모는 API에서 제거됨
 			<textarea
 				value={memo}
 				onChange={(e) => setMemo(e.target.value)}
@@ -420,6 +430,7 @@ export function TaskEditForm({
 				rows={3}
 				className="resize-none rounded-xl bg-gray-50 p-3 text-sm text-gray-700 outline-none placeholder:text-gray-300 focus:ring-1 focus:ring-[#B286FD]"
 			/>
+			*/}
 
 			{/* 버튼 */}
 			<div className="flex gap-2">

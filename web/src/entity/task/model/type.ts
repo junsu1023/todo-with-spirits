@@ -2,6 +2,7 @@ export type TaskType = 'SCHEDULE' | 'HABIT' | 'ROUTINE'
 
 export type RepeatType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
 
+// 기록(Record) API에서 사용. 할 일 API에서는 카테고리가 제거됨
 export type Category =
 	| 'FINANCE'
 	| 'GROWTH'
@@ -12,18 +13,20 @@ export type Category =
 	| 'ETC'
 	| 'NONE'
 
+// 카테고리·공개 상태·메모·시작일시는 할 일 API 요청/응답에서 제거됨 (back DTO, android b143473 기준)
+// todo: 백엔드에서 다시 제공하면 주석 해제
 export interface TaskItem {
 	taskId: number
 	taskType: TaskType
 	title: string
-	category: Category | null
-	memo: string | null
+	// category: Category | null
+	// memo: string | null
 	isAllDay: boolean
 	isCompleted: boolean
 	isImportant: boolean
-	isPublic: boolean
-	startDate?: string
-	startTime?: string
+	// isPublic: boolean
+	// startDate?: string
+	// startTime?: string
 	endDate?: string
 	endTime?: string
 	repeatType?: RepeatType
@@ -51,12 +54,12 @@ export interface CalendarItem {
 	taskId: number
 	taskType: TaskType
 	title: string
-	category: Category | null
-	memo: string | null
+	// category: Category | null
+	// memo: string | null
 	isAllDay?: boolean
 	isCompleted: boolean
 	isImportant: boolean
-	isPublic: boolean
+	// isPublic: boolean
 	occurrenceDate: string
 	endDate?: string | null
 	endTime?: string | null

@@ -16,9 +16,10 @@ export const updateScheduleSchema = z.object({
 	isAllDay: z.boolean(),
 	endTime: z.string().optional(),
 	isImportant: z.boolean().optional(),
-	category: z.string().optional(),
-	isPublic: z.boolean().optional(),
-	memo: z.string().max(2000).optional(),
+	// 카테고리·공개 상태·메모는 API에서 제거됨
+	// category: z.string().optional(),
+	// isPublic: z.boolean().optional(),
+	// memo: z.string().max(2000).optional(),
 })
 
 export type UpdateScheduleFormValues = z.infer<typeof updateScheduleSchema>

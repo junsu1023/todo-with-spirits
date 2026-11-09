@@ -8,6 +8,7 @@ import type {
 	PostponeTaskRequest,
 	PostponeTaskResponse,
 	RoutineDetail,
+	TaskCompletionResponse,
 	UpdateRoutineRequest,
 	UpdateScheduleRequest,
 } from '../model/type'
@@ -43,7 +44,7 @@ export const completeTask = ({
 		.post(`api/task/${taskId}/complete`, {
 			searchParams: date ? { date } : {},
 		})
-		.json<ApiResponse<null>>()
+		.json<ApiResponse<TaskCompletionResponse>>()
 
 export const uncompleteTask = ({
 	taskId,

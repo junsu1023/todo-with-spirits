@@ -17,7 +17,8 @@ export const routineSchema = z
 		repeatDaysOfWeek: z.array(z.enum(DAY_OF_WEEK_VALUES)),
 		repeatDaysOfMonth: z.array(z.number().int().min(1).max(31)),
 		repeatEndDate: z.string().optional(),
-		memo: z.string().max(2000).optional(),
+		// 메모는 API에서 제거됨
+		// memo: z.string().max(2000).optional(),
 	})
 	.superRefine((data, ctx) => {
 		if (data.repeatType === 'WEEKLY' && data.repeatDaysOfWeek.length === 0) {
@@ -45,10 +46,11 @@ export const updateRoutineSchema = z
 		repeatDaysOfWeek: z.array(z.enum(DAY_OF_WEEK_VALUES)),
 		repeatDaysOfMonth: z.array(z.number().int().min(1).max(31)),
 		repeatEndDate: z.string().optional(),
-		category: z.string().optional(),
-		isPublic: z.boolean().optional(),
+		// 카테고리·공개 상태·메모는 API에서 제거됨
+		// category: z.string().optional(),
+		// isPublic: z.boolean().optional(),
 		excludeHoliday: z.boolean().optional(),
-		memo: z.string().max(2000).optional(),
+		// memo: z.string().max(2000).optional(),
 	})
 	.superRefine((data, ctx) => {
 		if (data.repeatType === 'WEEKLY' && data.repeatDaysOfWeek.length === 0) {
