@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { useState } from 'react'
 import type { CalendarItem } from '@/entity/task/model/type'
 import { updateRoutine, updateSchedule } from '@/feature/task/api/mutate'
+import { toNotificationType } from '@/feature/task/model/notification'
 import type { DayOfWeek } from '@/feature/task/model/type'
 
 // 카테고리·공개 상태 선택이 빠지면서 사용 안 함
@@ -168,9 +169,16 @@ export function TaskEditForm({
 			? item.repeatType
 			: 'DAILY',
 	)
-	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>([])
-	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>([])
-	const [excludeHolidays, setExcludeHolidays] = useState(false)
+	// 기존 반복 요일·날짜·공휴일 제외를 채워서 연다 (비어 있으면 매주/매월 루틴은 저장이 막힘)
+	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>(
+		(item.repeatDaysOfWeek as DayOfWeek[] | undefined) ?? [],
+	)
+	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>(
+		item.repeatDaysOfMonth ?? [],
+	)
+	const [excludeHolidays, setExcludeHolidays] = useState(
+		item.excludeHoliday ?? false,
+	)
 
 	const invalidate = () => {
 		queryClient.invalidateQueries({
@@ -223,6 +231,10 @@ export function TaskEditForm({
 				...(repeatType === 'WEEKLY' && { repeatDaysOfWeek }),
 				...(repeatType === 'MONTHLY' && { repeatDaysOfMonth }),
 				excludeHoliday: excludeHolidays,
+				// 편집 화면에 없는 값은 기존 값을 그대로 보낸다 (안 보내면 서버에서 지워짐)
+				repeatEndDate: item.repeatEndDate ?? undefined,
+				// 알림: 웹은 미적용, 기존 값 유지용 (model/notification.ts 참고)
+				notificationType: toNotificationType(item.notificationMinutes),
 				// category,
 				// isPublic: isPublic === '공개',
 				// memo: memo.trim() || undefined,
@@ -237,6 +249,8 @@ export function TaskEditForm({
 				endDateTime,
 				isAllDay: !timeEnabled,
 				isImportant,
+				// 알림: 웹은 미적용, 기존 값 유지용 (model/notification.ts 참고)
+				notificationType: toNotificationType(item.notificationMinutes),
 				// category,
 				// isPublic: isPublic === '공개',
 				// memo: memo.trim() || undefined,

@@ -13,6 +13,7 @@ import {
 	uncompleteTask,
 	updateSchedule,
 } from '../api/mutate'
+import { toNotificationType } from '../model/notification'
 import { getPostponeErrorMessage } from '../model/postponeErrorMessage'
 import { TaskEditForm } from './TaskEditForm'
 import { TaskInputDock } from './TaskInputDock'
@@ -128,6 +129,8 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 			endDateTime,
 			isAllDay: todo.isAllDay ?? true,
 			isImportant: !todo.isImportant,
+			// 알림: 웹은 미적용, 기존 값 유지용 (model/notification.ts 참고)
+			notificationType: toNotificationType(todo.notificationMinutes),
 		})
 	}
 

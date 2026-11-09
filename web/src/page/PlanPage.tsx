@@ -26,6 +26,7 @@ import {
 	updateRoutine,
 	updateSchedule,
 } from '@/feature/task/api/mutate'
+import { toNotificationType } from '@/feature/task/model/notification'
 import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
 import type {
 	DayOfWeek,
@@ -676,6 +677,14 @@ export function PlanPage() {
 			return
 		}
 
+		// PlanItem에 없는 값(알림, 반복 종료일)은 조회 원본에서 가져와 그대로 보낸다 (안 보내면 서버에서 지워짐)
+		const original =
+			dayData?.result === 'success'
+				? dayData.detail.items.find((i) => i.taskId === updated.id)
+				: undefined
+		// 알림: 웹은 미적용, 기존 값 유지용 (model/notification.ts 참고)
+		const notificationType = toNotificationType(original?.notificationMinutes)
+
 		if (updated.type === 'todo' && updated.date) {
 			const endDateTime = updated.time
 				? `${updated.date}T${updated.time}`
@@ -686,6 +695,7 @@ export function PlanPage() {
 				endDateTime,
 				isAllDay: !updated.time,
 				isImportant: updated.starred,
+				notificationType,
 				// category: updated.category
 				// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
 				// 	: 'NONE',
@@ -711,6 +721,8 @@ export function PlanPage() {
 				// 	: 'NONE',
 				// isPublic: updated.isPublic ?? false,
 				excludeHoliday: updated.excludeHolidays ?? false,
+				repeatEndDate: original?.repeatEndDate ?? undefined,
+				notificationType,
 				// memo: updated.memo,
 			})
 			return
