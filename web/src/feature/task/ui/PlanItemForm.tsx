@@ -275,7 +275,10 @@ export function PlanItemForm({
 						key={t}
 						type="button"
 						onClick={() => setType(t)}
-						className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+						// 수정 시에는 타입을 바꿀 수 없다 (할 일 ↔ 루틴 변환 API 없음, 다른 타입 수정 API는 서버가 거부)
+						// todo: 타입 변경이 필요하면 삭제 후 새로 등록하는 흐름 검토
+						disabled={!isCreate && t !== type}
+						className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
 							type === t
 								? 'border-[#B286FD] text-[#B286FD]'
 								: 'border-gray-200 text-gray-400 hover:border-gray-300'

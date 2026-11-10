@@ -103,6 +103,11 @@ function toPlanItem(item: CalendarItem): PlanItem {
 		dday,
 		dateLabel,
 		date: item.occurrenceDate,
+		// 수정 폼이 시간을 채워서 열리도록 (없으면 저장 시 하루 종일로 바뀜). 루틴은 시간 없음
+		time:
+			item.taskType !== 'ROUTINE' && !item.isAllDay && item.endTime
+				? item.endTime.slice(0, 5)
+				: undefined,
 		// category: categoryLabel,
 		repeatType,
 		repeatDaysOfWeek: item.repeatDaysOfWeek,
