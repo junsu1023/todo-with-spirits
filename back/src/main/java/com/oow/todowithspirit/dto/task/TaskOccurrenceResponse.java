@@ -1,55 +1,62 @@
 package com.oow.todowithspirit.dto.task;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.oow.todowithspirit.domain.task.Task;
 import lombok.Getter;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
+/**
+ * 특정 날짜에 펼쳐진 할 일 1건 (단발성/반복 공통)
+ */
 @Getter
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "taskType",
-        visible = true
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ScheduleOccurrenceResponse.class, name = "SCHEDULE"),
-        @JsonSubTypes.Type(value = RoutineOccurrenceResponse.class, name = "ROUTINE")
-})
-public abstract class TaskOccurrenceResponse {
+public class TaskOccurrenceResponse {
+
     private final Long taskId;
-    private final String taskType;
     private final String title;
-
-    // 캘린더 전개를 위한 타겟 날짜 (공통)
     private final LocalDate occurrenceDate;
-
-    // 공통 필드들
+    private final LocalTime endTime;
+    private final Boolean isAllDay;
     private final Boolean isImportant;
-    private final Integer notificationMinutes;
-    protected LocalDateTime notificationAt;
 
-    // 성장 및 완료
+    private final Boolean isRepeating;
+    private final String repeatType;
+    private final LocalDate repeatEndDate;
+    private final List<String> repeatDaysOfWeek;
+    private final List<Integer> repeatDaysOfMonth;
+    private final Boolean excludeHoliday;
+
+    private final Integer notificationMinutes;
+    private final LocalDateTime notificationAt;
+
     private final Integer growthValue;
     private final String growthType;
+
+    // 해당 occurrence 기준 완료 여부
     private final Boolean isCompleted;
     private final LocalDateTime completedAt;
 
-    // 타임스탬프
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    protected TaskOccurrenceResponse(Task task, LocalDate occurrenceDate, Boolean isCompleted, LocalDateTime completedAt) {
+    public TaskOccurrenceResponse(Task task, LocalDate occurrenceDate, boolean isCompleted, LocalDateTime completedAt) {
         this.taskId = task.getId();
-        this.taskType = task.getTaskType().name();
         this.title = task.getTitle();
         this.occurrenceDate = occurrenceDate;
+        this.endTime = task.getEndTime();
+        this.isAllDay = task.isAllDay();
         this.isImportant = task.isImportant();
+        this.isRepeating = task.isRepeating();
+        this.repeatType = task.getRepeatType().name();
+        this.repeatEndDate = task.getRepeatEndDate();
+        this.repeatDaysOfWeek = task.getRepeatDaysOfWeek().stream().sorted().map(DayOfWeek::name).toList();
+        this.repeatDaysOfMonth = task.getRepeatDaysOfMonth().stream().sorted().toList();
+        this.excludeHoliday = task.isExcludeHoliday();
         this.notificationMinutes = task.getNotificationMinutes();
-        this.notificationAt = task.getNotificationAt();
+        this.notificationAt = task.notificationAtOn(occurrenceDate);
         this.growthValue = task.getGrowthValue();
         this.growthType = task.getGrowthType().name();
         this.isCompleted = isCompleted;

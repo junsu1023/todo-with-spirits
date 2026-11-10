@@ -29,10 +29,6 @@ public class Task extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TaskType taskType;
-
     @Column(nullable = false, length = 255)
     private String title;
 
@@ -54,7 +50,7 @@ public class Task extends BaseTimeEntity {
     @Column(name = "exclude_holiday", nullable = false)
     private boolean excludeHoliday;
 
-    // 반복
+    // 반복 (NONE이면 단발성 할 일)
     @Enumerated(EnumType.STRING)
     @Column(name = "repeat_type", nullable = false)
     private RepeatType repeatType = RepeatType.NONE;
@@ -80,8 +76,8 @@ public class Task extends BaseTimeEntity {
     private Integer notificationMinutes;
 
     // 알림 발송 기준 시각: 알림 서비스가 이 컬럼을 기준으로 발송 대상 조회
-    // SCHEDULE(isAllDay): startDate 23:59 - notificationMinutes
-    // ROUTINE: 각 occurrence 날짜 23:59 - notificationMinutes (서비스에서 occurrence별 계산)
+    // 단발성: startDate endTime(하루 종일이면 23:59:59) - notificationMinutes
+    // 반복: null (occurrence별로 notificationAtOn(date)로 계산)
     @Column(name = "notification_at")
     private LocalDateTime notificationAt;
 
@@ -102,81 +98,89 @@ public class Task extends BaseTimeEntity {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
-    public static Task createSchedule(User user, String title, LocalDateTime endDateTime, boolean isAllDay,
-                                      boolean isImportant, Integer notificationMinutes) {
-        LocalDate date = endDateTime.toLocalDate();
-        Task task = new Task();
-        task.user = user;
-        task.taskType = TaskType.SCHEDULE;
-        task.title = title;
-        task.growthType = DEFAULT_GROWTH_TYPE;
-        task.startDate = date;
-        task.endDate = date;
-        task.endTime = isAllDay ? LocalTime.of(23, 59, 59) : endDateTime.toLocalTime();
-        task.isAllDay = isAllDay;
-        task.isImportant = isImportant;
-        task.repeatType = RepeatType.NONE;
-        task.notificationMinutes = notificationMinutes;
-        task.notificationAt = computeScheduleNotificationAt(endDateTime, isAllDay, notificationMinutes);
-        return task;
-    }
+    public static final LocalTime ALL_DAY_END_TIME = LocalTime.of(23, 59, 59);
 
-    public static Task createRoutine(User user, String title, RepeatType repeatType, LocalDate repeatEndDate,
-                                     Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                                     Integer notificationMinutes, boolean excludeHoliday) {
-        Task task = new Task();
-        task.user = user;
-        task.taskType = TaskType.ROUTINE;
-        task.title = title;
-        task.growthType = DEFAULT_GROWTH_TYPE;
-        task.startDate = LocalDate.now();
-        task.repeatType = repeatType;
-        task.repeatEndDate = repeatEndDate;
-        task.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
-        task.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
-        task.notificationMinutes = notificationMinutes;
-        task.excludeHoliday = excludeHoliday;
-        task.endTime = LocalTime.of(23, 59, 0);
-        return task;
-    }
-
-    public void updateRoutine(String title, RepeatType repeatType, LocalDate repeatEndDate,
+    /**
+     * 할 일 생성. repeatType이 NONE이면 단발성, 그 외(DAILY/WEEKLY/MONTHLY)면 반복.
+     * date: 단발성은 해당 날짜, 반복은 반복 시작일
+     */
+    public static Task create(User user, String title, LocalDate date, LocalTime time, boolean isAllDay,
+                              boolean isImportant, Integer notificationMinutes,
+                              RepeatType repeatType, LocalDate repeatEndDate,
                               Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
-                              Integer notificationMinutes, boolean excludeHoliday) {
-        this.title = title;
-        this.repeatType = repeatType;
-        this.repeatEndDate = repeatEndDate;
-        this.repeatDaysOfWeek = repeatDaysOfWeek != null ? repeatDaysOfWeek : new HashSet<>();
-        this.repeatDaysOfMonth = repeatDaysOfMonth != null ? repeatDaysOfMonth : new HashSet<>();
-        this.notificationMinutes = notificationMinutes;
-        this.excludeHoliday = excludeHoliday;
-        this.endTime = LocalTime.of(23, 59, 0);
+                              boolean excludeHoliday) {
+        Task task = new Task();
+        task.user = user;
+        task.growthType = DEFAULT_GROWTH_TYPE;
+        task.apply(title, date, time, isAllDay, isImportant, notificationMinutes,
+                repeatType, repeatEndDate, repeatDaysOfWeek, repeatDaysOfMonth, excludeHoliday);
+        return task;
     }
 
-    public void updateSchedule(String title, LocalDateTime endDateTime, boolean isAllDay,
-                               boolean isImportant, Integer notificationMinutes) {
-        LocalDate date = endDateTime.toLocalDate();
+    public void update(String title, LocalDate date, LocalTime time, boolean isAllDay,
+                       boolean isImportant, Integer notificationMinutes,
+                       RepeatType repeatType, LocalDate repeatEndDate,
+                       Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
+                       boolean excludeHoliday) {
+        apply(title, date, time, isAllDay, isImportant, notificationMinutes,
+                repeatType, repeatEndDate, repeatDaysOfWeek, repeatDaysOfMonth, excludeHoliday);
+    }
+
+    private void apply(String title, LocalDate date, LocalTime time, boolean isAllDay,
+                       boolean isImportant, Integer notificationMinutes,
+                       RepeatType repeatType, LocalDate repeatEndDate,
+                       Set<DayOfWeek> repeatDaysOfWeek, Set<Integer> repeatDaysOfMonth,
+                       boolean excludeHoliday) {
+        boolean repeating = repeatType != null && repeatType != RepeatType.NONE;
         this.title = title;
         this.startDate = date;
-        this.endDate = date;
-        this.endTime = isAllDay ? LocalTime.of(23, 59, 59) : endDateTime.toLocalTime();
-        this.isAllDay = isAllDay;
+        this.endDate = repeating ? null : date;
+        this.endTime = (isAllDay || time == null) ? ALL_DAY_END_TIME : time;
+        this.isAllDay = isAllDay || time == null;
         this.isImportant = isImportant;
         this.notificationMinutes = notificationMinutes;
-        this.notificationAt = computeScheduleNotificationAt(endDateTime, isAllDay, notificationMinutes);
+        this.repeatType = repeating ? repeatType : RepeatType.NONE;
+        this.repeatEndDate = repeating ? repeatEndDate : null;
+        replace(this.repeatDaysOfWeek, repeating && repeatType == RepeatType.WEEKLY ? repeatDaysOfWeek : null);
+        replace(this.repeatDaysOfMonth, repeating && repeatType == RepeatType.MONTHLY ? repeatDaysOfMonth : null);
+        this.excludeHoliday = repeating && excludeHoliday;
+        refreshNotificationAt();
+    }
+
+    private static <T> void replace(Set<T> target, Set<T> source) {
+        target.clear();
+        if (source != null) target.addAll(source);
+    }
+
+    public boolean isRepeating() {
+        return repeatType != null && repeatType != RepeatType.NONE;
     }
 
     /**
-     * 미루기 전용: SCHEDULE의 날짜/시간만 이동 (다른 필드는 그대로)
+     * 특정 occurrence 날짜 기준 알림 발송 시각
+     */
+    public LocalDateTime notificationAtOn(LocalDate occurrenceDate) {
+        if (notificationMinutes == null || occurrenceDate == null) return null;
+        LocalTime time = endTime != null ? endTime : ALL_DAY_END_TIME;
+        return LocalDateTime.of(occurrenceDate, time).minusMinutes(notificationMinutes);
+    }
+
+    // 단발성은 해당 날짜 기준으로 저장, 반복은 occurrence별로 계산하므로 저장하지 않음
+    private void refreshNotificationAt() {
+        this.notificationAt = isRepeating() ? null : notificationAtOn(startDate);
+    }
+
+    /**
+     * 미루기 전용: 단발성 할 일의 날짜/시간만 이동 (다른 필드는 그대로)
      */
     public void rescheduleTo(LocalDate newDate, LocalTime newTime) {
         this.startDate = newDate;
         this.endDate = newDate;
-        this.endTime = newTime != null ? newTime : this.endTime;
-        if (this.notificationMinutes != null) {
-            LocalDateTime endDateTime = LocalDateTime.of(newDate, this.endTime != null ? this.endTime : LocalTime.of(23, 59, 59));
-            this.notificationAt = computeScheduleNotificationAt(endDateTime, this.isAllDay, this.notificationMinutes);
+        if (newTime != null && !newTime.equals(this.endTime)) {
+            this.endTime = newTime;
+            this.isAllDay = false;
         }
+        refreshNotificationAt();
     }
 
     public void completeTask() {
@@ -189,9 +193,4 @@ public class Task extends BaseTimeEntity {
         this.completedAt = null;
     }
 
-    private static LocalDateTime computeScheduleNotificationAt(LocalDateTime endDateTime, boolean isAllDay, Integer notificationMinutes) {
-        if (endDateTime == null || notificationMinutes == null) return null;
-        LocalDateTime base = isAllDay ? endDateTime.toLocalDate().atTime(23, 59, 59) : endDateTime;
-        return base.minusMinutes(notificationMinutes);
-    }
 }

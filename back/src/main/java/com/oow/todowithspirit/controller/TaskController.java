@@ -21,6 +21,26 @@ public class TaskController {
     private final TaskService taskService;
 
     // ==============================================
+    // 생성 / 수정 (단발성 · 반복 공통, repeatType으로 구분)
+    // ==============================================
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<TaskResponse>> createTask(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody TaskRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(taskService.createTask(userId, request)));
+    }
+
+    @PatchMapping("/{taskId}")
+    public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long taskId,
+            @Valid @RequestBody TaskRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.updateTask(userId, taskId, request)));
+    }
+
+    // ==============================================
     // 삭제 (단건 · 다건 공통)
     // ==============================================
 
@@ -32,41 +52,40 @@ public class TaskController {
     }
 
     // ==============================================
-    // 단건 조회 (일정/루틴 공통)
+    // 조회
     // ==============================================
+
+    // 기간 내 occurrence 목록 (from/to 생략 시 오늘)
+    @GetMapping
+    public ResponseEntity<ApiResponse<TaskListResponse<TaskOccurrenceResponse>>> getTasks(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        LocalDate today = LocalDate.now();
+        return ResponseEntity.ok(ApiResponse.success(
+                taskService.getTasks(userId, from != null ? from : today, to != null ? to : today)));
+    }
+
+    // 캘린더 (occurrence 목록 + 완료 집계)
+    @GetMapping("/calendar")
+    public ResponseEntity<ApiResponse<CalendarTasksResponse>> getCalendarTasks(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to)));
+    }
 
     @GetMapping("/{taskId}")
     public ResponseEntity<ApiResponse<TaskOccurrenceResponse>> getTask(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-
         LocalDate targetDate = (date != null) ? date : LocalDate.now();
         return ResponseEntity.ok(ApiResponse.success(taskService.getTaskDetail(userId, taskId, targetDate)));
     }
 
     // ==============================================
-    // 일정 수정
-    // ==============================================
-
-    @PatchMapping("/schedule/{taskId}")
-    public ResponseEntity<ApiResponse<ScheduleCreateResponse>> updateSchedule(
-            @AuthenticationPrincipal Long userId,
-            @PathVariable Long taskId,
-            @Valid @RequestBody ScheduleUpdateRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.updateSchedule(userId, taskId, request)));
-    }
-
-    @PatchMapping("/routine/{taskId}")
-    public ResponseEntity<ApiResponse<RoutineCreateResponse>> updateRoutine(
-            @AuthenticationPrincipal Long userId,
-            @PathVariable Long taskId,
-            @Valid @RequestBody RoutineUpdateRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.updateRoutine(userId, taskId, request)));
-    }
-
-    // ==============================================
-    // 미루기 (일정/루틴 공통)
+    // 미루기
     // ==============================================
 
     @PatchMapping("/{taskId}/postpone")
@@ -80,79 +99,21 @@ public class TaskController {
     // ==============================================
     // 완료 / 완료 취소
     // ==============================================
+
     @PostMapping("/{taskId}/complete")
-    public ResponseEntity<ApiResponse<TaskCompleteResponse>> completeRoutine(
+    public ResponseEntity<ApiResponse<TaskCompleteResponse>> completeTask(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        TaskCompleteResponse response = taskService.completeTask(userId, taskId, date);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(taskService.completeTask(userId, taskId, date)));
     }
 
     @DeleteMapping("/{taskId}/complete")
-    public ResponseEntity<ApiResponse<Void>> inCompleteRoutine(
+    public ResponseEntity<ApiResponse<Void>> undoCompleteTask(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long taskId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         taskService.undoCompleteTask(userId, taskId, date);
         return ResponseEntity.ok(ApiResponse.success(null));
-    }
-
-    // ==============================================
-    // 캘린더 (일정 + 루틴 occurrence 통합 조회)
-    // ==============================================
-
-    @GetMapping("/calendar")
-    public ResponseEntity<ApiResponse<CalendarTasksResponse>> getCalendarTasks(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(required = false) String taskType) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getCalendarTasks(userId, from, to, taskType)));
-    }
-
-    // ==============================================
-    // 일정 (SCHEDULE)
-    // ==============================================
-
-    @PostMapping("/schedule")
-    public ResponseEntity<ApiResponse<ScheduleCreateResponse>> createSchedule(
-            @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody ScheduleCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(taskService.createSchedule(userId, request)));
-    }
-
-    @GetMapping("/schedule")
-    public ResponseEntity<ApiResponse<TaskListResponse<ScheduleCreateResponse>>> getSchedules(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(ApiResponse.success(taskService.getSchedules(userId, from, to)));
-    }
-
-    // ==============================================
-    // 루틴 (ROUTINE)
-    // ==============================================
-
-    @PostMapping("/routine")
-    public ResponseEntity<ApiResponse<RoutineCreateResponse>> createRoutine(
-            @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody RoutineCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(taskService.createRoutine(userId, request)));
-    }
-
-    @GetMapping("/routine")
-    public ResponseEntity<ApiResponse<TaskListResponse<RoutineOccurrenceResponse>>> getRoutines(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-
-        if (from == null && to == null) {
-            from = LocalDate.now();
-            to = LocalDate.now();
-        }
-        return ResponseEntity.ok(ApiResponse.success(taskService.getRoutines(userId, from, to)));
     }
 }

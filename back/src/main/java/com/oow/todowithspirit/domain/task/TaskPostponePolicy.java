@@ -10,10 +10,10 @@ public final class TaskPostponePolicy {
     }
 
     /**
-     * null이면 무제한 (SCHEDULE)
+     * null이면 무제한 (단발성 할 일)
      */
     public static Integer maxPostponeCount(Task task) {
-        if (task.getTaskType() != TaskType.ROUTINE) {
+        if (!task.isRepeating()) {
             return null;
         }
         return switch (task.getRepeatType()) {

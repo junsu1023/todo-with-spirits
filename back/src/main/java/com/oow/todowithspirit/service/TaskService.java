@@ -4,7 +4,6 @@ import com.oow.todowithspirit.common.exception.ApiException;
 import com.oow.todowithspirit.common.exception.ErrorCode;
 import com.oow.todowithspirit.domain.spirit.Spirit;
 import com.oow.todowithspirit.domain.task.*;
-import com.oow.todowithspirit.domain.user.User;
 import com.oow.todowithspirit.domain.user.UserRepository;
 import com.oow.todowithspirit.dto.task.*;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,8 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TaskService {
 
-    private static final EnumSet<RepeatType> HABIT_ALLOWED_REPEAT = EnumSet.of(RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
+    private static final EnumSet<RepeatType> ALLOWED_REPEAT =
+            EnumSet.of(RepeatType.NONE, RepeatType.DAILY, RepeatType.WEEKLY, RepeatType.MONTHLY);
     private static final int AFFECTION_PER_COMPLETION = 1; // 할 일 완료 1회당 대표 정령 호감도 +1%
 
     private final TaskRepository taskRepository;
@@ -42,85 +42,57 @@ public class TaskService {
     // =========================================================
 
     @Transactional
-    public ScheduleCreateResponse createSchedule(Long userId, ScheduleCreateRequest request) {
-        User user = userRepository.getReferenceById(userId);
-        Task task = Task.createSchedule(
-                user,
+    public TaskResponse createTask(Long userId, TaskRequest request) {
+        RepeatType repeatType = resolveRepeatType(request);
+        LocalDate date = request.getEndDateTime() != null ? request.getEndDateTime().toLocalDate() : LocalDate.now();
+        LocalTime time = request.getEndDateTime() != null ? request.getEndDateTime().toLocalTime() : null;
+        boolean isAllDay = request.getIsAllDay() != null ? request.getIsAllDay() : time == null;
+        validateRepeat(repeatType, date, request);
+
+        Task task = Task.create(
+                userRepository.getReferenceById(userId),
                 request.getTitle(),
-                request.getEndDateTime(),
-                Boolean.TRUE.equals(request.getIsAllDay()),
+                date,
+                time,
+                isAllDay,
                 Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType())
-        );
-        return ScheduleCreateResponse.from(taskRepository.save(task));
-    }
-
-    @Transactional
-    public RoutineCreateResponse createRoutine(Long userId, RoutineCreateRequest request) {
-        if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
-        }
-        validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
-
-        User user = userRepository.getReferenceById(userId);
-        Task task = Task.createRoutine(
-                user,
-                request.getTitle(),
-                request.getRepeatType(),
+                resolveNotificationMinutes(request.getNotificationType()),
+                repeatType,
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
-                resolveNotificationMinutes(request.getNotificationType()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
-        return RoutineCreateResponse.from(taskRepository.save(task));
+        return TaskResponse.from(taskRepository.save(task));
     }
 
     @Transactional
-    public RoutineCreateResponse updateRoutine(Long userId, Long taskId, RoutineUpdateRequest request) {
-        if (!HABIT_ALLOWED_REPEAT.contains(request.getRepeatType())) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Habit repeat type must be DAILY, WEEKLY, or MONTHLY");
-        }
-        validateRepeatDetails(request.getRepeatType(), request.getRepeatDaysOfWeek(), request.getRepeatDaysOfMonth());
-
+    public TaskResponse updateTask(Long userId, Long taskId, TaskRequest request) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        if (task.getTaskType() != TaskType.ROUTINE) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId", "Task is not a routine");
-        }
+        RepeatType repeatType = resolveRepeatType(request);
+        // endDateTime이 없으면 기존 날짜·시각 유지
+        LocalDate date = request.getEndDateTime() != null ? request.getEndDateTime().toLocalDate() : task.getStartDate();
+        LocalTime time = request.getEndDateTime() != null ? request.getEndDateTime().toLocalTime()
+                : (task.isAllDay() ? null : task.getEndTime());
+        boolean isAllDay = request.getIsAllDay() != null ? request.getIsAllDay() : time == null;
+        validateRepeat(repeatType, date, request);
 
-        task.updateRoutine(
+        task.update(
                 request.getTitle(),
-                request.getRepeatType(),
+                date,
+                time,
+                isAllDay,
+                Boolean.TRUE.equals(request.getIsImportant()),
+                resolveNotificationMinutes(request.getNotificationType()),
+                repeatType,
                 request.getRepeatEndDate(),
                 request.getRepeatDaysOfWeek(),
                 request.getRepeatDaysOfMonth(),
-                resolveNotificationMinutes(request.getNotificationType()),
                 Boolean.TRUE.equals(request.getExcludeHoliday())
         );
-
-        return RoutineCreateResponse.from(task);
-    }
-
-    @Transactional
-    public ScheduleCreateResponse updateSchedule(Long userId, Long taskId, ScheduleUpdateRequest request) {
-        Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
-
-        if (task.getTaskType() != TaskType.SCHEDULE) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "taskId", "Task is not a schedule");
-        }
-
-        task.updateSchedule(
-                request.getTitle(),
-                request.getEndDateTime(),
-                Boolean.TRUE.equals(request.getIsAllDay()),
-                Boolean.TRUE.equals(request.getIsImportant()),
-                resolveNotificationMinutes(request.getNotificationType())
-        );
-
-        return ScheduleCreateResponse.from(task);
+        return TaskResponse.from(task);
     }
 
     // =========================================================
@@ -130,19 +102,19 @@ public class TaskService {
     @Transactional
     public TaskPostponeResponse postponeTask(Long userId, Long taskId, TaskPostponeRequest request) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found task."));
 
         LocalDate originalDate;
         LocalDate currentDate;
         LocalTime currentTime;
 
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        if (task.isRepeating()) {
             if (request.getOriginalDate() == null) {
-                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "originalDate is required for routines");
+                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "originalDate is required for repeating tasks");
             }
             originalDate = request.getOriginalDate();
             if (!isOccurrenceDate(task, originalDate)) {
-                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "Not an occurrence date for this routine");
+                throw new ApiException(ErrorCode.INVALID_PARAMETER, "originalDate", "Not an occurrence date for this task");
             }
 
             TaskPostponement latest = taskPostponementRepository
@@ -151,7 +123,7 @@ public class TaskService {
             currentDate = latest != null ? latest.getPostponedDate() : originalDate;
             currentTime = latest != null ? latest.getPostponedTime() : task.getEndTime();
         } else {
-            // SCHEDULE: 처음 미룰 때는 지금 예정일을 원본으로 삼고, 이후로는 최초 로그의 원본을 계속 재사용
+            // 단발성: 처음 미룰 때는 지금 예정일을 원본으로 삼고, 이후로는 최초 로그의 원본을 계속 재사용
             originalDate = taskPostponementRepository.findTopByTaskIdOrderByCreatedAtAsc(taskId)
                     .map(TaskPostponement::getOriginalDate)
                     .orElse(task.getStartDate());
@@ -170,15 +142,15 @@ public class TaskService {
         LocalDate newDate = request.getNewDate() != null ? request.getNewDate() : currentDate;
         LocalTime newTime = request.getNewTime() != null ? request.getNewTime() : currentTime;
 
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        if (task.isRepeating()) {
             validatePostponeRange(task, originalDate, newDate);
             validateNoCollision(task, originalDate, newDate);
         }
 
         taskPostponementRepository.save(TaskPostponement.create(task, originalDate, newDate, newTime));
 
-        if (task.getTaskType() == TaskType.SCHEDULE) {
-            task.rescheduleTo(newDate, newTime);
+        if (!task.isRepeating()) {
+            task.rescheduleTo(newDate, request.getNewTime());
         }
 
         int newCount = currentCount + 1;
@@ -203,21 +175,21 @@ public class TaskService {
             case DAILY -> {
                 if (!newDate.equals(originalDate)) {
                     throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
-                            "Daily routines cannot change date, only time");
+                            "Daily tasks cannot change date, only time");
                 }
             }
             case WEEKLY -> {
                 LocalDate weekEnd = originalDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
                 if (newDate.isBefore(originalDate) || newDate.isAfter(weekEnd)) {
                     throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
-                            "Weekly routines can only be postponed within the current week");
+                            "Weekly tasks can only be postponed within the current week");
                 }
             }
             case MONTHLY -> {
                 LocalDate monthEnd = originalDate.with(TemporalAdjusters.lastDayOfMonth());
                 if (newDate.isBefore(originalDate) || newDate.isAfter(monthEnd)) {
                     throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
-                            "Monthly routines can only be postponed within the current month");
+                            "Monthly tasks can only be postponed within the current month");
                 }
             }
             default ->
@@ -226,14 +198,14 @@ public class TaskService {
     }
 
     /**
-     * 같은 루틴의 다른 occurrence와 날짜가 겹치는지 검증 (반복 todo/루틴은 겹칠 수 있으므로 유의)
+     * 같은 반복 할 일의 다른 occurrence와 날짜가 겹치는지 검증
      */
     private void validateNoCollision(Task task, LocalDate originalDate, LocalDate newDate) {
         if (newDate.equals(originalDate)) return;
 
         if (isOccurrenceDate(task, newDate)) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
-                    "Target date already has an occurrence of this routine");
+                    "Target date already has an occurrence of this task");
         }
 
         Map<LocalDate, TaskPostponement> latestByOriginalDate = taskPostponementRepository
@@ -246,161 +218,83 @@ public class TaskService {
 
         if (collides) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "newDate",
-                    "Target date is already occupied by another occurrence of this routine");
+                    "Target date is already occupied by another occurrence of this task");
         }
     }
 
     // =========================================================
-    // 목록 조회
+    // 조회 (occurrence 기반 — from/to 필수, 최대 90일)
     // =========================================================
 
     @Transactional(readOnly = true)
-    public TaskListResponse<ScheduleCreateResponse> getSchedules(Long userId, LocalDate from, LocalDate to) {
-        List<Task> tasks = (from != null && to != null)
-                ? taskRepository.findAllByUserIdAndTaskTypeAndDateRange(userId, TaskType.ROUTINE, from, to)
-                : taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
-        return TaskListResponse.of(tasks.stream().map(ScheduleCreateResponse::from).toList());
+    public TaskListResponse<TaskOccurrenceResponse> getTasks(Long userId, LocalDate from, LocalDate to) {
+        return TaskListResponse.of(loadOccurrences(userId, from, to));
     }
 
-    // 특정 날짜 기준 활성화 여부 및 완료 판단
     @Transactional(readOnly = true)
-    public TaskListResponse<RoutineOccurrenceResponse> getRoutines(Long userId, LocalDate from, LocalDate to) {
+    public CalendarTasksResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
+        return CalendarTasksResponse.of(loadOccurrences(userId, from, to));
+    }
+
+    private List<TaskOccurrenceResponse> loadOccurrences(Long userId, LocalDate from, LocalDate to) {
         if (from == null || to == null) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From and to dates are required.");
         }
-
-        // 최대 90일 제한
-        long daysBetween = ChronoUnit.DAYS.between(from, to);
-        if (daysBetween > 90) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of routine data.");
+        if (from.isAfter(to)) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From must not be after to.");
+        }
+        if (ChronoUnit.DAYS.between(from, to) > 90) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of task data.");
         }
 
-        // 사용자의 전체 루틴 조회
-        List<Task> allRoutines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
+        List<Task> tasks = taskRepository.findAllInDateRange(userId, from, to);
 
-        // 루틴 완료 상태 일괄 조회
-        List<Long> routineIds = allRoutines.stream().map(Task::getId).toList();
-        Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, from, to);
+        List<Long> repeatingIds = tasks.stream().filter(Task::isRepeating).map(Task::getId).toList();
+        Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(repeatingIds, from, to);
 
-        // 루틴을 기간 내의 실제 발생일(Occurrence)로 전개하여 변환 및 정렬
-        List<RoutineOccurrenceResponse> items = allRoutines.stream()
-                .flatMap(task -> expandOccurrences(task, from, to).stream()
-                        .map(date -> new RoutineOccurrenceResponse(task, date, completionMap.getOrDefault(task.getId(), Map.of()).get(date)
-                        )))
-                .sorted(Comparator.comparing(RoutineOccurrenceResponse::getOccurrenceDate))
-                .toList();
-        return TaskListResponse.of(items);
-    }
-
-    // =========================================================
-    // 캘린더 통합 조회 (occurrence 기반 — from/to 필수)
-    // =========================================================
-    @Transactional(readOnly = true)
-    public CalendarTasksResponse getCalendarTasks(
-            Long userId, LocalDate from, LocalDate to, String taskType) {
-
-        if (from == null || to == null) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "From and to dates are required.");
-        }
-
-        long daysBetween = ChronoUnit.DAYS.between(from, to);
-        if (daysBetween > 90) {
-            throw new ApiException(ErrorCode.INVALID_PARAMETER, "dateRange", "Cannot query more than 90 days of calendar data.");
-        }
-
-        // 1. 일정과 루틴 데이터를 통합 조회
-        List<Task> tasks = taskRepository.findCalendarTasksWithDateRange(userId, from, to);
-
-        List<Task> schedules = Collections.emptyList();
-        List<Task> routines = Collections.emptyList();
-
-        boolean includeAll = (taskType == null || taskType.isBlank() || "ALL".equalsIgnoreCase(taskType));
-
-        if (includeAll || "SCHEDULE".equalsIgnoreCase(taskType)) {
-            schedules = tasks.stream().filter(t -> t.getTaskType() == TaskType.SCHEDULE).toList();
-        }
-        if (includeAll || "ROUTINE".equalsIgnoreCase(taskType)) {
-            routines = tasks.stream().filter(t -> t.getTaskType() == TaskType.ROUTINE).toList();
-        }
-
-        if (!routines.isEmpty()) {
-            routines.forEach(r -> {
-                if (r.getRepeatDaysOfWeek() != null) r.getRepeatDaysOfWeek().size();
-                if (r.getRepeatDaysOfMonth() != null) r.getRepeatDaysOfMonth().size();
-            });
-        }
-
-        // 2. 일정 Occurrence 변환
-        List<ScheduleOccurrenceResponse> scheduleOccurrences = schedules.stream()
-                .map(ScheduleOccurrenceResponse::new)
-                .toList();
-
-        // 3. 루틴 캘린더 일자별 전개 및 완료 상태 매핑
-        List<RoutineOccurrenceResponse> routineOccurrences = Collections.emptyList();
-        if (!routines.isEmpty()) {
-            List<Long> routineIds = routines.stream().map(Task::getId).toList();
-            Map<Long, Map<LocalDate, RoutineCompletion>> completionMap = loadCompletionMap(routineIds, from, to);
-
-            routineOccurrences = routines.stream()
-                    .flatMap(task -> expandOccurrences(task, from, to).stream()
-                            .map(date -> {
-                                RoutineCompletion completion = completionMap
-                                        .getOrDefault(task.getId(), Collections.emptyMap())
-                                        .get(date);
-
-                                return new RoutineOccurrenceResponse(task, date, completion);
-                            }))
-                    .toList();
-        }
-
-        // 4. 병합 및 정렬
-        List<TaskOccurrenceResponse> allOccurrences = Stream.concat(
-                        scheduleOccurrences.stream(),
-                        routineOccurrences.stream()
-                )
+        return tasks.stream()
+                .flatMap(task -> {
+                    if (!task.isRepeating()) {
+                        return Stream.of(new TaskOccurrenceResponse(
+                                task, task.getStartDate(), task.isCompleted(), task.getCompletedAt()));
+                    }
+                    Map<LocalDate, RoutineCompletion> completions = completionMap.getOrDefault(task.getId(), Map.of());
+                    return expandOccurrences(task, from, to).stream()
+                            .map(date -> toOccurrence(task, date, completions.get(date)));
+                })
                 .sorted(Comparator.comparing(TaskOccurrenceResponse::getOccurrenceDate)
-                        .thenComparing(res -> {
-                            if (res instanceof ScheduleOccurrenceResponse schedule) {
-                                return schedule.getEndTime();
-                            }
-                            return null;
-                        }, Comparator.nullsLast(Comparator.naturalOrder()))
-                        .thenComparing(TaskOccurrenceResponse::getTaskType))
+                        .thenComparing(TaskOccurrenceResponse::getEndTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(TaskOccurrenceResponse::getTaskId))
                 .toList();
-
-        return CalendarTasksResponse.of(allOccurrences);
     }
 
-    // =========================================================
-    // 단건 조회
-    // =========================================================
+    private TaskOccurrenceResponse toOccurrence(Task task, LocalDate date, RoutineCompletion completion) {
+        return new TaskOccurrenceResponse(task, date,
+                completion != null, completion != null ? completion.getCompletedAt() : null);
+    }
 
     @Transactional(readOnly = true)
     public TaskOccurrenceResponse getTaskDetail(Long userId, Long taskId, LocalDate targetDate) {
-        // Task 존재 및 권한 확인
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found task."));
 
-        // SCHEDULE 처리
-        if (task.getTaskType() == TaskType.SCHEDULE) {
-            return new ScheduleOccurrenceResponse(task);
+        if (!task.isRepeating()) {
+            return new TaskOccurrenceResponse(task, task.getStartDate(), task.isCompleted(), task.getCompletedAt());
         }
 
-        // ROUTINE(루틴) 처리
+        // 반복: 해당 날짜가 수행일이 아니면 null
         if (!isOccurrenceDate(task, targetDate)) {
             return null;
         }
 
-        // 해당 날짜의 완료 기록 조회
         RoutineCompletion completion = routineCompletionRepository
                 .findByTaskIdAndCompletionDate(taskId, targetDate)
                 .orElse(null);
-
-        return new RoutineOccurrenceResponse(task, targetDate, completion);
+        return toOccurrence(task, targetDate, completion);
     }
 
     /**
-     * 단 하루가 루틴 수행일인지 판단
+     * 해당 날짜가 반복 할 일의 수행일인지 판단
      */
     private boolean isOccurrenceDate(Task task, LocalDate targetDate) {
         // 기간 체크
@@ -434,14 +328,14 @@ public class TaskService {
     @Transactional
     public TaskCompleteResponse completeTask(Long userId, Long taskId, LocalDate completionDate) {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found schedule or routine."));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Not found task."));
 
         validateTaskDate(task, completionDate);
 
-        // 완료 처리
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        // 완료 처리 (반복은 날짜별 완료 기록, 단발성은 task 자체 상태)
+        if (task.isRepeating()) {
             if (routineCompletionRepository.findByTaskIdAndCompletionDate(taskId, completionDate).isPresent()) {
-                throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Routine already completed on " + completionDate);
+                throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Task already completed on " + completionDate);
             }
             routineCompletionRepository.save(RoutineCompletion.of(task, completionDate));
         } else {
@@ -471,7 +365,7 @@ public class TaskService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
         // 완료 취소
-        if (task.getTaskType() == TaskType.ROUTINE) {
+        if (task.isRepeating()) {
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
@@ -489,28 +383,19 @@ public class TaskService {
     }
 
     /**
-     * Task 타입별 날짜 정합성 검증
+     * 완료 대상 날짜 정합성 검증
      */
     private void validateTaskDate(Task task, LocalDate targetDate) {
-        if (task.getTaskType() == TaskType.SCHEDULE) {
-            // targetDate가 시작일 - 종료일 기간 내에 포함되는지 확인
-            LocalDate startDate = task.getStartDate();
-            LocalDate endDate = (task.getEndDate() != null) ? task.getEndDate() : startDate;
-
-            if (targetDate.isBefore(startDate) || targetDate.isAfter(endDate)) {
-                throw new ApiException(
-                        ErrorCode.INVALID_PARAMETER,
-                        String.format("Invalid schedule date. Target date (%s) is out of schedule range (%s ~ %s)", targetDate, startDate, endDate)
-                );
-            }
-        } else if (task.getTaskType() == TaskType.ROUTINE) {
-            // targetDate가 실제로 루틴이 수행되는 날짜인지 검증
+        if (task.isRepeating()) {
             if (!isOccurrenceDate(task, targetDate)) {
-                throw new ApiException(
-                        ErrorCode.INVALID_PARAMETER,
-                        String.format("Invalid routine date. %s is not an occurrence date for this routine.", targetDate)
-                );
+                throw new ApiException(ErrorCode.INVALID_PARAMETER,
+                        String.format("Invalid date. %s is not an occurrence date for this task.", targetDate));
             }
+            return;
+        }
+        if (!targetDate.equals(task.getStartDate())) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER,
+                    String.format("Invalid date. Target date (%s) does not match task date (%s)", targetDate, task.getStartDate()));
         }
     }
 
@@ -531,19 +416,6 @@ public class TaskService {
     // =========================================================
     // helpers
     // =========================================================
-
-    private boolean isRoutineActiveOnDate(Task task, LocalDate date) {
-        // 루틴 시작 전이거나, 종료일 이후라면 비활성화
-        if (date.isBefore(task.getStartDate())) return false;
-        if (task.getRepeatEndDate() != null && date.isAfter(task.getRepeatEndDate())) return false;
-
-        return switch (task.getRepeatType()) {
-            case DAILY -> true;
-            case WEEKLY -> task.getRepeatDaysOfWeek().contains(date.getDayOfWeek());
-            case MONTHLY -> task.getRepeatDaysOfMonth().contains(date.getDayOfMonth());
-            default -> false;
-        };
-    }
 
     public Map<Long, Map<LocalDate, RoutineCompletion>> loadCompletionMap(
             List<Long> routineIds, LocalDate from, LocalDate to) {
@@ -598,17 +470,33 @@ public class TaskService {
         return baseDates;
     }
 
-    private void validateRepeatDetails(RepeatType repeatType, Set<?> daysOfWeek, Set<Integer> daysOfMonth) {
+    private RepeatType resolveRepeatType(TaskRequest request) {
+        RepeatType repeatType = request.getRepeatType() != null ? request.getRepeatType() : RepeatType.NONE;
+        if (!ALLOWED_REPEAT.contains(repeatType)) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatType", "Repeat type must be NONE, DAILY, WEEKLY, or MONTHLY");
+        }
+        return repeatType;
+    }
+
+    private void validateRepeat(RepeatType repeatType, LocalDate startDate, TaskRequest request) {
+        if (repeatType == RepeatType.NONE) return;
+
+        if (request.getRepeatEndDate() != null && request.getRepeatEndDate().isBefore(startDate)) {
+            throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatEndDate",
+                    "Repeat end date must not be before the start date");
+        }
+        Set<DayOfWeek> daysOfWeek = request.getRepeatDaysOfWeek();
         if (repeatType == RepeatType.WEEKLY && (daysOfWeek == null || daysOfWeek.isEmpty())) {
             throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatDaysOfWeek",
                     "Days of week are required for weekly repeat");
         }
         if (repeatType == RepeatType.MONTHLY) {
+            Set<Integer> daysOfMonth = request.getRepeatDaysOfMonth();
             if (daysOfMonth == null || daysOfMonth.isEmpty()) {
                 throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatDaysOfMonth",
                         "Days of month are required for monthly repeat");
             }
-            if (daysOfMonth.stream().anyMatch(d -> d < 1 || d > 31)) {
+            if (daysOfMonth.stream().anyMatch(d -> d == null || d < 1 || d > 31)) {
                 throw new ApiException(ErrorCode.INVALID_PARAMETER, "repeatDaysOfMonth",
                         "Day of month must be between 1 and 31");
             }
@@ -618,42 +506,5 @@ public class TaskService {
     private Integer resolveNotificationMinutes(NotificationType option) {
         if (option == null || option == NotificationType.NONE) return null;
         return option.getMinutes();
-    }
-
-    @Transactional(readOnly = true)
-    public List<RoutineOccurrenceResponse> getRoutineOccurrences(Long userId, LocalDate startDate, LocalDate endDate) {
-        // 1. 기간 내의 모든 루틴(Task) 가져오기
-        List<Task> routines = taskRepository.findAllByUserIdAndTaskType(userId, TaskType.ROUTINE);
-
-        // 2. [핵심] 해당 기간 동안 유저가 완료한 모든 루틴 기록을 한 번에 IN 쿼리로 조회
-        List<RoutineCompletion> completions = routineCompletionRepository
-                .findAllByTaskInAndCompletionDateBetween(routines, startDate, endDate);
-
-        // 3. 빠른 조회를 위해 "TaskId_날짜"를 Key로 가지는 Set 또는 Map으로 변환
-        Set<String> completedKeySet = completions.stream()
-                .map(c -> c.getTask().getId() + "_" + c.getCompletionDate())
-                .collect(Collectors.toSet());
-
-        List<RoutineOccurrenceResponse> responses = new ArrayList<>();
-
-        for (Task routine : routines) {
-            // 4. 루틴의 반복 조건에 따라 기간 내의 날짜들을 순회 (전개 로직)
-            List<LocalDate> occurrenceDates = expandOccurrences(routine, startDate, endDate);
-
-            for (LocalDate date : occurrenceDates) {
-                // 5. 생성해 둔 Key가 존재하는지 판별하여 완료 여부(isCompleted) 확인!
-                boolean isCompleted = completedKeySet.contains(routine.getId() + "_" + date);
-
-                RoutineCompletion matchingCompletion = completions.stream()
-                        .filter(c -> c.getTask().getId().equals(routine.getId()) && c.getCompletionDate().equals(date))
-                        .findFirst()
-                        .orElse(null);
-
-                // 6. 지난 번 에러를 해결했던 DTO 생성자를 호출하여 리스트에 담기
-                responses.add(new RoutineOccurrenceResponse(routine, date, matchingCompletion));
-            }
-        }
-
-        return responses;
     }
 }

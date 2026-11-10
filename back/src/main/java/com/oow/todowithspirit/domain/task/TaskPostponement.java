@@ -25,10 +25,6 @@ public class TaskPostponement extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "task_type", nullable = false, length = 20)
-    private TaskType taskType;
-
     @Column(name = "original_date", nullable = false)
     private LocalDate originalDate;
 
@@ -42,7 +38,6 @@ public class TaskPostponement extends BaseTimeEntity {
         TaskPostponement postponement = new TaskPostponement();
         postponement.taskId = task.getId();
         postponement.userId = task.getUser().getId();
-        postponement.taskType = task.getTaskType();
         postponement.originalDate = originalDate;
         postponement.postponedDate = postponedDate;
         postponement.postponedTime = postponedTime;

@@ -12,30 +12,20 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.taskType = :taskType ORDER BY t.startDate ASC")
-    List<Task> findAllByUserIdAndTaskType(@Param("userId") Long userId, @Param("taskType") TaskType taskType);
-
-    @Query("SELECT t FROM Task t WHERE t.user.id = :userId AND t.taskType = :taskType AND t.startDate BETWEEN :from AND :to ORDER BY t.startDate ASC")
-    List<Task> findAllByUserIdAndTaskTypeAndDateRange(
-            @Param("userId") Long userId,
-            @Param("taskType") TaskType taskType,
-            @Param("from") LocalDate from,
-            @Param("to") LocalDate to
-    );
-
-    // 캘린더: 일정은 날짜 포함, 루틴은 활성 기간 겹침 (from/to 필수)
+    // 기간 조회: 단발성은 날짜 포함, 반복은 활성 기간 겹침
     @Query("""
             SELECT t FROM Task t
             WHERE t.user.id = :userId
               AND (
-                (t.taskType = 'SCHEDULE' AND t.startDate BETWEEN :from AND :to)
-                OR (t.taskType = 'ROUTINE'
+                (t.repeatType = com.oow.todowithspirit.domain.task.RepeatType.NONE
+                    AND t.startDate BETWEEN :from AND :to)
+                OR (t.repeatType <> com.oow.todowithspirit.domain.task.RepeatType.NONE
                     AND t.startDate <= :to
                     AND (t.repeatEndDate IS NULL OR t.repeatEndDate >= :from))
               )
             ORDER BY t.startDate ASC
             """)
-    List<Task> findCalendarTasksWithDateRange(
+    List<Task> findAllInDateRange(
             @Param("userId") Long userId,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to
