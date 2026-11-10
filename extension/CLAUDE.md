@@ -108,13 +108,13 @@ extension/
       web-auth.content.ts  웹(vercel) localStorage의 로그인 정보를 익스텐션 저장소로 복사
     page/                화면 단위 (TodayPage)
     feature/auth/        authStorage(chrome.storage.local 'auth'), useAuth, LoginScreen
-    feature/task/        등록·완료/해제 API, TodayTaskList(목록, 낙관적 업데이트), TaskItem, TaskInputDock(할 일/루틴 등록 폼)
+    feature/task/        등록·완료/해제·수정 API, TodayTaskList(목록, 낙관적 업데이트), TaskItem, TaskInputDock(할 일/루틴 등록 폼), TaskEditSheet(수정 시트), ImportantButton(할 일 중요 표시), RoutineRepeatPicker(반복 선택, 등록·수정 공용), model/update.ts(수정 요청 만들기)
     entity/task/         할 일 타입, API 조회 함수
     shared/lib/          공용 유틸 (date)
     lib/api.ts           ky 클라이언트 (토큰 헤더, 401 → 로그아웃, 재발급 안 함)
     lib/config.ts        API 주소 등 상수
     index.css
-  public/icon/           익스텐션 아이콘 (현재 WXT 기본 아이콘)
+  public/icon/           익스텐션 아이콘 (정령 이미지, 128은 16px 투명 여백)
   docs/spec.md           기획 문서
   .output/chrome-mv3/    빌드 결과 (git 제외)
 ```
@@ -161,6 +161,7 @@ extension/
 - [x] 오늘 할 일·루틴 목록 조회 — 확인 완료
 - [x] 할 일·루틴 등록 — 확인 완료 (폼은 react-hook-form/zod 없이 useState로 구현)
 - [x] 완료 체크 — 확인 완료
+- [ ] Step 2: 할 일·루틴 수정 + 할 일 중요 표시 — 구현 완료 (2026-11-10), 실제 크롬 확인 전
 
 **✅ MVP (Step 1) 완료 — 2026-10-28 실제 크롬에서 전체 확인.** 다음은 docs/spec.md 6번 로드맵 (Step 2) 및 9번 개선 필요 항목.
 

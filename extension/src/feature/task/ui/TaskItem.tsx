@@ -1,9 +1,13 @@
+import type { ReactNode } from 'react'
+
 interface TaskItemProps {
   title: string
   isCompleted: boolean
   checkColor: string
   onToggle: () => void
+  onEdit: () => void
   subtitle?: string
+  trailing?: ReactNode
 }
 
 // web/src/feature/task/ui/TaskItem.tsx의 체크 버튼 모양을 따르고, 사이드패널용으로 단순화
@@ -12,7 +16,9 @@ export function TaskItem({
   isCompleted,
   checkColor,
   onToggle,
+  onEdit,
   subtitle,
+  trailing,
 }: TaskItemProps) {
   return (
     <li className="flex items-center gap-3 rounded-lg px-1 py-2">
@@ -35,7 +41,12 @@ export function TaskItem({
           </svg>
         )}
       </button>
-      <div className="min-w-0 flex-1">
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label={`${title} 수정`}
+        className="min-w-0 flex-1 text-left"
+      >
         <p
           className={`truncate text-sm ${
             isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'
@@ -44,7 +55,8 @@ export function TaskItem({
           {title}
         </p>
         {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
-      </div>
+      </button>
+      {trailing}
     </li>
   )
 }
