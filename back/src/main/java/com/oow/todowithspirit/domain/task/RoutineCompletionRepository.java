@@ -20,6 +20,4 @@ public interface RoutineCompletionRepository extends JpaRepository<RoutineComple
     );
 
     Optional<RoutineCompletion> findByTaskIdAndCompletionDate(Long taskId, LocalDate completionDate);
-
-    List<RoutineCompletion> findAllByTaskInAndCompletionDateBetween(List<Task> routines, LocalDate startDate, LocalDate endDate);
 }

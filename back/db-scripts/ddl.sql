@@ -19,7 +19,6 @@
 -- CREATE TYPE achievement_type AS ENUM ('FIRST_CATEGORY_COMPLETE', 'CATEGORY_HALF_COMPLETE', 'CATEGORY_ALL_COMPLETE',
 -- 'TOTAL_COMPLTE_COUNT', 'HIDDEN_ACHIEVEMENT', 'STREAK', 'SPIRIT_LEVEL', 'USER_LEVEL', 'SPIRIT_MASTER', 'CATEGORY_MASTER','BADGE_COLLECTOR');
 -- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
--- CREATE TYPE spirit_status AS ENUM ('GROWING', 'ADULT', 'DEPARTED');
 -- CREATE TYPE spirit_temperament AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
 -- CREATE TYPE spirit_action_place AS ENUM ('BOOKSHELF', 'WORKBENCH', 'FRONT_YARD', 'TEA_TABLE', 'BED');
 
@@ -104,7 +103,6 @@ CREATE TABLE spirits
     id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT      NOT NULL,
     spirit_name     VARCHAR(50) NOT NULL     DEFAULT '아기 정령',
-    stage           INT         NOT NULL     DEFAULT 1,
     exp             INT         NOT NULL     DEFAULT 0,
     focus_exp       INT         NOT NULL     DEFAULT 0,
     energy_exp      INT         NOT NULL     DEFAULT 0,
@@ -119,19 +117,6 @@ CREATE TABLE spirits
 ALTER TABLE users
     ADD CONSTRAINT fk_users_rep_spirit
         FOREIGN KEY (representative_spirit_id) REFERENCES spirits (id) ON DELETE SET NULL;
-
--- 정령 진화 이력 테이블
-CREATE TABLE spirit_stage_history
-(
-    id         BIGSERIAL PRIMARY KEY,
-    spirit_id  BIGINT NOT NULL,
-    user_id    BIGINT NOT NULL,
-    from_stage INT    NOT NULL,
-    to_stage   INT    NOT NULL,
-    evolved_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_stage_history_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
-    CONSTRAINT fk_stage_history_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
 
 --  정령 상호작용 로그 테이블 (일일 횟수 제한 체크용)
 CREATE TABLE spirit_interactions
@@ -282,7 +267,7 @@ CREATE TABLE spirit_species
     sort_order      INT          NOT NULL DEFAULT 0,
     asset_key       VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
     image_url       TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
-    image_file_name VARCHAR(150)
+    image_file_name VARCHAR(150) NOT NULL  -- 이미지 파일명 (asset_key 기반)
 );
 
 -- 정령 외형(스킨) 마스터. 각 외형은 하나의 정령 종류에 속함
@@ -314,16 +299,9 @@ CREATE TABLE user_spirit_variant_unlocks
     CONSTRAINT uq_user_variant_unlock UNIQUE (user_id, variant_id)
 );
 
--- spirits 테이블 확장: 알/성장(활동일 기준)/생애주기/진로/외형
+-- spirits 테이블 확장: 알/외형/종류/호감도
 ALTER TABLE spirits
     ADD COLUMN egg_option_id      BIGINT REFERENCES spirit_egg_options (id),
-    ADD COLUMN target_growth_days INT         NOT NULL DEFAULT 35, -- 개체별 목표 성장기간(활동일 기준). 28~42 사이 랜덤 부여, 평균 35
-    ADD COLUMN active_days_count  INT         NOT NULL DEFAULT 0,  -- TODO/루틴을 완료해 생활기록이 생긴 날짜 수. 누적만 되고 감소하지 않음
-    ADD COLUMN last_active_date   DATE,                            -- active_days_count 하루 중복 증가 방지용
-    ADD COLUMN status             VARCHAR(20) NOT NULL DEFAULT 'GROWING', -- spirit_status ENUM
-    ADD COLUMN matured_at         TIMESTAMP WITH TIME ZONE,        -- 성체(ADULT)가 된 시점
-    ADD COLUMN departed_at        TIMESTAMP WITH TIME ZONE,        -- 여행을 떠나 이력으로 남은(DEPARTED) 시점
-    ADD COLUMN career_growth_type VARCHAR(20),                     -- 성체가 될 때 확정되는 진로. growth_type ENUM 재사용 (exp가 가장 높은 축)
     ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id), -- "정령 만나기"로 뽑힌 외형
     ADD COLUMN species_id         BIGINT REFERENCES spirit_species (id),  -- 정령 종류 (종류당 1마리)
     ADD COLUMN affection          INT         NOT NULL DEFAULT 0,         -- 호감도 0~100%. 할 일 완료 1회당 +1, 감소 없음. 단계(1~5)는 20%마다 1단계
@@ -587,7 +565,6 @@ CREATE INDEX idx_refresh_tokens_active ON refresh_tokens (token) WHERE NOT is_re
 
 -- 정령 목록 / 인터랙션 일별 집계
 CREATE INDEX idx_spirits_user ON spirits (user_id);
-CREATE INDEX idx_stage_history_spirit ON spirit_stage_history (spirit_id);
 -- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, (interacted_at::date));
 -- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, CAST(interacted_at AS DATE));
 

@@ -17,9 +17,8 @@ public class SpiritCollectionResponse {
 
     // 정령 종류
     private final Long speciesId;
-    private final String code;
-    private final String name;
-    private final String description;
+    private final String speciesName;
+    private final String speciesDescription;
     private final AssetResponse image;
 
     // 보유 여부
@@ -31,7 +30,6 @@ public class SpiritCollectionResponse {
     private final Integer affection;      // 호감도 (0~100%)
     private final Integer affectionLevel; // 호감도 단계 (1~5)
     private final Boolean isImportant;
-    private final Boolean isCompleted;    // 다 자람 (성체)
     private final Boolean isRepresentative;
 
     public static SpiritCollectionResponse notOwned(SpiritSpecies species) {
@@ -46,7 +44,6 @@ public class SpiritCollectionResponse {
                 .affection(spirit.getAffection())
                 .affectionLevel(spirit.getAffectionLevel())
                 .isImportant(spirit.isImportant())
-                .isCompleted(spirit.isCompleted())
                 .isRepresentative(spirit.getId().equals(representativeSpiritId))
                 .build();
     }
@@ -54,9 +51,8 @@ public class SpiritCollectionResponse {
     private static SpiritCollectionResponseBuilder base(SpiritSpecies species) {
         return SpiritCollectionResponse.builder()
                 .speciesId(species.getId())
-                .code(species.getCode())
-                .name(species.getSpeciesName())
-                .description(species.getDescription())
+                .speciesName(species.getSpeciesName())
+                .speciesDescription(species.getDescription())
                 .image(AssetResponse.of(species.getAssetKey(), species.getImageUrl(), species.getImageFileName()));
     }
 }

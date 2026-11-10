@@ -38,7 +38,7 @@ public class SpiritService {
 
     /**
      * 정령도감 조회.
-     * 전체 정령 종류를 정렬 순서대로 반환하고, 사용자가 보유한 종류는 그 정령의 호감도·중요·완료 여부를 함께 담는다.
+     * 전체 정령 종류를 정렬 순서대로 반환하고, 사용자가 보유한 종류는 그 정령의 호감도·중요 여부를 함께 담는다.
      */
     @Transactional(readOnly = true)
     public List<SpiritCollectionResponse> getSpiritCollection(Long userId) {
@@ -168,18 +168,29 @@ public class SpiritService {
         spirit.updateImportant(request.getIsImportant());
     }
 
-    /* 대표 정령 조회 및 없으면 기본 정령 자동 생성 */
+    /**
+     * 대표 정령 조회.
+     * 대표 정령이 없거나 지워졌으면 가장 먼저 만난 정령을 대표로 지정하고,
+     * 보유한 정령이 하나도 없으면(과거 계정) 기본 정령을 생성해 대표로 지정한다.
+     */
     @Transactional
     public Spirit getOrCreateRepresentativeSpirit(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
 
         if (user.getRepresentativeSpiritId() != null) {
-            return spiritRepository.findById(user.getRepresentativeSpiritId())
-                    .orElseGet(() -> createDefaultSpirit(user)); // ID는 있으나 데이터가 지워진 경우 대비
-        } else {
-            return createDefaultSpirit(user); // 과거 계정용 자동 생성
+            Optional<Spirit> representative = spiritRepository.findById(user.getRepresentativeSpiritId());
+            if (representative.isPresent()) {
+                return representative.get();
+            }
         }
+
+        return spiritRepository.findFirstByUserIdOrderByIdAsc(userId)
+                .map(firstMet -> {
+                    user.setRepresentativeSpiritId(firstMet.getId());
+                    return firstMet;
+                })
+                .orElseGet(() -> createDefaultSpirit(user));
     }
 
     /**
