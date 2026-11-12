@@ -1,18 +1,9 @@
 // web/src/entity/task/model/type.ts에서 MVP에 필요한 부분만 복사
+// 필드는 android TaskListItemResponse 기준 (category·isPublic·memo는 API에서 빠짐, 2026-11-09 b143473)
 
 export type TaskType = 'SCHEDULE' | 'HABIT' | 'ROUTINE'
 
 export type RepeatType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
-
-export type Category =
-  | 'FINANCE'
-  | 'GROWTH'
-  | 'HEALTH'
-  | 'HOBBY'
-  | 'RELATIONSHIP'
-  | 'WORK'
-  | 'ETC'
-  | 'NONE'
 
 export interface TaskScheduleParams {
   from?: string
@@ -23,12 +14,9 @@ export interface CalendarItem {
   taskId: number
   taskType: TaskType
   title: string
-  category: Category | null
-  memo: string | null
   isAllDay?: boolean
   isCompleted: boolean
   isImportant: boolean
-  isPublic: boolean
   occurrenceDate: string
   endDate?: string | null
   endTime?: string | null
@@ -37,6 +25,7 @@ export interface CalendarItem {
   repeatDaysOfWeek?: string[]
   repeatDaysOfMonth?: number[]
   excludeHoliday?: boolean
+  notificationMinutes?: number | null
   completedAt?: string | null
   createdAt?: string
   updatedAt?: string

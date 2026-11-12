@@ -27,10 +27,11 @@
 | - | 로그인 | 위 기능을 쓰려면 필수 (아래 7번 참고) | |
 
 - **중요 표시는 MVP에서 제외** (2026-10-27 결정). 백엔드 루틴 요청에 `isImportant` 필드가 없어 루틴은 불가능하고, 할 일/루틴을 똑같이 맞추기 위해 둘 다 뺀다. 목록에서 기존 중요 상태를 보여주는 것도 하지 않는다.
+  - → 2026-11-10 변경: **할 일만** 중요 표시를 지원한다 (web도 할 일에만 별이 있음). 루틴은 여전히 불가.
 
 ### MVP에서 제외 (나중에)
-- 할 일/루틴 **수정**, 삭제, 미루기
-- **중요 표시** (할 일은 API로 가능하므로 나중에 추가 가능, 루틴은 백엔드 필드 추가 필요)
+- ~~할 일/루틴 **수정**~~ (2026-11-10 추가), 삭제, 미루기
+- ~~**중요 표시**~~ (2026-11-10 할 일만 추가. 루틴은 백엔드 필드 추가 필요)
 - 다른 날짜 보기 (어제/내일/날짜 선택)
 - 정령, 숲(Unity), 기록(Record), 마이페이지/설정
 - 알림, 뱃지, 단축키 등 익스텐션 전용 기능
@@ -47,8 +48,12 @@ Base URL: `https://custom-lucky-draw.store` (`src/lib/config.ts`. web/.env의 �
 | 루틴 등록 | `POST api/task/routine` (`title`, `repeatType`, `repeatDaysOfWeek?`, `repeatDaysOfMonth?`, ...) | `web/src/feature/task/ui/RoutineForm.tsx`, `web/src/feature/task/model/routineSchema.ts` |
 | 완료 | `POST api/task/{taskId}/complete?date=YYYY-MM-DD` | `web/src/feature/task/api/mutate.ts` |
 | 완료 해제 | `DELETE api/task/{taskId}/complete?date=YYYY-MM-DD` | 위와 같음 |
+| 할 일 수정 / 중요 표시 | `PATCH api/task/schedule/{taskId}` (`title`, `endDateTime`, `isAllDay`, `isImportant`, `notificationType`) | `web/src/feature/task/ui/TaskEditForm.tsx`, `TodayTodoCard.tsx` |
+| 루틴 수정 | `PATCH api/task/routine/{taskId}` (`title`, `repeatType`, `repeatDaysOfWeek?`, `repeatDaysOfMonth?`, `repeatEndDate?`, `excludeHoliday`, `notificationType`) | `web/src/feature/task/ui/TaskEditForm.tsx` |
 | 로그인 / 토큰 재발급 | `web/src/feature/auth/api/*`, `POST api/auth/reissue` | `web/src/lib/api.ts` |
 
+- ⚠️ 수정 API는 **보내지 않은 값을 지운다** (`back/.../TaskService.java` `updateSchedule`/`updateRoutine`: 알림, 루틴 반복 종료일). 그래서 편집 화면에 없는 값도 조회 응답(`notificationMinutes`, `repeatEndDate`)에서 가져와 같이 보낸다 (`feature/task/model/update.ts`).
+- 참고: 웹 `TaskEditForm`은 카테고리·공개 상태·메모도 보내지만 백엔드 수정 API에 이 필드가 없어 저장되지 않는다 → 익스텐션 수정 화면에서는 뺐다.
 - 참고: 웹의 `CreateRoutineRequest`는 알림 필드를 `notification`으로 보내지만 백엔드 필드명은 `notificationType`이다. 익스텐션에서는 `notificationType`을 쓴다 (MVP에서는 알림을 보내지 않아도 됨).
 
 ## 5. 화면 구성 (초안)
@@ -74,7 +79,7 @@ Base URL: `https://custom-lucky-draw.store` (`src/lib/config.ts`. web/.env의 �
 ## 6. 로드맵
 
 - **Step 1 (MVP)**: 위 3번 범위 — ✅ 완료 (2026-10-28)
-- **Step 2**: 다른 날짜 보기 (이전/다음 날), 할 일/루틴 수정
+- **Step 2**: 다른 날짜 보기 (이전/다음 날), 할 일/루틴 수정 + 할 일 중요 표시 (✅ 2026-11-10)
 - **이후 후보**: 삭제·미루기, 정령/기록 화면, 툴바 뱃지(남은 할 일 수), 알림, 단축키, 팝업/새 탭 등 다른 형태
 
 ## 7. 로그인

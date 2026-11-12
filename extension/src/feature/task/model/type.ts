@@ -26,3 +26,38 @@ export interface CreateRoutineRequest {
   repeatDaysOfWeek?: DayOfWeek[]
   repeatDaysOfMonth?: number[]
 }
+
+// web의 NotificationType과 같음. 백엔드 enum: NONE, TEN_MINUTES(10), THIRTY_MINUTES(30), ONE_HOUR(60)
+export type NotificationType =
+  | 'NONE'
+  | 'TEN_MINUTES'
+  | 'THIRTY_MINUTES'
+  | 'ONE_HOUR'
+
+// 백엔드 ScheduleUpdateRequest에 있는 필드만. 보내지 않은 알림은 지워지므로 기존 값을 같이 보낸다
+export interface UpdateScheduleRequest {
+  taskId: number
+  title: string
+  endDateTime: string
+  isAllDay: boolean
+  isImportant: boolean
+  notificationType: NotificationType
+}
+
+// 백엔드 RoutineUpdateRequest에 있는 필드만. 보내지 않은 반복 종료일·알림은 지워지므로 기존 값을 같이 보낸다
+export interface UpdateRoutineRequest {
+  taskId: number
+  title: string
+  repeatType: RoutineRepeatType
+  repeatEndDate?: string
+  repeatDaysOfWeek?: DayOfWeek[]
+  repeatDaysOfMonth?: number[]
+  excludeHoliday: boolean
+  notificationType: NotificationType
+}
+
+// 완료 시 지급된 재화. 이미 지급된 적 있으면 currencyEarned = 0 (android TaskCompletionResponse)
+export interface TaskCompletionResponse {
+  currencyEarned: number
+  balance: number
+}
