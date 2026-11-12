@@ -22,7 +22,6 @@ public class TaskOccurrenceResponse {
     private final Boolean isAllDay;
     private final Boolean isImportant;
 
-    private final Boolean isRepeating;
     private final String repeatType;
     private final LocalDate repeatEndDate;
     private final List<String> repeatDaysOfWeek;
@@ -49,7 +48,6 @@ public class TaskOccurrenceResponse {
         this.endTime = task.getEndTime();
         this.isAllDay = task.isAllDay();
         this.isImportant = task.isImportant();
-        this.isRepeating = task.isRepeating();
         this.repeatType = task.getRepeatType().name();
         this.repeatEndDate = task.getRepeatEndDate();
         this.repeatDaysOfWeek = task.getRepeatDaysOfWeek().stream().sorted().map(DayOfWeek::name).toList();

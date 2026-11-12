@@ -227,11 +227,6 @@ public class TaskService {
     // =========================================================
 
     @Transactional(readOnly = true)
-    public TaskListResponse<TaskOccurrenceResponse> getTasks(Long userId, LocalDate from, LocalDate to) {
-        return TaskListResponse.of(loadOccurrences(userId, from, to));
-    }
-
-    @Transactional(readOnly = true)
     public CalendarTasksResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
         return CalendarTasksResponse.of(loadOccurrences(userId, from, to));
     }
@@ -339,6 +334,9 @@ public class TaskService {
             }
             routineCompletionRepository.save(RoutineCompletion.of(task, completionDate));
         } else {
+            if (task.isCompleted()) {
+                throw new ApiException(ErrorCode.ALREADY_COMPLETED, "Task already completed");
+            }
             task.completeTask();
         }
 
@@ -364,22 +362,25 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
 
-        // 완료 취소
+        // 완료 취소 + 지급됐던 재화 회수
         if (task.isRepeating()) {
             RoutineCompletion completion = routineCompletionRepository
                     .findByTaskIdAndCompletionDate(taskId, completionDate)
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task is not completed on " + completionDate));
             routineCompletionRepository.delete(completion);
+            currencyService.reverseTaskComplete(userId, taskId, completionDate);
         } else {
+            if (!task.isCompleted()) {
+                throw new ApiException(ErrorCode.NOT_FOUND, "Task is not completed");
+            }
             task.undoCompleteTask();
+            // 단발성은 완료가 한 번뿐이므로 요청 date와 상관없이 회수 (미루기로 날짜가 바뀐 경우 포함)
+            currencyService.reverseAllTaskComplete(userId, taskId);
         }
 
         // 대표 정령 경험치 차감 (없으면 자동 생성 후 차감)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
         spirit.decreaseExp(task.getGrowthValue(), task.getGrowthType());
-
-        // 지급됐던 재화 회수
-        currencyService.reverseTaskComplete(userId, taskId, completionDate);
     }
 
     /**
