@@ -227,11 +227,6 @@ public class TaskService {
     // =========================================================
 
     @Transactional(readOnly = true)
-    public TaskListResponse<TaskOccurrenceResponse> getTasks(Long userId, LocalDate from, LocalDate to) {
-        return TaskListResponse.of(loadOccurrences(userId, from, to));
-    }
-
-    @Transactional(readOnly = true)
     public CalendarTasksResponse getCalendarTasks(Long userId, LocalDate from, LocalDate to) {
         return CalendarTasksResponse.of(loadOccurrences(userId, from, to));
     }
