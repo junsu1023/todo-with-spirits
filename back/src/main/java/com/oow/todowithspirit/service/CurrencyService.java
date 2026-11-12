@@ -9,7 +9,6 @@ import com.oow.todowithspirit.domain.currency.CurrencyWallet;
 import com.oow.todowithspirit.domain.currency.CurrencyWalletRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,35 +35,46 @@ public class CurrencyService {
     }
 
     /**
-     * 할 일 완료에 대한 재화를 지급한다. 같은 (taskId, completionDate)에는 한 번만 지급된다 — 동시 요청이
-     * 겹쳐도 DB UNIQUE 제약(task_id, task_completion_date)이 두 번째 삽입을 막아주므로 멱등하다.
+     * 할 일 완료에 대한 재화를 지급한다. 같은 (taskId, completionDate)에는 한 번만 지급된다.
+     * 이미 지급 내역이 있으면 INSERT 하지 않고 0을 반환한다.
+     * (UNIQUE 위반 예외를 잡는 방식은 호출한 트랜잭션 전체를 rollback-only로 만들어 500이 나므로 사용하지 않음)
      * @return 이번 호출로 실제 지급된 금액 (이미 지급된 적이 있으면 0)
      */
     @Transactional
     public long creditForTaskComplete(Long userId, long amount, Long taskId, LocalDate completionDate) {
-        CurrencyTransaction transaction = CurrencyTransaction.ofTaskComplete(userId, amount, taskId, completionDate);
-        try {
-            currencyTransactionRepository.saveAndFlush(transaction);
-        } catch (DataIntegrityViolationException e) {
+        if (currencyTransactionRepository.existsByTaskIdAndTaskCompletionDateAndReason(
+                taskId, completionDate, CurrencyReason.TASK_COMPLETE)) {
             log.info("[creditForTaskComplete] Already credited. userId={}, taskId={}, date={}", userId, taskId, completionDate);
             return 0L;
         }
 
+        currencyTransactionRepository.save(CurrencyTransaction.ofTaskComplete(userId, amount, taskId, completionDate));
         getOrCreateWallet(userId).credit(amount);
         return amount;
     }
 
     /**
-     * 완료 취소 시 해당 지급 내역을 되돌린다. 지급된 적이 없으면(이미 취소됐거나 원래 지급 실패) 아무 일도 하지 않는다.
+     * 완료 취소 시 해당 날짜의 지급 내역을 되돌린다. 지급된 적이 없으면 아무 일도 하지 않는다.
      */
     @Transactional
     public void reverseTaskComplete(Long userId, Long taskId, LocalDate completionDate) {
         currencyTransactionRepository
                 .findByTaskIdAndTaskCompletionDateAndReason(taskId, completionDate, CurrencyReason.TASK_COMPLETE)
-                .ifPresent(transaction -> {
-                    currencyTransactionRepository.delete(transaction);
-                    getOrCreateWallet(userId).debit(transaction.getAmount());
-                });
+                .ifPresent(transaction -> reverse(userId, transaction));
+    }
+
+    /**
+     * 단발성 할 일 완료 취소용: 날짜와 상관없이 해당 할 일의 지급 내역을 모두 되돌린다.
+     */
+    @Transactional
+    public void reverseAllTaskComplete(Long userId, Long taskId) {
+        currencyTransactionRepository.findAllByTaskIdAndReason(taskId, CurrencyReason.TASK_COMPLETE)
+                .forEach(transaction -> reverse(userId, transaction));
+    }
+
+    private void reverse(Long userId, CurrencyTransaction transaction) {
+        currencyTransactionRepository.delete(transaction);
+        getOrCreateWallet(userId).debit(transaction.getAmount());
     }
 
     /**
