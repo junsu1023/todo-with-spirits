@@ -25,7 +25,6 @@ public class TaskResponse {
     private Boolean isImportant;
 
     // 반복
-    private Boolean isRepeating;
     private String repeatType;
     private LocalDate repeatEndDate;
     private List<String> repeatDaysOfWeek;
@@ -55,7 +54,6 @@ public class TaskResponse {
                 .endTime(task.getEndTime())
                 .isAllDay(task.isAllDay())
                 .isImportant(task.isImportant())
-                .isRepeating(task.isRepeating())
                 .repeatType(task.getRepeatType().name())
                 .repeatEndDate(task.getRepeatEndDate())
                 .repeatDaysOfWeek(task.getRepeatDaysOfWeek().stream().sorted().map(DayOfWeek::name).toList())

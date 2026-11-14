@@ -1,8 +1,11 @@
 package com.example.todowithspirits.testutil
 
+import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
+import com.example.domain.model.TaskCompletionReward
+import com.example.domain.model.TaskList
 import com.example.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalTime
@@ -30,17 +33,21 @@ class FakeTaskRepository : TaskRepository {
 
     override suspend fun getTask(taskId: Long): Result<Task> = getTaskResult ?: error("not used")
     override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> = taskCalendarResult
+    override suspend fun getSchedules(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
+    override suspend fun getRoutines(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
     override suspend fun createTodo(todo: NewTodo): Result<Task> {
         lastCreatedTodo = todo
         return createTodoResult ?: error("not used")
     }
-    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<Unit> = error("not used")
+    override suspend fun createRoutine(routine: NewRoutine): Result<Task> = error("not used")
+    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<TaskCompletionReward> = error("not used")
     override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit> = error("not used")
     override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> = error("not used")
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
         lastUpdatedTodo = taskId to todo
         return updateTodoResult ?: error("not used")
     }
+    override suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Task> = error("not used")
 
     override suspend fun postponeTask(
         taskId: Long,

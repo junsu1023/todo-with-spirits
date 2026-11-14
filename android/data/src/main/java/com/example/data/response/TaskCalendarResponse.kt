@@ -11,22 +11,25 @@ data class TaskCalendarResponse(
     val items: List<TaskListItemResponse> = emptyList()
 )
 
+// SCHEDULE 전용(isAllDay, endDate, endTime)과 ROUTINE 전용(excludeHoliday, repeat*) 필드는 nullable.
 data class TaskListItemResponse(
-    val category: String,
     val completedAt: String?,
     val createdAt: String,
     val endDate: String?,
     val endTime: String?,
+    val excludeHoliday: Boolean?,
     val growthType: String?,
     val growthValue: Int,
-    val isAllDay: Boolean,
+    val isAllDay: Boolean?,
     val isCompleted: Boolean,
     val isImportant: Boolean,
-    val isPublic: Boolean,
-    val memo: String?,
     val notificationAt: String?,
     val notificationMinutes: Int?,
     val occurrenceDate: String,
+    val repeatDaysOfMonth: List<Int>?,
+    val repeatDaysOfWeek: List<String>?,
+    val repeatEndDate: String?,
+    val repeatType: String?,
     val taskId: Long,
     val taskType: String,
     val title: String,

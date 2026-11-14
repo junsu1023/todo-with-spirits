@@ -7,9 +7,12 @@ import com.example.data.mapper.toRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
 import com.example.domain.exception.FieldValidationException
+import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
+import com.example.domain.model.TaskCompletionReward
+import com.example.domain.model.TaskList
 import com.example.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalTime
@@ -26,12 +29,26 @@ class TaskRepositoryImpl @Inject constructor(
         return taskRemoteDataSource.getTaskCalendar(from?.toString(), to?.toString()).mapCatching { it.toDomain() }
     }
 
+    override suspend fun getSchedules(from: LocalDate?, to: LocalDate?): Result<TaskList> {
+        return taskRemoteDataSource.getSchedules(from?.toString(), to?.toString()).mapCatching { it.toDomain() }
+    }
+
+    override suspend fun getRoutines(from: LocalDate?, to: LocalDate?): Result<TaskList> {
+        return taskRemoteDataSource.getRoutines(from?.toString(), to?.toString()).mapCatching { it.toDomain() }
+    }
+
     override suspend fun createTodo(todo: NewTodo): Result<Task> {
         return taskRemoteDataSource.createTodo(todo.toRequest()).mapCatching { it.toDomain() }
     }
 
-    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<Unit> {
-        return taskRemoteDataSource.completeTask(taskId, date.toString())
+    override suspend fun createRoutine(routine: NewRoutine): Result<Task> {
+        return taskRemoteDataSource.createRoutine(routine.toRequest())
+            .mapCatching { it.toDomain() }
+            .recoverFieldValidationErrors()
+    }
+
+    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<TaskCompletionReward> {
+        return taskRemoteDataSource.completeTask(taskId, date.toString()).mapCatching { it.toDomain() }
     }
 
     override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit> {
@@ -44,6 +61,12 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
         return taskRemoteDataSource.updateTodo(taskId, todo.toRequest()).mapCatching { it.toDomain() }
+    }
+
+    override suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Task> {
+        return taskRemoteDataSource.updateRoutine(taskId, routine.toRequest())
+            .mapCatching { it.toDomain() }
+            .recoverFieldValidationErrors()
     }
 
     override suspend fun postponeTask(
@@ -60,7 +83,7 @@ class TaskRepositoryImpl @Inject constructor(
         return taskRemoteDataSource.postponeTask(taskId, request).recoverFieldValidationErrors()
     }
 
-    // 미루기 400 응답은 originalDate/newDate/postponeCount/repeatType 등 구체적인 필드별 사유를
+    // 미루기·루틴 생성/수정 400 응답은 originalDate/newDate/repeatDaysOfWeek 등 구체적인 필드별 사유를
     // 내려주므로, 화면에서 그대로 보여줄 수 있게 FieldValidationException으로 변환해둔다.
     private fun <T> Result<T>.recoverFieldValidationErrors(): Result<T> {
         val error = exceptionOrNull() ?: return this

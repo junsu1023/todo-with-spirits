@@ -12,6 +12,7 @@ import com.example.data.response.EmailAvailabilityResponse
 import com.example.data.response.LoginResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
+import com.example.data.response.SubscriptionResponse
 import com.example.data.response.UserProfileResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -49,6 +50,9 @@ interface AuthApi {
 
     @PATCH(URLConstant.USER.USER_ME)
     suspend fun updateUserProfile(@Body request: UpdateUserProfileRequest): Response<ApiResponse<UserProfileResponse>>
+
+    @GET(URLConstant.USER.USER_SUBSCRIPTION)
+    suspend fun getSubscription(): Response<ApiResponse<SubscriptionResponse>>
 
     @POST(URLConstant.USER.EMAIL_VERIFY_RESEND)
     suspend fun resendEmailVerification(): Response<ApiResponse<Unit?>>

@@ -55,19 +55,8 @@ public class TaskController {
     // 조회
     // ==============================================
 
-    // 기간 내 occurrence 목록 (from/to 생략 시 오늘)
-    @GetMapping
-    public ResponseEntity<ApiResponse<TaskListResponse<TaskOccurrenceResponse>>> getTasks(
-            @AuthenticationPrincipal Long userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        LocalDate today = LocalDate.now();
-        return ResponseEntity.ok(ApiResponse.success(
-                taskService.getTasks(userId, from != null ? from : today, to != null ? to : today)));
-    }
-
-    // 캘린더 (occurrence 목록 + 완료 집계)
-    @GetMapping("/calendar")
+    // 일정 목록 (occurrence 목록 + 완료 집계)
+    @GetMapping()
     public ResponseEntity<ApiResponse<CalendarTasksResponse>> getCalendarTasks(
             @AuthenticationPrincipal Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,

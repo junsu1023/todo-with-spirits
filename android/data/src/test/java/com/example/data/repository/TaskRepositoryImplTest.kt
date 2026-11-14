@@ -7,10 +7,13 @@ import com.example.data.error.ApiException
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
+import com.example.data.request.RoutineRequest
 import com.example.data.response.ApiResponse
 import com.example.data.response.DeleteTaskResponse
 import com.example.data.response.TaskCalendarResponse
+import com.example.data.response.TaskCompletionResponse
 import com.example.data.response.TaskDetailResponse
+import com.example.data.response.TaskListResponse
 import com.example.domain.exception.FieldValidationException
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -38,11 +41,15 @@ class TaskRepositoryImplTest {
 
         override suspend fun getTask(taskId: Long): Response<ApiResponse<TaskDetailResponse>> = error("not used")
         override suspend fun getTaskCalendar(from: String?, to: String?): Response<ApiResponse<TaskCalendarResponse>> = error("not used")
+        override suspend fun getSchedules(from: String?, to: String?): Response<ApiResponse<TaskListResponse>> = error("not used")
+        override suspend fun getRoutines(from: String?, to: String?): Response<ApiResponse<TaskListResponse>> = error("not used")
         override suspend fun createTodo(request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
-        override suspend fun completeTask(taskId: Long, date: String): Response<ApiResponse<Unit?>> = error("not used")
+        override suspend fun createRoutine(request: RoutineRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
+        override suspend fun completeTask(taskId: Long, date: String): Response<ApiResponse<TaskCompletionResponse>> = error("not used")
         override suspend fun cancelTaskCompletion(taskId: Long, date: String): Response<ApiResponse<Unit?>> = error("not used")
         override suspend fun deleteTasks(request: DeleteTaskRequest): Response<ApiResponse<DeleteTaskResponse>> = error("not used")
         override suspend fun updateTodo(taskId: Long, request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
+        override suspend fun updateRoutine(taskId: Long, request: RoutineRequest): Response<ApiResponse<TaskDetailResponse>> = error("not used")
 
         override suspend fun postponeTask(taskId: Long, request: PostponeTaskRequest): Response<ApiResponse<Unit?>> {
             lastTaskId = taskId

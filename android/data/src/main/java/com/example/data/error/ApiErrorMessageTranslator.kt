@@ -16,19 +16,16 @@ object ApiErrorMessageTranslator {
         "Provider is required" to "Provider 누락",
         "Provider User Id is required" to "userId 누락",
         "Code is required" to "인증 번호를 입력하세요.",
-        "An account with this email already exists" to "이미 존재하는 계정입니다.",
+        "An account with this email already exists." to "이미 존재하는 계정입니다.",
         "Nickname must be between 2 and 12 characters" to "닉네임은 2~12글자여야 합니다.",
         "Request body is missing or contains an invalid value" to "요청 본문 누락 혹은 유효하지 않은 값 포함",
         "Spirit not found" to "정령을 찾을 수 없습니다.",
         "User not found" to "사용자 정보를 찾을 수 없습니다.",
-        "Cannot query more than 90 days of calendar data" to "90일동안의 데이터만 확인할 수 있습니다.",
-        "Invalid or missing credential" to "유효하지 않거나 누락된 정보가 있습니다.",
-        "date is required" to "유효한 날짜가 아닙니다.",
+        "Cannot query more than 90 days of calendar data." to "90일동안의 데이터만 확인할 수 있습니다.",
         "Notification not found" to "유효하지 않은 알림입니다.",
-        "invalid cursor" to "유효하지 않은 알림입니다.",
+        "Invalid cursor" to "유효하지 않은 알림입니다.",
         "Spirit ID to change is required" to "변경할 정령ID가 필요합니다.",
         "taskIds must not be empty" to "일정이 존재하지 않습니다.",
-        "Not found schedule or routine" to "일정이나 루틴을 찾을 수 없습니다.",
         "Not found schedule or routine." to "일정이나 루틴을 찾을 수 없습니다.",
         "originalDate is required for routines" to "루틴을 미루기 위해서는 기존 일자가 필요합니다.",
         "Not an occurrence date for this routine" to "루틴의 생성 일자가 잘못되었습니다.",
@@ -49,12 +46,18 @@ object ApiErrorMessageTranslator {
         "Task is not a routine" to "일정id로 루틴 생성 시도 - 개발용",
         "isAllDay is required" to "isAllDay는 필수 항목입니다.",
         "endDateTime is required" to "종료일자는 필수 항목입니다.",
-        "Task is not a schedule" to "루틴id로 일정 생성 시도 - 개발용"
+        "Task is not a schedule" to "루틴id로 일정 생성 시도 - 개발용",
+        "Spirit name is required" to "정령 이름을 입력하세요.",
+        "You do not own this spirit" to "보유하지 않은 정령입니다.",
+        "Decoration not found" to "장식을 찾을 수 없습니다.",
+        "You do not own this decoration" to "보유하지 않았거나 설치되지 않은 장식입니다.",
+        "Already installed" to "이미 설치된 장식입니다."
     )
 
     // 뒤에 가변 값(날짜 등)이 붙어 완전 일치가 안 되는 메시지를 위한 접두사 매핑.
     private val prefixTranslations: List<Pair<String, String>> = listOf(
         "Invalid routine date." to "유효하지 않은 날짜입니다.",
+        "Invalid schedule date." to "유효하지 않은 날짜입니다.",
         "Routine already completed on" to "이미 완료된 루틴입니다."
     )
 

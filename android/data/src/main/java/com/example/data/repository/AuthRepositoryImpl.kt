@@ -12,6 +12,7 @@ import com.example.domain.model.LoginSession
 import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
+import com.example.domain.model.Subscription
 import com.example.domain.model.UserProfile
 import com.example.domain.repository.AuthRepository
 import javax.inject.Inject
@@ -68,6 +69,11 @@ class AuthRepositoryImpl @Inject constructor(
         return authRemoteDataSource.updateUserProfile(nickname, representativeSpiritId)
             .mapCatching { it.toDomain() }
             .recoverFieldValidationErrors()
+    }
+
+    override suspend fun getSubscription(): Result<Subscription> {
+        return authRemoteDataSource.getSubscription()
+            .mapCatching { it.toDomain() }
     }
 
     override suspend fun resendEmailVerification(): Result<Unit> {

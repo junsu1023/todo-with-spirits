@@ -27,9 +27,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
-// 카테고리 선택이 디자인에서 빠져, 서버에는 '없음'에 해당하는 NONE으로 보낸다.
-private const val TODO_CATEGORY_NONE = "NONE"
-
 @HiltViewModel
 class AddViewModel @Inject constructor(
     private val createTodoUseCase: CreateTodoUseCase,
@@ -82,9 +79,7 @@ class AddViewModel @Inject constructor(
                             date = task.endDate ?: it.date,
                             isTimeEnabled = task.endTime != null,
                             dueTime = task.endTime ?: it.dueTime,
-                            alarmOption = task.notificationMinutes.toAlarmOption(),
-                            isPublic = task.isPublic,
-                            memo = task.memo
+                            alarmOption = task.notificationMinutes.toAlarmOption()
                         )
                     }
                 }
@@ -137,10 +132,7 @@ private fun AddUiState.toNewTodo(): NewTodo = NewTodo(
     isAllDay = !isTimeEnabled,
     endDateTime = Pair(date, dueTime).concatenating(),
     isImportant = isImportant,
-    notificationType = alarmOption,
-    category = TODO_CATEGORY_NONE,
-    isPublic = isPublic,
-    memo = memo.ifBlank { null }
+    notificationType = alarmOption
 )
 
 private fun Pair<LocalDate, LocalTime>.concatenating(): String =

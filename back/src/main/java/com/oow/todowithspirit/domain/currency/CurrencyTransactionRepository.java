@@ -13,5 +13,10 @@ public interface CurrencyTransactionRepository extends JpaRepository<CurrencyTra
     Optional<CurrencyTransaction> findByTaskIdAndTaskCompletionDateAndReason(
             Long taskId, LocalDate taskCompletionDate, CurrencyReason reason);
 
+    boolean existsByTaskIdAndTaskCompletionDateAndReason(
+            Long taskId, LocalDate taskCompletionDate, CurrencyReason reason);
+
+    List<CurrencyTransaction> findAllByTaskIdAndReason(Long taskId, CurrencyReason reason);
+
     List<CurrencyTransaction> findTop50ByUserIdOrderByCreatedAtDesc(Long userId);
 }
