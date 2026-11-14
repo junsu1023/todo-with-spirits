@@ -35,9 +35,6 @@ public class Task extends BaseTimeEntity {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
-
     @Column(name = "end_time")
     private LocalTime endTime;
 
@@ -134,7 +131,6 @@ public class Task extends BaseTimeEntity {
         boolean repeating = repeatType != null && repeatType != RepeatType.NONE;
         this.title = title;
         this.startDate = date;
-        this.endDate = repeating ? null : date;
         this.endTime = (isAllDay || time == null) ? ALL_DAY_END_TIME : time;
         this.isAllDay = isAllDay || time == null;
         this.isImportant = isImportant;
@@ -175,7 +171,6 @@ public class Task extends BaseTimeEntity {
      */
     public void rescheduleTo(LocalDate newDate, LocalTime newTime) {
         this.startDate = newDate;
-        this.endDate = newDate;
         if (newTime != null && !newTime.equals(this.endTime)) {
             this.endTime = newTime;
             this.isAllDay = false;

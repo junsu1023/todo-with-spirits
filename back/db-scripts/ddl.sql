@@ -320,7 +320,6 @@ CREATE TABLE tasks
     task_type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
     title                VARCHAR(255) NOT NULL,
     start_date           DATE         NOT NULL,
-    end_date             DATE,
     end_time             TIME,
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
     repeat_end_date      DATE,
