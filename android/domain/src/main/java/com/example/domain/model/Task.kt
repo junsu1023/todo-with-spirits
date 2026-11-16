@@ -30,7 +30,7 @@ data class Task(
     val updatedAt: LocalDateTime
 )
 
-// 일정/루틴 완료 시 지급된 재화
+// 일정 완료 시 지급된 재화
 data class TaskCompletionReward(
     val currencyEarned: Int,
     val balance: Int

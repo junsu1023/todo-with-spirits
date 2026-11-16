@@ -21,7 +21,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -114,17 +113,6 @@ class AddViewModelEventTest {
         assertEquals("보고서 수정", todo.title)
         assertTrue(todo.isImportant)
         assertEquals(AlarmOption.THIRTY_MINUTES, todo.notificationType)
-    }
-
-    @Test fun editingRoutineNavigatesBackWithoutLoading() = runTest(testDispatcher) {
-        val repository = FakeTaskRepository().apply { getTaskResult = Result.success(task(9, type = "ROUTINE")) }
-        val viewModel = buildViewModel(repository)
-
-        viewModel.loadTaskForEdit(9)
-        advanceUntilIdle()
-
-        assertNull(viewModel.uiState.value.editingTaskId)
-        assertEquals(AddEffect.NavigateBack, viewModel.effect.first())
     }
 
     @Test fun weekAndMonthDaysToggleOnAndOff() = runTest(testDispatcher) {

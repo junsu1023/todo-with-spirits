@@ -155,7 +155,7 @@ class TodoWidgetRepository @Inject constructor(
     }
 }
 
-// 종일 일정과 루틴은 시간 없이 표시한다. (홈 '오늘 일정'과 같은 규칙)
+// 종일 일정은 시간 없이 표시한다. (홈 '오늘 일정'과 같은 규칙)
 private fun TaskSummary.toWidgetTask(): WidgetTask = WidgetTask(
     id = taskId,
     title = title,

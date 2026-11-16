@@ -6,7 +6,6 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.NewTodo
-import com.example.domain.model.TaskType
 import com.example.domain.usecase.CreateTodoUseCase
 import com.example.domain.usecase.GetTaskUseCase
 import com.example.domain.usecase.UpdateTodoUseCase
@@ -64,13 +63,6 @@ class AddViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             getTaskUseCase(taskId)
                 .onSuccess { task ->
-                    // 루틴은 더 이상 만들거나 고칠 수 없다. 일정 API로 수정하면 실패하므로 막는다.
-                    if (task.taskType == TaskType.ROUTINE.type) {
-                        emitErrorMsg("루틴 일정은 수정할 수 없어요")
-                        sendEffect(AddEffect.NavigateBack)
-                        return@onSuccess
-                    }
-
                     _uiState.update {
                         it.copy(
                             editingTaskId = taskId,
