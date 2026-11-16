@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/spirit")
+@RequestMapping("/api/spirits")
 @RequiredArgsConstructor
 public class SpiritMeetController {
 
