@@ -26,9 +26,3 @@ data class TaskDetailResponse(
     val title: String,
     val updatedAt: String
 )
-
-// 일정 목록 / 루틴 목록 조회 응답
-data class TaskListResponse(
-    val totalCount: Int,
-    val items: List<TaskDetailResponse> = emptyList()
-)

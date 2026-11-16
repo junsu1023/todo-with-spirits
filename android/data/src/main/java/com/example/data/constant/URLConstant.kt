@@ -17,8 +17,6 @@ object URLConstant {
         const val TASK_COMPLETE = "$TASK/{taskId}/complete"
         const val TASK_DELETE = TASK
         const val TASK_SCHEDULE_DETAIL = "$TASK/schedule/{taskId}"
-        const val TASK_ROUTINE = "$TASK/routine"
-        const val TASK_ROUTINE_DETAIL = "$TASK/routine/{taskId}"
         const val TASK_POSTPONE = "$TASK/{taskId}/postpone"
     }
 
