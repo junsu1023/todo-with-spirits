@@ -7,10 +7,8 @@
 --  1. ENUM 타입
 -- ============================================================
 
--- CREATE TYPE task_type AS ENUM ('SCHEDULE', 'ROUTINE');
 -- CREATE TYPE growth_type AS ENUM ('FOCUS', 'ENERGY', 'CONSISTENCY', 'CREATIVITY');
 -- CREATE TYPE repeat_type AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
--- CREATE TYPE category_type AS ENUM ('NONE', 'WORK_STUDY', 'HEALTH', 'LIFE', 'RELATIONSHIP', 'GROWTH', 'HOBBY', 'REST', 'FINANCE');
 -- CREATE TYPE delete_scope AS ENUM ('ONLY_THIS', 'ALL_FUTURE');
 -- CREATE TYPE plan_type AS ENUM ('FREE', 'MONTHLY', 'YEARLY');
 -- CREATE TYPE provider AS ENUM ('KAKAO', 'APPLE', 'GOOGLE');
@@ -28,17 +26,17 @@
 -- 사용자 테이블
 CREATE TABLE users
 (
-    id                       BIGSERIAL PRIMARY KEY,
-    email                    VARCHAR(255),                            -- null: social login
-    password                 VARCHAR(255),                            -- null: social login
-    nickname                 VARCHAR(50) NOT NULL,
-    email_verification_status VARCHAR(30) NOT NULL    DEFAULT 'UNVERIFIED', -- email_verification_status ENUM (UNVERIFIED, VERIFIED, NEEDS_REVERIFICATION)
-    role                     VARCHAR(20) NOT NULL     DEFAULT 'USER', -- user_role ENUM
-    is_premium               BOOLEAN     NOT NULL     DEFAULT FALSE,
-    representative_spirit_id BIGINT,                                  -- spirits FK (순환 참조. ALTER로 후처리)
-    deleted_at               TIMESTAMP WITH TIME ZONE,                -- soft delete
-    created_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                        BIGSERIAL PRIMARY KEY,
+    email                     VARCHAR(255),                                  -- null: social login
+    password                  VARCHAR(255),                                  -- null: social login
+    nickname                  VARCHAR(50) NOT NULL,
+    email_verification_status VARCHAR(30) NOT NULL     DEFAULT 'UNVERIFIED', -- email_verification_status ENUM (UNVERIFIED, VERIFIED, NEEDS_REVERIFICATION)
+    role                      VARCHAR(20) NOT NULL     DEFAULT 'USER',       -- user_role ENUM
+    is_premium                BOOLEAN     NOT NULL     DEFAULT FALSE,
+    representative_spirit_id  BIGINT,                                        -- spirits FK (순환 참조. ALTER로 후처리)
+    deleted_at                TIMESTAMP WITH TIME ZONE,                      -- soft delete
+    created_at                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_users_email UNIQUE (email)
 );
 
@@ -73,9 +71,9 @@ CREATE TABLE email_verification_codes
     id          BIGSERIAL PRIMARY KEY,
     email       VARCHAR(255)             NOT NULL, -- 인증 대상 이메일
     code        VARCHAR(6)               NOT NULL, -- 6자리 숫자 코드 (여러 이메일이 동시에 같은 코드를 받을 수 있어 UNIQUE 아님)
-    verified_at TIMESTAMP WITH TIME ZONE,           -- null: 미사용
+    verified_at TIMESTAMP WITH TIME ZONE,          -- null: 미사용
     expires_at  TIMESTAMP WITH TIME ZONE NOT NULL,
-    created_at  TIMESTAMP WITH TIME ZONE          DEFAULT CURRENT_TIMESTAMP
+    created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_email_verification_codes_email ON email_verification_codes (email);
@@ -139,13 +137,13 @@ CREATE TABLE spirit_interactions
 CREATE TABLE spirit_egg_options
 (
     id          BIGSERIAL PRIMARY KEY,
-    code        VARCHAR(30)  NOT NULL UNIQUE,
-    egg_name    VARCHAR(50)  NOT NULL,
+    code        VARCHAR(30) NOT NULL UNIQUE,
+    egg_name    VARCHAR(50) NOT NULL,
     description TEXT,
     image_url   TEXT,
-    is_tutorial BOOLEAN      NOT NULL DEFAULT FALSE, -- 최초 가입 튜토리얼에서 고정 제공되는 알인지
-    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
-    sort_order  INT          NOT NULL DEFAULT 0
+    is_tutorial BOOLEAN     NOT NULL DEFAULT FALSE, -- 최초 가입 튜토리얼에서 고정 제공되는 알인지
+    is_active   BOOLEAN     NOT NULL DEFAULT TRUE,
+    sort_order  INT         NOT NULL DEFAULT 0
 );
 
 -- 정령별 선천기질 (2~3개 부여, 화면에는 수치가 아닌 태그로만 노출)
@@ -162,11 +160,11 @@ CREATE TABLE spirit_temperaments
 -- 행동장소 마스터 (5곳 고정)
 CREATE TABLE spirit_action_places
 (
-    id                     BIGSERIAL PRIMARY KEY,
-    code                   VARCHAR(30) NOT NULL UNIQUE, -- spirit_action_place ENUM
-    place_name             VARCHAR(50) NOT NULL,
-    representative_action  VARCHAR(50) NOT NULL,
-    sort_order             INT         NOT NULL DEFAULT 0
+    id                    BIGSERIAL PRIMARY KEY,
+    code                  VARCHAR(30) NOT NULL UNIQUE, -- spirit_action_place ENUM
+    place_name            VARCHAR(50) NOT NULL,
+    representative_action VARCHAR(50) NOT NULL,
+    sort_order            INT         NOT NULL DEFAULT 0
 );
 
 -- 장소별 행동예시 (오브젝트 설치 여부에 따라 노출되는 행동 구분)
@@ -206,8 +204,8 @@ CREATE TABLE spirit_home_objects
 CREATE TABLE user_spirit_home_objects
 (
     id           BIGSERIAL PRIMARY KEY,
-    user_id      BIGINT  NOT NULL,
-    object_id    BIGINT  NOT NULL,
+    user_id      BIGINT NOT NULL,
+    object_id    BIGINT NOT NULL,
     installed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_home_objects_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_user_home_objects_object FOREIGN KEY (object_id) REFERENCES spirit_home_objects (id),
@@ -232,12 +230,12 @@ CREATE TABLE spirit_daily_logs
 -- 성체가 된 정령이 보낸 편지
 CREATE TABLE spirit_letters
 (
-    id       BIGSERIAL PRIMARY KEY,
+    id        BIGSERIAL PRIMARY KEY,
     spirit_id BIGINT NOT NULL,
-    user_id  BIGINT NOT NULL,
-    content  TEXT   NOT NULL,
-    sent_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    read_at  TIMESTAMP WITH TIME ZONE,
+    user_id   BIGINT NOT NULL,
+    content   TEXT   NOT NULL,
+    sent_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    read_at   TIMESTAMP WITH TIME ZONE,
     CONSTRAINT fk_spirit_letters_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
     CONSTRAINT fk_spirit_letters_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
@@ -276,17 +274,17 @@ CREATE TABLE spirit_species
 -- 행을 넣어야 해금됨 (추후 버릇/추억/친밀도 구현 시 자동 평가 로직 추가 예정)
 CREATE TABLE spirit_variants
 (
-    id                BIGSERIAL PRIMARY KEY,
-    code              VARCHAR(30)  NOT NULL UNIQUE,
-    species_id        BIGINT       NOT NULL REFERENCES spirit_species (id),
-    variant_name      VARCHAR(50)  NOT NULL,
-    unlock_metric     VARCHAR(30)  NOT NULL, -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
-    unlock_threshold  INT          NOT NULL DEFAULT 0,
-    weight            INT          NOT NULL DEFAULT 1, -- 뽑기 가중치
-    sort_order        INT          NOT NULL DEFAULT 0,
-    asset_key         VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
-    image_url         TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
-    image_file_name   VARCHAR(150)
+    id               BIGSERIAL PRIMARY KEY,
+    code             VARCHAR(30)  NOT NULL UNIQUE,
+    species_id       BIGINT       NOT NULL REFERENCES spirit_species (id),
+    variant_name     VARCHAR(50)  NOT NULL,
+    unlock_metric    VARCHAR(30)  NOT NULL,           -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
+    unlock_threshold INT          NOT NULL DEFAULT 0,
+    weight           INT          NOT NULL DEFAULT 1, -- 뽑기 가중치
+    sort_order       INT          NOT NULL DEFAULT 0,
+    asset_key        VARCHAR(100) NOT NULL,           -- Unity 클라이언트가 번들에서 찾는 공통 식별자
+    image_url        TEXT,                            -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
+    image_file_name  VARCHAR(150)
 );
 
 -- 유저별 정령 외형 해금 현황
@@ -301,37 +299,35 @@ CREATE TABLE user_spirit_variant_unlocks
 
 -- spirits 테이블 확장: 알/외형/종류/호감도
 ALTER TABLE spirits
-    ADD COLUMN egg_option_id      BIGINT REFERENCES spirit_egg_options (id),
+    ADD COLUMN egg_option_id BIGINT REFERENCES spirit_egg_options (id),
     ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id), -- "정령 만나기"로 뽑힌 외형
     ADD COLUMN species_id         BIGINT REFERENCES spirit_species (id),  -- 정령 종류 (종류당 1마리)
     ADD COLUMN affection          INT         NOT NULL DEFAULT 0,         -- 호감도 0~100%. 할 일 완료 1회당 +1, 감소 없음. 단계(1~5)는 20%마다 1단계
-    ADD COLUMN is_important       BOOLEAN     NOT NULL DEFAULT FALSE;     -- 사용자가 지정한 중요 표시
+    ADD COLUMN is_important       BOOLEAN     NOT NULL DEFAULT FALSE; -- 사용자가 지정한 중요 표시
 
 CREATE UNIQUE INDEX uq_spirits_user_species ON spirits (user_id, species_id);
 
 -- ============================================================
---  4. To-do, schedule, habit 관련 테이블
+--  4. 할 일 관련 테이블
 -- ============================================================
--- To-do, schedule, habit 테이블
+-- 할 일
 CREATE TABLE tasks
 (
     id                   BIGSERIAL PRIMARY KEY,
     user_id              BIGINT       NOT NULL,
-    task_type            VARCHAR(20)  NOT NULL,                   -- task_type ENUM
     title                VARCHAR(255) NOT NULL,
-    start_date           DATE         NOT NULL,
-    end_date             DATE,
-    end_time             TIME,
-    repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- repeat_type ENUM
+    start_date           DATE         NOT NULL,                   -- 단발성: 할 일 날짜 / 반복: 반복 시작일
+    end_time             TIME,                                    -- 하루 종일이면 23:59:59
+    repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- NONE / DAILY / WEEKLY / MONTHLY
     repeat_end_date      DATE,
     growth_type          VARCHAR(20)  NOT NULL,                   -- growth_type ENUM
     growth_value         INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
-    is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,
+    is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,  -- 단발성 전용. 반복은 routine_completions에 날짜별 기록
     is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,
     is_all_day           BOOLEAN      NOT NULL    DEFAULT FALSE,
     exclude_holiday      BOOLEAN      NOT NULL    DEFAULT FALSE,
     notification_minutes INT,
-    notification_at      TIMESTAMP WITH TIME ZONE,                -- 알림 발송 기준 시각 (23:59 - notification_minutes)
+    notification_at      TIMESTAMP WITH TIME ZONE,                -- 알림 발송 시각 (단발성만 저장, 반복은 null → 회차별 계산)
     completed_at         TIMESTAMP WITH TIME ZONE,
     created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -344,8 +340,8 @@ CREATE TABLE spirit_action_logs
     id          BIGSERIAL PRIMARY KEY,
     spirit_id   BIGINT NOT NULL,
     place_id    BIGINT NOT NULL,
-    action_id   BIGINT,          -- spirit_place_actions FK. 카테고리 문구 기반으로 발생한 경우 null
-    task_id     BIGINT,          -- 이 행동을 유발한 TODO/루틴. 정령 자체 행동인 경우 null
+    action_id   BIGINT, -- spirit_place_actions FK. 카테고리 문구 기반으로 발생한 경우 null
+    task_id     BIGINT, -- 이 행동을 유발한 할 일. 정령 자체 행동인 경우 null
     occurred_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_spirit_action_logs_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
     CONSTRAINT fk_spirit_action_logs_place FOREIGN KEY (place_id) REFERENCES spirit_action_places (id),
@@ -358,22 +354,58 @@ CREATE INDEX idx_spirit_action_logs_spirit ON spirit_action_logs (spirit_id, occ
 -- 매주 반복 요일 (WEEKLY)
 CREATE TABLE IF NOT EXISTS task_repeat_days_of_week
 (
-    task_id     BIGINT      NOT NULL,
-    day_of_week VARCHAR(10) NOT NULL,
-    CONSTRAINT fk_rdow_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
-    CONSTRAINT pk_task_repeat_days_of_week PRIMARY KEY (task_id, day_of_week)
-);
+    task_id
+    BIGINT
+    NOT
+    NULL,
+    day_of_week
+    VARCHAR
+(
+    10
+) NOT NULL,
+    CONSTRAINT fk_rdow_task FOREIGN KEY
+(
+    task_id
+) REFERENCES tasks
+(
+    id
+) ON DELETE CASCADE,
+    CONSTRAINT pk_task_repeat_days_of_week PRIMARY KEY
+(
+    task_id,
+    day_of_week
+)
+    );
 
 -- 매월 반복 일 (MONTHLY)
 CREATE TABLE IF NOT EXISTS task_repeat_days_of_month
 (
-    task_id      BIGINT NOT NULL,
-    day_of_month INT    NOT NULL,
-    CONSTRAINT fk_rdom_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
-    CONSTRAINT pk_task_repeat_days_of_month PRIMARY KEY (task_id, day_of_month)
-);
+    task_id
+    BIGINT
+    NOT
+    NULL,
+    day_of_month
+    INT
+    NOT
+    NULL,
+    CONSTRAINT
+    fk_rdom_task
+    FOREIGN
+    KEY
+(
+    task_id
+) REFERENCES tasks
+(
+    id
+) ON DELETE CASCADE,
+    CONSTRAINT pk_task_repeat_days_of_month PRIMARY KEY
+(
+    task_id,
+    day_of_month
+)
+    );
 
--- 루틴 날짜별 완료 기록 (ROUTINE 전용)
+-- 반복 할 일의 날짜별 완료 기록 (repeat_type <> 'NONE' 전용)
 CREATE TABLE routine_completions
 (
     id              BIGSERIAL PRIMARY KEY,
@@ -384,17 +416,28 @@ CREATE TABLE routine_completions
     CONSTRAINT uq_routine_completions UNIQUE (task_id, completion_date)
 );
 
--- Task 미루기 이력 (SCHEDULE/ROUTINE 공통, append-only 이벤트 로그)
+-- 할 일 완료로 대표 정령 경험치·호감도가 오른 기록 (완료 → 취소 → 재완료 시 중복 증가 방지용)
+-- 완료 취소로 지우지 않음. 단발성은 task_id 기준 1회, 반복은 (task_id, completion_date) 기준 1회
+CREATE TABLE task_affection_grants
+(
+    id              BIGSERIAL PRIMARY KEY,
+    task_id         BIGINT                   NOT NULL,
+    completion_date DATE                     NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_task_affection_grants_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT uq_task_affection_grants UNIQUE (task_id, completion_date)
+);
+
+-- 할 일 미루기 이력 (단발성 · 반복 공통, append-only 이벤트 로그)
 -- 미룬 횟수는 COUNT(*) WHERE task_id=? AND original_date=? 로 구함
--- ROUTINE의 현재 유효 날짜/시간은 같은 (task_id, original_date)의 최신(created_at) row 기준
+-- 반복 할 일의 현재 유효 날짜/시간은 같은 (task_id, original_date)의 최신(created_at) row 기준
 CREATE TABLE task_postponements
 (
     id             BIGSERIAL PRIMARY KEY,
-    task_id        BIGINT      NOT NULL,
-    user_id        BIGINT      NOT NULL,           -- 리포트 집계용 비정규화
-    task_type      VARCHAR(20) NOT NULL,           -- SCHEDULE / ROUTINE
-    original_date  DATE        NOT NULL,           -- ROUTINE: 반복 규칙상 원래 occurrence 날짜 / SCHEDULE: 최초 예정일 (둘 다 불변, 집계 키)
-    postponed_date DATE        NOT NULL,           -- 이 이동으로 새로 정해진 날짜
+    task_id        BIGINT NOT NULL,
+    user_id        BIGINT NOT NULL, -- 리포트 집계용 비정규화
+    original_date  DATE   NOT NULL, -- 반복: 반복 규칙상 원래 occurrence 날짜 / 단발성: 최초 예정일 (둘 다 불변, 집계 키)
+    postponed_date DATE   NOT NULL, -- 이 이동으로 새로 정해진 날짜
     postponed_time TIME,
     created_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -454,23 +497,23 @@ CREATE TABLE user_achievements
 CREATE TABLE currency_wallets
 (
     user_id    BIGINT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
-    balance    BIGINT NOT NULL DEFAULT 0,
+    balance    BIGINT NOT NULL          DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 재화 지급/소비 이력 (원장). task_id+task_completion_date가 할 일 완료 보상의 멱등성 키
--- (SCHEDULE은 사실상 한 번만, ROUTINE은 날짜별로 반복 지급되므로 둘의 조합이어야 함)
+-- (단발성은 한 번만, 반복은 날짜별로 지급되므로 둘의 조합이어야 함)
 CREATE TABLE currency_transactions
 (
-    id                    BIGSERIAL PRIMARY KEY,
-    user_id               BIGINT      NOT NULL,
-    amount                BIGINT      NOT NULL,           -- 양수: 지급, 음수: 소비
-    reason                VARCHAR(30) NOT NULL,            -- TASK_COMPLETE / DECORATION_PURCHASE / SPIRIT_MEET
-    task_id               BIGINT,                          -- TASK_COMPLETE 전용. 그 외 reason은 NULL
-    task_completion_date  DATE,                            -- TASK_COMPLETE 전용. 그 외 reason은 NULL
-    created_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                   BIGSERIAL PRIMARY KEY,
+    user_id              BIGINT      NOT NULL,
+    amount               BIGINT      NOT NULL, -- 양수: 지급, 음수: 소비
+    reason               VARCHAR(30) NOT NULL, -- TASK_COMPLETE / DECORATION_PURCHASE / SPIRIT_MEET
+    task_id              BIGINT,               -- TASK_COMPLETE 전용. 그 외 reason은 NULL
+    task_completion_date DATE,                 -- TASK_COMPLETE 전용. 그 외 reason은 NULL
+    created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_currency_transactions_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_currency_transactions_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE SET NULL,
     CONSTRAINT uq_currency_tx_task_completion UNIQUE (task_id, task_completion_date)
@@ -484,13 +527,13 @@ CREATE INDEX idx_currency_transactions_user ON currency_transactions (user_id, c
 -- 장식 마스터. home-objects(무료)를 대체하는 유료 버전 — 재화로 구매해야 설치 가능
 CREATE TABLE decorations
 (
-    id               BIGSERIAL PRIMARY KEY,
-    code             VARCHAR(30)  NOT NULL UNIQUE,
-    decoration_name  VARCHAR(50)  NOT NULL,
-    price            BIGINT       NOT NULL,
-    asset_key        VARCHAR(100) NOT NULL,
-    image_url        TEXT,
-    image_file_name  VARCHAR(150)
+    id              BIGSERIAL PRIMARY KEY,
+    code            VARCHAR(30)  NOT NULL UNIQUE,
+    decoration_name VARCHAR(50)  NOT NULL,
+    price           BIGINT       NOT NULL,
+    asset_key       VARCHAR(100) NOT NULL,
+    image_url       TEXT,
+    image_file_name VARCHAR(150)
 );
 
 -- 유저가 구매·설치한 장식
@@ -500,7 +543,7 @@ CREATE TABLE user_decorations
     user_id       BIGINT  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     decoration_id BIGINT  NOT NULL REFERENCES decorations (id),
     purchased_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    is_installed  BOOLEAN NOT NULL DEFAULT FALSE,
+    is_installed  BOOLEAN NOT NULL         DEFAULT FALSE,
     CONSTRAINT uq_user_decoration UNIQUE (user_id, decoration_id)
 );
 
@@ -509,13 +552,13 @@ CREATE TABLE user_decorations
 -- ============================================================
 CREATE TABLE user_settings
 (
-    id                    BIGSERIAL PRIMARY KEY,
-    user_id               BIGINT      NOT NULL UNIQUE,
-    dark_mode             BOOLEAN     NOT NULL     DEFAULT FALSE,
-    language              VARCHAR(10) NOT NULL     DEFAULT 'SYSTEM', -- language ENUM (SYSTEM, KO, EN, JA, ZH)
-    dday_display_enabled  BOOLEAN     NOT NULL     DEFAULT TRUE,     -- 플랜(task) 디데이 표시
-    created_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at            TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                   BIGSERIAL PRIMARY KEY,
+    user_id              BIGINT      NOT NULL UNIQUE,
+    dark_mode            BOOLEAN     NOT NULL     DEFAULT FALSE,
+    language             VARCHAR(10) NOT NULL     DEFAULT 'SYSTEM', -- language ENUM (SYSTEM, KO, EN, JA, ZH)
+    dday_display_enabled BOOLEAN     NOT NULL     DEFAULT TRUE,     -- 플랜(task) 디데이 표시
+    created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
@@ -524,15 +567,15 @@ CREATE TABLE user_settings
 -- ============================================================
 CREATE TABLE notification_settings
 (
-    id                          BIGSERIAL PRIMARY KEY,
-    user_id                     BIGINT  NOT NULL UNIQUE,
-    reminder_enabled            BOOLEAN NOT NULL DEFAULT TRUE,  -- 리마인드 알림
-    postponed_task_enabled      BOOLEAN NOT NULL DEFAULT FALSE, -- 미룬 플랜 정기 알림
-    routine_reminder_enabled    BOOLEAN NOT NULL DEFAULT TRUE,  -- 루틴 안내 알림
-    streak_save_enabled         BOOLEAN NOT NULL DEFAULT TRUE,  -- 스트릭(연속 달성) 세이브 알림
-    night_push_enabled          BOOLEAN NOT NULL DEFAULT FALSE, -- 야간 푸시 알림 수신
-    created_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id                       BIGSERIAL PRIMARY KEY,
+    user_id                  BIGINT  NOT NULL UNIQUE,
+    reminder_enabled         BOOLEAN NOT NULL         DEFAULT TRUE,  -- 리마인드 알림
+    postponed_task_enabled   BOOLEAN NOT NULL         DEFAULT FALSE, -- 미룬 플랜 정기 알림
+    routine_reminder_enabled BOOLEAN NOT NULL         DEFAULT TRUE,  -- 루틴 안내 알림
+    streak_save_enabled      BOOLEAN NOT NULL         DEFAULT TRUE,  -- 스트릭(연속 달성) 세이브 알림
+    night_push_enabled       BOOLEAN NOT NULL         DEFAULT FALSE, -- 야간 푸시 알림 수신
+    created_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notification_settings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
@@ -545,7 +588,7 @@ CREATE TABLE notifications
     user_id    BIGINT      NOT NULL,
     category   VARCHAR(20) NOT NULL, -- notification_category ENUM (SYSTEM, EVENT, SPIRIT)
     content    TEXT        NOT NULL,
-    is_read    BOOLEAN     NOT NULL DEFAULT FALSE,
+    is_read    BOOLEAN     NOT NULL     DEFAULT FALSE,
     read_at    TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -568,13 +611,8 @@ CREATE INDEX idx_spirits_user ON spirits (user_id);
 -- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, (interacted_at::date));
 -- CREATE INDEX idx_interactions_user_date ON spirit_interactions (user_id, CAST(interacted_at AS DATE));
 
--- 태스크 조회 (캘린더, 목록)
-CREATE INDEX idx_tasks_user_date ON tasks (user_id, start_date);
--- 스케줄 전용 날짜 범위 인덱스 (기존 인덱스명 유지 시)
+-- 할 일 기간 조회 (GET /api/task: user_id + start_date 범위)
 CREATE INDEX idx_tasks_user_start_date ON tasks (user_id, start_date);
--- 루틴 종료일 조건 최적화용 복합 인덱스 추가
-CREATE INDEX idx_tasks_calendar_routine ON tasks (user_id, task_type, start_date, repeat_end_date);
-CREATE INDEX idx_tasks_user_type ON tasks (user_id, task_type);
 -- 알림 발송 대상 조회 (알림 서비스용)
 CREATE INDEX idx_tasks_notification_at ON tasks (notification_at) WHERE notification_at IS NOT NULL;
 
