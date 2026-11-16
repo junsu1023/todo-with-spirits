@@ -68,7 +68,7 @@ class AddViewModel @Inject constructor(
                             editingTaskId = taskId,
                             title = task.title,
                             isImportant = task.isImportant,
-                            date = task.endDate ?: it.date,
+                            date = task.occurrenceDate ?: it.date,
                             isTimeEnabled = task.endTime != null,
                             dueTime = task.endTime ?: it.dueTime,
                             alarmOption = task.notificationMinutes.toAlarmOption()

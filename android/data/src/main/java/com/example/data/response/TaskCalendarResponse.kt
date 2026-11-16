@@ -1,21 +1,17 @@
 package com.example.data.response
 
+// 일정 목록 조회 응답 (GET /api/task). 반복 일정은 날짜마다 한 건씩 펼쳐져 내려온다.
 data class TaskCalendarResponse(
     val completedCount: Int,
-    val completedRoutineCount: Int,
-    val completedScheduleCount: Int,
     val inCompleteCount: Int,
-    val routineCount: Int,
-    val scheduleCount: Int,
     val totalCount: Int,
     val items: List<TaskListItemResponse> = emptyList()
 )
 
-// SCHEDULE 전용(isAllDay, endDate, endTime)과 ROUTINE 전용(excludeHoliday, repeat*) 필드는 nullable.
+// 특정 날짜의 일정 1건. 단발성/반복 공통이며 repeatType이 NONE이면 단발성이다.
 data class TaskListItemResponse(
     val completedAt: String?,
     val createdAt: String,
-    val endDate: String?,
     val endTime: String?,
     val excludeHoliday: Boolean?,
     val growthType: String?,
@@ -31,7 +27,6 @@ data class TaskListItemResponse(
     val repeatEndDate: String?,
     val repeatType: String?,
     val taskId: Long,
-    val taskType: String,
     val title: String,
     val updatedAt: String
 )

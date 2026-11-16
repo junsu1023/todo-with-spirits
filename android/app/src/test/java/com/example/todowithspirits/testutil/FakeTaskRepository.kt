@@ -14,11 +14,7 @@ class FakeTaskRepository : TaskRepository {
     var taskCalendarResult: Result<TaskCalendar> = Result.success(
         TaskCalendar(
             completedCount = 0,
-            completedRoutineCount = 0,
-            completedScheduleCount = 0,
             inCompleteCount = 0,
-            routineCount = 0,
-            scheduleCount = 0,
             totalCount = 0,
             items = emptyList()
         )

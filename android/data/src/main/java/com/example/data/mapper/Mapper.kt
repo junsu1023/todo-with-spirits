@@ -83,7 +83,6 @@ fun SocialLoginResponse.toDomain(): SocialLoginSession = SocialLoginSession(
 fun TaskDetailResponse.toDomain(): Task = Task(
     completedAt = completedAt?.let { LocalDateTime.parse(it) },
     createdAt = createdAt?.let { LocalDateTime.parse(it) },
-    endDate = endDate?.let { LocalDate.parse(it) },
     endTime = endTime?.let { LocalTime.parse(it) },
     excludeHoliday = excludeHoliday ?: false,
     growthType = growthType,
@@ -98,8 +97,8 @@ fun TaskDetailResponse.toDomain(): Task = Task(
     repeatDaysOfWeek = repeatDaysOfWeek.orEmpty().map { DayOfWeek.valueOf(it) },
     repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
     repeatType = repeatType,
+    startDate = startDate?.let { LocalDate.parse(it) },
     taskId = taskId,
-    taskType = taskType,
     title = title,
     updatedAt = LocalDateTime.parse(updatedAt)
 )
@@ -111,11 +110,7 @@ fun TaskCompletionResponse.toDomain(): TaskCompletionReward = TaskCompletionRewa
 
 fun TaskCalendarResponse.toDomain(): TaskCalendar = TaskCalendar(
     completedCount = completedCount,
-    completedRoutineCount = completedRoutineCount,
-    completedScheduleCount = completedScheduleCount,
     inCompleteCount = inCompleteCount,
-    routineCount = routineCount,
-    scheduleCount = scheduleCount,
     totalCount = totalCount,
     items = items.map { it.toDomain() }
 )
@@ -123,7 +118,6 @@ fun TaskCalendarResponse.toDomain(): TaskCalendar = TaskCalendar(
 fun TaskListItemResponse.toDomain(): TaskSummary = TaskSummary(
     completedAt = completedAt?.let { LocalDateTime.parse(it) },
     createdAt = LocalDateTime.parse(createdAt),
-    endDate = endDate?.let { LocalDate.parse(it) },
     endTime = endTime?.let { LocalTime.parse(it) },
     excludeHoliday = excludeHoliday ?: false,
     growthType = growthType,
@@ -139,7 +133,6 @@ fun TaskListItemResponse.toDomain(): TaskSummary = TaskSummary(
     repeatEndDate = repeatEndDate?.let { LocalDate.parse(it) },
     repeatType = repeatType,
     taskId = taskId,
-    taskType = taskType,
     title = title,
     updatedAt = LocalDateTime.parse(updatedAt)
 )

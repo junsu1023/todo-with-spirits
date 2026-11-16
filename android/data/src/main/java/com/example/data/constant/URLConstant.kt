@@ -11,12 +11,11 @@ object URLConstant {
 
     object TASK {
         private const val TASK = "$API/task"
+        // 일정 목록 조회(GET, from/to 필수)·생성(POST)·삭제(DELETE)가 같은 경로를 쓴다.
+        const val TASK_LIST = TASK
         const val TASK_DETAIL = "$TASK/{taskId}"
-        const val TASK_CALENDAR = "$TASK/calendar"
-        const val TASK_SCHEDULE = "$TASK/schedule"
         const val TASK_COMPLETE = "$TASK/{taskId}/complete"
         const val TASK_DELETE = TASK
-        const val TASK_SCHEDULE_DETAIL = "$TASK/schedule/{taskId}"
         const val TASK_POSTPONE = "$TASK/{taskId}/postpone"
     }
 

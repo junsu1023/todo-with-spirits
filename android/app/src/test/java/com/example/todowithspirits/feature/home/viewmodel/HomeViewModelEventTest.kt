@@ -45,11 +45,11 @@ class HomeViewModelEventTest {
     private val today = LocalDate.now()
 
     private fun task(id: Long, title: String, completed: Boolean, important: Boolean, endTime: LocalTime? = null) = TaskSummary(
-        completedAt = null, createdAt = today.atStartOfDay(), endDate = today, endTime = endTime, excludeHoliday = false,
+        completedAt = null, createdAt = today.atStartOfDay(), endTime = endTime, excludeHoliday = false,
         growthType = null, growthValue = 10, isAllDay = endTime == null, isCompleted = completed, isImportant = important,
         notificationAt = null, notificationMinutes = null, occurrenceDate = today,
         repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
-        taskId = id, taskType = "SCHEDULE", title = title, updatedAt = today.atStartOfDay()
+        taskId = id, title = title, updatedAt = today.atStartOfDay()
     )
 
     private val todayTasks = listOf(
@@ -61,8 +61,8 @@ class HomeViewModelEventTest {
     private val repository = FakeTaskRepository().apply {
         taskCalendarResult = Result.success(
             TaskCalendar(
-                completedCount = 1, completedRoutineCount = 0, completedScheduleCount = 1, inCompleteCount = 2,
-                routineCount = 0, scheduleCount = 3, totalCount = 3, items = todayTasks
+                completedCount = 1, inCompleteCount = 2,
+                totalCount = 3, items = todayTasks
             )
         )
     }

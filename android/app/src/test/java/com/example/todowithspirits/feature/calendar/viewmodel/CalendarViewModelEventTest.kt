@@ -47,19 +47,19 @@ class CalendarViewModelEventTest {
     }
 
     private fun task(id: Long, title: String, completed: Boolean = false, important: Boolean = false) = TaskSummary(
-        completedAt = null, createdAt = today.atStartOfDay(), endDate = today, endTime = null, excludeHoliday = false,
+        completedAt = null, createdAt = today.atStartOfDay(), endTime = null, excludeHoliday = false,
         growthType = null, growthValue = 0, isAllDay = true, isCompleted = completed, isImportant = important,
         notificationAt = null, notificationMinutes = null, occurrenceDate = today,
         repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
-        taskId = id, taskType = "SCHEDULE", title = title, updatedAt = today.atStartOfDay()
+        taskId = id, title = title, updatedAt = today.atStartOfDay()
     )
 
     private fun buildViewModel(vararg tasks: TaskSummary): CalendarViewModel {
         val repository = FakeTaskRepository().apply {
             taskCalendarResult = Result.success(
                 TaskCalendar(
-                    completedCount = 0, completedRoutineCount = 0, completedScheduleCount = 0, inCompleteCount = 0,
-                    routineCount = 0, scheduleCount = 0, totalCount = tasks.size, items = tasks.toList()
+                    completedCount = 0, inCompleteCount = 0,
+                    totalCount = tasks.size, items = tasks.toList()
                 )
             )
         }

@@ -22,13 +22,13 @@ interface TaskApi {
     @GET(URLConstant.TASK.TASK_DETAIL)
     suspend fun getTask(@Path("taskId") taskId: Long): Response<ApiResponse<TaskDetailResponse>>
 
-    @GET(URLConstant.TASK.TASK_CALENDAR)
+    @GET(URLConstant.TASK.TASK_LIST)
     suspend fun getTaskCalendar(
         @Query("from") from: String?,
         @Query("to") to: String?
     ): Response<ApiResponse<TaskCalendarResponse>>
 
-    @POST(URLConstant.TASK.TASK_SCHEDULE)
+    @POST(URLConstant.TASK.TASK_LIST)
     suspend fun createTodo(@Body request: CreateTodoRequest): Response<ApiResponse<TaskDetailResponse>>
 
     @POST(URLConstant.TASK.TASK_COMPLETE)
@@ -46,7 +46,7 @@ interface TaskApi {
     @HTTP(method = "DELETE", path = URLConstant.TASK.TASK_DELETE, hasBody = true)
     suspend fun deleteTasks(@Body request: DeleteTaskRequest): Response<ApiResponse<DeleteTaskResponse>>
 
-    @PATCH(URLConstant.TASK.TASK_SCHEDULE_DETAIL)
+    @PATCH(URLConstant.TASK.TASK_DETAIL)
     suspend fun updateTodo(
         @Path("taskId") taskId: Long,
         @Body request: CreateTodoRequest
