@@ -33,9 +33,6 @@ public class Spirit {
     @Column(nullable = false)
     private int exp = 0;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @Column(name = "egg_option_id")
     private Long eggOptionId;
 
@@ -61,19 +58,14 @@ public class Spirit {
         this.user = user;
     }
 
-    public Spirit(User user, String imageUrl) {
+    public Spirit(User user, Long eggOptionId) {
         this(user);
-        this.imageUrl = imageUrl;
-    }
-
-    public Spirit(User user, String imageUrl, Long eggOptionId) {
-        this(user, imageUrl);
         this.eggOptionId = eggOptionId;
     }
 
     // "정령 만나기"로 만난 종류의 정령을 생성
     public Spirit(User user, SpiritSpecies species) {
-        this(user, species.getImageUrl());
+        this(user);
         this.speciesId = species.getId();
     }
 

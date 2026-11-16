@@ -101,7 +101,6 @@ CREATE TABLE spirits
     user_id         BIGINT      NOT NULL,
     spirit_name     VARCHAR(50) NOT NULL     DEFAULT '아기 정령',
     exp             INT         NOT NULL     DEFAULT 0, -- 특성 경험치 (할 일 완료로 누적, 완료 취소로 줄지 않음)
-    image_url       TEXT,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_spirits_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE

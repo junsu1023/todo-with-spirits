@@ -13,7 +13,6 @@ import com.oow.todowithspirit.dto.spirit.UpdateSpiritNameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,7 +22,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class SpiritService {
 
-    private static final String DEFAULT_IMAGE_URL = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치 변경
     private static final int MIN_TRAITS = 2;
     private static final int MAX_TRAITS = 3;
 
@@ -194,8 +192,8 @@ public class SpiritService {
     @Transactional
     public Spirit createDefaultSpirit(User user) {
         Spirit defaultSpirit = spiritEggOptionRepository.findFirstByIsTutorialTrueAndIsActiveTrue()
-                .map(egg -> new Spirit(user, StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL, egg.getId()))
-                .orElseGet(() -> new Spirit(user, DEFAULT_IMAGE_URL));
+                .map(egg -> new Spirit(user, egg.getId()))
+                .orElseGet(() -> new Spirit(user));
 
         // 첫 정령은 기본 종류(정렬 순서상 첫 번째)로 지정
         spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc()
