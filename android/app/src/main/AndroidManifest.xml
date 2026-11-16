@@ -32,6 +32,42 @@
             </intent-filter>
         </activity>
 
+        <!-- 홈 화면 위젯 -->
+        <receiver
+            android:name=".widget.TodayTodoWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_today_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_today_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.WeeklyTodoWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_weekly_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_weekly_info" />
+        </receiver>
+
+        <!-- 위젯 '+' 버튼으로 여는 일정 추가 화면. 앱과 다른 태스크로 떠서 저장하면 홈 화면으로 돌아간다. -->
+        <activity
+            android:name=".widget.WidgetAddTaskActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.widget"
+            android:theme="@style/Theme.TodoWithSpirits"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">

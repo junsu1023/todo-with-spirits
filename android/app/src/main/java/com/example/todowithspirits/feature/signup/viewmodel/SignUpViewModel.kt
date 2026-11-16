@@ -15,6 +15,7 @@ import com.example.todowithspirits.feature.signup.SignUpStep
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
 import com.example.todowithspirits.util.isValidEmail
 import com.example.todowithspirits.util.isValidPasswordFormat
+import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,7 +34,8 @@ class SignUpViewModel @Inject constructor(
     private val verifyEmailCodeUseCase: VerifyEmailCodeUseCase,
     private val signUpUseCase: SignUpUseCase,
     private val loginUseCase: LoginUseCase,
-    private val updateUserProfileUseCase: UpdateUserProfileUseCase
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
+    private val todoWidgetRepository: TodoWidgetRepository
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> get() = _uiState.asStateFlow()
@@ -256,7 +258,10 @@ class SignUpViewModel @Inject constructor(
             Log.d(TAG, "signUp success = $it")
 
             loginUseCase(state.email, state.password)
-                .onSuccess { onSuccess() }
+                .onSuccess {
+                    todoWidgetRepository.requestUpdate()
+                    onSuccess()
+                }
                 .onFailure { error ->
                     Log.e(TAG, "auto login after signUp failed!", error)
                     emitErrorMsg("회원가입은 완료되었지만 자동 로그인에 실패했습니다. 다시 로그인해주세요")

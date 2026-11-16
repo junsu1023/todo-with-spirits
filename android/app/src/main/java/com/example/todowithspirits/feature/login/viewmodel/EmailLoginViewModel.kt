@@ -6,6 +6,7 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.LoginUseCase
 import com.example.todowithspirits.feature.login.state.EmailLoginUiState
+import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmailLoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val todoWidgetRepository: TodoWidgetRepository
 ): BaseViewModel() {
     private val _uiState = MutableStateFlow(EmailLoginUiState())
     val uiState: StateFlow<EmailLoginUiState> get() = _uiState.asStateFlow()
@@ -32,6 +34,7 @@ class EmailLoginViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             loginUseCase(_uiState.value.email, _uiState.value.password)
                 .onSuccess {
+                    todoWidgetRepository.requestUpdate()
                     onSuccess()
                 }
                 .onFailure {

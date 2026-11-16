@@ -7,6 +7,7 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.GetUserProfileUseCase
 import com.example.domain.usecase.LogoutUseCase
 import com.example.todowithspirits.feature.mypage.state.MyPageUiState
+import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    private val todoWidgetRepository: TodoWidgetRepository
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> get() = _uiState.asStateFlow()
@@ -44,6 +46,7 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             logoutUseCase()
                 .onSuccess {
+                    todoWidgetRepository.requestUpdate()
                     onSuccess()
                 }
                 .onFailure {

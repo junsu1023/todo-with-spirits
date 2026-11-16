@@ -6,12 +6,14 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.SocialProvider
 import com.example.domain.usecase.SocialLoginUseCase
+import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val socialLoginUseCase: SocialLoginUseCase
+    private val socialLoginUseCase: SocialLoginUseCase,
+    private val todoWidgetRepository: TodoWidgetRepository
 ) : BaseViewModel() {
     fun socialLogin(
         provider: SocialProvider,
@@ -23,6 +25,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             socialLoginUseCase(provider, providerUserId, providerAccessToken, email)
                 .onSuccess {
+                    todoWidgetRepository.requestUpdate()
                     onSuccess()
                 }
                 .onFailure {

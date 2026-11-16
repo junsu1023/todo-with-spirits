@@ -7,6 +7,7 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.usecase.GetUserProfileUseCase
 import com.example.domain.usecase.WithdrawUseCase
 import com.example.todowithspirits.feature.mypage.state.WithdrawUiState
+import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WithdrawViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
-    private val withdrawUseCase: WithdrawUseCase
+    private val withdrawUseCase: WithdrawUseCase,
+    private val todoWidgetRepository: TodoWidgetRepository
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(WithdrawUiState())
     val uiState: StateFlow<WithdrawUiState> get() = _uiState.asStateFlow()
@@ -44,6 +46,7 @@ class WithdrawViewModel @Inject constructor(
         viewModelScope.launchWithLoading {
             withdrawUseCase()
                 .onSuccess {
+                    todoWidgetRepository.requestUpdate()
                     onSuccess()
                 }
                 .onFailure {
