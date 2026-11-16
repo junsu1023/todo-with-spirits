@@ -33,6 +33,7 @@ public class TaskService {
     private final HolidayRepository holidayRepository;
     private final RoutineCompletionRepository routineCompletionRepository;
     private final TaskPostponementRepository taskPostponementRepository;
+    private final TaskAffectionGrantRepository taskAffectionGrantRepository;
     private final SpiritService spiritService;
     private final SpiritActivityService spiritActivityService;
     private final CurrencyService currencyService;
@@ -349,12 +350,22 @@ public class TaskService {
         long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
         long balance = currencyService.getBalance(userId);
 
-        // 대표 정령 호감도 증가 (중복 완료 요청으로 재화가 지급되지 않은 경우는 제외). 완료 취소로 줄지 않음
-        if (earned > 0) {
+        // 대표 정령 호감도 증가. 완료 취소로 줄지 않으므로, 완료 -> 취소 -> 재완료로 반복해서 오르지 않게
+        // 같은 할 일(반복은 같은 날짜)로 이미 오른 적이 있으면 올리지 않음
+        if (!hasAffectionGranted(task, completionDate)) {
+            taskAffectionGrantRepository.save(TaskAffectionGrant.of(taskId, completionDate));
             spirit.increaseAffection(AFFECTION_PER_COMPLETION);
         }
 
         return new TaskCompleteResponse(earned, balance);
+    }
+
+    // 단발성은 완료 날짜와 상관없이 한 번만, 반복은 날짜별로 한 번만 호감도가 오름
+    private boolean hasAffectionGranted(Task task, LocalDate completionDate) {
+        if (task.isRepeating()) {
+            return taskAffectionGrantRepository.existsByTaskIdAndCompletionDate(task.getId(), completionDate);
+        }
+        return taskAffectionGrantRepository.existsByTaskId(task.getId());
     }
 
     @Transactional

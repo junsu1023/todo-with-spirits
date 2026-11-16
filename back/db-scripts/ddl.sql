@@ -416,6 +416,18 @@ CREATE TABLE routine_completions
     CONSTRAINT uq_routine_completions UNIQUE (task_id, completion_date)
 );
 
+-- 할 일 완료로 대표 정령 호감도가 오른 기록 (완료 → 취소 → 재완료 시 중복 증가 방지용)
+-- 완료 취소로 지우지 않음. 단발성은 task_id 기준 1회, 반복은 (task_id, completion_date) 기준 1회
+CREATE TABLE task_affection_grants
+(
+    id              BIGSERIAL PRIMARY KEY,
+    task_id         BIGINT                   NOT NULL,
+    completion_date DATE                     NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_task_affection_grants_task FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+    CONSTRAINT uq_task_affection_grants UNIQUE (task_id, completion_date)
+);
+
 -- 할 일 미루기 이력 (단발성 · 반복 공통, append-only 이벤트 로그)
 -- 미룬 횟수는 COUNT(*) WHERE task_id=? AND original_date=? 로 구함
 -- 반복 할 일의 현재 유효 날짜/시간은 같은 (task_id, original_date)의 최신(created_at) row 기준
