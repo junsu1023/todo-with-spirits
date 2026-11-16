@@ -168,9 +168,11 @@ ON CONFLICT (code) DO NOTHING;
 -- ------------------------------------------------------------
 -- 6-0. 정령 종류 (spirit_species)
 -- 이름/이미지는 기획 확정 전 임시(placeholder) 콘텐츠. 첫 출시는 정령 1종
+-- image_url 은 CDN 업로드 전까지 더미(placehold.co) URL. todo: 실제 CDN URL로 교체
 -- ------------------------------------------------------------
-INSERT INTO spirit_species (code, species_name, description, sort_order, asset_key, image_file_name)
-VALUES ('BASIC', '기본 정령', '처음 만나는 정령', 0, 'spirit_species_basic', 'spirit_species_basic.png')
+INSERT INTO spirit_species (code, species_name, description, sort_order, asset_key, image_url, image_file_name)
+VALUES ('BASIC', '기본 정령', '처음 만나는 정령', 0, 'spirit_species_basic',
+        'https://placehold.co/256x256/png?text=BASIC', 'spirit_species_basic.png')
 ON CONFLICT (code) DO NOTHING;
 
 -- ------------------------------------------------------------

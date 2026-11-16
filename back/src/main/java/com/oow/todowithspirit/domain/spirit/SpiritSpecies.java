@@ -34,7 +34,7 @@ public class SpiritSpecies {
     @Column(name = "asset_key", nullable = false, length = 100)
     private String assetKey;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
     @Column(name = "image_file_name", nullable = false, length = 150)

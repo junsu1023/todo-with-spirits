@@ -264,7 +264,7 @@ CREATE TABLE spirit_species
     description     TEXT,
     sort_order      INT          NOT NULL DEFAULT 0,
     asset_key       VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
-    image_url       TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
+    image_url       TEXT         NOT NULL, -- 웹용 이미지 URL (CDN 업로드 전에는 더미 URL)
     image_file_name VARCHAR(150) NOT NULL  -- 이미지 파일명 (asset_key 기반)
 );
 
