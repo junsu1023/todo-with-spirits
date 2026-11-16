@@ -28,11 +28,18 @@ class FakeTaskRepository : TaskRepository {
     var getTaskResult: Result<Task>? = null
     var createTodoResult: Result<Task>? = null
     var updateTodoResult: Result<Task>? = null
+    var lastCalendarRange: Pair<LocalDate?, LocalDate?>? = null
+    var lastCompletedTask: Pair<Long, LocalDate>? = null
+    var lastCanceledTask: Pair<Long, LocalDate>? = null
+    var lastDeletedTaskIds: List<Long>? = null
     var lastCreatedTodo: NewTodo? = null
     var lastUpdatedTodo: Pair<Long, NewTodo>? = null
 
     override suspend fun getTask(taskId: Long): Result<Task> = getTaskResult ?: error("not used")
-    override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> = taskCalendarResult
+    override suspend fun getTaskCalendar(from: LocalDate?, to: LocalDate?): Result<TaskCalendar> {
+        lastCalendarRange = from to to
+        return taskCalendarResult
+    }
     override suspend fun getSchedules(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
     override suspend fun getRoutines(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
     override suspend fun createTodo(todo: NewTodo): Result<Task> {
@@ -40,9 +47,18 @@ class FakeTaskRepository : TaskRepository {
         return createTodoResult ?: error("not used")
     }
     override suspend fun createRoutine(routine: NewRoutine): Result<Task> = error("not used")
-    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<TaskCompletionReward> = error("not used")
-    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit> = error("not used")
-    override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> = error("not used")
+    override suspend fun completeTask(taskId: Long, date: LocalDate): Result<TaskCompletionReward> {
+        lastCompletedTask = taskId to date
+        return Result.success(TaskCompletionReward(currencyEarned = 10, balance = 10))
+    }
+    override suspend fun cancelTaskCompletion(taskId: Long, date: LocalDate): Result<Unit> {
+        lastCanceledTask = taskId to date
+        return Result.success(Unit)
+    }
+    override suspend fun deleteTasks(taskIds: List<Long>): Result<Int> {
+        lastDeletedTaskIds = taskIds
+        return Result.success(taskIds.size)
+    }
     override suspend fun updateTodo(taskId: Long, todo: NewTodo): Result<Task> {
         lastUpdatedTodo = taskId to todo
         return updateTodoResult ?: error("not used")

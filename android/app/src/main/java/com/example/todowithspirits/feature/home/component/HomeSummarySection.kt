@@ -44,12 +44,8 @@ import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.home.state.HomeTodayTask
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-// home3: 펼친 카드 244 = 접힌 94 + 목록 150. 넘치면 목록이 스크롤된다.
-private val TodayTaskListMaxHeight = 150.dp
-
 // 피그마의 숫자 박스 높이 (폰트 위아래 여백을 뺀 글자 높이)
 private val CompletedCountBoxHeight = 39.dp
-private val TotalCountBoxHeight = 24.dp
 
 /**
  * @param onCollapsedHeightChanged 접힌 부분(제목 + 숫자 줄)의 높이. 펼친 목록이 아래 콘텐츠 위로 겹치도록
@@ -68,6 +64,7 @@ fun HomeTodaySummaryCard(
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
+    val hasTasks = tasks.isNotEmpty()
     val arrowRotation by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
         label = "todayTasksArrowRotation"
@@ -78,8 +75,7 @@ fun HomeTodaySummaryCard(
             .fillMaxWidth()
             .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(6.dp))
             .animateContentSize()
-            // 카드는 아래 콘텐츠 위에 겹쳐 그려지므로, 카드 어디를 눌러도 아래(정령 등)로 터치가 넘어가지 않게 카드가 받는다.
-            .noRippleClickable(onClick = onToggleExpanded)
+            .noRippleClickable(onClick = { if (hasTasks) onToggleExpanded() })
             .padding(horizontal = 14.dp)
     ) {
         Column(
@@ -117,25 +113,27 @@ fun HomeTodaySummaryCard(
                         text = "/ $totalCount",
                         fontSize = 20.sp,
                         color = SpiritTodoTheme.color.systemGrey,
-                        modifier = Modifier.baselineAtBottom(TotalCountBoxHeight)
+                        modifier = Modifier.baselineAtBottom(24.dp)
                     )
                 }
 
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(28.dp)
-                        .rotate(arrowRotation)
-                )
+                if (hasTasks) {
+                    Image(
+                        painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .rotate(arrowRotation)
+                    )
+                }
             }
         }
 
-        if (isExpanded) {
+        if (isExpanded && hasTasks) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = TodayTaskListMaxHeight),
+                    .heightIn(max = 150.dp),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {

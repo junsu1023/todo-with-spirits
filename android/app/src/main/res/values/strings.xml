@@ -120,4 +120,10 @@
     <string name="verification_email_resend_success">인증 메일을 다시 보냈습니다</string>
     <string name="signup_welcome_title">가입을 환영합니다!</string>
     <string name="signup_welcome_subtitle">정령들에게 알려줄 사용자님의 이름을 설정해주세요.</string>
+
+    <!-- 홈 화면 위젯 -->
+    <string name="widget_today_label">오늘 일정</string>
+    <string name="widget_today_description">오늘 일정을 보고 바로 완료할 수 있어요</string>
+    <string name="widget_weekly_label">주간 일정</string>
+    <string name="widget_weekly_description">이번 주 일정과 오늘 할 일을 한눈에 볼 수 있어요</string>
 </resources>
