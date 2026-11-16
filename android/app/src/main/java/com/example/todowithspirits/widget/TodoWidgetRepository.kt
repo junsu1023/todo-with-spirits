@@ -46,7 +46,9 @@ class TodoWidgetRepository @Inject constructor(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val refreshMutex = Mutex()
+    // 마지막으로 불러오기를 시도한 시각과 날짜. 실패해도 기록해 세션이 열릴 때마다 반복 요청하지 않는다.
     private var lastRefreshedAt = 0L
+    private var lastRefreshedDate: LocalDate? = null
 
     private val _state = MutableStateFlow<TodoWidgetState>(TodoWidgetState.Loading)
     val state: StateFlow<TodoWidgetState> get() = _state.asStateFlow()
@@ -60,13 +62,12 @@ class TodoWidgetRepository @Inject constructor(
     }
 
     // 위젯 세션이 새로 열릴 때 호출한다. 방금 불러온 일정이면 다시 부르지 않는다.
-    suspend fun refreshIfStale() {
-        val loaded = _state.value as? TodoWidgetState.Loaded
-        val isFresh = loaded != null &&
-            loaded.today == LocalDate.now() &&
+    // 위젯 세션은 언제든 끝날 수 있어서, 세션 코루틴이 아니라 저장소 스코프에서 불러온 뒤 위젯을 갱신한다.
+    fun refreshIfStale() {
+        val isFresh = lastRefreshedDate == LocalDate.now() &&
             SystemClock.elapsedRealtime() - lastRefreshedAt < STALE_MILLIS
 
-        if (!isFresh) refresh()
+        if (!isFresh) requestUpdate()
     }
 
     // 앱 화면 없이 프로세스가 떴다면 AuthInterceptor가 부트스트랩 완료를 기다리므로, 복원 후 완료를 알린다.
@@ -106,7 +107,11 @@ class TodoWidgetRepository @Inject constructor(
     }
 
     private suspend fun refresh() {
-        refreshMutex.withLock { refreshLocked() }
+        refreshMutex.withLock {
+            refreshLocked()
+            lastRefreshedAt = SystemClock.elapsedRealtime()
+            lastRefreshedDate = LocalDate.now()
+        }
     }
 
     private suspend fun refreshLocked() {
@@ -130,7 +135,6 @@ class TodoWidgetRepository @Inject constructor(
                         .filter { it.occurrenceDate == today }
                         .map { it.toWidgetTask() }
                 )
-                lastRefreshedAt = SystemClock.elapsedRealtime()
             }
             .onFailure {
                 Log.e(TAG, "widget refresh failed!", it)

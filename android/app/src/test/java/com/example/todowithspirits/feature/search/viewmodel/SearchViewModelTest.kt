@@ -38,19 +38,19 @@ class SearchViewModelTest {
     }
 
     private fun task(id: Long, title: String, date: LocalDate) = TaskSummary(
-        completedAt = null, createdAt = date.atStartOfDay(), endDate = date, endTime = null, excludeHoliday = false,
+        completedAt = null, createdAt = date.atStartOfDay(), endTime = null, excludeHoliday = false,
         growthType = null, growthValue = 0, isAllDay = true, isCompleted = false, isImportant = false,
         notificationAt = null, notificationMinutes = null, occurrenceDate = date,
         repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
-        taskId = id, taskType = "SCHEDULE", title = title, updatedAt = date.atStartOfDay()
+        taskId = id, title = title, updatedAt = date.atStartOfDay()
     )
 
     private fun buildViewModel(query: String, vararg tasks: TaskSummary): SearchViewModel {
         val repository = FakeTaskRepository().apply {
             taskCalendarResult = Result.success(
                 TaskCalendar(
-                    completedCount = 0, completedRoutineCount = 0, completedScheduleCount = 0, inCompleteCount = 0,
-                    routineCount = 0, scheduleCount = 0, totalCount = tasks.size, items = tasks.toList()
+                    completedCount = 0, inCompleteCount = 0,
+                    totalCount = tasks.size, items = tasks.toList()
                 )
             )
         }

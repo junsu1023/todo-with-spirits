@@ -44,12 +44,12 @@ class AddViewModelEventTest {
         Dispatchers.resetMain()
     }
 
-    private fun task(id: Long, type: String = "SCHEDULE") = Task(
-        completedAt = null, createdAt = date.atStartOfDay(), endDate = date, endTime = LocalTime.of(9, 30),
+    private fun task(id: Long) = Task(
+        completedAt = null, createdAt = date.atStartOfDay(), endTime = LocalTime.of(9, 30),
         excludeHoliday = false, growthType = null, growthValue = 0, isAllDay = false, isCompleted = false,
-        isImportant = true, notificationAt = null, notificationMinutes = 30, occurrenceDate = null,
-        repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
-        taskId = id, taskType = type, title = "성과 보고서 제출 마감", updatedAt = date.atStartOfDay()
+        isImportant = true, notificationAt = null, notificationMinutes = 30, occurrenceDate = date,
+        repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = "NONE", startDate = null,
+        taskId = id, title = "성과 보고서 제출 마감", updatedAt = date.atStartOfDay()
     )
 
     private fun buildViewModel(repository: FakeTaskRepository) = AddViewModel(

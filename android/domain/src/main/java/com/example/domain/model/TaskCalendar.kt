@@ -7,20 +7,15 @@ import java.time.LocalTime
 
 data class TaskCalendar(
     val completedCount: Int,
-    val completedRoutineCount: Int,
-    val completedScheduleCount: Int,
     val inCompleteCount: Int,
-    val routineCount: Int,
-    val scheduleCount: Int,
     val totalCount: Int,
     val items: List<TaskSummary>
 )
 
-// SCHEDULE 전용: isAllDay, endDate, endTime / ROUTINE 전용: excludeHoliday, repeat*
+// 특정 날짜(occurrenceDate)의 일정 1건. repeatType이 NONE이면 단발성, 그 외는 반복 일정이다.
 data class TaskSummary(
     val completedAt: LocalDateTime?,
     val createdAt: LocalDateTime,
-    val endDate: LocalDate?,
     val endTime: LocalTime?,
     val excludeHoliday: Boolean,
     val growthType: String?,
@@ -36,7 +31,6 @@ data class TaskSummary(
     val repeatEndDate: LocalDate?,
     val repeatType: String?,
     val taskId: Long,
-    val taskType: String,
     val title: String,
     val updatedAt: LocalDateTime
 )

@@ -7,14 +7,14 @@ import java.time.LocalDate
 
 class ForestHostSnapshotTest {
     private val today = LocalDate.of(2026, 9, 18)
-    private fun task(id: Long = 1, title: String = "책 읽기", type: String = "SCHEDULE", date: LocalDate = today, completed: Boolean = false) = TaskSummary(
-        completedAt = null, createdAt = today.atStartOfDay(), endDate = today, endTime = null, excludeHoliday = false,
+    private fun task(id: Long = 1, title: String = "책 읽기", repeatType: String = "NONE", date: LocalDate = today, completed: Boolean = false) = TaskSummary(
+        completedAt = null, createdAt = today.atStartOfDay(), endTime = null, excludeHoliday = false,
         growthType = null, growthValue = 0, isAllDay = true, isCompleted = completed, isImportant = false,
-        notificationAt = null, notificationMinutes = null, occurrenceDate = date, repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = null,
-        taskId = id, taskType = type, title = title, updatedAt = today.atStartOfDay())
+        notificationAt = null, notificationMinutes = null, occurrenceDate = date, repeatDaysOfMonth = emptyList(), repeatDaysOfWeek = emptyList(), repeatEndDate = null, repeatType = repeatType,
+        taskId = id, title = title, updatedAt = today.atStartOfDay())
 
     @Test fun retainsOriginalTitleCompletionAndRoutineIdentity() {
-        val rows = ForestHostSnapshot.items(today, listOf(task(title = "가".repeat(255)), task(type = "ROUTINE", completed = true)))
+        val rows = ForestHostSnapshot.items(today, listOf(task(title = "가".repeat(255)), task(repeatType = "DAILY", completed = true)))
         assertEquals(255, rows[0].title.length)
         assertFalse(rows[0].isCompleted)
         assertTrue(rows[1].isHabit)
@@ -29,7 +29,7 @@ class ForestHostSnapshotTest {
         assertThrows(IllegalArgumentException::class.java) { ForestHostSnapshot.items(today, (1L..51L).map { task(it) }) }
     }
     @Test fun rejectsDuplicateWrongDateAndUnsupportedContent() {
-        listOf(listOf(task(), task()), listOf(task(date = today.minusDays(1))), listOf(task(type = "UNKNOWN")), listOf(task(title = "가".repeat(256))), listOf(task(title = "첫 줄\n다음 줄"))).forEach { rows ->
+        listOf(listOf(task(), task()), listOf(task(date = today.minusDays(1))), listOf(task(title = "가".repeat(256))), listOf(task(title = "첫 줄\n다음 줄"))).forEach { rows ->
             assertThrows(IllegalArgumentException::class.java) { ForestHostSnapshot.items(today, rows) }
         }
     }
