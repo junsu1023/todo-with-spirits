@@ -111,7 +111,13 @@ public class SpiritService {
         Spirit spirit = spiritRepository.findById(repSpiritId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
 
-        return RepresentativeSpiritResponse.from(spirit, traitsOf(spirit.getId()));
+        // 종류가 지정되지 않은 예전 정령은 기본 종류의 모습으로 보여준다
+        SpiritSpecies species = Optional.ofNullable(spirit.getSpeciesId())
+                .flatMap(spiritSpeciesRepository::findById)
+                .or(spiritSpeciesRepository::findFirstByOrderBySortOrderAscIdAsc)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Spirit species not found"));
+
+        return RepresentativeSpiritResponse.from(spirit, species, traitsOf(spirit.getId()));
     }
 
     @Transactional
