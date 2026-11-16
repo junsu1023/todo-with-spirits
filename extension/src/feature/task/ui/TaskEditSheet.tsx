@@ -2,14 +2,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useEffect, useState } from 'react'
 import type { CalendarItem } from '@/entity/task/model/type'
 import type { ApiResponse } from '@/lib/api'
-import { updateRoutine, updateSchedule } from '../api/mutate'
+import { updateTask } from '../api/mutate'
 import type { DayOfWeek, RoutineRepeatType } from '../model/type'
 import {
   getScheduleDate,
   getScheduleTime,
+  isRoutine,
   toDaysOfWeek,
   toEndDateTime,
-  toNotificationType,
+  toRoutineRepeatType,
+  toRoutineUpdate,
   toScheduleUpdate,
 } from '../model/update'
 import { ImportantButton } from './ImportantButton'
@@ -22,10 +24,10 @@ interface TaskEditSheetProps {
 
 /**
  * web/src/feature/task/ui/TaskEditForm.tsx를 사이드패널 하단 시트로 옮김.
- * 카테고리·공개 상태·메모는 백엔드 수정 API에 필드가 없어 저장되지 않으므로 뺐다.
+ * 카테고리·공개 상태·메모는 백엔드 TaskRequest에 필드가 없어 저장되지 않으므로 뺐다.
  */
 export function TaskEditSheet({ item, onClose }: TaskEditSheetProps) {
-  const isRoutine = item.taskType === 'ROUTINE'
+  const routine = isRoutine(item)
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -46,7 +48,7 @@ export function TaskEditSheet({ item, onClose }: TaskEditSheetProps) {
       <div className="relative flex max-h-[90vh] flex-col gap-4 overflow-y-auto rounded-t-2xl bg-white p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-gray-800">
-            {isRoutine ? '루틴 수정' : '할 일 수정'}
+            {routine ? '루틴 수정' : '할 일 수정'}
           </h2>
           <button
             type="button"
@@ -56,7 +58,7 @@ export function TaskEditSheet({ item, onClose }: TaskEditSheetProps) {
             닫기
           </button>
         </div>
-        {isRoutine ? (
+        {routine ? (
           <RoutineEditForm item={item} onDone={onClose} />
         ) : (
           <ScheduleEditForm item={item} onDone={onClose} />
@@ -99,7 +101,7 @@ function ScheduleEditForm({ item, onDone }: EditFormProps) {
   const [isImportant, setIsImportant] = useState(item.isImportant)
   const [date, setDate] = useState(getScheduleDate(item))
   const [time, setTime] = useState(getScheduleTime(item))
-  const { mutate, isPending, error, setError } = useSave(updateSchedule, onDone)
+  const { mutate, isPending, error, setError } = useSave(updateTask, onDone)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -169,8 +171,9 @@ function ScheduleEditForm({ item, onDone }: EditFormProps) {
 
 function RoutineEditForm({ item, onDone }: EditFormProps) {
   const [title, setTitle] = useState(item.title)
+  const [isImportant, setIsImportant] = useState(item.isImportant)
   const [repeatType, setRepeatType] = useState<RoutineRepeatType>(
-    item.repeatType && item.repeatType !== 'YEARLY' ? item.repeatType : 'DAILY',
+    toRoutineRepeatType(item),
   )
   const [daysOfWeek, setDaysOfWeek] = useState<DayOfWeek[]>(
     toDaysOfWeek(item.repeatDaysOfWeek),
@@ -181,7 +184,7 @@ function RoutineEditForm({ item, onDone }: EditFormProps) {
   const [excludeHoliday, setExcludeHoliday] = useState(
     item.excludeHoliday ?? false,
   )
-  const { mutate, isPending, error, setError } = useSave(updateRoutine, onDone)
+  const { mutate, isPending, error, setError } = useSave(updateTask, onDone)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -193,22 +196,31 @@ function RoutineEditForm({ item, onDone }: EditFormProps) {
       return setError('날짜를 선택해 주세요.')
     setError(null)
 
-    mutate({
-      taskId: item.taskId,
-      title: trimmed,
-      repeatType,
-      ...(repeatType === 'WEEKLY' && { repeatDaysOfWeek: daysOfWeek }),
-      ...(repeatType === 'MONTHLY' && { repeatDaysOfMonth: daysOfMonth }),
-      excludeHoliday,
-      // 편집 화면에 없는 값은 기존 값을 그대로 보낸다 (안 보내면 지워짐)
-      repeatEndDate: item.repeatEndDate ?? undefined,
-      notificationType: toNotificationType(item.notificationMinutes),
-    })
+    // 편집 화면에 없는 값(알림, 반복 종료일)은 기존 값을 그대로 보낸다 (안 보내면 지워짐)
+    mutate(
+      toRoutineUpdate(item, {
+        title: trimmed,
+        isImportant,
+        repeatType,
+        repeatDaysOfWeek: repeatType === 'WEEKLY' ? daysOfWeek : undefined,
+        repeatDaysOfMonth: repeatType === 'MONTHLY' ? daysOfMonth : undefined,
+        excludeHoliday,
+      }),
+    )
   }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
       <TitleInput value={title} onChange={setTitle} placeholder="루틴" />
+
+      <div className="flex flex-col rounded-xl bg-gray-50 px-3">
+        <FieldRow label="중요" last>
+          <ImportantButton
+            isImportant={isImportant}
+            onToggle={() => setIsImportant((v) => !v)}
+          />
+        </FieldRow>
+      </div>
 
       <div className="flex flex-col gap-3 rounded-xl bg-gray-50 p-3">
         <RoutineRepeatPicker

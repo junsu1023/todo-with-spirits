@@ -28,10 +28,11 @@
 
 - **중요 표시는 MVP에서 제외** (2026-10-27 결정). 백엔드 루틴 요청에 `isImportant` 필드가 없어 루틴은 불가능하고, 할 일/루틴을 똑같이 맞추기 위해 둘 다 뺀다. 목록에서 기존 중요 상태를 보여주는 것도 하지 않는다.
   - → 2026-11-10 변경: **할 일만** 중요 표시를 지원한다 (web도 할 일에만 별이 있음). 루틴은 여전히 불가.
+  - → 2026-11-17 변경: API 통합(#115)으로 백엔드가 루틴도 `isImportant`를 받으므로 **루틴도** 중요 표시를 지원한다 (목록 별 + 수정 시트).
 
 ### MVP에서 제외 (나중에)
 - ~~할 일/루틴 **수정**~~ (2026-11-10 추가), 삭제, 미루기
-- ~~**중요 표시**~~ (2026-11-10 할 일만 추가. 루틴은 백엔드 필드 추가 필요)
+- ~~**중요 표시**~~ (2026-11-10 할 일, 2026-11-17 루틴 추가)
 - 다른 날짜 보기 (어제/내일/날짜 선택)
 - 정령, 숲(Unity), 기록(Record), 마이페이지/설정
 - 알림, 뱃지, 단축키 등 익스텐션 전용 기능
@@ -43,18 +44,18 @@ Base URL: `https://custom-lucky-draw.store` (`src/lib/config.ts`. web/.env의 �
 
 | 기능 | 메서드 / 경로 | 웹 참고 코드 |
 | --- | --- | --- |
-| 오늘 목록 (할 일 + 루틴) | `GET api/task/calendar?from=YYYY-MM-DD&to=YYYY-MM-DD` (from=to=오늘) → `taskType === 'ROUTINE'`이면 루틴, 아니면 할 일 | `web/src/entity/task/api/query.ts`, `web/src/feature/task/ui/TodayTodoCard.tsx` |
-| 할 일 등록 | `POST api/task/schedule` (`title`, `isAllDay`, `startDatetime`, `endDateTime`, `isImportant?`) | `web/src/feature/task/ui/ScheduleForm.tsx` |
-| 루틴 등록 | `POST api/task/routine` (`title`, `repeatType`, `repeatDaysOfWeek?`, `repeatDaysOfMonth?`, ...) | `web/src/feature/task/ui/RoutineForm.tsx`, `web/src/feature/task/model/routineSchema.ts` |
-| 완료 | `POST api/task/{taskId}/complete?date=YYYY-MM-DD` | `web/src/feature/task/api/mutate.ts` |
-| 완료 해제 | `DELETE api/task/{taskId}/complete?date=YYYY-MM-DD` | 위와 같음 |
-| 할 일 수정 / 중요 표시 | `PATCH api/task/schedule/{taskId}` (`title`, `endDateTime`, `isAllDay`, `isImportant`, `notificationType`) | `web/src/feature/task/ui/TaskEditForm.tsx`, `TodayTodoCard.tsx` |
-| 루틴 수정 | `PATCH api/task/routine/{taskId}` (`title`, `repeatType`, `repeatDaysOfWeek?`, `repeatDaysOfMonth?`, `repeatEndDate?`, `excludeHoliday`, `notificationType`) | `web/src/feature/task/ui/TaskEditForm.tsx` |
+| 오늘 목록 (할 일 + 루틴) | `GET api/task?from=YYYY-MM-DD&to=YYYY-MM-DD` (from=to=오늘, 둘 다 필수) → `repeatType === 'NONE'`이면 할 일, 아니면 루틴 | `back/.../TaskController.java` `getCalendarTasks` |
+| 할 일 등록 | `POST api/task` (`title`, `endDateTime`, `isAllDay`, `repeatType: 'NONE'`) | `back/.../dto/task/TaskRequest.java` |
+| 루틴 등록 | `POST api/task` (`title`, `repeatType`, `repeatDaysOfWeek?`, `repeatDaysOfMonth?`). `endDateTime`을 안 보내면 오늘부터 반복 | 위와 같음 |
+| 완료 | `POST api/task/{taskId}/complete?date=YYYY-MM-DD` (date 필수) | `back/.../TaskController.java` |
+| 완료 해제 | `DELETE api/task/{taskId}/complete?date=YYYY-MM-DD` (date 필수) | 위와 같음 |
+| 할 일 수정 / 중요 표시 | `PATCH api/task/{taskId}` (할 일 등록 필드 + `isImportant`, `notificationType`) | `back/.../service/TaskService.java` `updateTask` |
+| 루틴 수정 | `PATCH api/task/{taskId}` (루틴 등록 필드 + `isImportant`, `repeatEndDate?`, `excludeHoliday`, `notificationType`). `endDateTime`은 안 보냄 → 기존 시작일·시각 유지 | 위와 같음 |
 | 로그인 / 토큰 재발급 | `web/src/feature/auth/api/*`, `POST api/auth/reissue` | `web/src/lib/api.ts` |
 
-- ⚠️ 수정 API는 **보내지 않은 값을 지운다** (`back/.../TaskService.java` `updateSchedule`/`updateRoutine`: 알림, 루틴 반복 종료일). 그래서 편집 화면에 없는 값도 조회 응답(`notificationMinutes`, `repeatEndDate`)에서 가져와 같이 보낸다 (`feature/task/model/update.ts`).
-- 참고: 웹 `TaskEditForm`은 카테고리·공개 상태·메모도 보내지만 백엔드 수정 API에 이 필드가 없어 저장되지 않는다 → 익스텐션 수정 화면에서는 뺐다.
-- 참고: 웹의 `CreateRoutineRequest`는 알림 필드를 `notification`으로 보내지만 백엔드 필드명은 `notificationType`이다. 익스텐션에서는 `notificationType`을 쓴다 (MVP에서는 알림을 보내지 않아도 됨).
+- 2026-11-16: 백엔드가 할 일·루틴 API를 `api/task` 하나로 합쳤다 (#115). 조회 응답에서 `taskType`, `endDate`, 루틴/일정별 개수가 빠졌다.
+- ⚠️ 수정 API는 **`endDateTime` 외에 보내지 않은 값을 지운다** (`TaskService.updateTask`: 중요 → false, 알림 → 없음, 반복 → NONE, 반복 종료일·요일·날짜 → 없음). 그래서 편집 화면에 없는 값도 조회 응답에서 가져와 같이 보낸다 (`feature/task/model/update.ts` `toScheduleUpdate`, `toRoutineUpdate`).
+- 참고: 웹 `TaskEditForm`은 카테고리·공개 상태·메모도 보내지만 백엔드 `TaskRequest`에 이 필드가 없어 저장되지 않는다 → 익스텐션 수정 화면에서는 뺐다.
 
 ## 5. 화면 구성 (초안)
 
@@ -79,7 +80,7 @@ Base URL: `https://custom-lucky-draw.store` (`src/lib/config.ts`. web/.env의 �
 ## 6. 로드맵
 
 - **Step 1 (MVP)**: 위 3번 범위 — ✅ 완료 (2026-10-28)
-- **Step 2**: 다른 날짜 보기 (이전/다음 날), 할 일/루틴 수정 + 할 일 중요 표시 (✅ 2026-11-10)
+- **Step 2**: 다른 날짜 보기 (이전/다음 날), 할 일/루틴 수정 + 중요 표시 (✅ 2026-11-10, 루틴 중요 2026-11-17)
 - **이후 후보**: 삭제·미루기, 정령/기록 화면, 툴바 뱃지(남은 할 일 수), 알림, 단축키, 팝업/새 탭 등 다른 형태
 
 ## 7. 로그인

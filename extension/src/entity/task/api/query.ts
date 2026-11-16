@@ -1,14 +1,8 @@
 import { type ApiResponse, apiClient } from '@/lib/api'
 import type { CalendarDetail, TaskScheduleParams } from '../model/type'
 
-function buildSearchParams(params?: TaskScheduleParams) {
-  const searchParams = new URLSearchParams()
-  if (params?.from) searchParams.set('from', params.from)
-  if (params?.to) searchParams.set('to', params.to)
-  return searchParams
-}
-
-export const getTaskCalendar = (params?: TaskScheduleParams) =>
+// 백엔드 GET api/task (from, to 필수)
+export const getTaskCalendar = ({ from, to }: TaskScheduleParams) =>
   apiClient
-    .get('api/task/calendar', { searchParams: buildSearchParams(params) })
+    .get('api/task', { searchParams: { from, to } })
     .json<ApiResponse<CalendarDetail>>()

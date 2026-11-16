@@ -1,44 +1,30 @@
 import { type ApiResponse, apiClient } from '@/lib/api'
 import type {
-  CreateRoutineRequest,
-  CreateScheduleRequest,
   TaskCompletionResponse,
-  UpdateRoutineRequest,
-  UpdateScheduleRequest,
+  TaskRequest,
+  TaskResponse,
+  UpdateTaskRequest,
 } from '../model/type'
 
-// web/src/feature/task/api/mutate.ts와 동일
-export const createSchedule = (body: CreateScheduleRequest) =>
-  apiClient
-    .post('api/task/schedule', { json: body })
-    .json<ApiResponse<unknown>>()
+// 백엔드 TaskController 기준. 할 일·루틴 모두 같은 API를 쓰고 repeatType으로 구분한다
+export const createTask = (body: TaskRequest) =>
+  apiClient.post('api/task', { json: body }).json<ApiResponse<TaskResponse>>()
 
-export const createRoutine = (body: CreateRoutineRequest) =>
+export const updateTask = ({ taskId, ...body }: UpdateTaskRequest) =>
   apiClient
-    .post('api/task/routine', { json: body })
-    .json<ApiResponse<unknown>>()
+    .patch(`api/task/${taskId}`, { json: body })
+    .json<ApiResponse<TaskResponse>>()
 
-export const updateSchedule = ({ taskId, ...body }: UpdateScheduleRequest) =>
-  apiClient
-    .patch(`api/task/schedule/${taskId}`, { json: body })
-    .json<ApiResponse<unknown>>()
-
-export const updateRoutine = ({ taskId, ...body }: UpdateRoutineRequest) =>
-  apiClient
-    .patch(`api/task/routine/${taskId}`, { json: body })
-    .json<ApiResponse<unknown>>()
-
+// date 필수: 할 일은 해당 날짜, 루틴은 수행일이어야 한다
 export const completeTask = ({
   taskId,
   date,
 }: {
   taskId: number
-  date?: string
+  date: string
 }) =>
   apiClient
-    .post(`api/task/${taskId}/complete`, {
-      searchParams: date ? { date } : {},
-    })
+    .post(`api/task/${taskId}/complete`, { searchParams: { date } })
     .json<ApiResponse<TaskCompletionResponse>>()
 
 export const uncompleteTask = ({
@@ -46,10 +32,8 @@ export const uncompleteTask = ({
   date,
 }: {
   taskId: number
-  date?: string
+  date: string
 }) =>
   apiClient
-    .delete(`api/task/${taskId}/complete`, {
-      searchParams: date ? { date } : {},
-    })
+    .delete(`api/task/${taskId}/complete`, { searchParams: { date } })
     .json<ApiResponse<null>>()
