@@ -341,27 +341,27 @@ public class TaskService {
             task.completeTask();
         }
 
-        // 대표 정령 경험치 증가 (없으면 자동 생성)
+        // 대표 정령 (없으면 자동 생성)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
-        spirit.addExp(task.getGrowthValue(), task.getGrowthType());
         spiritActivityService.recordActivity(spirit, completionDate);
 
         // 재화 지급 (taskId+completionDate 단위로 멱등. 중복 요청이면 0 반환)
         long earned = currencyService.creditForTaskComplete(userId, task.getGrowthValue(), taskId, completionDate);
         long balance = currencyService.getBalance(userId);
 
-        // 대표 정령 호감도 증가. 완료 취소로 줄지 않으므로, 완료 -> 취소 -> 재완료로 반복해서 오르지 않게
+        // 대표 정령 경험치 및 호감도 증가. 완료 취소로 줄지 않으므로, 완료 -> 취소 -> 재완료로 반복해서 오르지 않게
         // 같은 할 일(반복은 같은 날짜)로 이미 오른 적이 있으면 올리지 않음
-        if (!hasAffectionGranted(task, completionDate)) {
+        if (!hasGrowthGranted(task, completionDate)) {
             taskAffectionGrantRepository.save(TaskAffectionGrant.of(taskId, completionDate));
+            spirit.addExp(task.getGrowthValue(), task.getGrowthType());
             spirit.increaseAffection(AFFECTION_PER_COMPLETION);
         }
 
         return new TaskCompleteResponse(earned, balance);
     }
 
-    // 단발성은 완료 날짜와 상관없이 한 번만, 반복은 날짜별로 한 번만 호감도가 오름
-    private boolean hasAffectionGranted(Task task, LocalDate completionDate) {
+    // 단발성은 완료 날짜와 상관없이 한 번만, 반복은 날짜별로 한 번만 경험치·호감도가 오름
+    private boolean hasGrowthGranted(Task task, LocalDate completionDate) {
         if (task.isRepeating()) {
             return taskAffectionGrantRepository.existsByTaskIdAndCompletionDate(task.getId(), completionDate);
         }
