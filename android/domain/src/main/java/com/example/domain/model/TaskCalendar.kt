@@ -40,8 +40,3 @@ data class TaskSummary(
     val title: String,
     val updatedAt: LocalDateTime
 )
-
-enum class TaskType(val type: String) {
-    SCHEDULE("SCHEDULE"),
-    ROUTINE("ROUTINE")
-}

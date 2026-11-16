@@ -26,7 +26,7 @@ import retrofit2.Response
 import java.time.LocalDate
 import okhttp3.Response as OkHttpResponse
 
-// 일정/루틴 미루기(postpone) 요청 매핑과, 400 응답의 필드별 사유를 FieldValidationException으로
+// 일정 미루기(postpone) 요청 매핑과, 400 응답의 필드별 사유를 FieldValidationException으로
 // 변환하는 TaskRepositoryImpl.recoverFieldValidationErrors()를 검증한다.
 // 실제 apiCallUnit 경로(okhttp Response -> ApiException 변환)까지 그대로 태워보기 위해
 // TaskApi만 가짜로 두고 TaskRemoteDataSource/TaskRepositoryImpl은 실제 구현을 사용한다.
@@ -107,7 +107,7 @@ class TaskRepositoryImplTest {
                 "timestamp": "2026-01-01T00:00:00.000000+09:00",
                 "errorCode": "INVALID_PARAMETER",
                 "description": [
-                  {"field": "originalDate", "message": "originalDate is required for routines"}
+                  {"field": "newDate", "message": "Target date already has an occurrence of this task"}
                 ]
               }
             }
@@ -120,7 +120,7 @@ class TaskRepositoryImplTest {
         assertTrue(error is FieldValidationException)
         // ApiCallExtensions.toApiException()이 ApiErrorMessageTranslator로 한국어로 치환해둔다.
         assertEquals(
-            mapOf("originalDate" to "루틴을 미루기 위해서는 기존 일자가 필요합니다."),
+            mapOf("newDate" to "미룰 날짜에 같은 일정이 있습니다."),
             (error as FieldValidationException).fieldErrors
         )
     }
@@ -138,7 +138,7 @@ class TaskRepositoryImplTest {
                 "timestamp": "2026-01-01T00:00:00.000000+09:00",
                 "errorCode": "NOT_FOUND",
                 "description": [
-                  {"field": null, "message": "Not found schedule or routine."}
+                  {"field": null, "message": "Not found task."}
                 ]
               }
             }
@@ -150,7 +150,7 @@ class TaskRepositoryImplTest {
         val error = result.exceptionOrNull()
         assertTrue(error is FieldValidationException)
         assertTrue((error as FieldValidationException).fieldErrors.isEmpty())
-        assertEquals("일정이나 루틴을 찾을 수 없습니다.", error.message)
+        assertEquals("일정을 찾을 수 없습니다.", error.message)
     }
 
     // description이 아예 없는(필드별 사유가 없는) 일반 에러는 변환하지 않고 ApiException 그대로 둔다.

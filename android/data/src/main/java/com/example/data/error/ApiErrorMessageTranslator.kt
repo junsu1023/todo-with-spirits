@@ -21,32 +21,26 @@ object ApiErrorMessageTranslator {
         "Request body is missing or contains an invalid value" to "요청 본문 누락 혹은 유효하지 않은 값 포함",
         "Spirit not found" to "정령을 찾을 수 없습니다.",
         "User not found" to "사용자 정보를 찾을 수 없습니다.",
-        "Cannot query more than 90 days of calendar data." to "90일동안의 데이터만 확인할 수 있습니다.",
+        "Cannot query more than 90 days of task data." to "90일동안의 데이터만 확인할 수 있습니다.",
         "Notification not found" to "유효하지 않은 알림입니다.",
         "Invalid cursor" to "유효하지 않은 알림입니다.",
         "Spirit ID to change is required" to "변경할 정령ID가 필요합니다.",
         "taskIds must not be empty" to "일정이 존재하지 않습니다.",
-        "Not found schedule or routine." to "일정이나 루틴을 찾을 수 없습니다.",
-        "originalDate is required for routines" to "루틴을 미루기 위해서는 기존 일자가 필요합니다.",
-        "Not an occurrence date for this routine" to "루틴의 생성 일자가 잘못되었습니다.",
+        "Not found task." to "일정을 찾을 수 없습니다.",
+        "Not an occurrence date for this task" to "일정의 날짜가 잘못되었습니다.",
         "Postpone limit reached for this occurrence (max 3)" to "최대 미루기 횟수 한도에 도달했습니다. (최대 3회)",
-        "Daily routines cannot change date, only time" to "일일 루틴은 미룰 수 없습니다.",
-        "Weekly routines can only be postponed within the current week" to "주간 루틴은 해당 주 내에서만 연기할 수 있습니다.",
-        "Monthly routines can only be postponed within the current month" to "월간 루틴은 해당 월에서만 연기할 수 있습니다.",
-        "Unsupported repeat type for postpone" to "미룰 수 없는 일정/루틴입니다.",
-        "Target date already has an occurrence of this routine" to "미룰 날짜에 같은 루틴이 있습니다.",
-        "Target date is already occupied by another occurrence of this routine" to "미룰 날짜에 같은 루틴이 있습니다.",
-        "Routine repeat type must be DAILY, WEEKLY, or MONTHLY" to "루틴은 일간, 주간, 월간 중 하나여야 합니다.",
+        "Daily tasks cannot change date, only time" to "매일 반복 일정은 미룰 수 없습니다.",
+        "Weekly tasks can only be postponed within the current week" to "매주 반복 일정은 해당 주 안에서만 미룰 수 있습니다.",
+        "Monthly tasks can only be postponed within the current month" to "매월 반복 일정은 해당 월 안에서만 미룰 수 있습니다.",
+        "Unsupported repeat type for postpone" to "미룰 수 없는 일정입니다.",
+        "Target date already has an occurrence of this task" to "미룰 날짜에 같은 일정이 있습니다.",
+        "Target date is already occupied by another occurrence of this task" to "미룰 날짜에 같은 일정이 있습니다.",
+        "Repeat type must be NONE, DAILY, WEEKLY, or MONTHLY" to "반복은 없음, 매일, 매주, 매월 중 하나여야 합니다.",
+        "Repeat end date must not be before the start date" to "반복 종료일은 시작일보다 빠를 수 없습니다.",
         "Days of week are required for weekly repeat" to "매주 반복을 위한 요일을 선택하세요.",
         "Days of month are required for monthly repeat" to "매월 반복을 위한 날짜를 선택하세요.",
         "Day of month must be between 1 and 31" to "일자는 1~31일 사이여야 합니다.",
         "Title is required" to "제목을 입력하세요.",
-        "Repeat type is required" to "반복 유형은 필수 항목입니다.",
-        "Habit repeat type must be DAILY, WEEKLY, or MONTHLY" to "루틴은 일간, 주간, 월간 중 하나여야 합니다.",
-        "Task is not a routine" to "일정id로 루틴 생성 시도 - 개발용",
-        "isAllDay is required" to "isAllDay는 필수 항목입니다.",
-        "endDateTime is required" to "종료일자는 필수 항목입니다.",
-        "Task is not a schedule" to "루틴id로 일정 생성 시도 - 개발용",
         "Spirit name is required" to "정령 이름을 입력하세요.",
         "You do not own this spirit" to "보유하지 않은 정령입니다.",
         "Decoration not found" to "장식을 찾을 수 없습니다.",
@@ -56,9 +50,9 @@ object ApiErrorMessageTranslator {
 
     // 뒤에 가변 값(날짜 등)이 붙어 완전 일치가 안 되는 메시지를 위한 접두사 매핑.
     private val prefixTranslations: List<Pair<String, String>> = listOf(
-        "Invalid routine date." to "유효하지 않은 날짜입니다.",
-        "Invalid schedule date." to "유효하지 않은 날짜입니다.",
-        "Routine already completed on" to "이미 완료된 루틴입니다."
+        "Invalid date." to "유효하지 않은 날짜입니다.",
+        "Task already completed" to "이미 완료된 일정입니다.",
+        "Task is not completed" to "완료되지 않은 일정입니다."
     )
 
     // message로 못 찾으면 errorCode로 한 번 더 시도한다(메시지 없이 코드만 내려오는 경우 대비).
@@ -67,7 +61,7 @@ object ApiErrorMessageTranslator {
         "INVALID_TOKEN" to "유효하지 않은 토큰입니다.",
         "INVALID_PROVIDER_TOKEN" to "유효하지 않은 토큰입니다.",
         "DUPLICATE_EMAIL" to "이미 가입된 이메일입니다.",
-        "NOT_FOUND" to "일정이나 루틴을 찾을 수 없습니다.",
+        "NOT_FOUND" to "일정을 찾을 수 없습니다.",
         "UNAUTHORIZED" to "권한 없음"
     )
 

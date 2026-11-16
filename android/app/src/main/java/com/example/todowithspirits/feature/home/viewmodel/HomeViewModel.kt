@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isTodayTasksExpanded = !it.isTodayTasksExpanded) }
     }
 
-    // 일정 및 루틴 목록 조회 API를 오늘 하루 범위(from = to = 오늘)로 호출한다.
+    // 일정 목록 조회 API를 오늘 하루 범위(from = to = 오늘)로 호출한다.
     private fun loadTodayTasks() {
         viewModelScope.launchWithLoading {
             val today = LocalDate.now()
@@ -148,7 +148,7 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-// 종일 일정과 루틴은 시간 없이 표시한다.
+// 종일 일정은 시간 없이 표시한다.
 private fun TaskSummary.toHomeTodayTask(): HomeTodayTask = HomeTodayTask(
     id = taskId,
     title = title,

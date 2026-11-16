@@ -11,8 +11,8 @@ class ApiErrorMessageTranslatorTest {
             ApiErrorMessageTranslator.translate("Invalid email format")
         )
         assertEquals(
-            "루틴을 미루기 위해서는 기존 일자가 필요합니다.",
-            ApiErrorMessageTranslator.translate("originalDate is required for routines")
+            "매일 반복 일정은 미룰 수 없습니다.",
+            ApiErrorMessageTranslator.translate("Daily tasks cannot change date, only time")
         )
     }
 
@@ -25,12 +25,12 @@ class ApiErrorMessageTranslatorTest {
 
     @Test fun translatesPrefixOnlyMessagesThatCarryVariableSuffixes() {
         assertEquals(
-            "이미 완료된 루틴입니다.",
-            ApiErrorMessageTranslator.translate("Routine already completed on 2026-01-01")
+            "이미 완료된 일정입니다.",
+            ApiErrorMessageTranslator.translate("Task already completed on 2026-01-01")
         )
         assertEquals(
             "유효하지 않은 날짜입니다.",
-            ApiErrorMessageTranslator.translate("Invalid routine date. must be after today")
+            ApiErrorMessageTranslator.translate("Invalid date. 2026-01-01 is not an occurrence date for this task.")
         )
     }
 
