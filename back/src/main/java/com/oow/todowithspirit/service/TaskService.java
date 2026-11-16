@@ -388,10 +388,7 @@ public class TaskService {
             // 단발성은 완료가 한 번뿐이므로 요청 date와 상관없이 회수 (미루기로 날짜가 바뀐 경우 포함)
             currencyService.reverseAllTaskComplete(userId, taskId);
         }
-
-        // 대표 정령 경험치 차감 (없으면 자동 생성 후 차감)
-        Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
-        spirit.decreaseExp(task.getGrowthValue());
+        // 정령의 특성 경험치·호감도는 완료를 취소해도 줄지 않음 (완료 시 같은 할 일로 한 번만 오름)
     }
 
     /**

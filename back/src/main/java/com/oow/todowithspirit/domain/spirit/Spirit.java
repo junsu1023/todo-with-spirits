@@ -29,7 +29,7 @@ public class Spirit {
     @Column(name = "spirit_name", nullable = false, length = 50)
     private String spiritName = "아기 정령";
 
-    // 특성 경험치 (할 일 완료로 누적)
+    // 특성 경험치 (할 일 완료로 누적, 완료 취소로 줄지 않음)
     @Column(nullable = false)
     private int exp = 0;
 
@@ -101,12 +101,6 @@ public class Spirit {
     // 특성 경험치 획득
     public void addExp(int amount) {
         this.exp += amount;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    // 완료 취소 시 특성 경험치 감소
-    public void decreaseExp(int amount) {
-        this.exp = Math.max(0, this.exp - amount);
         this.updatedAt = LocalDateTime.now();
     }
 
