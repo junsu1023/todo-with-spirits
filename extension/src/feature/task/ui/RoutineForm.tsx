@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useState } from 'react'
-import { createRoutine } from '../api/mutate'
+import { createTask } from '../api/mutate'
 import type { DayOfWeek, RoutineRepeatType } from '../model/type'
 import { RoutineRepeatPicker } from './RoutineRepeatPicker'
 
@@ -15,7 +15,7 @@ export function RoutineForm() {
   const [notice, setNotice] = useState<string | null>(null)
 
   const { mutate, isPending } = useMutation({
-    mutationFn: createRoutine,
+    mutationFn: createTask,
     onSuccess: (res) => {
       if (res.result !== 'success') {
         setError(res.detail.description[0]?.message ?? '등록하지 못했어요.')
@@ -42,6 +42,7 @@ export function RoutineForm() {
       return setError('날짜를 선택해 주세요.')
     setError(null)
 
+    // endDateTime을 안 보내면 오늘부터 반복 (하루 종일)
     mutate({
       title: trimmed,
       repeatType,

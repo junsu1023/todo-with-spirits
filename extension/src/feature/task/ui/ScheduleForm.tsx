@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useState } from 'react'
-import { createSchedule } from '../api/mutate'
+import { createTask } from '../api/mutate'
+import { toEndDateTime } from '../model/update'
 
 interface ScheduleFormProps {
   dateStr: string
@@ -14,7 +15,7 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
   const [error, setError] = useState<string | null>(null)
 
   const { mutate, isPending } = useMutation({
-    mutationFn: createSchedule,
+    mutationFn: createTask,
     onSuccess: (res) => {
       if (res.result !== 'success') {
         setError(res.detail.description[0]?.message ?? '등록하지 못했어요.')
@@ -36,13 +37,12 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
     }
     setError(null)
 
-    // web ScheduleForm과 같은 형식
-    const isAllDay = time === ''
+    // repeatType NONE = 할 일
     mutate({
       title: trimmed,
-      isAllDay,
-      startDatetime: `${dateStr}T00:00:00`,
-      endDateTime: isAllDay ? `${dateStr}T23:59:59` : `${dateStr}T${time}:00`,
+      isAllDay: time === '',
+      endDateTime: toEndDateTime(dateStr, time),
+      repeatType: 'NONE',
     })
   }
 

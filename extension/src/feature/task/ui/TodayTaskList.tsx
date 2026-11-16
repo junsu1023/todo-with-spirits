@@ -7,8 +7,8 @@ import type {
   RepeatType,
 } from '@/entity/task/model/type'
 import type { ApiResponse } from '@/lib/api'
-import { completeTask, uncompleteTask, updateSchedule } from '../api/mutate'
-import { toScheduleUpdate } from '../model/update'
+import { completeTask, uncompleteTask, updateTask } from '../api/mutate'
+import { isRoutine, toRoutineUpdate, toScheduleUpdate } from '../model/update'
 import { ImportantButton } from './ImportantButton'
 import { TaskEditSheet } from './TaskEditSheet'
 import { TaskItem } from './TaskItem'
@@ -18,6 +18,7 @@ const TODO_COLOR = '#48CAD9'
 const ROUTINE_COLOR = '#B2F042'
 
 const REPEAT_LABEL: Record<RepeatType, string | null> = {
+  NONE: null,
   DAILY: '매일',
   WEEKLY: '매주',
   MONTHLY: '매월',
@@ -81,12 +82,16 @@ export function TodayTaskList({ dateStr }: TodayTaskListProps) {
     onSettled: invalidate,
   })
 
-  // 할 일만 가능 (루틴은 백엔드 수정 API에 isImportant가 없다)
+  // 수정 API라 다른 값이 지워지지 않게 기존 값을 모두 담아 보낸다
   const { mutate: toggleImportant } = useMutation({
-    mutationFn: (item: CalendarItem) =>
-      updateSchedule(
-        toScheduleUpdate(item, { isImportant: !item.isImportant }),
-      ),
+    mutationFn: (item: CalendarItem) => {
+      const overrides = { isImportant: !item.isImportant }
+      return updateTask(
+        isRoutine(item)
+          ? toRoutineUpdate(item, overrides)
+          : toScheduleUpdate(item, overrides),
+      )
+    },
     onMutate: (item) =>
       optimisticUpdate(item.taskId, (i) => ({ isImportant: !i.isImportant })),
     onSuccess: (res, _item, context) => {
@@ -102,8 +107,15 @@ export function TodayTaskList({ dateStr }: TodayTaskListProps) {
     return <p className="text-sm text-red-500">할 일을 불러오지 못했어요.</p>
 
   const items = data.detail.items
-  const todos = items.filter((i) => i.taskType !== 'ROUTINE')
-  const routines = items.filter((i) => i.taskType === 'ROUTINE')
+  const todos = items.filter((i) => !isRoutine(i))
+  const routines = items.filter(isRoutine)
+
+  const renderImportant = (item: CalendarItem) => (
+    <ImportantButton
+      isImportant={item.isImportant}
+      onToggle={() => toggleImportant(item)}
+    />
+  )
 
   return (
     <div className="flex flex-col gap-5">
@@ -117,12 +129,7 @@ export function TodayTaskList({ dateStr }: TodayTaskListProps) {
         }
         onToggle={toggleComplete}
         onEdit={setEditingItem}
-        getTrailing={(todo) => (
-          <ImportantButton
-            isImportant={todo.isImportant}
-            onToggle={() => toggleImportant(todo)}
-          />
-        )}
+        getTrailing={renderImportant}
       />
       <TaskSection
         title="루틴"
@@ -136,6 +143,7 @@ export function TodayTaskList({ dateStr }: TodayTaskListProps) {
         }
         onToggle={toggleComplete}
         onEdit={setEditingItem}
+        getTrailing={renderImportant}
       />
       {editingItem && (
         <TaskEditSheet
