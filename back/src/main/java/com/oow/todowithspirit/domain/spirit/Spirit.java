@@ -29,29 +29,12 @@ public class Spirit {
     @Column(name = "spirit_name", nullable = false, length = 50)
     private String spiritName = "아기 정령";
 
+    // 특성 경험치 (할 일 완료로 누적, 완료 취소로 줄지 않음)
     @Column(nullable = false)
     private int exp = 0;
 
-    @Column(name = "focus_exp", nullable = false)
-    private int focusExp = 0;
-
-    @Column(name = "energy_exp", nullable = false)
-    private int energyExp = 0;
-
-    @Column(name = "consistency_exp", nullable = false)
-    private int consistencyExp = 0;
-
-    @Column(name = "creativity_exp", nullable = false)
-    private int creativityExp = 0;
-
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @Column(name = "egg_option_id")
     private Long eggOptionId;
-
-    @Column(name = "variant_id")
-    private Long variantId;
 
     // 정령 종류 (spirit_species). 종류가 지정되지 않은 예전 정령은 null → 서비스에서 기본 종류로 취급
     @Column(name = "species_id")
@@ -75,29 +58,20 @@ public class Spirit {
         this.user = user;
     }
 
-    public Spirit(User user, String imageUrl) {
+    public Spirit(User user, Long eggOptionId) {
         this(user);
-        this.imageUrl = imageUrl;
-    }
-
-    public Spirit(User user, String imageUrl, Long eggOptionId) {
-        this(user, imageUrl);
         this.eggOptionId = eggOptionId;
     }
 
-    // "정령 만나기"로 뽑힌 외형으로 개체를 생성 (외형이 속한 종류의 정령이 됨)
-    public Spirit(User user, SpiritVariant variant) {
-        this(user, variant.getImageUrl());
-        this.variantId = variant.getId();
-        this.speciesId = variant.getSpeciesId();
+    // "정령 만나기"로 만난 종류의 정령을 생성
+    public Spirit(User user, SpiritSpecies species) {
+        this(user);
+        this.speciesId = species.getId();
     }
 
-    // 종류·외형 지정 (알로 생성되는 첫 정령 등 외형 없이 만들어진 경우)
-    public void assignSpecies(Long speciesId, Long variantId) {
+    // 종류 지정 (알로 생성되는 첫 정령 등 종류 없이 만들어진 경우)
+    public void assignSpecies(Long speciesId) {
         this.speciesId = speciesId;
-        if (variantId != null) {
-            this.variantId = variantId;
-        }
     }
 
     // 호감도 증가 (최대 100)
@@ -116,27 +90,9 @@ public class Spirit {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 경험치 획득 (성장 유형별 누적치)
-    public void addExp(int amount, GrowthType type) {
+    // 특성 경험치 획득
+    public void addExp(int amount) {
         this.exp += amount;
-        switch (type) {
-            case FOCUS -> this.focusExp += amount;
-            case ENERGY -> this.energyExp += amount;
-            case CONSISTENCY -> this.consistencyExp += amount;
-            case CREATIVITY -> this.creativityExp += amount;
-        }
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    // 완료 취소 시 경험치 감소
-    public void decreaseExp(int amount, GrowthType type) {
-        this.exp = Math.max(0, this.exp - amount);
-        switch (type) {
-            case FOCUS -> this.focusExp = Math.max(0, this.focusExp - amount);
-            case ENERGY -> this.energyExp = Math.max(0, this.energyExp - amount);
-            case CONSISTENCY -> this.consistencyExp = Math.max(0, this.consistencyExp - amount);
-            case CREATIVITY -> this.creativityExp = Math.max(0, this.creativityExp - amount);
-        }
         this.updatedAt = LocalDateTime.now();
     }
 

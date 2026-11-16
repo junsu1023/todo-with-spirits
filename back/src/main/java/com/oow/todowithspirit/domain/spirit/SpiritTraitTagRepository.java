@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserSpiritVariantUnlockRepository extends JpaRepository<UserSpiritVariantUnlock, Long> {
+public interface SpiritTraitTagRepository extends JpaRepository<SpiritTraitTag, Long> {
 
-    List<UserSpiritVariantUnlock> findAllByUserId(Long userId);
+    List<SpiritTraitTag> findAllBySpiritId(Long spiritId);
 }

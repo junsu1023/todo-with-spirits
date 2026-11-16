@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "spirit_temperaments")
+@Table(name = "spirit_traits")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SpiritTemperamentTag {
+public class SpiritTraitTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +22,14 @@ public class SpiritTemperamentTag {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private SpiritTemperament temperament;
+    private SpiritTrait trait;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public SpiritTemperamentTag(Long spiritId, SpiritTemperament temperament) {
+    public SpiritTraitTag(Long spiritId, SpiritTrait trait) {
         this.spiritId = spiritId;
-        this.temperament = temperament;
+        this.trait = trait;
         this.createdAt = LocalDateTime.now();
     }
 }

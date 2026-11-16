@@ -37,7 +37,6 @@ public class TaskResponse {
 
     // 성장
     private Integer growthValue;
-    private String growthType;
 
     // 완료 (단발성 전용. 반복은 occurrence 조회로 확인)
     private Boolean isCompleted;
@@ -62,7 +61,6 @@ public class TaskResponse {
                 .notificationMinutes(task.getNotificationMinutes())
                 .notificationAt(task.getNotificationAt())
                 .growthValue(task.getGrowthValue())
-                .growthType(task.getGrowthType().name())
                 .isCompleted(task.isCompleted())
                 .completedAt(task.getCompletedAt())
                 .createdAt(task.getCreatedAt())

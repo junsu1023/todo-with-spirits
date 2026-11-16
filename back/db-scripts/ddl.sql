@@ -7,7 +7,6 @@
 --  1. ENUM 타입
 -- ============================================================
 
--- CREATE TYPE growth_type AS ENUM ('FOCUS', 'ENERGY', 'CONSISTENCY', 'CREATIVITY');
 -- CREATE TYPE repeat_type AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
 -- CREATE TYPE delete_scope AS ENUM ('ONLY_THIS', 'ALL_FUTURE');
 -- CREATE TYPE plan_type AS ENUM ('FREE', 'MONTHLY', 'YEARLY');
@@ -17,7 +16,7 @@
 -- CREATE TYPE achievement_type AS ENUM ('FIRST_CATEGORY_COMPLETE', 'CATEGORY_HALF_COMPLETE', 'CATEGORY_ALL_COMPLETE',
 -- 'TOTAL_COMPLTE_COUNT', 'HIDDEN_ACHIEVEMENT', 'STREAK', 'SPIRIT_LEVEL', 'USER_LEVEL', 'SPIRIT_MASTER', 'CATEGORY_MASTER','BADGE_COLLECTOR');
 -- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
--- CREATE TYPE spirit_temperament AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
+-- CREATE TYPE spirit_trait AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
 -- CREATE TYPE spirit_action_place AS ENUM ('BOOKSHELF', 'WORKBENCH', 'FRONT_YARD', 'TEA_TABLE', 'BED');
 
 -- ============================================================
@@ -101,12 +100,7 @@ CREATE TABLE spirits
     id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT      NOT NULL,
     spirit_name     VARCHAR(50) NOT NULL     DEFAULT '아기 정령',
-    exp             INT         NOT NULL     DEFAULT 0,
-    focus_exp       INT         NOT NULL     DEFAULT 0,
-    energy_exp      INT         NOT NULL     DEFAULT 0,
-    consistency_exp INT         NOT NULL     DEFAULT 0,
-    creativity_exp  INT         NOT NULL     DEFAULT 0,
-    image_url       TEXT,
+    exp             INT         NOT NULL     DEFAULT 0, -- 특성 경험치 (할 일 완료로 누적, 완료 취소로 줄지 않음)
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_spirits_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -147,14 +141,14 @@ CREATE TABLE spirit_egg_options
 );
 
 -- 정령별 선천기질 (2~3개 부여, 화면에는 수치가 아닌 태그로만 노출)
-CREATE TABLE spirit_temperaments
+CREATE TABLE spirit_traits
 (
     id          BIGSERIAL PRIMARY KEY,
     spirit_id   BIGINT      NOT NULL,
-    temperament VARCHAR(20) NOT NULL, -- spirit_temperament ENUM
+    trait VARCHAR(20) NOT NULL, -- spirit_trait ENUM
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_spirit_temperaments_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
-    CONSTRAINT uq_spirit_temperament UNIQUE (spirit_id, temperament)
+    CONSTRAINT fk_spirit_traits_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT uq_spirit_trait UNIQUE (spirit_id, trait)
 );
 
 -- 행동장소 마스터 (5곳 고정)
@@ -254,8 +248,8 @@ CREATE TABLE spirit_discoveries
     CONSTRAINT fk_spirit_discoveries_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- 정령 종류 마스터 (정령도감의 한 칸). 종류마다 외형(spirit_variants)을 최대 6개 가지며,
--- 사용자는 종류당 정령을 1마리만 보유한다
+-- 정령 종류 마스터 (정령도감의 한 칸). 종류마다 외형은 하나(이 테이블의 이미지)이며,
+-- 사용자는 종류당 정령을 1마리만 보유한다. 버릇은 외형이 아니라 Unity 동작·소품으로 표현
 CREATE TABLE spirit_species
 (
     id              BIGSERIAL PRIMARY KEY,
@@ -264,43 +258,13 @@ CREATE TABLE spirit_species
     description     TEXT,
     sort_order      INT          NOT NULL DEFAULT 0,
     asset_key       VARCHAR(100) NOT NULL, -- Unity 클라이언트가 번들에서 찾는 공통 식별자
-    image_url       TEXT,                  -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
+    image_url       TEXT         NOT NULL, -- 웹용 이미지 URL (CDN 업로드 전에는 더미 URL)
     image_file_name VARCHAR(150) NOT NULL  -- 이미지 파일명 (asset_key 기반)
 );
 
--- 정령 외형(스킨) 마스터. 각 외형은 하나의 정령 종류에 속함
--- unlock_metric=DEFAULT는 항상 해금(시드 필수). 그 외(HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE)는
--- 버릇·추억·친밀도 데이터 모델이 아직 없어 자동 해금 평가 로직이 없음 — 수동으로 user_spirit_variant_unlocks에
--- 행을 넣어야 해금됨 (추후 버릇/추억/친밀도 구현 시 자동 평가 로직 추가 예정)
-CREATE TABLE spirit_variants
-(
-    id               BIGSERIAL PRIMARY KEY,
-    code             VARCHAR(30)  NOT NULL UNIQUE,
-    species_id       BIGINT       NOT NULL REFERENCES spirit_species (id),
-    variant_name     VARCHAR(50)  NOT NULL,
-    unlock_metric    VARCHAR(30)  NOT NULL,           -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
-    unlock_threshold INT          NOT NULL DEFAULT 0,
-    weight           INT          NOT NULL DEFAULT 1, -- 뽑기 가중치
-    sort_order       INT          NOT NULL DEFAULT 0,
-    asset_key        VARCHAR(100) NOT NULL,           -- Unity 클라이언트가 번들에서 찾는 공통 식별자
-    image_url        TEXT,                            -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
-    image_file_name  VARCHAR(150)
-);
-
--- 유저별 정령 외형 해금 현황
-CREATE TABLE user_spirit_variant_unlocks
-(
-    id          BIGSERIAL PRIMARY KEY,
-    user_id     BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    variant_id  BIGINT NOT NULL REFERENCES spirit_variants (id),
-    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_user_variant_unlock UNIQUE (user_id, variant_id)
-);
-
--- spirits 테이블 확장: 알/외형/종류/호감도
+-- spirits 테이블 확장: 알/종류/호감도
 ALTER TABLE spirits
     ADD COLUMN egg_option_id BIGINT REFERENCES spirit_egg_options (id),
-    ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id), -- "정령 만나기"로 뽑힌 외형
     ADD COLUMN species_id         BIGINT REFERENCES spirit_species (id),  -- 정령 종류 (종류당 1마리)
     ADD COLUMN affection          INT         NOT NULL DEFAULT 0,         -- 호감도 0~100%. 할 일 완료 1회당 +1, 감소 없음. 단계(1~5)는 20%마다 1단계
     ADD COLUMN is_important       BOOLEAN     NOT NULL DEFAULT FALSE; -- 사용자가 지정한 중요 표시
@@ -320,7 +284,6 @@ CREATE TABLE tasks
     end_time             TIME,                                    -- 하루 종일이면 23:59:59
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- NONE / DAILY / WEEKLY / MONTHLY
     repeat_end_date      DATE,
-    growth_type          VARCHAR(20)  NOT NULL,                   -- growth_type ENUM
     growth_value         INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
     is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,  -- 단발성 전용. 반복은 routine_completions에 날짜별 기록
     is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,

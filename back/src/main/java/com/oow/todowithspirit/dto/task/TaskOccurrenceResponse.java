@@ -32,7 +32,6 @@ public class TaskOccurrenceResponse {
     private final LocalDateTime notificationAt;
 
     private final Integer growthValue;
-    private final String growthType;
 
     // 해당 occurrence 기준 완료 여부
     private final Boolean isCompleted;
@@ -56,7 +55,6 @@ public class TaskOccurrenceResponse {
         this.notificationMinutes = task.getNotificationMinutes();
         this.notificationAt = task.notificationAtOn(occurrenceDate);
         this.growthValue = task.getGrowthValue();
-        this.growthType = task.getGrowthType().name();
         this.isCompleted = isCompleted;
         this.completedAt = completedAt;
         this.createdAt = task.getCreatedAt();
