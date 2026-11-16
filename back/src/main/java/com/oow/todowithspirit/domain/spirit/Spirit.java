@@ -50,9 +50,6 @@ public class Spirit {
     @Column(name = "egg_option_id")
     private Long eggOptionId;
 
-    @Column(name = "variant_id")
-    private Long variantId;
-
     // 정령 종류 (spirit_species). 종류가 지정되지 않은 예전 정령은 null → 서비스에서 기본 종류로 취급
     @Column(name = "species_id")
     private Long speciesId;
@@ -85,19 +82,15 @@ public class Spirit {
         this.eggOptionId = eggOptionId;
     }
 
-    // "정령 만나기"로 뽑힌 외형으로 개체를 생성 (외형이 속한 종류의 정령이 됨)
-    public Spirit(User user, SpiritVariant variant) {
-        this(user, variant.getImageUrl());
-        this.variantId = variant.getId();
-        this.speciesId = variant.getSpeciesId();
+    // "정령 만나기"로 만난 종류의 정령을 생성
+    public Spirit(User user, SpiritSpecies species) {
+        this(user, species.getImageUrl());
+        this.speciesId = species.getId();
     }
 
-    // 종류·외형 지정 (알로 생성되는 첫 정령 등 외형 없이 만들어진 경우)
-    public void assignSpecies(Long speciesId, Long variantId) {
+    // 종류 지정 (알로 생성되는 첫 정령 등 종류 없이 만들어진 경우)
+    public void assignSpecies(Long speciesId) {
         this.speciesId = speciesId;
-        if (variantId != null) {
-            this.variantId = variantId;
-        }
     }
 
     // 호감도 증가 (최대 100)

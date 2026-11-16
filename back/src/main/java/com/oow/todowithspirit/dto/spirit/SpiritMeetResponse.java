@@ -9,6 +9,5 @@ public class SpiritMeetResponse {
 
     private final Long id;
     private final String name;
-    private final String variant;
     private final long balance;
 }

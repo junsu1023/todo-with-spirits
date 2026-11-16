@@ -254,8 +254,8 @@ CREATE TABLE spirit_discoveries
     CONSTRAINT fk_spirit_discoveries_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- 정령 종류 마스터 (정령도감의 한 칸). 종류마다 외형(spirit_variants)을 최대 6개 가지며,
--- 사용자는 종류당 정령을 1마리만 보유한다
+-- 정령 종류 마스터 (정령도감의 한 칸). 종류마다 외형은 하나(이 테이블의 이미지)이며,
+-- 사용자는 종류당 정령을 1마리만 보유한다. 버릇은 외형이 아니라 Unity 동작·소품으로 표현
 CREATE TABLE spirit_species
 (
     id              BIGSERIAL PRIMARY KEY,
@@ -268,39 +268,9 @@ CREATE TABLE spirit_species
     image_file_name VARCHAR(150) NOT NULL  -- 이미지 파일명 (asset_key 기반)
 );
 
--- 정령 외형(스킨) 마스터. 각 외형은 하나의 정령 종류에 속함
--- unlock_metric=DEFAULT는 항상 해금(시드 필수). 그 외(HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE)는
--- 버릇·추억·친밀도 데이터 모델이 아직 없어 자동 해금 평가 로직이 없음 — 수동으로 user_spirit_variant_unlocks에
--- 행을 넣어야 해금됨 (추후 버릇/추억/친밀도 구현 시 자동 평가 로직 추가 예정)
-CREATE TABLE spirit_variants
-(
-    id               BIGSERIAL PRIMARY KEY,
-    code             VARCHAR(30)  NOT NULL UNIQUE,
-    species_id       BIGINT       NOT NULL REFERENCES spirit_species (id),
-    variant_name     VARCHAR(50)  NOT NULL,
-    unlock_metric    VARCHAR(30)  NOT NULL,           -- DEFAULT/HABIT_TYPE_COUNT/MEMORY_COUNT/INTIMACY_STAGE
-    unlock_threshold INT          NOT NULL DEFAULT 0,
-    weight           INT          NOT NULL DEFAULT 1, -- 뽑기 가중치
-    sort_order       INT          NOT NULL DEFAULT 0,
-    asset_key        VARCHAR(100) NOT NULL,           -- Unity 클라이언트가 번들에서 찾는 공통 식별자
-    image_url        TEXT,                            -- 웹용 CDN URL (웹에 아직 미노출이면 NULL)
-    image_file_name  VARCHAR(150)
-);
-
--- 유저별 정령 외형 해금 현황
-CREATE TABLE user_spirit_variant_unlocks
-(
-    id          BIGSERIAL PRIMARY KEY,
-    user_id     BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    variant_id  BIGINT NOT NULL REFERENCES spirit_variants (id),
-    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_user_variant_unlock UNIQUE (user_id, variant_id)
-);
-
--- spirits 테이블 확장: 알/외형/종류/호감도
+-- spirits 테이블 확장: 알/종류/호감도
 ALTER TABLE spirits
     ADD COLUMN egg_option_id BIGINT REFERENCES spirit_egg_options (id),
-    ADD COLUMN variant_id         BIGINT REFERENCES spirit_variants (id), -- "정령 만나기"로 뽑힌 외형
     ADD COLUMN species_id         BIGINT REFERENCES spirit_species (id),  -- 정령 종류 (종류당 1마리)
     ADD COLUMN affection          INT         NOT NULL DEFAULT 0,         -- 호감도 0~100%. 할 일 완료 1회당 +1, 감소 없음. 단계(1~5)는 20%마다 1단계
     ADD COLUMN is_important       BOOLEAN     NOT NULL DEFAULT FALSE; -- 사용자가 지정한 중요 표시

@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 정령 종류 (정령도감의 한 칸).
- * 종류마다 외형(spirit_variants)을 여러 개(최대 6개) 가지며, 사용자는 종류당 정령을 1마리만 보유한다.
+ * 종류마다 외형은 하나(이 마스터의 이미지)이며, 사용자는 종류당 정령을 1마리만 보유한다.
+ * 버릇은 외형이 아니라 Unity 동작·소품으로 표현한다.
  */
 @Entity
 @Table(name = "spirit_species")

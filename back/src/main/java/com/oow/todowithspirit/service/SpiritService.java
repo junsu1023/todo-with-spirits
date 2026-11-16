@@ -17,8 +17,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,7 +32,6 @@ public class SpiritService {
     private final SpiritEggOptionRepository spiritEggOptionRepository;
     private final SpiritTraitTagRepository spiritTraitTagRepository;
     private final SpiritSpeciesRepository spiritSpeciesRepository;
-    private final SpiritVariantRepository spiritVariantRepository;
 
     /**
      * 정령도감 조회.
@@ -60,7 +57,7 @@ public class SpiritService {
 
     /**
      * 사용자가 보유한 정령을 종류별로 묶는다 (종류당 1마리).
-     * 종류가 지정되지 않은 예전 정령은 외형의 종류 → 기본 종류 순으로 귀속시킨다.
+     * 종류가 지정되지 않은 예전 정령은 기본 종류로 귀속시킨다.
      * 예전 데이터로 같은 종류의 정령이 여러 마리면 대표 정령 → 가장 먼저 만난 정령을 사용한다.
      */
     public Map<Long, Spirit> ownedSpiritsBySpecies(Long userId, Long representativeSpiritId) {
@@ -69,9 +66,6 @@ public class SpiritService {
             return Map.of();
         }
 
-        Map<Long, Long> speciesByVariant = spiritVariantRepository.findAll().stream()
-                .filter(variant -> variant.getSpeciesId() != null)
-                .collect(Collectors.toMap(SpiritVariant::getId, SpiritVariant::getSpeciesId));
         Long defaultSpeciesId = spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc()
                 .map(SpiritSpecies::getId)
                 .orElse(null);
@@ -79,7 +73,7 @@ public class SpiritService {
         Map<Long, Spirit> result = new HashMap<>();
         // id 내림차순이므로 뒤에 오는(먼저 만난) 정령이 덮어쓰고, 대표 정령은 마지막에 우선 적용
         for (Spirit spirit : spirits) {
-            Long speciesId = resolveSpeciesId(spirit, speciesByVariant, defaultSpeciesId);
+            Long speciesId = resolveSpeciesId(spirit, defaultSpeciesId);
             if (speciesId != null) {
                 result.put(speciesId, spirit);
             }
@@ -88,7 +82,7 @@ public class SpiritService {
                 .filter(spirit -> spirit.getId().equals(representativeSpiritId))
                 .findFirst()
                 .ifPresent(rep -> {
-                    Long speciesId = resolveSpeciesId(rep, speciesByVariant, defaultSpeciesId);
+                    Long speciesId = resolveSpeciesId(rep, defaultSpeciesId);
                     if (speciesId != null) {
                         result.put(speciesId, rep);
                     }
@@ -96,14 +90,8 @@ public class SpiritService {
         return result;
     }
 
-    private Long resolveSpeciesId(Spirit spirit, Map<Long, Long> speciesByVariant, Long defaultSpeciesId) {
-        if (spirit.getSpeciesId() != null) {
-            return spirit.getSpeciesId();
-        }
-        if (spirit.getVariantId() != null && speciesByVariant.containsKey(spirit.getVariantId())) {
-            return speciesByVariant.get(spirit.getVariantId());
-        }
-        return defaultSpeciesId;
+    private Long resolveSpeciesId(Spirit spirit, Long defaultSpeciesId) {
+        return spirit.getSpeciesId() != null ? spirit.getSpeciesId() : defaultSpeciesId;
     }
 
     @Transactional(readOnly = true)
@@ -203,15 +191,9 @@ public class SpiritService {
                 .map(egg -> new Spirit(user, StringUtils.hasText(egg.getImageUrl()) ? egg.getImageUrl() : DEFAULT_IMAGE_URL, egg.getId()))
                 .orElseGet(() -> new Spirit(user, DEFAULT_IMAGE_URL));
 
-        // 첫 정령은 기본 종류의 기본 외형으로 지정
-        spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc().ifPresent(species -> {
-            Long defaultVariantId = spiritVariantRepository.findAllBySpeciesIdOrderBySortOrderAsc(species.getId()).stream()
-                    .filter(SpiritVariant::isAlwaysUnlocked)
-                    .map(SpiritVariant::getId)
-                    .findFirst()
-                    .orElse(null);
-            defaultSpirit.assignSpecies(species.getId(), defaultVariantId);
-        });
+        // 첫 정령은 기본 종류(정렬 순서상 첫 번째)로 지정
+        spiritSpeciesRepository.findFirstByOrderBySortOrderAscIdAsc()
+                .ifPresent(species -> defaultSpirit.assignSpecies(species.getId()));
 
         spiritRepository.save(defaultSpirit);
         assignRandomTraits(defaultSpirit.getId());
