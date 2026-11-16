@@ -1,7 +1,7 @@
 package com.oow.todowithspirit.dto.spirit;
 
 import com.oow.todowithspirit.domain.spirit.Spirit;
-import com.oow.todowithspirit.domain.spirit.SpiritTemperament;
+import com.oow.todowithspirit.domain.spirit.SpiritTrait;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,9 +18,9 @@ public class RepresentativeSpiritResponse {
     private final int consistencyExp;
     private final int creativityExp;
     private final String imageUrl;
-    private final List<SpiritTemperament> temperaments;
+    private final List<SpiritTrait> trait;
 
-    public static RepresentativeSpiritResponse from(Spirit spirit, List<SpiritTemperament> temperaments) {
+    public static RepresentativeSpiritResponse from(Spirit spirit, List<SpiritTrait> traits) {
         return new RepresentativeSpiritResponse(
                 spirit.getId(),
                 spirit.getSpiritName(),
@@ -30,7 +30,7 @@ public class RepresentativeSpiritResponse {
                 spirit.getConsistencyExp(),
                 spirit.getCreativityExp(),
                 spirit.getImageUrl(),
-                temperaments
+                traits
         );
     }
 }

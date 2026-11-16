@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class SpiritService {
 
     private static final String DEFAULT_IMAGE_URL = "https://default_baby_spirit.png"; // todo: 기본 에셋 위치 변경
-    private static final int MIN_TEMPERAMENTS = 2;
-    private static final int MAX_TEMPERAMENTS = 3;
+    private static final int MIN_TRAITS = 2;
+    private static final int MAX_TRAITS = 3;
 
     private final SpiritRepository spiritRepository;
     private final UserRepository userRepository; // 유저의 대표 정령 ID를 가져오기 위함
     private final SpiritEggOptionRepository spiritEggOptionRepository;
-    private final SpiritTemperamentTagRepository spiritTemperamentTagRepository;
+    private final SpiritTraitTagRepository spiritTraitTagRepository;
     private final SpiritSpeciesRepository spiritSpeciesRepository;
     private final SpiritVariantRepository spiritVariantRepository;
 
@@ -123,7 +123,7 @@ public class SpiritService {
         Spirit spirit = spiritRepository.findById(repSpiritId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Representative spirit not found"));
 
-        return RepresentativeSpiritResponse.from(spirit, temperamentsOf(spirit.getId()));
+        return RepresentativeSpiritResponse.from(spirit, traitsOf(spirit.getId()));
     }
 
     @Transactional
@@ -214,24 +214,24 @@ public class SpiritService {
         });
 
         spiritRepository.save(defaultSpirit);
-        assignRandomTemperaments(defaultSpirit.getId());
+        assignRandomTraits(defaultSpirit.getId());
         user.setRepresentativeSpiritId(defaultSpirit.getId());
 
         return defaultSpirit;
     }
 
-    private void assignRandomTemperaments(Long spiritId) {
-        List<SpiritTemperament> pool = new ArrayList<>(List.of(SpiritTemperament.values()));
+    private void assignRandomTraits(Long spiritId) {
+        List<SpiritTrait> pool = new ArrayList<>(List.of(SpiritTrait.values()));
         Collections.shuffle(pool);
-        int count = ThreadLocalRandom.current().nextInt(MIN_TEMPERAMENTS, MAX_TEMPERAMENTS + 1);
+        int count = ThreadLocalRandom.current().nextInt(MIN_TRAITS, MAX_TRAITS + 1);
         pool.stream()
                 .limit(count)
-                .forEach(temperament -> spiritTemperamentTagRepository.save(new SpiritTemperamentTag(spiritId, temperament)));
+                .forEach(trait -> spiritTraitTagRepository.save(new SpiritTraitTag(spiritId, trait)));
     }
 
-    private List<SpiritTemperament> temperamentsOf(Long spiritId) {
-        return spiritTemperamentTagRepository.findAllBySpiritId(spiritId).stream()
-                .map(SpiritTemperamentTag::getTemperament)
+    private List<SpiritTrait> traitsOf(Long spiritId) {
+        return spiritTraitTagRepository.findAllBySpiritId(spiritId).stream()
+                .map(SpiritTraitTag::getTrait)
                 .toList();
     }
 }

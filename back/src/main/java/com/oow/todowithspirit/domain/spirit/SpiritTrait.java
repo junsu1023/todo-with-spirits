@@ -1,6 +1,6 @@
 package com.oow.todowithspirit.domain.spirit;
 
-public enum SpiritTemperament {
+public enum SpiritTrait {
 
     CURIOUS,     // 호기심 많음
     EASYGOING,   // 느긋함

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SpiritTemperamentTagRepository extends JpaRepository<SpiritTemperamentTag, Long> {
+public interface SpiritTraitTagRepository extends JpaRepository<SpiritTraitTag, Long> {
 
-    List<SpiritTemperamentTag> findAllBySpiritId(Long spiritId);
+    List<SpiritTraitTag> findAllBySpiritId(Long spiritId);
 }

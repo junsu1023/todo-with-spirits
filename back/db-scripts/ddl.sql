@@ -17,7 +17,7 @@
 -- CREATE TYPE achievement_type AS ENUM ('FIRST_CATEGORY_COMPLETE', 'CATEGORY_HALF_COMPLETE', 'CATEGORY_ALL_COMPLETE',
 -- 'TOTAL_COMPLTE_COUNT', 'HIDDEN_ACHIEVEMENT', 'STREAK', 'SPIRIT_LEVEL', 'USER_LEVEL', 'SPIRIT_MASTER', 'CATEGORY_MASTER','BADGE_COLLECTOR');
 -- CREATE TYPE notification_category AS ENUM ('SYSTEM', 'EVENT', 'SPIRIT');
--- CREATE TYPE spirit_temperament AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
+-- CREATE TYPE spirit_trait AS ENUM ('CURIOUS', 'EASYGOING', 'ACTIVE', 'SOCIABLE', 'CAUTIOUS', 'METICULOUS', 'PLAYFUL', 'INDEPENDENT');
 -- CREATE TYPE spirit_action_place AS ENUM ('BOOKSHELF', 'WORKBENCH', 'FRONT_YARD', 'TEA_TABLE', 'BED');
 
 -- ============================================================
@@ -147,14 +147,14 @@ CREATE TABLE spirit_egg_options
 );
 
 -- 정령별 선천기질 (2~3개 부여, 화면에는 수치가 아닌 태그로만 노출)
-CREATE TABLE spirit_temperaments
+CREATE TABLE spirit_traits
 (
     id          BIGSERIAL PRIMARY KEY,
     spirit_id   BIGINT      NOT NULL,
-    temperament VARCHAR(20) NOT NULL, -- spirit_temperament ENUM
+    trait VARCHAR(20) NOT NULL, -- spirit_trait ENUM
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_spirit_temperaments_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
-    CONSTRAINT uq_spirit_temperament UNIQUE (spirit_id, temperament)
+    CONSTRAINT fk_spirit_traits_spirit FOREIGN KEY (spirit_id) REFERENCES spirits (id) ON DELETE CASCADE,
+    CONSTRAINT uq_spirit_trait UNIQUE (spirit_id, trait)
 );
 
 -- 행동장소 마스터 (5곳 고정)
