@@ -8,7 +8,7 @@ spring:
       maximum-pool-size: 3
   jpa:
     hibernate:
-      ddl-auto: update # DB table auto update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
