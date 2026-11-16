@@ -353,7 +353,7 @@ public class TaskService {
         // 같은 할 일(반복은 같은 날짜)로 이미 오른 적이 있으면 올리지 않음
         if (!hasGrowthGranted(task, completionDate)) {
             taskAffectionGrantRepository.save(TaskAffectionGrant.of(taskId, completionDate));
-            spirit.addExp(task.getGrowthValue(), task.getGrowthType());
+            spirit.addExp(task.getGrowthValue());
             spirit.increaseAffection(AFFECTION_PER_COMPLETION);
         }
 
@@ -391,7 +391,7 @@ public class TaskService {
 
         // 대표 정령 경험치 차감 (없으면 자동 생성 후 차감)
         Spirit spirit = spiritService.getOrCreateRepresentativeSpirit(userId);
-        spirit.decreaseExp(task.getGrowthValue(), task.getGrowthType());
+        spirit.decreaseExp(task.getGrowthValue());
     }
 
     /**

@@ -29,20 +29,9 @@ public class Spirit {
     @Column(name = "spirit_name", nullable = false, length = 50)
     private String spiritName = "아기 정령";
 
+    // 특성 경험치 (할 일 완료로 누적)
     @Column(nullable = false)
     private int exp = 0;
-
-    @Column(name = "focus_exp", nullable = false)
-    private int focusExp = 0;
-
-    @Column(name = "energy_exp", nullable = false)
-    private int energyExp = 0;
-
-    @Column(name = "consistency_exp", nullable = false)
-    private int consistencyExp = 0;
-
-    @Column(name = "creativity_exp", nullable = false)
-    private int creativityExp = 0;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -109,27 +98,15 @@ public class Spirit {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 경험치 획득 (성장 유형별 누적치)
-    public void addExp(int amount, GrowthType type) {
+    // 특성 경험치 획득
+    public void addExp(int amount) {
         this.exp += amount;
-        switch (type) {
-            case FOCUS -> this.focusExp += amount;
-            case ENERGY -> this.energyExp += amount;
-            case CONSISTENCY -> this.consistencyExp += amount;
-            case CREATIVITY -> this.creativityExp += amount;
-        }
         this.updatedAt = LocalDateTime.now();
     }
 
-    // 완료 취소 시 경험치 감소
-    public void decreaseExp(int amount, GrowthType type) {
+    // 완료 취소 시 특성 경험치 감소
+    public void decreaseExp(int amount) {
         this.exp = Math.max(0, this.exp - amount);
-        switch (type) {
-            case FOCUS -> this.focusExp = Math.max(0, this.focusExp - amount);
-            case ENERGY -> this.energyExp = Math.max(0, this.energyExp - amount);
-            case CONSISTENCY -> this.consistencyExp = Math.max(0, this.consistencyExp - amount);
-            case CREATIVITY -> this.creativityExp = Math.max(0, this.creativityExp - amount);
-        }
         this.updatedAt = LocalDateTime.now();
     }
 

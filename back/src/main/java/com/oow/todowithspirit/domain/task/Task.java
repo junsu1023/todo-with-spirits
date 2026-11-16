@@ -1,7 +1,6 @@
 package com.oow.todowithspirit.domain.task;
 
 import com.oow.todowithspirit.domain.BaseTimeEntity;
-import com.oow.todowithspirit.domain.spirit.GrowthType;
 import com.oow.todowithspirit.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -82,12 +81,6 @@ public class Task extends BaseTimeEntity {
     @Column(nullable = false)
     private int growthValue = 10;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "growth_type", nullable = true)
-    private GrowthType growthType;
-
-    private static final GrowthType DEFAULT_GROWTH_TYPE = GrowthType.CONSISTENCY;
-
     // 완료
     @Column(name = "is_completed", nullable = false)
     private boolean isCompleted;
@@ -108,7 +101,6 @@ public class Task extends BaseTimeEntity {
                               boolean excludeHoliday) {
         Task task = new Task();
         task.user = user;
-        task.growthType = DEFAULT_GROWTH_TYPE;
         task.apply(title, date, time, isAllDay, isImportant, notificationMinutes,
                 repeatType, repeatEndDate, repeatDaysOfWeek, repeatDaysOfMonth, excludeHoliday);
         return task;

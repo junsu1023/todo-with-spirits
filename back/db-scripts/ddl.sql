@@ -7,7 +7,6 @@
 --  1. ENUM 타입
 -- ============================================================
 
--- CREATE TYPE growth_type AS ENUM ('FOCUS', 'ENERGY', 'CONSISTENCY', 'CREATIVITY');
 -- CREATE TYPE repeat_type AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
 -- CREATE TYPE delete_scope AS ENUM ('ONLY_THIS', 'ALL_FUTURE');
 -- CREATE TYPE plan_type AS ENUM ('FREE', 'MONTHLY', 'YEARLY');
@@ -101,11 +100,7 @@ CREATE TABLE spirits
     id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT      NOT NULL,
     spirit_name     VARCHAR(50) NOT NULL     DEFAULT '아기 정령',
-    exp             INT         NOT NULL     DEFAULT 0,
-    focus_exp       INT         NOT NULL     DEFAULT 0,
-    energy_exp      INT         NOT NULL     DEFAULT 0,
-    consistency_exp INT         NOT NULL     DEFAULT 0,
-    creativity_exp  INT         NOT NULL     DEFAULT 0,
+    exp             INT         NOT NULL     DEFAULT 0, -- 특성 경험치 (할 일 완료로 누적)
     image_url       TEXT,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -290,7 +285,6 @@ CREATE TABLE tasks
     end_time             TIME,                                    -- 하루 종일이면 23:59:59
     repeat_type          VARCHAR(20)  NOT NULL    DEFAULT 'NONE', -- NONE / DAILY / WEEKLY / MONTHLY
     repeat_end_date      DATE,
-    growth_type          VARCHAR(20)  NOT NULL,                   -- growth_type ENUM
     growth_value         INT          NOT NULL    DEFAULT 10,     -- 서버가 계산하여 저장 (클라이언트 미전달)
     is_completed         BOOLEAN      NOT NULL    DEFAULT FALSE,  -- 단발성 전용. 반복은 routine_completions에 날짜별 기록
     is_important         BOOLEAN      NOT NULL    DEFAULT FALSE,

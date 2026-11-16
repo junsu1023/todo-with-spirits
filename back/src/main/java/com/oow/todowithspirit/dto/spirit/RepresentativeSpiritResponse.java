@@ -13,10 +13,6 @@ public class RepresentativeSpiritResponse {
     private final Long id;
     private final String spiritName;
     private final int exp;
-    private final int focusExp;
-    private final int vitalityExp;
-    private final int consistencyExp;
-    private final int creativityExp;
     private final String imageUrl;
     private final List<SpiritTrait> trait;
 
@@ -25,10 +21,6 @@ public class RepresentativeSpiritResponse {
                 spirit.getId(),
                 spirit.getSpiritName(),
                 spirit.getExp(),
-                spirit.getFocusExp(),
-                spirit.getEnergyExp(),
-                spirit.getConsistencyExp(),
-                spirit.getCreativityExp(),
                 spirit.getImageUrl(),
                 traits
         );
