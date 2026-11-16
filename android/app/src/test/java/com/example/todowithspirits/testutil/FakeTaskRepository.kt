@@ -1,11 +1,9 @@
 package com.example.todowithspirits.testutil
 
-import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskCompletionReward
-import com.example.domain.model.TaskList
 import com.example.domain.repository.TaskRepository
 import java.time.LocalDate
 import java.time.LocalTime
@@ -40,13 +38,10 @@ class FakeTaskRepository : TaskRepository {
         lastCalendarRange = from to to
         return taskCalendarResult
     }
-    override suspend fun getSchedules(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
-    override suspend fun getRoutines(from: LocalDate?, to: LocalDate?): Result<TaskList> = error("not used")
     override suspend fun createTodo(todo: NewTodo): Result<Task> {
         lastCreatedTodo = todo
         return createTodoResult ?: error("not used")
     }
-    override suspend fun createRoutine(routine: NewRoutine): Result<Task> = error("not used")
     override suspend fun completeTask(taskId: Long, date: LocalDate): Result<TaskCompletionReward> {
         lastCompletedTask = taskId to date
         return Result.success(TaskCompletionReward(currencyEarned = 10, balance = 10))
@@ -63,7 +58,6 @@ class FakeTaskRepository : TaskRepository {
         lastUpdatedTodo = taskId to todo
         return updateTodoResult ?: error("not used")
     }
-    override suspend fun updateRoutine(taskId: Long, routine: NewRoutine): Result<Task> = error("not used")
 
     override suspend fun postponeTask(
         taskId: Long,

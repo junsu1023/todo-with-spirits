@@ -6,12 +6,10 @@ import com.example.data.network.apiCallUnit
 import com.example.data.request.CreateTodoRequest
 import com.example.data.request.DeleteTaskRequest
 import com.example.data.request.PostponeTaskRequest
-import com.example.data.request.RoutineRequest
 import com.example.data.response.DeleteTaskResponse
 import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskCompletionResponse
 import com.example.data.response.TaskDetailResponse
-import com.example.data.response.TaskListResponse
 import javax.inject.Inject
 
 class TaskRemoteDataSource @Inject constructor(
@@ -22,17 +20,8 @@ class TaskRemoteDataSource @Inject constructor(
     suspend fun getTaskCalendar(from: String?, to: String?): Result<TaskCalendarResponse> =
         apiCall { taskApi.getTaskCalendar(from, to) }
 
-    suspend fun getSchedules(from: String?, to: String?): Result<TaskListResponse> =
-        apiCall { taskApi.getSchedules(from, to) }
-
-    suspend fun getRoutines(from: String?, to: String?): Result<TaskListResponse> =
-        apiCall { taskApi.getRoutines(from, to) }
-
     suspend fun createTodo(request: CreateTodoRequest): Result<TaskDetailResponse> =
         apiCall { taskApi.createTodo(request) }
-
-    suspend fun createRoutine(request: RoutineRequest): Result<TaskDetailResponse> =
-        apiCall { taskApi.createRoutine(request) }
 
     suspend fun completeTask(taskId: Long, date: String): Result<TaskCompletionResponse> =
         apiCall { taskApi.completeTask(taskId, date) }
@@ -45,9 +34,6 @@ class TaskRemoteDataSource @Inject constructor(
 
     suspend fun updateTodo(taskId: Long, request: CreateTodoRequest): Result<TaskDetailResponse> =
         apiCall { taskApi.updateTodo(taskId, request) }
-
-    suspend fun updateRoutine(taskId: Long, request: RoutineRequest): Result<TaskDetailResponse> =
-        apiCall { taskApi.updateRoutine(taskId, request) }
 
     suspend fun postponeTask(taskId: Long, request: PostponeTaskRequest): Result<Unit> =
         apiCallUnit { taskApi.postponeTask(taskId, request) }

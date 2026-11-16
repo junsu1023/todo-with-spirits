@@ -1,7 +1,6 @@
 package com.example.data.mapper
 
 import com.example.data.request.CreateTodoRequest
-import com.example.data.request.RoutineRequest
 import com.example.data.response.CurrencyResponse
 import com.example.data.response.CurrencyTransactionResponse
 import com.example.data.response.DecorationPurchaseResponse
@@ -21,7 +20,6 @@ import com.example.data.response.TaskCalendarResponse
 import com.example.data.response.TaskCompletionResponse
 import com.example.data.response.TaskDetailResponse
 import com.example.data.response.TaskListItemResponse
-import com.example.data.response.TaskListResponse
 import com.example.data.response.UserProfileResponse
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.AppLanguage
@@ -35,7 +33,6 @@ import com.example.domain.model.EmailAvailability
 import com.example.domain.model.LoginSession
 import com.example.domain.model.LoginType
 import com.example.domain.model.MetSpirit
-import com.example.domain.model.NewRoutine
 import com.example.domain.model.NewTodo
 import com.example.domain.model.NotificationCategory
 import com.example.domain.model.NotificationItem
@@ -50,7 +47,6 @@ import com.example.domain.model.Subscription
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
 import com.example.domain.model.TaskCompletionReward
-import com.example.domain.model.TaskList
 import com.example.domain.model.TaskSummary
 import com.example.domain.model.UserProfile
 import com.example.domain.model.UserRole
@@ -108,11 +104,6 @@ fun TaskDetailResponse.toDomain(): Task = Task(
     updatedAt = LocalDateTime.parse(updatedAt)
 )
 
-fun TaskListResponse.toDomain(): TaskList = TaskList(
-    totalCount = totalCount,
-    items = items.map { it.toDomain() }
-)
-
 fun TaskCompletionResponse.toDomain(): TaskCompletionReward = TaskCompletionReward(
     currencyEarned = currencyEarned,
     balance = balance
@@ -159,16 +150,6 @@ fun NewTodo.toRequest(): CreateTodoRequest = CreateTodoRequest(
     endDateTime = endDateTime,
     isImportant = isImportant,
     notificationType = notificationType.toApiValue()
-)
-
-fun NewRoutine.toRequest(): RoutineRequest = RoutineRequest(
-    title = title,
-    repeatType = repeatType.name,
-    repeatEndDate = repeatEndDate?.toString(),
-    repeatDaysOfWeek = repeatDaysOfWeek.map { it.name },
-    repeatDaysOfMonth = repeatDaysOfMonth,
-    notificationType = notificationType.toApiValue(),
-    excludeHoliday = excludeHoliday
 )
 
 fun NotificationPageResponse.toDomain(): NotificationPage = NotificationPage(

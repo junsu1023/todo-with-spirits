@@ -30,11 +30,6 @@ data class Task(
     val updatedAt: LocalDateTime
 )
 
-data class TaskList(
-    val totalCount: Int,
-    val items: List<Task>
-)
-
 // 일정/루틴 완료 시 지급된 재화
 data class TaskCompletionReward(
     val currencyEarned: Int,
