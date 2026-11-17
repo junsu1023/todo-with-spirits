@@ -114,6 +114,9 @@ dependencies {
     // Widget
     implementation(libs.androidx.glance.appwidget)
 
+    // Image
+    implementation(libs.coil.compose)
+
     // Splash
     implementation(libs.androidx.core.splashscreen)
 

@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.core.auth.SessionExpiredNotifier
 import com.example.todowithspirits.feature.add.AddRoute
 import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.feature.bestiary.BestiaryRoute
 import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
 import com.example.todowithspirits.feature.mypage.WithdrawScreen
@@ -142,6 +143,7 @@ fun SpiritsTodoNavigation(
             HomeRoute(
                 navigateToAlarm = navigateToAlarm,
                 navigateToMyPage = { navigateFromHome(Screen.MyPage.route) },
+                navigateToBestiary = { navigateFromHome(Screen.Bestiary.route) },
                 navigateToForest = { navigateFromHome(Screen.Forest.route) },
                 navigateToCalendar = { navigateFromHome(Screen.Calendar.route) },
                 navigateToEditTask = navigateToEditTask
@@ -164,6 +166,10 @@ fun SpiritsTodoNavigation(
             arguments = listOf(navArgument(SEARCH_QUERY_ARG) { type = NavType.StringType; defaultValue = "" })
         ) {
             SearchRoute(navigateBack = onBack)
+        }
+
+        composable(Screen.Bestiary.route) {
+            BestiaryRoute(navigateBack = onBack)
         }
 
         composable(Screen.Forest.route) {

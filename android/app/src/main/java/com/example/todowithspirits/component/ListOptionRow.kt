@@ -1,0 +1,89 @@
+package com.example.todowithspirits.component
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.todowithspirits.R
+import com.example.todowithspirits.theme.SpiritTodoTheme
+
+// 목록 위의 체크 필터 + 정렬 드롭다운 한 줄. (캘린더 완료 제외, 정령도감 미보유만)
+@Composable
+fun ListOptionRow(
+    checkLabel: String,
+    isChecked: Boolean,
+    onCheckToggled: () -> Unit,
+    sortLabel: String,
+    sortLabels: List<String>,
+    onSortSelected: (index: Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier.noRippleClickable(onClick = onCheckToggled),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SpiritsTodoCheckbox(
+                modifier = Modifier.size(14.dp),
+                checked = isChecked,
+                onCheckedChange = { onCheckToggled() },
+                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
+                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off)
+            )
+
+            Text(
+                text = checkLabel,
+                color = SpiritTodoTheme.color.systemGrey,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SpiritsTodoDropdown(
+            value = sortLabel,
+            options = sortLabels,
+            onOptionSelected = { label ->
+                sortLabels.indexOf(label).takeIf { it >= 0 }?.let(onSortSelected)
+            },
+            dropdownWidth = 96.dp,
+            dropdownGap = 6.dp,
+            itemVerticalPadding = 10.dp,
+            selectedOptionColor = SpiritTodoTheme.color.pointPink
+        ) { expand ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.noRippleClickable { expand() }
+            ) {
+                Text(
+                    text = sortLabel,
+                    color = SpiritTodoTheme.color.todoTextMain,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
+}

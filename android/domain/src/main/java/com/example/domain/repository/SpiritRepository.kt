@@ -2,9 +2,10 @@ package com.example.domain.repository
 
 import com.example.domain.model.MetSpirit
 import com.example.domain.model.Spirit
+import com.example.domain.model.SpiritCollectionItem
 
 interface SpiritRepository {
-    suspend fun getSpirits(): Result<List<Spirit>>
+    suspend fun getSpiritCollection(): Result<List<SpiritCollectionItem>>
 
     suspend fun getCurrentSpirit(): Result<Spirit>
 

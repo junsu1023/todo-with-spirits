@@ -51,6 +51,7 @@ private val HomeSectionGap = 10.dp
 fun HomeRoute(
     navigateToAlarm: () -> Unit,
     navigateToMyPage: () -> Unit,
+    navigateToBestiary: () -> Unit,
     navigateToForest: () -> Unit,
     navigateToCalendar: () -> Unit,
     navigateToEditTask: (Long) -> Unit,
@@ -63,6 +64,7 @@ fun HomeRoute(
         when (effect) {
             HomeEffect.NavigateToMyPage -> navigateToMyPage()
             HomeEffect.NavigateToAlarm -> navigateToAlarm()
+            HomeEffect.NavigateToBestiary -> navigateToBestiary()
             HomeEffect.NavigateToForest -> navigateToForest()
             HomeEffect.NavigateToCalendar -> navigateToCalendar()
             is HomeEffect.NavigateToEditTask -> navigateToEditTask(effect.taskId)
@@ -170,6 +172,7 @@ fun HomeScreen(
 
         // 언덕 배경 위에 겹쳐 보이도록 화면 맨 아래에 띄운다.
         HomeBottomButtons(
+            onBestiaryClick = { onEvent(HomeEvent.BestiaryButtonClicked) },
             onForestClick = { onEvent(HomeEvent.ForestButtonClicked) },
             onCalendarClick = { onEvent(HomeEvent.CalendarButtonClicked) },
             modifier = Modifier.align(Alignment.BottomCenter)

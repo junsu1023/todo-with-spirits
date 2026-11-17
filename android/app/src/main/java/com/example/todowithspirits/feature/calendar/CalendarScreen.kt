@@ -3,10 +3,8 @@ package com.example.todowithspirits.feature.calendar
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,20 +25,17 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.CalendarViewDefaults
+import com.example.todowithspirits.component.ListOptionRow
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.SpiritsTodoCheckbox
-import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.TitleHeader
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
@@ -172,11 +167,15 @@ fun CalendarScreen(
 
                 if (uiState.plans.isNotEmpty()) {
                     item {
-                        CalendarListOptionRow(
-                            isHidden = uiState.isHidden,
-                            sortOption = uiState.sortOption,
-                            sortOptions = uiState.sortOptions,
-                            onEvent = onEvent,
+                        ListOptionRow(
+                            checkLabel = stringResource(R.string.hide_completion),
+                            isChecked = uiState.isHidden,
+                            onCheckToggled = { onEvent(CalendarEvent.HideCompletedToggled) },
+                            sortLabel = stringResource(uiState.sortOption.labelRes),
+                            sortLabels = uiState.sortOptions.map { stringResource(it.labelRes) },
+                            onSortSelected = { index ->
+                                onEvent(CalendarEvent.SortOptionSelected(uiState.sortOptions[index]))
+                            },
                             modifier = Modifier.padding(
                                 start = CalendarHorizontalMargin,
                                 top = 28.dp,
@@ -261,77 +260,4 @@ fun CalendarScreen(
     }
 
     LoadingOverlay(isLoading = isLoading)
-}
-
-// 완료 제외 체크 + 정렬 드롭다운
-@Composable
-private fun CalendarListOptionRow(
-    isHidden: Boolean,
-    sortOption: PlanSortOption,
-    sortOptions: List<PlanSortOption>,
-    onEvent: (CalendarEvent) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val sortLabels = sortOptions.map { stringResource(it.labelRes) }
-
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.HideCompletedToggled) },
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SpiritsTodoCheckbox(
-                modifier = Modifier.size(14.dp),
-                checked = isHidden,
-                onCheckedChange = { onEvent(CalendarEvent.HideCompletedToggled) },
-                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
-                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off)
-            )
-
-            Text(
-                text = stringResource(R.string.hide_completion),
-                color = SpiritTodoTheme.color.systemGrey,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        SpiritsTodoDropdown(
-            value = stringResource(sortOption.labelRes),
-            options = sortLabels,
-            onOptionSelected = { label ->
-                sortOptions.getOrNull(sortLabels.indexOf(label))?.let {
-                    onEvent(CalendarEvent.SortOptionSelected(it))
-                }
-            },
-            dropdownWidth = 96.dp,
-            dropdownGap = 6.dp,
-            itemVerticalPadding = 10.dp,
-            selectedOptionColor = SpiritTodoTheme.color.pointPink
-        ) { expand ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.noRippleClickable { expand() }
-            ) {
-                Text(
-                    text = stringResource(sortOption.labelRes),
-                    color = SpiritTodoTheme.color.todoTextMain,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Image(
-                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-    }
 }
