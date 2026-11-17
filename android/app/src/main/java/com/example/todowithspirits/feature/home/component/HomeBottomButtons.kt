@@ -37,7 +37,7 @@ fun HomeBottomButtons(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // 이미 홈이라 누르면 아무 동작도 하지 않는다.
-        HomeBottomButton(label = R.string.home, onClick = null)
+        HomeBottomButton(label = R.string.spirit_bestiary, onClick = null)
         HomeBottomButton(label = R.string.forest, onClick = onForestClick)
         HomeBottomButton(label = R.string.calendar, onClick = onCalendarClick)
     }

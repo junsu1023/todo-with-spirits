@@ -20,7 +20,7 @@
     <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
-    <string name="home">홈</string>
+    <string name="spirit_bestiary">정령도감</string>
     <string name="forest">정령의숲</string>
     <string name="calendar">캘린더</string>
     <string name="add_todo">일정 추가</string>
