@@ -5,14 +5,9 @@ data class DecorationResponse(
     val code: String,
     val name: String,
     val price: Int,
-    val image: DecorationImageResponse?,
+    val image: AssetResponse?,
     val purchased: Boolean,
     val installed: Boolean
-)
-
-data class DecorationImageResponse(
-    val key: String?,
-    val url: String?
 )
 
 data class DecorationPurchaseResponse(

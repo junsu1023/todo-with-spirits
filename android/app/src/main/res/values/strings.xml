@@ -102,6 +102,13 @@
     <string name="sort_by_time">시간 순</string>
     <string name="sort_by_important">중요 순</string>
     <string name="sort_by_complete">완료 순</string>
+    <string name="sort_by_bestiary">도감 순</string>
+    <string name="sort_by_acquired">획득 일자 순</string>
+    <string name="spirit_bestiary_title">정령 도감</string>
+    <string name="show_unowned_only">미보유만</string>
+    <string name="representative">대표</string>
+    <string name="undiscovered_spirit_name">\???</string>
+    <string name="undiscovered_spirit">(발견 전)</string>
     <string name="search_placeholder">검색어 입력</string>
     <string name="recent_search">최근 검색</string>
     <string name="clear_all">전체삭제</string>

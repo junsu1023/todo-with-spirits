@@ -1,20 +1,31 @@
 package com.example.data.response
 
-// 보유 정령 목록 / 대표 정령 조회 응답 공용.
-// 활력 경험치 필드명이 목록(energyExp)과 대표 정령(vitalityExp) 문서에서 달라 둘 다 받는다.
-// representative는 목록 응답에만 있다.
+// 대표 정령 조회 응답.
 data class SpiritResponse(
     val id: Long,
     val spiritName: String,
     val stage: Int,
     val exp: Int,
     val focusExp: Int?,
-    val energyExp: Int?,
     val vitalityExp: Int?,
     val consistencyExp: Int?,
     val creativityExp: Int?,
-    val imageUrl: String?,
-    val representative: Boolean?
+    val imageUrl: String?
+)
+
+// 정령도감의 한 칸 (정령 종류 1개). 미보유 종류는 정령 개체 관련 값이 모두 null이다.
+data class SpiritCollectionResponse(
+    val speciesId: Long,
+    val speciesName: String,
+    val speciesDescription: String?,
+    val image: AssetResponse?,
+    val isOwned: Boolean,
+    val spiritId: Long?,
+    val spiritName: String?,
+    val affection: Int?,
+    val affectionLevel: Int?,
+    val isImportant: Boolean?,
+    val isRepresentative: Boolean?
 )
 
 data class MeetSpiritResponse(

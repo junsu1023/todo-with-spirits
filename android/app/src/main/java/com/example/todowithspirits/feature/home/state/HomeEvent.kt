@@ -3,6 +3,7 @@ package com.example.todowithspirits.feature.home.state
 sealed interface HomeEvent {
     data object SettingClicked : HomeEvent
     data object AlarmClicked : HomeEvent
+    data object BestiaryButtonClicked : HomeEvent
     data object ForestButtonClicked : HomeEvent
     data object CalendarButtonClicked : HomeEvent
     data object TodayTasksToggled : HomeEvent

@@ -8,6 +8,7 @@ import com.example.data.response.CurrencyResponse
 import com.example.data.response.DecorationPurchaseResponse
 import com.example.data.response.DecorationResponse
 import com.example.data.response.MeetSpiritResponse
+import com.example.data.response.SpiritCollectionResponse
 import com.example.data.response.SpiritResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -20,7 +21,7 @@ import retrofit2.http.Path
 // API 문서의 Spirit 구분(정령, 장식, 재화)을 한 인터페이스로 묶는다.
 interface SpiritApi {
     @GET(URLConstant.SPIRIT.SPIRIT)
-    suspend fun getSpirits(): Response<ApiResponse<List<SpiritResponse>>>
+    suspend fun getSpiritCollection(): Response<ApiResponse<List<SpiritCollectionResponse>>>
 
     @GET(URLConstant.SPIRIT.SPIRIT_CURRENT)
     suspend fun getCurrentSpirit(): Response<ApiResponse<SpiritResponse>>

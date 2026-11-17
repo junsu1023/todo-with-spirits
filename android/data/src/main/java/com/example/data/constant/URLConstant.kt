@@ -51,7 +51,7 @@ object URLConstant {
     }
 
     object SPIRIT {
-        const val SPIRIT = "$API/spirit"
+        const val SPIRIT = "$API/spirits"
         const val SPIRIT_CURRENT = "$SPIRIT/current"
         const val SPIRIT_NAME = "$SPIRIT/{spiritId}/name"
         const val SPIRIT_MEET = "$SPIRIT/meet"

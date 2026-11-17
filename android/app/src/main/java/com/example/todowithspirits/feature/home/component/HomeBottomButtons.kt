@@ -25,6 +25,7 @@ private val BottomButtonSize = 71.dp
 // Note: home1 디자인의 임시 버튼. 아이콘이 나오면 교체한다.
 @Composable
 fun HomeBottomButtons(
+    onBestiaryClick: () -> Unit,
     onForestClick: () -> Unit,
     onCalendarClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -36,8 +37,7 @@ fun HomeBottomButtons(
             .padding(start = 30.dp, end = 30.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // 이미 홈이라 누르면 아무 동작도 하지 않는다.
-        HomeBottomButton(label = R.string.spirit_bestiary, onClick = null)
+        HomeBottomButton(label = R.string.spirit_bestiary, onClick = onBestiaryClick)
         HomeBottomButton(label = R.string.forest, onClick = onForestClick)
         HomeBottomButton(label = R.string.calendar, onClick = onCalendarClick)
     }
@@ -46,13 +46,13 @@ fun HomeBottomButtons(
 @Composable
 private fun HomeBottomButton(
     @StringRes label: Int,
-    onClick: (() -> Unit)?
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .size(BottomButtonSize)
             .background(SpiritTodoTheme.color.surfaceColor15)
-            .then(if (onClick != null) Modifier.noRippleClickable(onClick = onClick) else Modifier),
+            .noRippleClickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Text(

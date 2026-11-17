@@ -54,6 +54,7 @@ class HomeViewModel @Inject constructor(
         when (event) {
             HomeEvent.SettingClicked -> sendEffect(HomeEffect.NavigateToMyPage)
             HomeEvent.AlarmClicked -> sendEffect(HomeEffect.NavigateToAlarm)
+            HomeEvent.BestiaryButtonClicked -> sendEffect(HomeEffect.NavigateToBestiary)
             HomeEvent.ForestButtonClicked -> sendEffect(HomeEffect.NavigateToForest)
             HomeEvent.CalendarButtonClicked -> sendEffect(HomeEffect.NavigateToCalendar)
             HomeEvent.TodayTasksToggled -> toggleTodayTasks()

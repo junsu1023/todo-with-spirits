@@ -14,6 +14,7 @@ import com.example.data.response.NotificationPageResponse
 import com.example.data.response.NotificationSettingResponse
 import com.example.data.response.SignUpResponse
 import com.example.data.response.SocialLoginResponse
+import com.example.data.response.SpiritCollectionResponse
 import com.example.data.response.SpiritResponse
 import com.example.data.response.SubscriptionResponse
 import com.example.data.response.TaskCalendarResponse
@@ -43,6 +44,7 @@ import com.example.domain.model.SignUpResult
 import com.example.domain.model.SocialLoginSession
 import com.example.domain.model.SocialProvider
 import com.example.domain.model.Spirit
+import com.example.domain.model.SpiritCollectionItem
 import com.example.domain.model.Subscription
 import com.example.domain.model.Task
 import com.example.domain.model.TaskCalendar
@@ -199,18 +201,27 @@ fun NotificationSettingResponse.toDomain(): NotificationSetting = NotificationSe
     nightPushEnabled = nightPushEnabled
 )
 
-// 대표 정령 조회 응답에는 representative가 없으므로 호출부에서 기본값을 정한다.
-fun SpiritResponse.toDomain(defaultRepresentative: Boolean = false): Spirit = Spirit(
+fun SpiritResponse.toDomain(): Spirit = Spirit(
     id = id,
     spiritName = spiritName,
     stage = stage,
     exp = exp,
     focusExp = focusExp ?: 0,
-    energyExp = energyExp ?: vitalityExp ?: 0,
+    energyExp = vitalityExp ?: 0,
     consistencyExp = consistencyExp ?: 0,
     creativityExp = creativityExp ?: 0,
-    imageUrl = imageUrl.orEmpty(),
-    representative = representative ?: defaultRepresentative
+    imageUrl = imageUrl.orEmpty()
+)
+
+fun SpiritCollectionResponse.toDomain(): SpiritCollectionItem = SpiritCollectionItem(
+    speciesId = speciesId,
+    speciesName = speciesName,
+    imageUrl = image?.url,
+    isOwned = isOwned,
+    spiritId = spiritId,
+    spiritName = spiritName,
+    affectionLevel = affectionLevel ?: 0,
+    isRepresentative = isRepresentative ?: false
 )
 
 fun MeetSpiritResponse.toDomain(): MetSpirit = MetSpirit(

@@ -9,13 +9,15 @@ import com.example.data.response.CurrencyResponse
 import com.example.data.response.DecorationPurchaseResponse
 import com.example.data.response.DecorationResponse
 import com.example.data.response.MeetSpiritResponse
+import com.example.data.response.SpiritCollectionResponse
 import com.example.data.response.SpiritResponse
 import javax.inject.Inject
 
 class SpiritRemoteDataSource @Inject constructor(
     private val spiritApi: SpiritApi
 ) {
-    suspend fun getSpirits(): Result<List<SpiritResponse>> = apiCall { spiritApi.getSpirits() }
+    suspend fun getSpiritCollection(): Result<List<SpiritCollectionResponse>> =
+        apiCall { spiritApi.getSpiritCollection() }
 
     suspend fun getCurrentSpirit(): Result<SpiritResponse> = apiCall { spiritApi.getCurrentSpirit() }
 
