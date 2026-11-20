@@ -27,9 +27,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -161,6 +164,7 @@ fun CalendarView(
     showSelectedDateInHeader: Boolean = false,
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
     onMonthChanged: (YearMonth) -> Unit = {},
+    firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY,
     style: CalendarViewStyle = CalendarViewDefaults.style()
 ) {
     val today = remember { LocalDate.now() }
@@ -252,7 +256,9 @@ fun CalendarView(
                 .then(if (style.weekdayRowHeight != Dp.Unspecified) Modifier.height(style.weekdayRowHeight) else Modifier),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val weekDays = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+            val weekDays = remember(firstDayOfWeek) {
+                (0L until 7L).map { firstDayOfWeek.plus(it).getDisplayName(TextStyle.SHORT, Locale.US).uppercase() }
+            }
             weekDays.forEach { day ->
                 Text(
                     text = day,
@@ -277,6 +283,7 @@ fun CalendarView(
                 selectedDate = selectedDate,
                 eventData = eventData,
                 onDateSelected = onDateSelected,
+                firstDayOfWeek = firstDayOfWeek,
                 style = style,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -320,12 +327,14 @@ private fun CalendarMonthGrid(
     selectedDate: LocalDate,
     eventData: Map<LocalDate, CalendarDayEvent>,
     onDateSelected: (LocalDate) -> Unit,
+    firstDayOfWeek: DayOfWeek,
     style: CalendarViewStyle,
     modifier: Modifier = Modifier
 ) {
-    val calendarDays = remember(month) {
+    val calendarDays = remember(month, firstDayOfWeek) {
         val firstDayOfMonth = month.atDay(1)
-        val leadingCount = firstDayOfMonth.dayOfWeek.value % 7
+        // 주 시작 요일부터 1일 전까지 채울 이전 달 날짜 수
+        val leadingCount = (firstDayOfMonth.dayOfWeek.value - firstDayOfWeek.value + 7) % 7
 
         val days = mutableListOf<CalendarDay>()
         for (offset in leadingCount downTo 1) {
