@@ -8,12 +8,12 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -52,16 +51,15 @@ private const val BOUNCE_UP_DURATION_MS = 150
 // wind_spirit 원본은 꼬리가 오른쪽에 있어 왼쪽을 바라본다. 오른쪽으로 갈 때 좌우 반전한다.
 private const val SPIRIT_FACES_LEFT = true
 
-private const val HILL_ASPECT_RATIO = 296.287f / 360f
-
-private val SpiritSize = 150.dp
+private val SpiritSize = 168.dp
 private val StageHorizontalMargin = 18.dp
 private val BounceHeight = 20.dp
 
-// home1 기준: 정령 하단이 언덕 상단에서 50 아래, 말풍선은 정령보다 50 왼쪽에서 시작해 정령 상단과 6 겹친다.
-private val SpiritSinkIntoHill = 50.dp
-private val BubbleOffsetX = (-50).dp
-private val BubbleOverlapSpirit = 6.dp
+// home1 기준: 정령 하단이 하단 버튼 상단에서 93 위(= 화면 하단 여백 24 + 버튼 94 + 93),
+// 말풍선은 정령보다 13 왼쪽에서 시작해 꼬리 끝이 정령 상단과 21 겹친다.
+private val SpiritBottomPadding = 212.dp
+private val BubbleOffsetX = (-12).dp
+private val BubbleOverlapSpirit = 20.dp
 
 // home4 기준: 정령 박스 중심에서 각 아이콘 중심까지의 거리. 좌우 대칭으로 부채꼴처럼 놓인다.
 private val MenuIconSize = 44.dp
@@ -93,15 +91,15 @@ fun SpiritStage(
     onMenuAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // 하단 버튼이 내비게이션 바 위에 놓이므로 정령 위치도 같은 기준으로 맞춘다.
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
+            .navigationBarsPadding()
             .clipToBounds()
     ) {
         val density = LocalDensity.current
-        val hillHeight = maxWidth * HILL_ASPECT_RATIO
-        // 홈은 하단 버튼 뒤까지 그려지므로 언덕을 영역(=화면) 맨 아래에 맞춘다.
-        val spiritBottomPadding = hillHeight - SpiritSinkIntoHill
+        val spiritBottomPadding = SpiritBottomPadding
 
         val minX = with(density) { StageHorizontalMargin.toPx() }
         val maxX = with(density) { (maxWidth - StageHorizontalMargin - SpiritSize).toPx() }.coerceAtLeast(minX)
@@ -147,30 +145,8 @@ fun SpiritStage(
             }
         }
 
-        Image(
-            painter = painterResource(R.drawable.home_hill),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(hillHeight)
-        )
-
         // 꼬리가 정령을 가리키도록 정령을 따라 움직이되, 좌우 여백 밖으로는 나가지 않는다.
-        SpeechBubble(
-            text = message,
-            backgroundColor = SpiritTodoTheme.color.systemArea,
-            textColor = SpiritTodoTheme.color.todoTextMain,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Normal,
-            horizontalPadding = 26.dp,
-            verticalPadding = 12.dp,
-            cornerRadius = 21.dp,
-            tailWidth = 13.dp,
-            tailHeight = 31.dp,
-            tailHorizontalBias = 0.28f,
-            tailTipOffset = 19.dp,
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(bottom = spiritBottomPadding + SpiritSize - BubbleOverlapSpirit)
@@ -181,7 +157,41 @@ fun SpiritStage(
                     val x = (spiritX.value + bubbleOffsetPx).coerceIn(minX, maxBubbleX)
                     IntOffset(x.roundToInt(), 0)
                 }
-        )
+        ) {
+            SpeechBubble(
+                text = message,
+                backgroundColor = SpiritTodoTheme.color.white,
+                textColor = SpiritTodoTheme.color.font01,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                horizontalPadding = 12.dp,
+                verticalPadding = 8.dp,
+                cornerRadius = 6.dp,
+                tailWidth = 7.dp,
+                tailHeight = 24.dp,
+                tailHorizontalBias = 0.47f,
+                tailTipOffset = 10.dp,
+                border = BorderStroke(1.dp, SpiritTodoTheme.color.stroke01)
+            )
+
+            Image(
+                painter = painterResource(R.drawable.widgetly_heart_medium),
+                contentDescription = null,
+                modifier = Modifier.offset(x = (-1).dp, y = (-7).dp)
+            )
+            Image(
+                painter = painterResource(R.drawable.widgetly_heart_large),
+                contentDescription = null,
+                modifier = Modifier.offset(x = 7.dp, y = (-14).dp)
+            )
+            Image(
+                painter = painterResource(R.drawable.widgetly_heart_small),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 7.dp, y = 21.dp)
+            )
+        }
 
         // 가로 이동은 offset으로 적용해 클릭 영역이 정령을 따라오게 하고, 반전/바운스는 graphicsLayer로 처리한다.
         Box(
@@ -214,7 +224,7 @@ fun SpiritStage(
                 contentDescription = spiritName,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .padding(horizontal = 18.dp, vertical = 9.dp)
             )
         }
 
