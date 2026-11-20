@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
@@ -25,16 +26,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.layout.FirstBaseline
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,9 +43,7 @@ import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.home.state.HomeTodayTask
 import com.example.todowithspirits.theme.SpiritTodoTheme
-
-// 피그마의 숫자 박스 높이 (폰트 위아래 여백을 뺀 글자 높이)
-private val CompletedCountBoxHeight = 39.dp
+import com.example.todowithspirits.util.baselineAtBottom
 
 /**
  * @param onCollapsedHeightChanged 접힌 부분(제목 + 숫자 줄)의 높이. 펼친 목록이 아래 콘텐츠 위로 겹치도록
@@ -73,9 +71,9 @@ fun HomeTodaySummaryCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.white, RoundedCornerShape(8.dp))
             .animateContentSize()
-            .noRippleClickable(onClick = { if (hasTasks) onToggleExpanded() })
+            .border(1.dp, SpiritTodoTheme.color.stroke01, RoundedCornerShape(8.dp))
             .padding(horizontal = 14.dp)
     ) {
         Column(
@@ -84,12 +82,13 @@ fun HomeTodaySummaryCard(
                 .padding(vertical = 12.dp)
         ) {
             Text(
-                text = "오늘 일정",
+                text = stringResource(R.string.today_task),
                 fontSize = 16.sp,
-                color = SpiritTodoTheme.color.todoTextMain
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.font01
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,28 +100,28 @@ fun HomeTodaySummaryCard(
                 ) {
                     Text(
                         text = "$completedCount",
-                        fontSize = 53.sp,
+                        fontSize = 50.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.color.todoTextMain,
-                        modifier = Modifier.baselineAtBottom(CompletedCountBoxHeight)
+                        color = SpiritTodoTheme.color.font01,
+                        modifier = Modifier.baselineAtBottom(39.dp)
                     )
 
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(2.dp))
 
                     Text(
                         text = "/ $totalCount",
                         fontSize = 20.sp,
-                        color = SpiritTodoTheme.color.systemGrey,
+                        color = SpiritTodoTheme.color.font02,
                         modifier = Modifier.baselineAtBottom(24.dp)
                     )
                 }
 
                 if (hasTasks) {
                     Image(
-                        painter = painterResource(R.drawable.fi_rr_angle_small_down),
+                        painter = painterResource(R.drawable.widgetly_down_24),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(28.dp)
+                            .noRippleClickable(onClick = { onToggleExpanded() })
                             .rotate(arrowRotation)
                     )
                 }
@@ -134,7 +133,7 @@ fun HomeTodaySummaryCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 150.dp),
-                contentPadding = PaddingValues(top = 8.dp, bottom = 12.dp),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(items = tasks, key = { it.id }) { task ->
@@ -149,22 +148,6 @@ fun HomeTodaySummaryCard(
     }
 }
 
-/*
-큰 숫자는 폰트 자체의 위아래 여백(ascent/descent) 때문에 피그마보다 훨씬 크게 잡힌다.
-텍스트는 원래 크기로 그리되(잘리지 않게), 레이아웃에는 기준선을 하단에 맞춘 height만큼만 차지하도록 보고한다.
-숫자와 '/'는 기준선 아래로 내려가는 부분이 거의 없어 하단 정렬만으로 피그마와 같은 모양이 된다.
- */
-private fun Modifier.baselineAtBottom(height: Dp) = layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
-    val boxHeight = height.roundToPx()
-    val baseline = placeable[FirstBaseline]
-
-    layout(placeable.width, boxHeight, mapOf(FirstBaseline to boxHeight)) {
-        placeable.place(0, boxHeight - baseline)
-    }
-}
-
-// 체크 영역은 완료 전환, 나머지(제목) 영역은 상세 팝업을 연다.
 @Composable
 private fun HomeTodayTaskItem(
     task: HomeTodayTask,
@@ -175,29 +158,34 @@ private fun HomeTodayTaskItem(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 완료 상태 디자인이 없어 이전 오늘 일정과 같은 체크 아이콘을 쓴다.
         SpiritsTodoCheckbox(
-            modifier = Modifier.size(20.dp),
             checked = task.isCompleted,
             onCheckedChange = onCompletionChange,
-            checkedIcon = painterResource(R.drawable.todo_icon_check_pp),
-            uncheckedIcon = painterResource(R.drawable.ic_check_circle_empty)
+            checkedIcon = painterResource(R.drawable.widgetly_circle_check_18),
+            uncheckedIcon = painterResource(R.drawable.widgetly_circle_check_empty_18)
         )
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Row(
             modifier = Modifier
                 .weight(1f)
                 .height(20.dp)
-                .noRippleClickable(onClick = onClick)
-                .padding(start = 10.dp),
+                .noRippleClickable(onClick = onClick),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = task.title,
                 fontSize = 14.sp,
-                color = if (task.isCompleted) SpiritTodoTheme.color.systemGrey else SpiritTodoTheme.color.todoTextMain,
-                textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null,
+                color = when(task.isCompleted) {
+                    true -> SpiritTodoTheme.color.fontGrey
+                    else -> SpiritTodoTheme.color.font01
+                },
+                textDecoration = when(task.isCompleted) {
+                    true -> TextDecoration.LineThrough
+                    else -> null
+                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f, fill = false)
@@ -205,9 +193,9 @@ private fun HomeTodayTaskItem(
 
             if (task.isImportant) {
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_color_star),
+                    painter = painterResource(R.drawable.widgetly_start_14),
                     contentDescription = null,
-                    modifier = Modifier.size(14.dp)
+                    colorFilter = ColorFilter.tint(SpiritTodoTheme.color.key02)
                 )
             }
         }
@@ -226,16 +214,16 @@ fun HomeStatusChipRow(
     ) {
         if (importantCount > 0) {
             HomeStatusChip(
-                iconRes = R.drawable.fi_rr_color_star,
-                text = "중요 일정이 ${importantCount}건 있어요!",
-                backgroundColor = SpiritTodoTheme.color.mainBackground
+                iconRes = R.drawable.widgetly_start_14,
+                text = stringResource(R.string.has_important, importantCount),
+                backgroundColor = SpiritTodoTheme.color.key02
             )
         }
 
         HomeStatusChip(
-            iconRes = R.drawable.ic_check_routine,
+            iconRes = R.drawable.widgetly_check_14,
             text = "완료 ($completedCount)",
-            backgroundColor = SpiritTodoTheme.color.routineBackground
+            backgroundColor = SpiritTodoTheme.color.key01
         )
     }
 }
@@ -251,7 +239,7 @@ private fun HomeStatusChip(
             .height(26.dp)
             .background(backgroundColor, RoundedCornerShape(4.dp))
             .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -263,7 +251,7 @@ private fun HomeStatusChip(
         Text(
             text = text,
             fontSize = 12.sp,
-            color = SpiritTodoTheme.color.todoTextMain
+            color = SpiritTodoTheme.color.white
         )
     }
 }
