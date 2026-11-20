@@ -2,6 +2,10 @@
     <string name="app_name">TodoWithSpirits</string>
     <!-- NOTE 임시 스플래시 타이틀. 정식 앱 이름이 정해지면 교체 -->
     <string name="splash_app_name">Spirits</string>
+    <string name="today_task">오늘 일정</string>
+    <string name="has_important">중요 일정이 %d건 있어요!</string>
+    <string name="complete_count">완료(%d)</string>
+
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
     <string name="password">비밀번호</string>
