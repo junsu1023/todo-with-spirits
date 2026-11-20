@@ -144,7 +144,7 @@ fun SearchField(
         )
 
         Image(
-            painter = painterResource(R.drawable.fi_rr_search),
+            painter = painterResource(R.drawable.widgetly_search),
             contentDescription = null,
             modifier = Modifier
                 .size(20.dp)
@@ -174,7 +174,7 @@ private fun RecentSearchChip(
         )
 
         Image(
-            painter = painterResource(R.drawable.todo_cross),
+            painter = painterResource(R.drawable.widgetly_cross_24),
             contentDescription = null,
             colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey),
             modifier = Modifier

@@ -121,7 +121,7 @@ fun PasswordField(
                 Spacer(Modifier.width(8.dp))
 
                 Image(
-                    painter = painterResource(R.drawable.todo_cross),
+                    painter = painterResource(R.drawable.widgetly_cross_24),
                     contentDescription = null,
                     modifier = Modifier
                         .size(16.dp)

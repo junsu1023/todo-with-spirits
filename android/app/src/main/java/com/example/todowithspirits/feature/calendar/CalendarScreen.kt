@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -86,7 +84,7 @@ fun CalendarScreen(
     onEvent: (CalendarEvent) -> Unit
 ) {
     val context = LocalContext.current
-    val dotColor = SpiritTodoTheme.color.pointPink
+    val dotColor = SpiritTodoTheme.color.key01
     val calendarEventData = remember(uiState.calendarEvents, dotColor) {
         uiState.calendarEvents.mapValues { (_, events) ->
             CalendarDayEvent(
@@ -105,36 +103,32 @@ fun CalendarScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.back01)
     ) {
         TopNaviBar(
+            modifier = Modifier.padding(17.dp),
             title = stringResource(R.string.calendar),
             leftComposable = {
                 Image(
-                    painter = painterResource(R.drawable.todo_back1),
+                    painter = painterResource(R.drawable.widgetly_back_26),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(26.dp)
                         .noRippleClickable { onEvent(CalendarEvent.BackClicked) }
                 )
             },
             rightComposable = {
                 if (uiState.isSearchOpen) {
                     Image(
-                        painter = painterResource(R.drawable.todo_cross),
+                        painter = painterResource(R.drawable.widgetly_cross_24),
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
+                        modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
                     )
                 } else {
                     Image(
-                        painter = painterResource(R.drawable.fi_rr_search),
+                        painter = painterResource(R.drawable.widgetly_search),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
-                        modifier = Modifier
-                            .size(24.dp)
-                            .noRippleClickable { onEvent(CalendarEvent.SearchClicked) }
+                        modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.SearchClicked) }
                     )
                 }
             }

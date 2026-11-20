@@ -6,6 +6,9 @@
     <string name="today_task">오늘 일정</string>
     <string name="has_important">중요 일정이 %d건 있어요!</string>
     <string name="complete_count">완료(%d)</string>
+    <string name="spirit_bestiary">정령도감</string>
+    <string name="forest">정령의숲</string>
+    <string name="calendar">캘린더</string>
 
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
@@ -25,9 +28,6 @@
     <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
-    <string name="spirit_bestiary">정령도감</string>
-    <string name="forest">정령의숲</string>
-    <string name="calendar">캘린더</string>
     <string name="add_todo">일정 추가</string>
     <string name="edit_todo">일정 수정</string>
     <string name="task_title_placeholder">일정 입력</string>
