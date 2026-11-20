@@ -1,14 +1,15 @@
 package com.example.todowithspirits.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
@@ -43,7 +44,8 @@ fun SpeechBubble(
     tailWidth: Dp = 10.dp,
     tailHeight: Dp = 12.dp,
     tailHorizontalBias: Float = 0.6f,
-    tailTipOffset: Dp = 0.dp
+    tailTipOffset: Dp = 0.dp,
+    border: BorderStroke? = null
 ) {
     val shape = remember(cornerRadius, tailWidth, tailHeight, tailHorizontalBias, tailTipOffset) {
         SpeechBubbleShape(cornerRadius, tailWidth, tailHeight, tailHorizontalBias, tailTipOffset)
@@ -52,6 +54,7 @@ fun SpeechBubble(
     Box(
         modifier = modifier
             .background(backgroundColor, shape)
+            .then(if (border != null) Modifier.border(border, shape) else Modifier)
             .padding(
                 start = horizontalPadding,
                 end = horizontalPadding,
@@ -90,19 +93,21 @@ private class SpeechBubbleShape(
         val maxTipX = (size.width - cr - tw).coerceAtLeast(minTipX)
         val tipX = minTipX + (maxTipX - minTipX) * tailHorizontalBias.coerceIn(0f, 1f)
 
+        // 본문과 꼬리를 하나의 윤곽으로 이어 그려야 테두리가 꼬리 밑변을 가로지르지 않는다.
+        val right = size.width
         val path = Path().apply {
-            addRoundRect(
-                RoundRect(
-                    left = 0f,
-                    top = 0f,
-                    right = size.width,
-                    bottom = bodyBottom,
-                    cornerRadius = CornerRadius(cr, cr)
-                )
-            )
-            moveTo(tipX, bodyBottom)
-            lineTo(tipX + tipOffset, size.height)
+            moveTo(cr, 0f)
+            lineTo(right - cr, 0f)
+            arcTo(Rect(right - 2 * cr, 0f, right, 2 * cr), 270f, 90f, false)
+            lineTo(right, bodyBottom - cr)
+            arcTo(Rect(right - 2 * cr, bodyBottom - 2 * cr, right, bodyBottom), 0f, 90f, false)
             lineTo(tipX + tw, bodyBottom)
+            lineTo(tipX + tipOffset, size.height)
+            lineTo(tipX, bodyBottom)
+            lineTo(cr, bodyBottom)
+            arcTo(Rect(0f, bodyBottom - 2 * cr, 2 * cr, bodyBottom), 90f, 90f, false)
+            lineTo(0f, cr)
+            arcTo(Rect(0f, 0f, 2 * cr, 2 * cr), 180f, 90f, false)
             close()
         }
 

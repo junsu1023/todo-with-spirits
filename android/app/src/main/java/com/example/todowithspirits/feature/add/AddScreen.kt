@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.add.component.TaskTitleField
 import com.example.todowithspirits.feature.add.component.TodoForm
@@ -86,7 +86,7 @@ fun AddScreen(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            TitleHeader(
+            TopNaviBar(
                 title = stringResource(if (uiState.isEditMode) R.string.edit_todo else R.string.add_todo),
                 leftComposable = {
                     Image(

@@ -78,8 +78,7 @@ fun SpiritsTodoCheckbox(
     uncheckedIcon: Painter
 ) {
     Icon(
-        modifier = modifier
-            .noRippleClickable { onCheckedChange(!checked) },
+        modifier = modifier.noRippleClickable { onCheckedChange(!checked) },
         painter = if(checked) checkedIcon else uncheckedIcon,
         contentDescription = null,
         tint = Color.Unspecified

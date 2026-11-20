@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.AlarmIconSection
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.home.component.HomeBottomButtons
 import com.example.todowithspirits.feature.home.component.HomeStatusChipRow
@@ -84,21 +85,22 @@ fun HomeScreen(
     isLoading: Boolean,
     onEvent: (HomeEvent) -> Unit
 ) {
-    var todayCardCollapsedHeight by remember { mutableStateOf(94.dp) }
+    var todayCardCollapsedHeight by remember { mutableStateOf(98.dp) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SpiritTodoTheme.color.surfaceColor1)
+                .background(SpiritTodoTheme.color.back01)
         ) {
-            TitleHeader(
+            TopNaviBar(
+                modifier = Modifier.padding(horizontal = 17.dp),
                 leftComposable = {
                     Text(
                         text = uiState.selectedDate.format(KoreanMonthDayWithDayFormatter),
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Medium,
-                        color = SpiritTodoTheme.color.pointPink
+                        color = SpiritTodoTheme.color.font01
                     )
                 },
                 rightComposable = {
@@ -119,20 +121,20 @@ fun HomeScreen(
                             onAlarmClick = { onEvent(HomeEvent.AlarmClicked) },
                             msgCnt = 100,
                             iconSize = 26.dp,
-                            badgeColor = SpiritTodoTheme.color.pointPink
+                            badgeColor = SpiritTodoTheme.color.key02
                         )
                     }
                 }
             )
 
-            // 오늘 일정 카드는 펼치면 아래 콘텐츠 위로 겹쳐야 해서, 같은 Box 안에서 카드를 마지막에(위에) 그린다.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Spacer(Modifier.height(HomeSectionGap + todayCardCollapsedHeight + HomeSectionGap))
+                    // 중요 일정 / 완료 뱃지 Y축 띄우기
+                    Spacer(Modifier.height(24.dp + todayCardCollapsedHeight))
 
                     HomeStatusChipRow(
                         importantCount = uiState.todayImportantCount,
@@ -142,7 +144,7 @@ fun HomeScreen(
 
                     SpiritStage(
                         spiritName = uiState.spiritInfo.name,
-                        message = "오늘 하루도 힘차게!",
+                        message = "얼마 안남았어요!",
                         isMenuVisible = uiState.isSpiritMenuVisible,
                         onSpiritClick = { onEvent(HomeEvent.SpiritClicked) },
                         onMenuAddClick = { onEvent(HomeEvent.SpiritMenuAddClicked) },
@@ -170,7 +172,6 @@ fun HomeScreen(
             }
         }
 
-        // 언덕 배경 위에 겹쳐 보이도록 화면 맨 아래에 띄운다.
         HomeBottomButtons(
             onBestiaryClick = { onEvent(HomeEvent.BestiaryButtonClicked) },
             onForestClick = { onEvent(HomeEvent.ForestButtonClicked) },

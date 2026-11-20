@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SettingActionRow
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -32,7 +32,7 @@ fun DataSettingScreen(
             .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.data_setting),
             onLeftIconClick = onBack

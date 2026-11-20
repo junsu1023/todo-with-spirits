@@ -30,7 +30,7 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.component.LoginFailureDialog
 import com.example.todowithspirits.feature.login.viewmodel.EmailLoginViewModel
@@ -65,7 +65,7 @@ fun EmailLoginScreen(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            TitleHeader(
+            TopNaviBar(
                 leftIconRes = R.drawable.todo_back1,
                 onLeftIconClick = onBack,
                 title = stringResource(R.string.login)

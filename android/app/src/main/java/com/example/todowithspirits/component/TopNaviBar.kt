@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun TitleHeader(
+fun TopNaviBar(
+    modifier: Modifier = Modifier,
     @DrawableRes leftIconRes: Int? = null,
     title: String? = null,
     @DrawableRes rightIconRes: Int? = null,
@@ -38,11 +39,10 @@ fun TitleHeader(
     leftComposable: (@Composable () -> Unit)? = null
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(60.dp)
-            .background(SpiritTodoTheme.color.transparent)
-            .padding(horizontal = 16.dp),
+            .background(SpiritTodoTheme.color.transparent),
         contentAlignment = Alignment.Center
     ) {
         if (leftIconRes != null) {

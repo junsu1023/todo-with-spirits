@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
 import com.example.todowithspirits.theme.SpiritTodoTheme
@@ -85,7 +85,7 @@ fun EmailVerificationStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             onLeftIconClick = onBack,
             title = stringResource(R.string.sign_up)

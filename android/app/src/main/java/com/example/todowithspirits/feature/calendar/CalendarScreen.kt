@@ -36,7 +36,7 @@ import com.example.todowithspirits.component.CalendarView
 import com.example.todowithspirits.component.CalendarViewDefaults
 import com.example.todowithspirits.component.ListOptionRow
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
 import com.example.todowithspirits.feature.search.component.SearchPanel
@@ -105,7 +105,7 @@ fun CalendarScreen(
             .fillMaxSize()
             .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        TitleHeader(
+        TopNaviBar(
             title = stringResource(R.string.calendar),
             leftComposable = {
                 Image(

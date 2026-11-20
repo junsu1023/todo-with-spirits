@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SettingActionRow
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.mypage.component.MySpiritCard
 import com.example.todowithspirits.feature.mypage.component.ProfileSection
@@ -74,7 +74,7 @@ fun MyPageScreen(
             .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
-        TitleHeader(title = stringResource(R.string.my_page_title))
+        TopNaviBar(title = stringResource(R.string.my_page_title))
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             ProfileSection(
