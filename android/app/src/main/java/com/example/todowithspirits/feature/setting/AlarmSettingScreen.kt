@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
 import com.example.todowithspirits.feature.setting.viewmodel.AlarmSettingViewModel
 
@@ -36,7 +36,7 @@ fun AlarmSettingScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            TitleHeader(
+            TopNaviBar(
                 leftIconRes = R.drawable.todo_back1,
                 title = stringResource(R.string.alarm_setting),
                 onLeftIconClick = onBack

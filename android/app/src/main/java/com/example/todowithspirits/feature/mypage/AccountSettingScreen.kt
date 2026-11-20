@@ -29,7 +29,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SettingActionRow
 import com.example.todowithspirits.component.SettingsRow
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.mypage.viewmodel.AccountSettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
@@ -57,7 +57,7 @@ fun AccountSettingScreen(
             .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             onLeftIconClick = onBack,
             title = stringResource(R.string.account_management)

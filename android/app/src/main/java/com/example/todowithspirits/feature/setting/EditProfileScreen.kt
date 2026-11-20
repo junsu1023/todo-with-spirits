@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.viewmodel.EditProfileViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
@@ -59,7 +59,7 @@ fun EditProfileScreen(
             .fillMaxSize()
             .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             onLeftIconClick = onBack,
             title = stringResource(R.string.modify_profile)

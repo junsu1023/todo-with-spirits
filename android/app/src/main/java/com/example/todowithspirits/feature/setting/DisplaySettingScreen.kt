@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.DisplaySelectorRow
 import com.example.todowithspirits.feature.setting.component.DisplayToggleRow
 import com.example.todowithspirits.feature.setting.state.LanguageOptions
@@ -50,7 +50,7 @@ fun DisplaySettingScreen(
             .background(SpiritTodoTheme.color.surfaceColor1)
             .verticalScroll(rememberScrollState())
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.display_setting),
             onLeftIconClick = onBack

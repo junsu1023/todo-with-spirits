@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun TitleHeader(
+fun TopNaviBar(
     @DrawableRes leftIconRes: Int? = null,
     title: String? = null,
     @DrawableRes rightIconRes: Int? = null,

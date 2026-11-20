@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.search.component.SearchField
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
@@ -87,7 +87,7 @@ fun SearchScreen(
                 .fillMaxSize()
                 .background(SpiritTodoTheme.color.surfaceColor1)
         ) {
-            TitleHeader(
+            TopNaviBar(
                 title = stringResource(R.string.search_title),
                 leftComposable = {
                     Image(

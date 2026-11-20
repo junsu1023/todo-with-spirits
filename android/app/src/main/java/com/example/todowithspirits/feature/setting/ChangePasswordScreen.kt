@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
@@ -37,7 +37,7 @@ fun ChangePasswordScreen(
             .fillMaxSize()
             .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             onLeftIconClick = onBack,
             title = stringResource(R.string.change_password)

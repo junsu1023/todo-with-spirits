@@ -29,7 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.alarm.component.AlarmBanner
 import com.example.todowithspirits.feature.alarm.component.AlarmItem
@@ -67,7 +67,7 @@ fun AlarmScreen(
             .fillMaxSize()
             .background(SpiritTodoTheme.color.surfaceColor4)
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.alarm),
             rightIconRes = R.drawable.todo_setting,

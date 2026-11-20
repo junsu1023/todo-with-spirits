@@ -29,7 +29,7 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
@@ -56,7 +56,7 @@ fun CredentialsStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TitleHeader(
+        TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             onLeftIconClick = onBack,
             title = stringResource(R.string.sign_up)

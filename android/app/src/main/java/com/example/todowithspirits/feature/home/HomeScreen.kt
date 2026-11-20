@@ -29,7 +29,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.AlarmIconSection
 import com.example.todowithspirits.component.LoadingOverlay
-import com.example.todowithspirits.component.TitleHeader
+import com.example.todowithspirits.component.TopNaviBar
+import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.home.component.HomeBottomButtons
 import com.example.todowithspirits.feature.home.component.HomeStatusChipRow
@@ -92,7 +93,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(SpiritTodoTheme.color.surfaceColor1)
         ) {
-            TitleHeader(
+            TopNaviBar(
                 leftComposable = {
                     Text(
                         text = uiState.selectedDate.format(KoreanMonthDayWithDayFormatter),
