@@ -15,7 +15,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -24,10 +24,6 @@ import com.example.todowithspirits.navigation.SpiritsTodoNavigation
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
 
-// 홈 하단 버튼으로 들어가는 화면. 뒤로가기 시 홈으로 돌아간다.
-private val homeButtonRoutes = setOf(Screen.Forest.route, Screen.Calendar.route)
-
-// mainViewModel은 앱 시작 시 시스템 상태 확인(init)을 위해 생성만 한다.
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
@@ -47,14 +43,14 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
             activity?.finish()
         } else {
             lastBackPressedAt = now
-            ToastUtil.show(context, "뒤로 버튼을 한 번 더 누르면 종료됩니다")
+            ToastUtil.show(context, context.getString(R.string.one_more_back))
         }
     }
 
     BackHandler(enabled = currentRoute != null) {
         when (currentRoute) {
             Screen.Home.route -> confirmExit()
-            in homeButtonRoutes -> {
+            in setOf(Screen.Forest.route, Screen.Calendar.route) -> {
                 val movedToHome = navController.popBackStack(Screen.Home.route, inclusive = false)
                 if (!movedToHome) {
                     navController.navigate(Screen.Home.route) {
@@ -80,15 +76,9 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
         },
         containerColor = SpiritTodoTheme.color.surfaceColor1
     ) { innerPadding ->
-        // 홈은 언덕 배경이 시스템 내비게이션 바 뒤까지 이어지도록 bottom padding을 적용하지 않는다.
-        val bottomPadding = if (currentRoute == Screen.Home.route) 0.dp else innerPadding.calculateBottomPadding()
-
         SpiritsTodoNavigation(
             navController = navController,
-            modifier = Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = bottomPadding
-            )
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         )
     }
 }

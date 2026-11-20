@@ -2,6 +2,7 @@
     <string name="app_name">TodoWithSpirits</string>
     <!-- NOTE 임시 스플래시 타이틀. 정식 앱 이름이 정해지면 교체 -->
     <string name="splash_app_name">Spirits</string>
+    <string name="one_more_back">뒤로 버튼을 한 번 더 누르면 종료됩니다</string>
     <string name="today_task">오늘 일정</string>
     <string name="has_important">중요 일정이 %d건 있어요!</string>
     <string name="complete_count">완료(%d)</string>
