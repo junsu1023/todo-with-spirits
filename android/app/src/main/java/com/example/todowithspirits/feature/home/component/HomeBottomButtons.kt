@@ -89,7 +89,7 @@ private fun HomeBottomButton(
                 color = SpiritTodoTheme.color.white,
                 style = TextStyle(
                     drawStyle = Stroke(
-                        width = with(LocalDensity.current) { 3.dp.toPx() },
+                        width = with(LocalDensity.current) { 4.dp.toPx() },
                         join = StrokeJoin.Round
                     )
                 )
