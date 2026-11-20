@@ -42,7 +42,7 @@ fun TopNaviBar(
             .fillMaxWidth()
             .height(60.dp)
             .background(SpiritTodoTheme.color.transparent)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center
     ) {
         if (leftIconRes != null) {
