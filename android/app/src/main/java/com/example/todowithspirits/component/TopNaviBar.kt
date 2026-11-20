@@ -28,6 +28,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun TopNaviBar(
+    modifier: Modifier = Modifier,
     @DrawableRes leftIconRes: Int? = null,
     title: String? = null,
     @DrawableRes rightIconRes: Int? = null,
@@ -38,11 +39,10 @@ fun TopNaviBar(
     leftComposable: (@Composable () -> Unit)? = null
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(60.dp)
-            .background(SpiritTodoTheme.color.transparent)
-            .padding(horizontal = 10.dp),
+            .background(SpiritTodoTheme.color.transparent),
         contentAlignment = Alignment.Center
     ) {
         if (leftIconRes != null) {
