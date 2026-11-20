@@ -6,6 +6,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 
 val spiritsLightColor = SpiritColor(
+    white = Color(0xFFFFFFFF),
+    back01 = Color(0xFFFDFBFA),
+    back02 = Color(0xFFF8F4F1),
+    stroke01 = Color(0xFFECEAE4),
+    font01 = Color(0xFF857563),
+    font02 = Color(0xFFCFB6A0),
+    fontGrey = Color(0xFFC9C9C2),
+    key01B = Color(0xFFA3B90E),
+    key01 = Color(0xFFC1DD00),
+    key01Op = Color(0xFFEDFCB7),
+    key02B = Color(0xFFF168C6),
+    key02 = Color(0xFFFF96DE),
+    key02Op = Color(0xFFFFE6F6),
+    colorSub01 = Color(0xFF76D8F6),
+    colorSub02 = Color(0xFFF79090),
+
     surfaceColor1 = Color(0xFFFFFFFF),
     surfaceColor4 = Color(0xFFF6F6F6),
     surfaceColor5 = Color(0xFF353534),
@@ -38,6 +54,22 @@ val spiritsLightColor = SpiritColor(
 )
 
 class SpiritColor(
+    white: Color,
+    back01: Color,
+    back02: Color,
+    stroke01: Color,
+    font01: Color,
+    font02: Color,
+    fontGrey: Color,
+    key01B: Color,
+    key01: Color,
+    key01Op: Color,
+    key02B: Color,
+    key02: Color,
+    key02Op: Color,
+    colorSub01: Color,
+    colorSub02: Color,
+
     surfaceColor1: Color,
     surfaceColor4: Color,
     surfaceColor5: Color,
@@ -68,6 +100,52 @@ class SpiritColor(
     kakaoText: Color,
     googleText: Color
 ) {
+    var white by mutableStateOf(white)
+        private set
+
+    var back01 by mutableStateOf(back01)
+        private set
+
+    var back02 by mutableStateOf(back02)
+        private set
+
+    var stroke01 by mutableStateOf(stroke01)
+        private set
+
+    var font01 by mutableStateOf(font01)
+        private set
+
+    var font02 by mutableStateOf(font02)
+        private set
+
+    var fontGrey by mutableStateOf(fontGrey)
+        private set
+
+    var key01B by mutableStateOf(key01B)
+        private set
+
+    var key01 by mutableStateOf(key01)
+        private set
+
+    var key01Op by mutableStateOf(key01Op)
+        private set
+
+    var key02B by mutableStateOf(key02B)
+        private set
+
+    var key02 by mutableStateOf(key02)
+        private set
+
+    var key02Op by mutableStateOf(key02Op)
+        private set
+
+    var colorSub01 by mutableStateOf(colorSub01)
+        private set
+
+    var colorSub02 by mutableStateOf(colorSub02)
+        private set
+
+
     var surfaceColor1 by mutableStateOf(surfaceColor1)
         private set
 
