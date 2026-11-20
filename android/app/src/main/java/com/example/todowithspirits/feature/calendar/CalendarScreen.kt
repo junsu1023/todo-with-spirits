@@ -3,6 +3,7 @@ package com.example.todowithspirits.feature.calendar
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.CalendarView
@@ -37,6 +39,7 @@ import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
 import com.example.todowithspirits.feature.search.component.SearchPanel
 import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
+import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
@@ -44,6 +47,8 @@ import com.example.todowithspirits.feature.calendar.state.CalendarUiState
 import com.example.todowithspirits.feature.calendar.viewmodel.CalendarViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
+import java.time.LocalDate
+import java.time.YearMonth
 
 private val CalendarHorizontalMargin = 18.dp
 
@@ -86,7 +91,6 @@ fun CalendarScreen(
             events.takeIf { it > 0 }?.let { context.getString(R.string.important_count, it) }
         }
     }
-    val visiblePlans = uiState.visiblePlans
 
     BackHandler(enabled = uiState.isSearchOpen) { onEvent(CalendarEvent.SearchClosed) }
 
@@ -129,89 +133,26 @@ fun CalendarScreen(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    Column(modifier = Modifier.padding(horizontal = 14.dp)) {
-                        Spacer(modifier = Modifier.height(4.dp))
+            TasksArea(
+                selectedDate = uiState.selectedDate,
+                calendarEventLabels = calendarEventLabels,
+                plans = uiState.plans,
+                isHidden = uiState.isHidden,
+                sortLabel = stringResource(uiState.sortOption.labelRes),
+                sortOptions = uiState.sortOptions,
+                visiblePlans = uiState.visiblePlans,
+                expandedTaskId = uiState.expandedTaskId,
+                onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
+                onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
+                onAddTaskClick = { onEvent(CalendarEvent.AddClicked) },
+                onCheckToggled = { onEvent(CalendarEvent.HideCompletedToggled) },
+                onSortSelected = { option -> onEvent(CalendarEvent.SortOptionSelected(option)) },
+                onToggleExpanded = { id -> onEvent(CalendarEvent.TaskClicked(id)) },
+                onToggleCompleted = { id, isDone, endDate -> onEvent(CalendarEvent.TaskCompletionToggled(id, isDone, endDate)) },
+                onDelete = { id -> onEvent(CalendarEvent.TaskDeleteClicked(id)) },
+                onEdit = { id -> onEvent(CalendarEvent.TaskEditClicked(id)) }
+            )
 
-                        CalendarView(
-                            selectedDate = uiState.selectedDate,
-                            onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
-                            eventLabels = calendarEventLabels,
-                            onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        AddPlanButton(onClick = { onEvent(CalendarEvent.AddClicked) })
-                    }
-                }
-
-                if (uiState.plans.isNotEmpty()) {
-                    item {
-                        ListOptionRow(
-                            checkLabel = stringResource(R.string.hide_completion),
-                            isChecked = uiState.isHidden,
-                            onCheckToggled = { onEvent(CalendarEvent.HideCompletedToggled) },
-                            sortLabel = stringResource(uiState.sortOption.labelRes),
-                            sortLabels = uiState.sortOptions.map { stringResource(it.labelRes) },
-                            onSortSelected = { index ->
-                                onEvent(CalendarEvent.SortOptionSelected(uiState.sortOptions[index]))
-                            },
-                            modifier = Modifier.padding(
-                                start = CalendarHorizontalMargin,
-                                top = 28.dp,
-                                end = CalendarHorizontalMargin,
-                                bottom = 16.dp
-                            )
-                        )
-                    }
-                }
-
-                if (visiblePlans.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 56.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.todo_empty),
-                                contentDescription = null
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = stringResource(R.string.empty_plans),
-                                fontSize = 14.sp,
-                                color = SpiritTodoTheme.color.systemGrey
-                            )
-                        }
-                    }
-                } else {
-                    items(visiblePlans, key = { it.id }) { item ->
-                        CalendarTaskItem(
-                            item = item,
-                            isExpanded = uiState.expandedTaskId == item.id,
-                            onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
-                            onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone, item.endDate)) },
-                            onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
-                            onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) },
-                            modifier = Modifier.padding(
-                                start = CalendarHorizontalMargin,
-                                end = CalendarHorizontalMargin,
-                                bottom = 10.dp
-                            )
-                        )
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-            }
 
             if (uiState.isSearchOpen) {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -242,4 +183,108 @@ fun CalendarScreen(
     }
 
     LoadingOverlay(isLoading = isLoading)
+}
+
+@Composable
+private fun TasksArea(
+    selectedDate: LocalDate,
+    calendarEventLabels: Map<LocalDate, String?>,
+    plans: List<PlanItemData>,
+    isHidden: Boolean,
+    sortLabel: String,
+    sortOptions: List<PlanSortOption>,
+    visiblePlans: List<PlanItemData>,
+    expandedTaskId: Int?,
+    onDateSelected: (LocalDate) -> Unit,
+    onMonthChanged: (YearMonth) -> Unit,
+    onAddTaskClick: () -> Unit,
+    onCheckToggled: () -> Unit,
+    onSortSelected: (PlanSortOption) -> Unit,
+    onToggleExpanded: (Int) -> Unit,
+    onToggleCompleted: (Int, Boolean, LocalDate?) -> Unit,
+    onDelete: (Int) -> Unit,
+    onEdit: (Int) -> Unit
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Column(
+                modifier = Modifier.padding(horizontal = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                CalendarView(
+                    selectedDate = selectedDate,
+                    onDateSelected = { onDateSelected(it) },
+                    eventLabels = calendarEventLabels,
+                    onMonthChanged = { onMonthChanged(it) },
+                )
+
+                AddPlanButton(onClick = onAddTaskClick)
+            }
+        }
+
+        if (plans.isNotEmpty()) {
+            item {
+                ListOptionRow(
+                    checkLabel = stringResource(R.string.hide_completion),
+                    isChecked = isHidden,
+                    onCheckToggled = onCheckToggled,
+                    sortLabel = sortLabel,
+                    sortLabels = sortOptions.map { stringResource(it.labelRes) },
+                    onSortSelected = { idx -> onSortSelected(sortOptions[idx] ) },
+                    modifier = Modifier.padding(
+                        start = CalendarHorizontalMargin,
+                        top = 28.dp,
+                        end = CalendarHorizontalMargin,
+                        bottom = 16.dp
+                    )
+                )
+            }
+        }
+
+        if (visiblePlans.isEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.widgetly_empty),
+                        contentDescription = null
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = stringResource(R.string.empty_plans),
+                        fontSize = 14.sp,
+                        color = SpiritTodoTheme.color.font02
+                    )
+                }
+            }
+        } else {
+            items(visiblePlans, key = { it.id }) { item ->
+                CalendarTaskItem(
+                    item = item,
+                    isExpanded = expandedTaskId == item.id,
+                    onToggleExpanded = { onToggleExpanded(item.id) },
+                    onToggleComplete = { onToggleCompleted(item.id, item.isDone, item.endDate) },
+                    onDelete = { onDelete(item.id) },
+                    onEdit = { onEdit(item.id) },
+                    modifier = Modifier.padding(
+                        start = CalendarHorizontalMargin,
+                        end = CalendarHorizontalMargin,
+                        bottom = 10.dp
+                    )
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
 }

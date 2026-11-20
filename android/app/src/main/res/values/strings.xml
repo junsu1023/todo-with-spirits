@@ -13,6 +13,7 @@
     <string name="important_count">중요 %d</string>
     <string name="add_plan">일정 추가</string>
     <string name="hide_completion">완료 제외</string>
+    <string name="empty_plans">예정된 일정 없음</string>
 
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
@@ -121,7 +122,6 @@
     <string name="search_title">일정 검색</string>
     <string name="year_format">%d년도</string>
     <string name="search_no_result">검색 결과 없음</string>
-    <string name="empty_plans">예정된 일정 없음</string>
     <string name="empty_alarm">알림이 없습니다</string>
     <string name="verification_code_title">인증번호를 입력해주세요.</string>
     <string name="verification_code_description_suffix"> 으로</string>
