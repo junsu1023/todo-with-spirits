@@ -164,7 +164,7 @@ fun CalendarView(
     showSelectedDateInHeader: Boolean = false,
     eventData: Map<LocalDate, CalendarDayEvent> = emptyMap(),
     onMonthChanged: (YearMonth) -> Unit = {},
-    firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY,
+    firstDayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
     style: CalendarViewStyle = CalendarViewDefaults.style()
 ) {
     val today = remember { LocalDate.now() }
