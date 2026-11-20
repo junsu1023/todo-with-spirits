@@ -11,7 +11,6 @@ import com.example.todowithspirits.feature.calendar.model.toPlanItemData
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
 import com.example.todowithspirits.feature.calendar.state.CalendarUiState
-import com.example.todowithspirits.feature.calendar.state.DayPlanEvents
 import com.example.todowithspirits.feature.search.model.RecentSearchStore
 import com.example.todowithspirits.util.TaskRefreshBus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -188,9 +187,7 @@ class CalendarViewModel @Inject constructor(
                 .onSuccess { calendar ->
                     val events = calendar.items
                         .groupBy { it.occurrenceDate }
-                        .mapValues { (_, items) ->
-                            DayPlanEvents(importantCount = items.count { it.isImportant })
-                        }
+                        .mapValues { (_, items) -> items.count { it.isImportant } }
 
                     _uiState.update { it.copy(calendarEvents = events) }
                 }

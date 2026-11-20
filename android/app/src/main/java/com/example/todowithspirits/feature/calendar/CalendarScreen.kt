@@ -13,14 +13,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,9 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
-import com.example.todowithspirits.component.CalendarDayEvent
 import com.example.todowithspirits.component.CalendarView
-import com.example.todowithspirits.component.CalendarViewDefaults
 import com.example.todowithspirits.component.ListOptionRow
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TopNaviBar
@@ -84,15 +81,9 @@ fun CalendarScreen(
     onEvent: (CalendarEvent) -> Unit
 ) {
     val context = LocalContext.current
-    val dotColor = SpiritTodoTheme.color.key01
-    val calendarEventData = remember(uiState.calendarEvents, dotColor) {
+    val calendarEventLabels = remember(uiState.calendarEvents) {
         uiState.calendarEvents.mapValues { (_, events) ->
-            CalendarDayEvent(
-                dotColors = listOf(dotColor),
-                label = events.importantCount
-                    .takeIf { it > 0 }
-                    ?.let { context.getString(R.string.important_count, it) }
-            )
+            events.takeIf { it > 0 }?.let { context.getString(R.string.important_count, it) }
         }
     }
     val visiblePlans = uiState.visiblePlans
@@ -106,7 +97,7 @@ fun CalendarScreen(
             .background(SpiritTodoTheme.color.back01)
     ) {
         TopNaviBar(
-            modifier = Modifier.padding(17.dp),
+            modifier = Modifier.padding(horizontal = 17.dp),
             title = stringResource(R.string.calendar),
             leftComposable = {
                 Image(
@@ -125,9 +116,8 @@ fun CalendarScreen(
                     )
                 } else {
                     Image(
-                        painter = painterResource(R.drawable.widgetly_search),
+                        painter = painterResource(R.drawable.widgetly_search_24),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.todoTextMain),
                         modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.SearchClicked) }
                     )
                 }
@@ -141,18 +131,14 @@ fun CalendarScreen(
         ) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
-                    Column(modifier = Modifier.padding(horizontal = CalendarHorizontalMargin)) {
+                    Column(modifier = Modifier.padding(horizontal = 14.dp)) {
                         Spacer(modifier = Modifier.height(4.dp))
 
                         CalendarView(
-                            modifier = Modifier
-                                .background(SpiritTodoTheme.color.systemBackground, RoundedCornerShape(8.dp))
-                                .padding(top = 10.dp),
                             selectedDate = uiState.selectedDate,
                             onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
-                            eventData = calendarEventData,
+                            eventLabels = calendarEventLabels,
                             onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
-                            style = CalendarViewDefaults.calendarScreenStyle()
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

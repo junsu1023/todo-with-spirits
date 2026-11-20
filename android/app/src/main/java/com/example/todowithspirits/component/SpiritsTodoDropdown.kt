@@ -40,8 +40,8 @@ fun SpiritsTodoDropdown(
     dropdownWidth: Dp = 96.dp,
     dropdownGap: Dp = 0.dp,
     itemVerticalPadding: Dp = 12.dp,
-    unselectedOptionColor: Color = SpiritTodoTheme.color.todoTextMain,
-    selectedOptionColor: Color = SpiritTodoTheme.color.mainTextAndStroke,
+    unselectedOptionColor: Color = SpiritTodoTheme.color.font01,
+    selectedOptionColor: Color = SpiritTodoTheme.color.key02,
     anchor: @Composable (expand: () -> Unit) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -60,7 +60,7 @@ fun SpiritsTodoDropdown(
                     modifier = Modifier.width(dropdownWidth),
                     shape = RoundedCornerShape(8.dp),
                     shadowElevation = 4.dp,
-                    color = SpiritTodoTheme.color.surfaceColor1
+                    color = SpiritTodoTheme.color.white
                 ) {
                     Column {
                         options.forEachIndexed { index, option ->
@@ -85,7 +85,7 @@ fun SpiritsTodoDropdown(
                             if (index < options.size - 1) {
                                 HorizontalDivider(
                                     thickness = 1.dp,
-                                    color = SpiritTodoTheme.color.surfaceColor4
+                                    color = SpiritTodoTheme.color.stroke01
                                 )
                             }
                         }

@@ -9,6 +9,10 @@
     <string name="spirit_bestiary">정령도감</string>
     <string name="forest">정령의숲</string>
     <string name="calendar">캘린더</string>
+    <string name="year_month">%d %d월</string>
+    <string name="important_count">중요 %d</string>
+    <string name="add_plan">일정 추가</string>
+    <string name="hide_completion">완료 제외</string>
 
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
@@ -32,7 +36,6 @@
     <string name="edit_todo">일정 수정</string>
     <string name="task_title_placeholder">일정 입력</string>
     <string name="important">중요</string>
-    <string name="important_count">중요 %d</string>
     <string name="repeat">반복</string>
     <string name="alarm">알림</string>
     <string name="month">%s월</string>
@@ -40,8 +43,6 @@
     <string name="date">날짜</string>
     <string name="delete">삭제</string>
     <string name="modify">수정</string>
-    <string name="add_plan">일정 추가</string>
-    <string name="hide_completion">완료 제외</string>
     <string name="check">확인</string>
     <string name="alarm_desc">알림을 설정하고 중요한 플랜을 놓치지 마세요!</string>
     <string name="new_alarm">새로운 알림</string>

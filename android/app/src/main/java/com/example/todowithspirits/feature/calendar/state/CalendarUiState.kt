@@ -12,16 +12,14 @@ data class CalendarUiState(
     val isHidden: Boolean = false,
     val selectedDate: LocalDate = LocalDate.now(),
     val calendarMonth: YearMonth = YearMonth.now(),
-    val calendarEvents: Map<LocalDate, DayPlanEvents> = emptyMap(),
+    val calendarEvents: Map<LocalDate, Int> = emptyMap(),
     val sortOption: PlanSortOption = PlanSortOption.DEADLINE,
     val plans: List<PlanItemData> = emptyList(),
-    // 펼친 일정 카드. 한 번에 하나만 펼친다.
     val expandedTaskId: Int? = null,
     val isSearchOpen: Boolean = false,
     val searchInput: String = "",
     val recentSearches: List<String> = emptyList()
 ) {
-    // 완료 제외 중에는 '완료 순' 정렬을 고를 수 없다.
     val sortOptions: List<PlanSortOption>
         get() = PlanSortOption.entries.filter { !(isHidden && it == PlanSortOption.COMPLETE) }
 
@@ -43,9 +41,3 @@ data class CalendarUiState(
             }
         }
 }
-
-// 일정이 있는 날만 맵에 들어간다. (점 표시)
-@Immutable
-data class DayPlanEvents(
-    val importantCount: Int = 0
-)

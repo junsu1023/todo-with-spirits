@@ -144,7 +144,7 @@ fun SearchField(
         )
 
         Image(
-            painter = painterResource(R.drawable.widgetly_search),
+            painter = painterResource(R.drawable.widgetly_search_24),
             contentDescription = null,
             modifier = Modifier
                 .size(20.dp)
