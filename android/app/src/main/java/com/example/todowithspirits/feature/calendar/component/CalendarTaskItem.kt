@@ -1,6 +1,5 @@
 package com.example.todowithspirits.feature.calendar.component
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
