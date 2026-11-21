@@ -248,7 +248,7 @@ fun HomeStatusChipRow(
 
         HomeStatusChip(
             iconRes = R.drawable.widgetly_check_14,
-            text = "완료 ($completedCount)",
+            text = stringResource(R.string.complete_count, completedCount),
             backgroundColor = SpiritTodoTheme.color.key01
         )
     }

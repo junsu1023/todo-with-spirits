@@ -45,35 +45,15 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-private const val SPIRIT_SPEED_DP_PER_SEC = 30f
-private const val BOUNCE_UP_DURATION_MS = 150
-
-// wind_spirit 원본은 꼬리가 오른쪽에 있어 왼쪽을 바라본다. 오른쪽으로 갈 때 좌우 반전한다.
-private const val SPIRIT_FACES_LEFT = true
-
 private val SpiritSize = 168.dp
 private val StageHorizontalMargin = 18.dp
-private val BounceHeight = 20.dp
-
-// home1 기준: 정령 하단이 하단 버튼 상단에서 93 위(= 화면 하단 여백 24 + 버튼 94 + 93),
-// 말풍선은 정령보다 13 왼쪽에서 시작해 꼬리 끝이 정령 상단과 21 겹친다.
-private val SpiritBottomPadding = 212.dp
-private val BubbleOffsetX = (-12).dp
-private val BubbleOverlapSpirit = 20.dp
-
-// home4 기준: 정령 박스 중심에서 각 아이콘 중심까지의 거리. 좌우 대칭으로 부채꼴처럼 놓인다.
-private val MenuIconSize = 44.dp
 private val SpiritMenuIcons = listOf(
-    SpiritMenuIcon(SpiritMenuType.ADD, R.drawable.ic_spirit_menu_add, (-73).dp, (-70).dp),
-    SpiritMenuIcon(SpiritMenuType.FRIENDSHIP, R.drawable.ic_spirit_menu_friendship, (-29).dp, (-110).dp),
-    SpiritMenuIcon(SpiritMenuType.SPIRIT, R.drawable.ic_spirit_menu_spirit, 29.dp, (-110).dp),
-    SpiritMenuIcon(SpiritMenuType.EMPTY, R.drawable.ic_spirit_menu_empty, 73.dp, (-70).dp)
+    SpiritMenuIcon(SpiritMenuType.ADD, R.drawable.widgetly_float_calendar, (-73).dp, (-70).dp),
+    SpiritMenuIcon(SpiritMenuType.FRIENDSHIP, R.drawable.widgetly_float_friendship, (-29).dp, (-110).dp),
+    SpiritMenuIcon(SpiritMenuType.CLOTH, R.drawable.widgetly_float_cloth, 29.dp, (-110).dp),
+    SpiritMenuIcon(SpiritMenuType.SETTING, R.drawable.widgetly_float_setting, 73.dp, (-70).dp)
 )
-private const val MENU_ICON_START_SCALE = 0.3f
-private const val MENU_CLOSE_DURATION_MS = 200
-
-// Note: 추가 외 아이콘은 동작이 정해지지 않아 아직 클릭을 받지 않는다.
-private enum class SpiritMenuType { ADD, FRIENDSHIP, SPIRIT, EMPTY }
+private enum class SpiritMenuType { ADD, FRIENDSHIP, CLOTH, SETTING }
 
 private data class SpiritMenuIcon(
     val type: SpiritMenuType,
@@ -89,9 +69,9 @@ fun SpiritStage(
     isMenuVisible: Boolean,
     onSpiritClick: () -> Unit,
     onMenuAddClick: () -> Unit,
+    onSettingClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 하단 버튼이 내비게이션 바 위에 놓이므로 정령 위치도 같은 기준으로 맞춘다.
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
@@ -99,7 +79,7 @@ fun SpiritStage(
             .clipToBounds()
     ) {
         val density = LocalDensity.current
-        val spiritBottomPadding = SpiritBottomPadding
+        val spiritBottomPadding = 212.dp
 
         val minX = with(density) { StageHorizontalMargin.toPx() }
         val maxX = with(density) { (maxWidth - StageHorizontalMargin - SpiritSize).toPx() }.coerceAtLeast(minX)
@@ -113,7 +93,7 @@ fun SpiritStage(
             spiritX.snapTo(spiritX.value.coerceIn(minX, maxX))
             if (maxX <= minX || isMenuVisible) return@LaunchedEffect
 
-            val pxPerMs = with(density) { SPIRIT_SPEED_DP_PER_SEC.dp.toPx() } / 1000f
+            val pxPerMs = with(density) { 30f.dp.toPx() } / 1000f
             while (true) {
                 val target = if (isMovingRight) maxX else minX
                 val durationMs = (abs(target - spiritX.value) / pxPerMs).roundToInt()
@@ -124,8 +104,8 @@ fun SpiritStage(
 
         val bounceY = remember { Animatable(0f) }
         val scope = rememberCoroutineScope()
-        val bouncePx = with(density) { BounceHeight.toPx() }
-        val bubbleOffsetPx = with(density) { BubbleOffsetX.toPx() }
+        val bouncePx = with(density) { 20.dp.toPx() }
+        val bubbleOffsetPx = with(density) { (-12).dp.toPx() }
         var bubbleWidthPx by remember { mutableIntStateOf(0) }
         val bubbleAlpha by animateFloatAsState(
             targetValue = if (isMenuVisible) 0f else 1f,
@@ -141,15 +121,14 @@ fun SpiritStage(
                     spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow)
                 )
             } else {
-                menuProgress.animateTo(0f, tween(MENU_CLOSE_DURATION_MS, easing = FastOutSlowInEasing))
+                menuProgress.animateTo(0f, tween(200, easing = FastOutSlowInEasing))
             }
         }
 
-        // 꼬리가 정령을 가리키도록 정령을 따라 움직이되, 좌우 여백 밖으로는 나가지 않는다.
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = spiritBottomPadding + SpiritSize - BubbleOverlapSpirit)
+                .padding(bottom = spiritBottomPadding + SpiritSize - 20.dp)
                 .graphicsLayer { alpha = bubbleAlpha }
                 .onSizeChanged { bubbleWidthPx = it.width }
                 .offset {
@@ -202,13 +181,13 @@ fun SpiritStage(
                 .size(SpiritSize)
                 .graphicsLayer {
                     translationY = bounceY.value
-                    scaleX = if (isMovingRight == SPIRIT_FACES_LEFT) -1f else 1f
+                    scaleX = if(isMovingRight) -1f else 1f
                 }
                 .noRippleClickable {
                     onSpiritClick()
                     // 바운스 중 다시 누르면 진행 중인 애니메이션이 취소되고 현재 위치에서 다시 시작한다.
                     scope.launch {
-                        bounceY.animateTo(-bouncePx, tween(BOUNCE_UP_DURATION_MS, easing = FastOutSlowInEasing))
+                        bounceY.animateTo(-bouncePx, tween(150, easing = FastOutSlowInEasing))
                         bounceY.animateTo(
                             0f,
                             spring(
@@ -220,7 +199,7 @@ fun SpiritStage(
                 }
         ) {
             Image(
-                painter = painterResource(R.drawable.wind_spirit),
+                painter = painterResource(R.drawable.widgetly_wind_spirit),
                 contentDescription = spiritName,
                 modifier = Modifier
                     .fillMaxSize()
@@ -230,7 +209,7 @@ fun SpiritStage(
 
         if (isMenuVisible || menuProgress.value > 0f) {
             val spiritHalfPx = with(density) { (SpiritSize / 2).toPx() }
-            val iconHalfPx = with(density) { (MenuIconSize / 2).toPx() }
+            val iconHalfPx = with(density) { ( 44.dp / 2).toPx() }
             // 정령이 화면 끝에 있어도 아이콘이 좌우 여백 밖으로 나가지 않도록 아이콘 묶음 중심을 제한한다.
             val menuHalfWidthPx = with(density) { SpiritMenuIcons.maxOf { abs(it.offsetX.value) }.dp.toPx() } + iconHalfPx
             val minCenterX = minX + menuHalfWidthPx
@@ -239,6 +218,7 @@ fun SpiritStage(
             SpiritMenuIcons.forEach { icon ->
                 val onClick: (() -> Unit)? = when (icon.type) {
                     SpiritMenuType.ADD -> onMenuAddClick
+                    SpiritMenuType.SETTING -> onSettingClick
                     else -> null
                 }
 
@@ -248,7 +228,7 @@ fun SpiritStage(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         // 아이콘 중심을 정령 박스 중심 높이에 맞춘 뒤, 진행도만큼 각 위치로 이동한다.
-                        .padding(bottom = spiritBottomPadding + SpiritSize / 2 - MenuIconSize / 2)
+                        .padding(bottom = spiritBottomPadding + SpiritSize / 2 -  22.dp)
                         .offset {
                             val progress = menuProgress.value
                             val centerX = (spiritX.value + spiritHalfPx).coerceIn(minCenterX, maxCenterX)
@@ -257,10 +237,9 @@ fun SpiritStage(
                                 y = (icon.offsetY.toPx() * progress).roundToInt()
                             )
                         }
-                        .size(MenuIconSize)
                         .graphicsLayer {
                             val progress = menuProgress.value
-                            val scale = MENU_ICON_START_SCALE + (1f - MENU_ICON_START_SCALE) * progress
+                            val scale = 0.3f + (1f - 0.3f) * progress
                             scaleX = scale
                             scaleY = scale
                             alpha = progress.coerceIn(0f, 1f)

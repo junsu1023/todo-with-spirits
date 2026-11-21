@@ -59,7 +59,7 @@ fun LoadingIndicator(
     )
 
     Image(
-        painter = painterResource(R.drawable.loading_gray),
+        painter = painterResource(R.drawable.widgetly_loading),
         contentDescription = null,
         modifier = modifier
             .size(size)

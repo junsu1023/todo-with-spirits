@@ -227,7 +227,7 @@ private data class SpiritFloatSpec(
 
 private val spiritFloatSpecs = listOf(
     SpiritFloatSpec(
-        drawable = R.drawable.wind_spirit,
+        drawable = R.drawable.widgetly_wind_spirit,
         size = 96.dp,
         anchorX = 0.24f,
         anchorY = 0.26f,

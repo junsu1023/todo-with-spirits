@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,9 +43,7 @@ import com.example.todowithspirits.feature.home.viewmodel.HomeViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanMonthDayWithDayFormatter
 import com.example.todowithspirits.util.ObserveAsEffect
-
-private val HomeHorizontalMargin = 18.dp
-private val HomeSectionGap = 10.dp
+import java.time.LocalDate
 
 @Composable
 fun HomeRoute(
@@ -55,6 +52,7 @@ fun HomeRoute(
     navigateToBestiary: () -> Unit,
     navigateToForest: () -> Unit,
     navigateToCalendar: () -> Unit,
+    navigateToAdd: () -> Unit,
     navigateToEditTask: (Long) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -68,6 +66,7 @@ fun HomeRoute(
             HomeEffect.NavigateToBestiary -> navigateToBestiary()
             HomeEffect.NavigateToForest -> navigateToForest()
             HomeEffect.NavigateToCalendar -> navigateToCalendar()
+            HomeEffect.NavigateToAdd -> navigateToAdd()
             is HomeEffect.NavigateToEditTask -> navigateToEditTask(effect.taskId)
         }
     }
@@ -93,38 +92,10 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(SpiritTodoTheme.color.back01)
         ) {
-            TopNaviBar(
-                modifier = Modifier.padding(horizontal = 17.dp),
-                leftComposable = {
-                    Text(
-                        text = uiState.selectedDate.format(KoreanMonthDayWithDayFormatter),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = SpiritTodoTheme.color.font01
-                    )
-                },
-                rightComposable = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.todo_setting),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(26.dp)
-                                .noRippleClickable { onEvent(HomeEvent.SettingClicked) }
-                        )
-
-                        AlarmIconSection(
-                            alarmIconRes = R.drawable.todo_alarm,
-                            onAlarmClick = { onEvent(HomeEvent.AlarmClicked) },
-                            msgCnt = 100,
-                            iconSize = 26.dp,
-                            badgeColor = SpiritTodoTheme.color.key02
-                        )
-                    }
-                }
+            HomeHeader(
+                selectedDate = uiState.selectedDate,
+                onSettingClicked = { onEvent(HomeEvent.SettingClicked) },
+                onAlarmClicked = { onEvent(HomeEvent.AlarmClicked) }
             )
 
             Box(
@@ -139,7 +110,7 @@ fun HomeScreen(
                     HomeStatusChipRow(
                         importantCount = uiState.todayImportantCount,
                         completedCount = uiState.todayCompletedCount,
-                        modifier = Modifier.padding(horizontal = HomeHorizontalMargin)
+                        modifier = Modifier.padding(horizontal = 18.dp)
                     )
 
                     SpiritStage(
@@ -148,6 +119,7 @@ fun HomeScreen(
                         isMenuVisible = uiState.isSpiritMenuVisible,
                         onSpiritClick = { onEvent(HomeEvent.SpiritClicked) },
                         onMenuAddClick = { onEvent(HomeEvent.SpiritMenuAddClicked) },
+                        onSettingClick = { onEvent(HomeEvent.SettingClicked) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -163,11 +135,9 @@ fun HomeScreen(
                     },
                     onTaskClick = { id -> onEvent(HomeEvent.TodayTaskClicked(id)) },
                     onCollapsedHeightChanged = { todayCardCollapsedHeight = it },
-                    modifier = Modifier.padding(
-                        start = HomeHorizontalMargin,
-                        top = HomeSectionGap,
-                        end = HomeHorizontalMargin
-                    )
+                    modifier = Modifier
+                        .padding(horizontal = 18.dp)
+                        .padding(top = 10.dp)
                 )
             }
         }
@@ -190,4 +160,43 @@ fun HomeScreen(
 
         LoadingOverlay(isLoading = isLoading)
     }
+}
+
+@Composable
+private fun HomeHeader(
+    selectedDate: LocalDate,
+    onSettingClicked: () -> Unit,
+    onAlarmClicked: () -> Unit
+) {
+    TopNaviBar(
+        modifier = Modifier.padding(horizontal = 17.dp),
+        leftComposable = {
+            Text(
+                text = selectedDate.format(KoreanMonthDayWithDayFormatter),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.font01
+            )
+        },
+        rightComposable = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.widgetly_setting_26),
+                    contentDescription = null,
+                    modifier = Modifier.noRippleClickable { onSettingClicked() }
+                )
+
+                AlarmIconSection(
+                    alarmIconRes = R.drawable.widgetly_alarm_26,
+                    onAlarmClick = { onAlarmClicked() },
+                    msgCnt = 100,
+                    iconSize = 26.dp,
+                    badgeColor = SpiritTodoTheme.color.key02
+                )
+            }
+        }
+    )
 }

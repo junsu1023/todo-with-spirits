@@ -44,7 +44,6 @@ class HomeViewModel @Inject constructor(
     init {
         loadTodayTasks()
 
-        // 다른 화면(추가/수정, 캘린더)에서 일정이 바뀌면 오늘 일정을 다시 불러온다.
         taskRefreshBus.events
             .onEach { loadTodayTasks() }
             .launchIn(viewModelScope)
@@ -64,9 +63,8 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.TodayTaskDeleteClicked -> deleteTodayTask(event.id)
             HomeEvent.SpiritClicked -> toggleSpiritMenu()
             HomeEvent.SpiritMenuAddClicked -> {
-                // 화면을 옮기므로 메뉴는 닫아 두고, 돌아왔을 때 접힌 상태로 보이게 한다.
                 _uiState.update { it.copy(isSpiritMenuVisible = false) }
-                sendEffect(HomeEffect.NavigateToCalendar)
+                sendEffect(HomeEffect.NavigateToAdd)
             }
             is HomeEvent.TodayTaskEditClicked -> {
                 closeTaskDetail()
@@ -78,8 +76,6 @@ class HomeViewModel @Inject constructor(
     private fun toggleTodayTasks() {
         _uiState.update { it.copy(isTodayTasksExpanded = !it.isTodayTasksExpanded) }
     }
-
-    // 일정 목록 조회 API를 오늘 하루 범위(from = to = 오늘)로 호출한다.
     private fun loadTodayTasks() {
         viewModelScope.launchWithLoading {
             val today = LocalDate.now()
@@ -117,8 +113,6 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
-
-    // 정령을 누르면 펼쳐진 오늘 일정을 접고, 정령 위 아이콘 메뉴를 열고 닫는다.
     private fun toggleSpiritMenu() {
         _uiState.update {
             it.copy(
@@ -149,7 +143,6 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-// 종일 일정은 시간 없이 표시한다.
 private fun TaskSummary.toHomeTodayTask(): HomeTodayTask = HomeTodayTask(
     id = taskId,
     title = title,

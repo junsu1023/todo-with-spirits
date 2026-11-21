@@ -146,6 +146,7 @@ fun SpiritsTodoNavigation(
                 navigateToBestiary = { navigateFromHome(Screen.Bestiary.route) },
                 navigateToForest = { navigateFromHome(Screen.Forest.route) },
                 navigateToCalendar = { navigateFromHome(Screen.Calendar.route) },
+                navigateToAdd = { navigateFromHome(Screen.Add.route) },
                 navigateToEditTask = navigateToEditTask
             )
         }
