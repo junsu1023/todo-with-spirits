@@ -45,10 +45,6 @@ import com.example.todowithspirits.feature.home.state.HomeTodayTask
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.baselineAtBottom
 
-/**
- * @param onCollapsedHeightChanged 접힌 부분(제목 + 숫자 줄)의 높이. 펼친 목록이 아래 콘텐츠 위로 겹치도록
- * HomeScreen이 이 높이만큼 자리를 비워둔다.
- */
 @Composable
 fun HomeTodaySummaryCard(
     completedCount: Int,
@@ -63,10 +59,6 @@ fun HomeTodaySummaryCard(
 ) {
     val density = LocalDensity.current
     val hasTasks = tasks.isNotEmpty()
-    val arrowRotation by animateFloatAsState(
-        targetValue = if (isExpanded) 180f else 0f,
-        label = "todayTasksArrowRotation"
-    )
 
     Column(
         modifier = modifier
@@ -79,14 +71,9 @@ fun HomeTodaySummaryCard(
         Column(
             modifier = Modifier
                 .onSizeChanged { onCollapsedHeightChanged(with(density) { it.height.toDp() }) }
-                .padding(vertical = 12.dp)
+                .padding(vertical = 16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.today_task),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.font01
-            )
+            SummaryTitle()
 
             Spacer(Modifier.height(8.dp))
 
@@ -94,35 +81,16 @@ fun HomeTodaySummaryCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
+                SummaryCount(
                     modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = "$completedCount",
-                        fontSize = 50.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = SpiritTodoTheme.color.font01,
-                        modifier = Modifier.baselineAtBottom(39.dp)
-                    )
-
-                    Spacer(Modifier.width(2.dp))
-
-                    Text(
-                        text = "/ $totalCount",
-                        fontSize = 20.sp,
-                        color = SpiritTodoTheme.color.font02,
-                        modifier = Modifier.baselineAtBottom(24.dp)
-                    )
-                }
+                    completedCount = completedCount,
+                    totalCount = totalCount
+                )
 
                 if (hasTasks) {
-                    Image(
-                        painter = painterResource(R.drawable.widgetly_down_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .noRippleClickable(onClick = { onToggleExpanded() })
-                            .rotate(arrowRotation)
+                    ShowTaskToggle(
+                        isExpanded = isExpanded,
+                        onToggleExpanded = onToggleExpanded
                     )
                 }
             }
@@ -146,6 +114,64 @@ fun HomeTodaySummaryCard(
             }
         }
     }
+}
+
+@Composable
+private fun SummaryTitle() {
+    Text(
+        text = stringResource(R.string.today_task),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        color = SpiritTodoTheme.color.font01
+    )
+}
+
+@Composable
+private fun SummaryCount(
+    modifier: Modifier,
+    completedCount: Int,
+    totalCount: Int
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = "$completedCount",
+            fontSize = 50.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = SpiritTodoTheme.color.font01,
+            modifier = Modifier.baselineAtBottom(39.dp)
+        )
+
+        Spacer(Modifier.width(2.dp))
+
+        Text(
+            text = "/ $totalCount",
+            fontSize = 20.sp,
+            color = SpiritTodoTheme.color.font02,
+            modifier = Modifier.baselineAtBottom(24.dp)
+        )
+    }
+}
+
+@Composable
+private fun ShowTaskToggle(
+    isExpanded: Boolean,
+    onToggleExpanded: () -> Unit
+) {
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "todayTasksArrowRotation"
+    )
+
+    Image(
+        painter = painterResource(R.drawable.widgetly_down_24),
+        contentDescription = null,
+        modifier = Modifier
+            .noRippleClickable(onClick = { onToggleExpanded() })
+            .rotate(arrowRotation)
+    )
 }
 
 @Composable
@@ -222,7 +248,7 @@ fun HomeStatusChipRow(
 
         HomeStatusChip(
             iconRes = R.drawable.widgetly_check_14,
-            text = "완료 ($completedCount)",
+            text = stringResource(R.string.complete_count, completedCount),
             backgroundColor = SpiritTodoTheme.color.key01
         )
     }

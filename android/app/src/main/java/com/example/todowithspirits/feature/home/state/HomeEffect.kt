@@ -6,5 +6,6 @@ sealed interface HomeEffect {
     data object NavigateToBestiary : HomeEffect
     data object NavigateToForest : HomeEffect
     data object NavigateToCalendar : HomeEffect
+    data object NavigateToAdd: HomeEffect
     data class NavigateToEditTask(val taskId: Long) : HomeEffect
 }

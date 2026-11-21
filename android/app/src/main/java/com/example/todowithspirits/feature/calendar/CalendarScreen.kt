@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,18 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.domain.model.PlanSortOption
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
 import com.example.todowithspirits.component.CalendarView
-import com.example.todowithspirits.component.ListOptionRow
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.component.TaskFilterBar
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
 import com.example.todowithspirits.feature.search.component.SearchPanel
-import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
-import com.example.todowithspirits.feature.calendar.model.PlanItemData
+import com.example.todowithspirits.feature.calendar.component.TaskCard
 import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
 import com.example.todowithspirits.feature.calendar.state.CalendarEvent
@@ -49,8 +46,6 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 import java.time.LocalDate
 import java.time.YearMonth
-
-private val CalendarHorizontalMargin = 18.dp
 
 @Composable
 fun CalendarRoute(
@@ -85,13 +80,6 @@ fun CalendarScreen(
     isLoading: Boolean,
     onEvent: (CalendarEvent) -> Unit
 ) {
-    val context = LocalContext.current
-    val calendarEventLabels = remember(uiState.calendarEvents) {
-        uiState.calendarEvents.mapValues { (_, events) ->
-            events.takeIf { it > 0 }?.let { context.getString(R.string.important_count, it) }
-        }
-    }
-
     BackHandler(enabled = uiState.isSearchOpen) { onEvent(CalendarEvent.SearchClosed) }
 
     Column(
@@ -100,32 +88,11 @@ fun CalendarScreen(
             .navigationBarsPadding()
             .background(SpiritTodoTheme.color.back01)
     ) {
-        TopNaviBar(
-            modifier = Modifier.padding(horizontal = 17.dp),
-            title = stringResource(R.string.calendar),
-            leftComposable = {
-                Image(
-                    painter = painterResource(R.drawable.widgetly_back_26),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .noRippleClickable { onEvent(CalendarEvent.BackClicked) }
-                )
-            },
-            rightComposable = {
-                if (uiState.isSearchOpen) {
-                    Image(
-                        painter = painterResource(R.drawable.widgetly_cross_24),
-                        contentDescription = null,
-                        modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.SearchClosed) }
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(R.drawable.widgetly_search_24),
-                        contentDescription = null,
-                        modifier = Modifier.noRippleClickable { onEvent(CalendarEvent.SearchClicked) }
-                    )
-                }
-            }
+        CalendarHeader(
+            isSearchOpen = uiState.isSearchOpen,
+            onBackClick = { onEvent(CalendarEvent.BackClicked) },
+            onSearchClosed = { onEvent(CalendarEvent.SearchClosed) },
+            onSearchClicked = { onEvent(CalendarEvent.SearchClicked) }
         )
 
         Box(
@@ -133,26 +100,59 @@ fun CalendarScreen(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            TasksArea(
-                selectedDate = uiState.selectedDate,
-                calendarEventLabels = calendarEventLabels,
-                plans = uiState.plans,
-                isHidden = uiState.isHidden,
-                sortLabel = stringResource(uiState.sortOption.labelRes),
-                sortOptions = uiState.sortOptions,
-                visiblePlans = uiState.visiblePlans,
-                expandedTaskId = uiState.expandedTaskId,
-                onDateSelected = { onEvent(CalendarEvent.DateSelected(it)) },
-                onMonthChanged = { onEvent(CalendarEvent.MonthChanged(it)) },
-                onAddTaskClick = { onEvent(CalendarEvent.AddClicked) },
-                onCheckToggled = { onEvent(CalendarEvent.HideCompletedToggled) },
-                onSortSelected = { option -> onEvent(CalendarEvent.SortOptionSelected(option)) },
-                onToggleExpanded = { id -> onEvent(CalendarEvent.TaskClicked(id)) },
-                onToggleCompleted = { id, isDone, endDate -> onEvent(CalendarEvent.TaskCompletionToggled(id, isDone, endDate)) },
-                onDelete = { id -> onEvent(CalendarEvent.TaskDeleteClicked(id)) },
-                onEdit = { id -> onEvent(CalendarEvent.TaskEditClicked(id)) }
-            )
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
 
+                    CalendarSection(
+                        selectedDate = uiState.selectedDate,
+                        calendarEvents = uiState.calendarEvents,
+                        onDateSelected = { date -> onEvent(CalendarEvent.DateSelected(date)) },
+                        onMonthChanged = { month -> onEvent(CalendarEvent.MonthChanged(month)) },
+                        onAddClicked = { onEvent(CalendarEvent.AddClicked)}
+                    )
+                }
+
+                if(uiState.plans.isNotEmpty()) {
+                    item {
+                        TaskFilterBar(
+                            checkLabel = stringResource(R.string.hide_completion),
+                            isChecked = uiState.isHidden,
+                            onCheckToggled = { onEvent(CalendarEvent.HideCompletedToggled) },
+                            sortLabel = stringResource(uiState.sortOption.labelRes),
+                            sortLabels = uiState.sortOptions.map { stringResource(it.labelRes) },
+                            onSortSelected = { idx -> onEvent(CalendarEvent.SortOptionSelected(uiState.sortOptions[idx])) },
+                            modifier = Modifier
+                                .padding(horizontal = 18.dp)
+                                .padding(top = 28.dp, bottom = 16.dp)
+                        )
+                    }
+                }
+
+                if(uiState.visiblePlans.isEmpty()) {
+                    item {
+                        EmptyTaskSection()
+                    }
+                } else {
+                    items(uiState.visiblePlans, key = { it.id }) { item ->
+                        TaskCard(
+                            item = item,
+                            isExpanded = uiState.expandedTaskId == item.id,
+                            onToggleExpanded = { onEvent(CalendarEvent.TaskClicked(item.id)) },
+                            onToggleComplete = { onEvent(CalendarEvent.TaskCompletionToggled(item.id, item.isDone, item.endDate)) },
+                            onDelete = { onEvent(CalendarEvent.TaskDeleteClicked(item.id)) },
+                            onEdit = { onEvent(CalendarEvent.TaskEditClicked(item.id)) },
+                            modifier = Modifier
+                                .padding(horizontal = 18.dp)
+                                .padding(bottom = 10.dp)
+                        )
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+            }
 
             if (uiState.isSearchOpen) {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -186,105 +186,89 @@ fun CalendarScreen(
 }
 
 @Composable
-private fun TasksArea(
+private fun CalendarHeader(
+    isSearchOpen: Boolean,
+    onBackClick: () -> Unit,
+    onSearchClosed: () -> Unit,
+    onSearchClicked: () -> Unit
+) {
+    TopNaviBar(
+        modifier = Modifier.padding(horizontal = 17.dp),
+        title = stringResource(R.string.calendar),
+        leftComposable = {
+            Image(
+                painter = painterResource(R.drawable.widgetly_back_26),
+                contentDescription = null,
+                modifier = Modifier.noRippleClickable { onBackClick() }
+            )
+        },
+        rightComposable = {
+            if (isSearchOpen) {
+                Image(
+                    painter = painterResource(R.drawable.widgetly_cross_24),
+                    contentDescription = null,
+                    modifier = Modifier.noRippleClickable { onSearchClosed() }
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.widgetly_search_24),
+                    contentDescription = null,
+                    modifier = Modifier.noRippleClickable { onSearchClicked() }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun CalendarSection(
     selectedDate: LocalDate,
-    calendarEventLabels: Map<LocalDate, String?>,
-    plans: List<PlanItemData>,
-    isHidden: Boolean,
-    sortLabel: String,
-    sortOptions: List<PlanSortOption>,
-    visiblePlans: List<PlanItemData>,
-    expandedTaskId: Int?,
+    calendarEvents: Map<LocalDate, Int>,
     onDateSelected: (LocalDate) -> Unit,
     onMonthChanged: (YearMonth) -> Unit,
-    onAddTaskClick: () -> Unit,
-    onCheckToggled: () -> Unit,
-    onSortSelected: (PlanSortOption) -> Unit,
-    onToggleExpanded: (Int) -> Unit,
-    onToggleCompleted: (Int, Boolean, LocalDate?) -> Unit,
-    onDelete: (Int) -> Unit,
-    onEdit: (Int) -> Unit
+    onAddClicked: () -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            Column(
-                modifier = Modifier.padding(horizontal = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                CalendarView(
-                    selectedDate = selectedDate,
-                    onDateSelected = { onDateSelected(it) },
-                    eventLabels = calendarEventLabels,
-                    onMonthChanged = { onMonthChanged(it) },
-                )
-
-                AddPlanButton(onClick = onAddTaskClick)
-            }
+    val context = LocalContext.current
+    val calendarEventLabels = remember(calendarEvents) {
+        calendarEvents.mapValues { (_, events) ->
+            events.takeIf { it > 0 }?.let { context.getString(R.string.important_count, it) }
         }
+    }
 
-        if (plans.isNotEmpty()) {
-            item {
-                ListOptionRow(
-                    checkLabel = stringResource(R.string.hide_completion),
-                    isChecked = isHidden,
-                    onCheckToggled = onCheckToggled,
-                    sortLabel = sortLabel,
-                    sortLabels = sortOptions.map { stringResource(it.labelRes) },
-                    onSortSelected = { idx -> onSortSelected(sortOptions[idx] ) },
-                    modifier = Modifier.padding(
-                        start = CalendarHorizontalMargin,
-                        top = 28.dp,
-                        end = CalendarHorizontalMargin,
-                        bottom = 16.dp
-                    )
-                )
-            }
-        }
+    Column(
+        modifier = Modifier.padding(horizontal = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        CalendarView(
+            selectedDate = selectedDate,
+            onDateSelected = { date -> onDateSelected(date) },
+            eventLabels = calendarEventLabels,
+            onMonthChanged = { month -> onMonthChanged(month) },
+        )
 
-        if (visiblePlans.isEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 60.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.widgetly_empty),
-                        contentDescription = null
-                    )
+        AddPlanButton(onClick = onAddClicked)
+    }
+}
 
-                    Spacer(modifier = Modifier.height(4.dp))
+@Composable
+private fun EmptyTaskSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 60.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.widgetly_empty),
+            contentDescription = null
+        )
 
-                    Text(
-                        text = stringResource(R.string.empty_plans),
-                        fontSize = 14.sp,
-                        color = SpiritTodoTheme.color.font02
-                    )
-                }
-            }
-        } else {
-            items(visiblePlans, key = { it.id }) { item ->
-                CalendarTaskItem(
-                    item = item,
-                    isExpanded = expandedTaskId == item.id,
-                    onToggleExpanded = { onToggleExpanded(item.id) },
-                    onToggleComplete = { onToggleCompleted(item.id, item.isDone, item.endDate) },
-                    onDelete = { onDelete(item.id) },
-                    onEdit = { onEdit(item.id) },
-                    modifier = Modifier.padding(
-                        start = CalendarHorizontalMargin,
-                        end = CalendarHorizontalMargin,
-                        bottom = 10.dp
-                    )
-                )
-            }
+        Spacer(modifier = Modifier.height(4.dp))
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
+        Text(
+            text = stringResource(R.string.empty_plans),
+            fontSize = 14.sp,
+            color = SpiritTodoTheme.color.font02
+        )
     }
 }

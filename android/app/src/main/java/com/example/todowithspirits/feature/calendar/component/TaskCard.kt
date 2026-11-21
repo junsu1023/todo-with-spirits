@@ -1,9 +1,7 @@
 package com.example.todowithspirits.feature.calendar.component
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +40,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
-fun CalendarTaskItem(
+fun TaskCard(
     item: PlanItemData,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,
@@ -51,12 +49,6 @@ fun CalendarTaskItem(
     onEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val animatedHeight by animateDpAsState(
-        targetValue = if(isExpanded) 103.dp else 61.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "heightAnimation"
-    )
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -65,7 +57,7 @@ fun CalendarTaskItem(
                 1.dp,
                 if(isExpanded) SpiritTodoTheme.color.font02 else SpiritTodoTheme.color.stroke01,
                 RoundedCornerShape(8.dp))
-            .height(animatedHeight)
+            .animateContentSize()
             .noRippleClickable(onClick = onToggleExpanded)
             .padding(12.dp)
     ) {
@@ -173,7 +165,7 @@ private fun TaskDateTime(
         Text(
             text = buildString {
                 append(date.format(KoreanMonthDayWithDayFormatter))
-                if (!isAllDay) endTime?.let { append(" ${it.format(KoreanHourMinuteFormatter)}") }
+                if(!isAllDay) endTime?.let { append(" ${it.format(KoreanHourMinuteFormatter)}") }
             },
             fontSize = 12.sp,
             color = SpiritTodoTheme.color.font02,

@@ -16,13 +16,13 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
-fun ListOptionRow(
+fun TaskFilterBar(
     checkLabel: String,
     isChecked: Boolean,
     onCheckToggled: () -> Unit,
     sortLabel: String,
     sortLabels: List<String>,
-    onSortSelected: (index: Int) -> Unit,
+    onSortSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(

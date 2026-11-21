@@ -170,7 +170,7 @@ internal fun TodoWidgetTaskList(
         }
 
         Image(
-            provider = ImageProvider(R.drawable.wind_spirit),
+            provider = ImageProvider(R.drawable.widgetly_wind_spirit),
             contentDescription = null,
             modifier = GlanceModifier.size(SpiritPeekSize)
         )
@@ -258,7 +258,7 @@ internal fun TodoWidgetMessage(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            provider = ImageProvider(R.drawable.wind_spirit),
+            provider = ImageProvider(R.drawable.widgetly_wind_spirit),
             contentDescription = null,
             modifier = GlanceModifier.size(44.dp)
         )
