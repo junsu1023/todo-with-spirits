@@ -1,6 +1,9 @@
 package com.example.todowithspirits.feature.calendar.model
 
+import androidx.annotation.StringRes
+import com.example.domain.model.PlanSortOption
 import com.example.domain.model.TaskSummary
+import com.example.todowithspirits.R
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -23,3 +26,11 @@ fun TaskSummary.toPlanItemData(): PlanItemData = PlanItemData(
     endTime = endTime,
     isAllDay = isAllDay
 )
+
+@get:StringRes
+val PlanSortOption.labelRes: Int
+    get() = when (this) {
+        PlanSortOption.DEADLINE -> R.string.sort_by_time
+        PlanSortOption.IMPORTANT -> R.string.sort_by_important
+        PlanSortOption.COMPLETE -> R.string.sort_by_complete
+    }

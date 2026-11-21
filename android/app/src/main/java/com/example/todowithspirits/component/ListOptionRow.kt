@@ -5,19 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-// 목록 위의 체크 필터 + 정렬 드롭다운 한 줄. (캘린더 완료 제외, 정령도감 미보유만)
 @Composable
 fun ListOptionRow(
     checkLabel: String,
@@ -38,18 +35,16 @@ fun ListOptionRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             SpiritsTodoCheckbox(
-                modifier = Modifier.size(14.dp),
                 checked = isChecked,
                 onCheckedChange = { onCheckToggled() },
-                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
-                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off)
+                checkedIcon = painterResource(R.drawable.widgetly_checkbox_on_16),
+                uncheckedIcon = painterResource(R.drawable.widgetly_checkbox_off_16)
             )
 
             Text(
                 text = checkLabel,
-                color = SpiritTodoTheme.color.systemGrey,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                color = SpiritTodoTheme.color.font01,
+                fontSize = 16.sp
             )
         }
 
@@ -64,7 +59,7 @@ fun ListOptionRow(
             dropdownWidth = 96.dp,
             dropdownGap = 6.dp,
             itemVerticalPadding = 10.dp,
-            selectedOptionColor = SpiritTodoTheme.color.pointPink
+            selectedOptionColor = SpiritTodoTheme.color.key02
         ) { expand ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -73,15 +68,13 @@ fun ListOptionRow(
             ) {
                 Text(
                     text = sortLabel,
-                    color = SpiritTodoTheme.color.todoTextMain,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    color = SpiritTodoTheme.color.font01,
+                    fontSize = 16.sp
                 )
 
                 Image(
-                    painter = painterResource(R.drawable.fi_rr_angle_small_down),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    painter = painterResource(R.drawable.widgetly_down_16),
+                    contentDescription = null
                 )
             }
         }

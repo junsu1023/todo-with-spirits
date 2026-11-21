@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +30,7 @@ fun AddPlanButton(
         modifier = modifier
             .fillMaxWidth()
             .height(43.dp)
-            .background(SpiritTodoTheme.color.pointPink, RoundedCornerShape(6.dp))
+            .background(SpiritTodoTheme.color.key01, RoundedCornerShape(6.dp))
             .throttleClickable(showRipple = false, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -40,14 +39,13 @@ fun AddPlanButton(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_plus),
-                contentDescription = null,
-                modifier = Modifier.size(14.dp)
+                painter = painterResource(R.drawable.widgetly_plus_14),
+                contentDescription = null
             )
 
             Text(
                 text = stringResource(R.string.add_plan),
-                color = SpiritTodoTheme.color.onSurfaceColor3,
+                color = SpiritTodoTheme.color.white,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )

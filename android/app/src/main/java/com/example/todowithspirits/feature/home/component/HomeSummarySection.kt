@@ -161,8 +161,8 @@ private fun HomeTodayTaskItem(
         SpiritsTodoCheckbox(
             checked = task.isCompleted,
             onCheckedChange = onCompletionChange,
-            checkedIcon = painterResource(R.drawable.widgetly_circle_check_18),
-            uncheckedIcon = painterResource(R.drawable.widgetly_circle_check_empty_18)
+            checkedIcon = painterResource(R.drawable.widgetly_circle_check_on_18),
+            uncheckedIcon = painterResource(R.drawable.widgetly_circle_check_off_18)
         )
 
         Spacer(modifier = Modifier.width(8.dp))

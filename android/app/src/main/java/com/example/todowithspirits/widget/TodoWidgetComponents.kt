@@ -129,7 +129,7 @@ private fun AddTaskButton() {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            provider = ImageProvider(R.drawable.ic_plus),
+            provider = ImageProvider(R.drawable.widgetly_plus_14),
             contentDescription = "일정 추가",
             modifier = GlanceModifier.size(12.dp)
         )

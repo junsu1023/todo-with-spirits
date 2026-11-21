@@ -2,9 +2,18 @@
     <string name="app_name">TodoWithSpirits</string>
     <!-- NOTE 임시 스플래시 타이틀. 정식 앱 이름이 정해지면 교체 -->
     <string name="splash_app_name">Spirits</string>
+    <string name="one_more_back">뒤로 버튼을 한 번 더 누르면 종료됩니다</string>
     <string name="today_task">오늘 일정</string>
     <string name="has_important">중요 일정이 %d건 있어요!</string>
     <string name="complete_count">완료(%d)</string>
+    <string name="spirit_bestiary">정령도감</string>
+    <string name="forest">정령의숲</string>
+    <string name="calendar">캘린더</string>
+    <string name="year_month">%d %d월</string>
+    <string name="important_count">중요 %d</string>
+    <string name="add_plan">일정 추가</string>
+    <string name="hide_completion">완료 제외</string>
+    <string name="empty_plans">예정된 일정 없음</string>
 
     <string name="email">이메일</string>
     <string name="email_placeholder">이메일을 입력해주세요</string>
@@ -24,14 +33,10 @@
     <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
-    <string name="spirit_bestiary">정령도감</string>
-    <string name="forest">정령의숲</string>
-    <string name="calendar">캘린더</string>
     <string name="add_todo">일정 추가</string>
     <string name="edit_todo">일정 수정</string>
     <string name="task_title_placeholder">일정 입력</string>
     <string name="important">중요</string>
-    <string name="important_count">중요 %d</string>
     <string name="repeat">반복</string>
     <string name="alarm">알림</string>
     <string name="month">%s월</string>
@@ -39,8 +44,6 @@
     <string name="date">날짜</string>
     <string name="delete">삭제</string>
     <string name="modify">수정</string>
-    <string name="add_plan">일정 추가</string>
-    <string name="hide_completion">완료 제외</string>
     <string name="check">확인</string>
     <string name="alarm_desc">알림을 설정하고 중요한 플랜을 놓치지 마세요!</string>
     <string name="new_alarm">새로운 알림</string>
@@ -119,7 +122,6 @@
     <string name="search_title">일정 검색</string>
     <string name="year_format">%d년도</string>
     <string name="search_no_result">검색 결과 없음</string>
-    <string name="empty_plans">예정된 일정 없음</string>
     <string name="empty_alarm">알림이 없습니다</string>
     <string name="verification_code_title">인증번호를 입력해주세요.</string>
     <string name="verification_code_description_suffix"> 으로</string>
