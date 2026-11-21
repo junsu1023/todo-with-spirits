@@ -29,10 +29,7 @@ import com.example.todowithspirits.feature.add.state.AddUiState
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-// 피그마: "23 : 59"
-private val TimeValueFormatter = DateTimeFormatter.ofPattern("HH : mm")
 
-// 중요 카드 + 날짜/시간/반복/알림 카드
 @Composable
 fun TodoForm(
     uiState: AddUiState,
@@ -47,17 +44,6 @@ fun TodoForm(
     var isTimePickerOpen by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        SettingGroup {
-            SettingCheckboxItem(
-                icon = painterResource(R.drawable.todo_important_20),
-                label = stringResource(R.string.important),
-                checked = uiState.isImportant,
-                onCheckedChange = { onEvent(AddEvent.ImportantChanged(it)) }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
         SettingGroup {
             SettingDateItem(
                 icon = painterResource(R.drawable.todo_calendar),
@@ -77,7 +63,7 @@ fun TodoForm(
                     isTimePickerOpen = enabled
                     onEvent(AddEvent.TimeEnabledChanged(enabled))
                 },
-                valueText = if (uiState.isTimeEnabled) uiState.dueTime.format(TimeValueFormatter) else null,
+                valueText = if (uiState.isTimeEnabled) uiState.dueTime.format(DateTimeFormatter.ofPattern("HH : mm")) else null,
                 isValueHighlighted = isTimePickerOpen,
                 onValueClick = { isTimePickerOpen = !isTimePickerOpen },
                 subContent = {
@@ -101,8 +87,6 @@ fun TodoForm(
                     }
                 }
             )
-
-            SettingDivider()
 
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_repeat),

@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-// 일정 제목 입력. 입력 중(포커스)에는 밑줄이 분홍색으로 바뀐다.
 @Composable
 fun TaskTitleField(
     title: String,
@@ -37,8 +36,8 @@ fun TaskTitleField(
                 .fillMaxWidth()
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TextStyle(
-                color = SpiritTodoTheme.color.todoTextMain,
-                fontSize = 18.sp
+                color = SpiritTodoTheme.color.font01,
+                fontSize = 20.sp
             ),
             singleLine = true,
             decorationBox = { innerTextField ->
@@ -46,8 +45,8 @@ fun TaskTitleField(
                     Text(
                         text = stringResource(R.string.task_title_placeholder),
                         style = TextStyle(
-                            color = SpiritTodoTheme.color.onSurfaceColor2,
-                            fontSize = 18.sp
+                            color = SpiritTodoTheme.color.fontGrey,
+                            fontSize = 20.sp
                         )
                     )
                 }
@@ -57,9 +56,9 @@ fun TaskTitleField(
         )
 
         HorizontalDivider(
-            modifier = Modifier.padding(top = 10.dp),
-            thickness = if (isFocused) 1.5.dp else 1.dp,
-            color = if (isFocused) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.onSurfaceColor2
+            modifier = Modifier.padding(top = 8.dp),
+            thickness = 1.dp,
+            color = if(isFocused) SpiritTodoTheme.color.font01 else SpiritTodoTheme.color.fontGrey
         )
     }
 }

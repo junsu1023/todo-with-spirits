@@ -17,6 +17,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
@@ -56,22 +58,20 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.KoreanDateWithDayFormatter
 import java.time.LocalDate
 
-private val SettingRowHorizontalPadding = 12.dp
-
 @Composable
 fun SettingGroup(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        color = SpiritTodoTheme.color.surfaceColor10,
-        shape = RoundedCornerShape(6.dp)
+        color = SpiritTodoTheme.color.white,
+        shape = RoundedCornerShape(6.dp),
+        border = BorderStroke(1.dp, SpiritTodoTheme.color.stroke01)
     ) {
         Column(content = content)
     }
 }
 
-// 일정 추가 설정 한 줄: 아이콘 20 + 라벨 + 오른쪽 값/컨트롤. 높이 50 (세로 패딩 12 + 컨트롤 26)
 @Composable
 fun BaseSettingRow(
     icon: Painter,
@@ -83,18 +83,17 @@ fun BaseSettingRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = 14.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = SettingRowHorizontalPadding),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                contentDescription = null
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -104,12 +103,13 @@ fun BaseSettingRow(
                 modifier = Modifier.weight(1f),
                 style = TextStyle(
                     fontSize = 16.sp,
-                    color = SpiritTodoTheme.color.todoTextMain
+                    color = SpiritTodoTheme.color.font02,
+                    fontWeight = FontWeight.Medium
                 )
             )
 
             Box(
-                modifier = Modifier.heightIn(min = 26.dp),
+                modifier = Modifier.heightIn(min = 22.dp),
                 contentAlignment = Alignment.Center
             ) {
                 action()
@@ -180,9 +180,8 @@ fun SettingCheckboxItem(
             SpiritsTodoCheckbox(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                checkedIcon = painterResource(R.drawable.ic_checkbox_square_on),
-                uncheckedIcon = painterResource(R.drawable.ic_checkbox_square_off),
-                modifier = Modifier.size(20.dp)
+                checkedIcon = painterResource(R.drawable.widgetly_checkbox_on_22),
+                uncheckedIcon = painterResource(R.drawable.widgetly_checkbox_off_22)
             )
         }
     )
@@ -253,7 +252,7 @@ fun SettingDateItem(
                 enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
                 exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
             ) {
-                Column(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) {
+                Column(modifier = Modifier.padding(vertical = 20.dp)) {
                     CalendarView(
                         selectedDate = date,
                         onDateSelected = {
@@ -268,7 +267,7 @@ fun SettingDateItem(
             Text(
                 text = date.format(KoreanDateWithDayFormatter),
                 fontSize = 16.sp,
-                color = if (expanded) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.todoTextMain,
+                color = SpiritTodoTheme.color.font01,
                 modifier = Modifier.clickable { expanded = !expanded }
             )
         }
