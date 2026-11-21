@@ -45,7 +45,6 @@ fun CalendarView(
     modifier: Modifier = Modifier,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
-    // 키로 들어 있는 날짜에는 점이 표시되고, 값(라벨)이 있으면 그 아래 라벨도 표시된다.
     eventLabels: Map<LocalDate, String?> = emptyMap(),
     onMonthChanged: (YearMonth) -> Unit = {},
     firstDayOfWeek: DayOfWeek = DayOfWeek.MONDAY

@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.ListOptionRow
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.component.TaskFilterBar
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.bestiary.component.BestiarySpiritCard
@@ -91,7 +91,7 @@ fun BestiaryScreen(
                 }
             )
 
-            ListOptionRow(
+            TaskFilterBar(
                 checkLabel = stringResource(R.string.show_unowned_only),
                 isChecked = uiState.isUnownedOnly,
                 onCheckToggled = { onEvent(BestiaryEvent.UnownedOnlyToggled) },
