@@ -41,7 +41,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
-fun CalendarTaskItem(
+fun TaskCard(
     item: PlanItemData,
     isExpanded: Boolean,
     onToggleExpanded: () -> Unit,

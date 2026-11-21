@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,7 +37,7 @@ import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.calendar.component.AddPlanButton
 import com.example.todowithspirits.feature.search.component.SearchPanel
-import com.example.todowithspirits.feature.calendar.component.CalendarTaskItem
+import com.example.todowithspirits.feature.calendar.component.TaskCard
 import com.example.todowithspirits.feature.calendar.model.PlanItemData
 import com.example.todowithspirits.feature.calendar.model.labelRes
 import com.example.todowithspirits.feature.calendar.state.CalendarEffect
@@ -267,7 +266,7 @@ private fun TasksArea(
             }
         } else {
             items(visiblePlans, key = { it.id }) { item ->
-                CalendarTaskItem(
+                TaskCard(
                     item = item,
                     isExpanded = expandedTaskId == item.id,
                     onToggleExpanded = { onToggleExpanded(item.id) },
