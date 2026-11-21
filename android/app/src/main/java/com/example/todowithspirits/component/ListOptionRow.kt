@@ -43,7 +43,7 @@ fun ListOptionRow(
 
             Text(
                 text = checkLabel,
-                color = SpiritTodoTheme.color.font02,
+                color = SpiritTodoTheme.color.font01,
                 fontSize = 16.sp
             )
         }

@@ -47,7 +47,6 @@ val spiritsLightColor = SpiritColor(
     mainArea = Color(0xFFD7BFFF),
     systemRed = Color(0xFFF49191),
     pointPink = Color(0xFFEFA4C6),
-    routineBackground = Color(0xFFF0FFD4),
     kakaoBg = Color(0xFFFEE500),
     kakaoText = Color(0xD9000000),
     googleText = Color(0xFF1F1F1F)
@@ -95,7 +94,6 @@ class SpiritColor(
     mainArea: Color,
     systemRed: Color,
     pointPink: Color,
-    routineBackground: Color,
     kakaoBg: Color,
     kakaoText: Color,
     googleText: Color
@@ -218,9 +216,6 @@ class SpiritColor(
         private set
 
     var pointPink by mutableStateOf(pointPink)
-        private set
-
-    var routineBackground by mutableStateOf(routineBackground)
         private set
 
     var kakaoBg by mutableStateOf(kakaoBg)
