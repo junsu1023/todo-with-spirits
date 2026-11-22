@@ -183,7 +183,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    // EmailVerificationStep의 "인증 메일 다시 보내기" 클릭 시 호출된다.
     private fun resendVerificationEmail() {
         val email = _uiState.value.email
 

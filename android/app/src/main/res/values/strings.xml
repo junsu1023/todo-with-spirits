@@ -49,9 +49,11 @@
     <string name="verification_email_resend_hint_prefix">스팸 편지함 확인 또는</string>
     <string name="verification_email_resend_action">인증 메일 다시 보내기</string>
     <string name="verification_email_resend_success">인증 메일을 다시 보냈습니다</string>
+    <string name="signup_welcome_title">가입을 환영합니다!</string>
+    <string name="signup_welcome_subtitle">정령들에게 알려줄 이름을 설정해주세요.\n입력하지 않으면 랜덤으로 지어드려요.</string>
+    <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
 
     <string name="sign_up">회원가입</string>
-    <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
     <string name="alarm_desc">알림을 설정하고 중요한 플랜을 놓치지 마세요!</string>
     <string name="new_alarm">새로운 알림</string>
     <string name="old_alarm">지난 알림</string>
@@ -130,8 +132,6 @@
     <string name="year_format">%d년도</string>
     <string name="search_no_result">검색 결과 없음</string>
     <string name="empty_alarm">알림이 없습니다</string>
-    <string name="signup_welcome_title">가입을 환영합니다!</string>
-    <string name="signup_welcome_subtitle">정령들에게 알려줄 사용자님의 이름을 설정해주세요.</string>
 
     <!-- 홈 화면 위젯 -->
     <string name="widget_today_label">오늘 일정</string>

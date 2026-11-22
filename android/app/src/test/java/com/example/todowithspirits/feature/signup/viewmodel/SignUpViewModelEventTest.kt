@@ -182,7 +182,7 @@ class SignUpViewModelEventTest {
         val effects = mutableListOf<SignUpEffect>()
         backgroundScope.launch { viewModel.effect.toList(effects) }
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         viewModel.onEvent(SignUpEvent.BackClicked)
         runCurrent()
 
@@ -197,7 +197,7 @@ class SignUpViewModelEventTest {
         val viewModel = buildViewModelAtVerification()
         assertFalse(viewModel.uiState.value.canVerifyCode)
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         assertTrue(viewModel.uiState.value.canVerifyCode)
 
         viewModel.onEvent(SignUpEvent.BackClicked)
@@ -213,7 +213,7 @@ class SignUpViewModelEventTest {
         assertEquals(setOf("verificationCode"), viewModel.uiState.value.fieldErrors.keys)
         assertTrue(authRepository.verifyCodeRequests.isEmpty())
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         assertTrue(viewModel.uiState.value.fieldErrors.isEmpty())
 
         viewModel.onEvent(SignUpEvent.BackClicked)
@@ -224,7 +224,7 @@ class SignUpViewModelEventTest {
         val error = async { viewModel.errorMsg.first() }
         runCurrent()
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         viewModel.onEvent(SignUpEvent.VerifyClicked)
         authRepository.verifyCodeResponse.complete(Result.failure(IllegalStateException("인증 실패")))
         runCurrent()
@@ -238,7 +238,7 @@ class SignUpViewModelEventTest {
     @Test fun verifySucceededSignsUpAndMovesToNickname() = runTest(testDispatcher) {
         val viewModel = buildViewModelAtVerification()
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         viewModel.onEvent(SignUpEvent.VerifyClicked)
         authRepository.verifyCodeResponse.complete(Result.success(Unit))
         authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
@@ -247,7 +247,7 @@ class SignUpViewModelEventTest {
         )
         runCurrent()
 
-        assertEquals(listOf("a@b.com" to 123456), authRepository.verifyCodeRequests)
+        assertEquals(listOf("a@b.com" to 654321), authRepository.verifyCodeRequests)
         assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
         authRepository.restoreSessionRequested.await()
     }
@@ -260,7 +260,7 @@ class SignUpViewModelEventTest {
         // 첫 발송은 토스트를 띄우지 않는다.
         assertTrue(effects.isEmpty())
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
         viewModel.onEvent(SignUpEvent.ResendClicked)
         runCurrent()
 
@@ -285,5 +285,17 @@ class SignUpViewModelEventTest {
         assertTrue(effects.isEmpty())
 
         viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun devCodeSkipsVerifyAndSignUpInDebug() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+        assertTrue(authRepository.verifyCodeRequests.isEmpty())
+        assertTrue(authRepository.loginRequests.isEmpty())
     }
 }
