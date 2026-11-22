@@ -131,7 +131,6 @@ fun SettingSwitchItem(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     valueText: String? = null,
-    isValueHighlighted: Boolean = false,
     onValueClick: () -> Unit = {},
     subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
@@ -145,21 +144,21 @@ fun SettingSwitchItem(
                     Text(
                         text = valueText,
                         fontSize = 16.sp,
-                        color = if (isValueHighlighted) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.systemGrey,
+                        color = SpiritTodoTheme.color.fontGrey,
                         modifier = Modifier.noRippleClickable(onClick = onValueClick)
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                 }
 
                 SpiritsTodoSwitch(
                     checked = checked,
                     onCheckedChange = onCheckedChange,
                     modifier = Modifier
-                        .width(44.dp)
+                        .width(46.dp)
                         .height(22.dp),
                     thumbSize = 18.dp,
-                    checkedColor = SpiritTodoTheme.color.pointPink
+                    checkedColor = SpiritTodoTheme.color.font01
                 )
             }
         }
@@ -395,8 +394,8 @@ fun DayOfWeekSelector(
 @Composable
 fun SettingDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 10.dp),
-        thickness = 0.8.dp,
-        color = SpiritTodoTheme.color.onSurfaceColor2
+        modifier = Modifier.padding(horizontal = 12.dp),
+        thickness = 0.5.dp,
+        color = SpiritTodoTheme.color.stroke01
     )
 }

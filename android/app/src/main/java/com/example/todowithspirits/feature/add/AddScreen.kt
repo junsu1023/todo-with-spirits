@@ -1,17 +1,11 @@
 package com.example.todowithspirits.feature.add
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -22,10 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,16 +26,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
-import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
-import com.example.todowithspirits.feature.add.component.SettingDateItem
 import com.example.todowithspirits.feature.add.component.SettingDivider
 import com.example.todowithspirits.feature.add.component.SettingGroup
-import com.example.todowithspirits.feature.add.component.SettingSwitchItem
+import com.example.todowithspirits.feature.add.component.TaskAlarmRow
+import com.example.todowithspirits.feature.add.component.TaskDateRow
+import com.example.todowithspirits.feature.add.component.TaskRepeatRow
+import com.example.todowithspirits.feature.add.component.TaskTimeRow
 import com.example.todowithspirits.feature.add.component.TaskTitleField
-import com.example.todowithspirits.feature.add.component.TodoForm
 import com.example.todowithspirits.feature.add.state.AddEffect
 import com.example.todowithspirits.feature.add.state.AddEvent
 import com.example.todowithspirits.feature.add.state.AddUiState
@@ -53,9 +43,6 @@ import com.example.todowithspirits.feature.add.viewmodel.AddViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 private val AddHorizontalMargin = 18.dp
 
@@ -135,15 +122,9 @@ fun AddScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 TaskOptionCard(
-                    date = uiState.date,
-                    isTimeEnabled = uiState.isTimeEnabled,
-                    dueTime = uiState.dueTime,
-                    onDateSelected = { date -> onEvent(AddEvent.DateChanged(date)) },
-                    onCheckChanged = { enabled -> onEvent(AddEvent.TimeEnabledChanged(enabled)) },
-                    onTimeSelected = { time -> onEvent(AddEvent.DueTimeChanged(time)) }
+                    uiState = uiState,
+                    onEvent = onEvent
                 )
-
-                TodoForm(uiState = uiState, onEvent = onEvent)
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -198,59 +179,40 @@ private fun ImportantCheckBox(
 
 @Composable
 private fun TaskOptionCard(
-    date: LocalDate,
-    isTimeEnabled: Boolean,
-    dueTime: LocalTime,
-    onDateSelected: (LocalDate) -> Unit,
-    onCheckChanged: (Boolean) -> Unit,
-    onTimeSelected: (LocalTime) -> Unit
+    uiState: AddUiState,
+    onEvent: (AddEvent) -> Unit
 ) {
-    var isTimePickerOpen by rememberSaveable { mutableStateOf(false) }
-
     SettingGroup {
-        SettingDateItem(
-            icon = painterResource(R.drawable.widgetly_calendar_20),
-            label = stringResource(R.string.date),
-            date = date,
-            onDateSelected = onDateSelected
+        TaskDateRow(
+            date = uiState.date,
+            onDateSelected = { date -> onEvent(AddEvent.DateChanged(date)) }
         )
 
         SettingDivider()
 
-        SettingSwitchItem(
-            icon = painterResource(R.drawable.todo_clock2),
-            label = stringResource(R.string.time),
-            checked = isTimeEnabled,
-            onCheckedChange = { enabled ->
-                isTimePickerOpen = enabled
-                onCheckChanged(enabled)
-            },
-            valueText = when(isTimeEnabled) {
-                true -> dueTime.format(DateTimeFormatter.ofPattern("HH : mm"))
-                false -> null
-            },
-            isValueHighlighted = isTimePickerOpen,
-            onValueClick = { isTimePickerOpen = !isTimePickerOpen },
-            subContent = {
-                AnimatedVisibility(
-                    visible = isTimeEnabled && isTimePickerOpen,
-                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 22.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TimeWheelPicker(
-                            initialHour = dueTime.hour,
-                            initialMinute = dueTime.minute,
-                            onTimeSelected = { h, m -> onTimeSelected(LocalTime.of(h, m)) }
-                        )
-                    }
-                }
-            }
+        TaskTimeRow(
+            isEnabled = uiState.isTimeEnabled,
+            dueTime = uiState.dueTime,
+            onEnabledChange = { enabled -> onEvent(AddEvent.TimeEnabledChanged(enabled)) },
+            onTimeSelected = { time -> onEvent(AddEvent.DueTimeChanged(time)) }
+        )
+
+        SettingDivider()
+
+        TaskRepeatRow(
+            repeatOption = uiState.repeatOption,
+            selectedWeekDays = uiState.selectedWeekDays,
+            selectedMonthDays = uiState.selectedMonthDays,
+            onRepeatOptionSelected = { option -> onEvent(AddEvent.RepeatOptionChanged(option)) },
+            onWeekDayToggled = { day -> onEvent(AddEvent.WeekDayToggled(day)) },
+            onMonthDayToggled = { day -> onEvent(AddEvent.MonthDayToggled(day)) }
+        )
+
+        SettingDivider()
+
+        TaskAlarmRow(
+            alarmOption = uiState.alarmOption,
+            onAlarmOptionSelected = { option -> onEvent(AddEvent.AlarmOptionChanged(option)) }
         )
     }
 }
