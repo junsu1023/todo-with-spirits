@@ -164,7 +164,7 @@ fun EmailLoginScreen(
 @Composable
 private fun EmailLoginHeader(onBack: () -> Unit) {
     TopNaviBar(
-        leftIconRes = R.drawable.todo_back1,
+        leftIconRes = R.drawable.widgetly_back_24,
         onLeftIconClick = onBack,
         title = stringResource(R.string.login),
         modifier = Modifier.padding(horizontal = 17.dp)
