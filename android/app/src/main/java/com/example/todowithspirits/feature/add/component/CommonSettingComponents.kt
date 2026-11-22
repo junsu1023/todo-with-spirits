@@ -49,7 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.CalendarView
+import com.example.todowithspirits.component.calendar.DatePickerCalendar
 import com.example.todowithspirits.component.SpiritsTodoCheckbox
 import com.example.todowithspirits.component.SpiritsTodoDropdown
 import com.example.todowithspirits.component.SpiritsTodoSwitch
@@ -252,13 +252,10 @@ fun SettingDateItem(
                 enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
                 exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
             ) {
-                Column(modifier = Modifier.padding(vertical = 20.dp)) {
-                    CalendarView(
+                Column(modifier = Modifier.padding(top = 20.dp, bottom = 6.dp)) {
+                    DatePickerCalendar(
                         selectedDate = date,
-                        onDateSelected = {
-                            onDateSelected(it)
-                            expanded = false
-                        }
+                        onDateSelected = { date -> onDateSelected(date) }
                     )
                 }
             }

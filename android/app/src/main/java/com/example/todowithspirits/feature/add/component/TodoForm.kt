@@ -1,21 +1,9 @@
 package com.example.todowithspirits.feature.add.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,12 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.model.AlarmOption
 import com.example.domain.model.RepeatOption
 import com.example.todowithspirits.R
-import com.example.todowithspirits.component.TimeWheelPicker
 import com.example.todowithspirits.feature.add.state.AddEvent
 import com.example.todowithspirits.feature.add.state.AddUiState
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-
 
 @Composable
 fun TodoForm(
@@ -41,53 +25,8 @@ fun TodoForm(
     val alarmOptions = AlarmOption.entries
     val alarmLabels = alarmOptions.map { it.displayName }
 
-    var isTimePickerOpen by rememberSaveable { mutableStateOf(false) }
-
     Column(modifier = modifier.fillMaxWidth()) {
         SettingGroup {
-            SettingDateItem(
-                icon = painterResource(R.drawable.todo_calendar),
-                label = stringResource(R.string.date),
-                date = uiState.date,
-                onDateSelected = { onEvent(AddEvent.DateChanged(it)) }
-            )
-
-            SettingDivider()
-
-            SettingSwitchItem(
-                icon = painterResource(R.drawable.todo_clock2),
-                label = stringResource(R.string.time),
-                checked = uiState.isTimeEnabled,
-                onCheckedChange = { enabled ->
-                    // 켜면 시간을 고를 수 있게 휠을 바로 펼친다.
-                    isTimePickerOpen = enabled
-                    onEvent(AddEvent.TimeEnabledChanged(enabled))
-                },
-                valueText = if (uiState.isTimeEnabled) uiState.dueTime.format(DateTimeFormatter.ofPattern("HH : mm")) else null,
-                isValueHighlighted = isTimePickerOpen,
-                onValueClick = { isTimePickerOpen = !isTimePickerOpen },
-                subContent = {
-                    AnimatedVisibility(
-                        visible = uiState.isTimeEnabled && isTimePickerOpen,
-                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 22.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            TimeWheelPicker(
-                                initialHour = uiState.dueTime.hour,
-                                initialMinute = uiState.dueTime.minute,
-                                onTimeSelected = { h, m -> onEvent(AddEvent.DueTimeChanged(LocalTime.of(h, m))) }
-                            )
-                        }
-                    }
-                }
-            )
-
             SettingSelectorItem(
                 icon = painterResource(R.drawable.todo_repeat),
                 label = stringResource(R.string.repeat),
