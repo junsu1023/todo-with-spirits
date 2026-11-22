@@ -17,4 +17,7 @@ data class SignUpUiState(
                 password.isNotBlank() &&
                 confirmPassword.isNotBlank() &&
                 fieldErrors.isEmpty()
+
+    val canVerifyCode: Boolean
+        get() = verificationCode.isNotBlank()
 }

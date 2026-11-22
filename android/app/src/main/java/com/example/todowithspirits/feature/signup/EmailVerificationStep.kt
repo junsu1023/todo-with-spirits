@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,7 +33,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -52,15 +50,13 @@ import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun EmailVerificationStep(
     uiState: SignUpUiState,
-    onCodeChange: (String) -> Unit,
-    onBack: () -> Unit,
-    onVerify: () -> Unit,
-    onResend: () -> Unit
+    onEvent: (SignUpEvent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
@@ -83,7 +79,7 @@ fun EmailVerificationStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        VerificationHeader(onBack)
+        VerificationHeader(onBack = { onEvent(SignUpEvent.BackClicked) })
 
         Column(
             modifier = Modifier
@@ -110,7 +106,7 @@ fun EmailVerificationStep(
 
             VerificationCodeField(
                 value = uiState.verificationCode,
-                onValueChange = onCodeChange,
+                onValueChange = { onEvent(SignUpEvent.VerificationCodeChanged(it)) },
                 remainingSeconds = uiState.verificationRemainingSeconds,
                 isError = uiState.fieldErrors["verificationCode"] != null
             )
@@ -148,7 +144,7 @@ fun EmailVerificationStep(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SpiritTodoTheme.color.font01,
-                    modifier = Modifier.noRippleClickable(onClick = onResend)
+                    modifier = Modifier.noRippleClickable { onEvent(SignUpEvent.ResendClicked) }
                 )
             }
 
@@ -156,11 +152,11 @@ fun EmailVerificationStep(
 
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.check),
-                enabled = uiState.verificationCode.isNotBlank(),
+                enabled = uiState.canVerifyCode,
                 modifier = Modifier.imePadding(),
                 onClick = {
                     focusManager.clearFocus()
-                    onVerify()
+                    onEvent(SignUpEvent.VerifyClicked)
                 }
             )
 

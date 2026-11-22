@@ -52,11 +52,22 @@ class SignUpViewModel @Inject constructor(
 
     fun onEvent(event: SignUpEvent) {
         when (event) {
-            SignUpEvent.BackClicked -> sendEffect(SignUpEffect.NavigateBack)
+            SignUpEvent.BackClicked -> goBack()
             is SignUpEvent.EmailChanged -> setEmail(event.email)
             is SignUpEvent.PasswordChanged -> setPassword(event.password)
             is SignUpEvent.ConfirmPasswordChanged -> setConfirmPassword(event.confirmPassword)
             SignUpEvent.CredentialsNextClicked -> validateCredentials()
+            is SignUpEvent.VerificationCodeChanged -> setVerificationCode(event.code)
+            SignUpEvent.VerifyClicked -> verifyEmailCode()
+            SignUpEvent.ResendClicked -> resendVerificationEmail()
+        }
+    }
+
+    private fun goBack() {
+        when (_uiState.value.step) {
+            SignUpStep.CREDENTIALS -> sendEffect(SignUpEffect.NavigateBack)
+            SignUpStep.EMAIL_VERIFICATION -> goBackToCredentials()
+            SignUpStep.NICKNAME -> goBackToEmailVerification()
         }
     }
 
@@ -96,7 +107,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setVerificationCode(code: String) {
+    private fun setVerificationCode(code: String) {
         _uiState.update {
             it.copy(
                 verificationCode = code,
@@ -173,26 +184,26 @@ class SignUpViewModel @Inject constructor(
     }
 
     // EmailVerificationStep의 "인증 메일 다시 보내기" 클릭 시 호출된다.
-    fun resendVerificationEmail(onSuccess: () -> Unit = {}) {
+    private fun resendVerificationEmail() {
         val email = _uiState.value.email
 
         viewModelScope.launchWithLoading {
-            sendVerificationEmail(email, onSuccess)
+            sendVerificationEmail(email, onSuccess = { sendEffect(SignUpEffect.ShowResendSucceeded) })
         }
     }
 
-    fun goBackToCredentials() {
+    private fun goBackToCredentials() {
         cancelVerificationTimer()
         _uiState.update {
             it.copy(step = SignUpStep.CREDENTIALS, fieldErrors = emptyMap(), verificationCode = "")
         }
     }
 
-    fun goBackToEmailVerification() {
+    private fun goBackToEmailVerification() {
         _uiState.update { it.copy(step = SignUpStep.EMAIL_VERIFICATION, fieldErrors = emptyMap()) }
     }
 
-    fun verifyEmailCode() {
+    private fun verifyEmailCode() {
         val state = _uiState.value
         val code = state.verificationCode.toIntOrNull()
 

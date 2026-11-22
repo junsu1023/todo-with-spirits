@@ -3,6 +3,8 @@ package com.example.todowithspirits.feature.signup.viewmodel
 import android.content.ContextWrapper
 import com.example.domain.exception.FieldValidationException
 import com.example.domain.model.EmailAvailability
+import com.example.domain.model.LoginSession
+import com.example.domain.model.SignUpResult
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CheckEmailAvailabilityUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
@@ -20,10 +22,15 @@ import com.example.todowithspirits.testutil.FakeAuthRepository
 import com.example.todowithspirits.testutil.FakeTaskRepository
 import com.example.todowithspirits.util.TaskRefreshBus
 import com.example.todowithspirits.widget.TodoWidgetRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -35,7 +42,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-// 회원가입 이메일·비밀번호 입력 단계의 Event → UiState / Effect 흐름을 검증한다.
+// 회원가입 이메일·비밀번호 입력, 이메일 인증 단계의 Event → UiState / Effect 흐름을 검증한다.
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpViewModelEventTest {
     private val testDispatcher = StandardTestDispatcher()
@@ -78,6 +85,16 @@ class SignUpViewModelEventTest {
         onEvent(SignUpEvent.PasswordChanged(password))
         onEvent(SignUpEvent.ConfirmPasswordChanged(confirmPassword))
         onEvent(SignUpEvent.CredentialsNextClicked)
+    }
+
+    private fun TestScope.buildViewModelAtVerification(): SignUpViewModel {
+        val viewModel = buildViewModel()
+        viewModel.submit()
+        authRepository.checkEmailResponse.complete(Result.success(EmailAvailability(null, false)))
+        authRepository.sendVerificationResponse.complete(Result.success(Unit))
+        runCurrent()
+        assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
+        return viewModel
     }
 
     @Test fun backClickedSendsNavigateBack() = runTest(testDispatcher) {
@@ -157,6 +174,116 @@ class SignUpViewModelEventTest {
         assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
 
         // 타이머는 실제 시각을 기준으로 돌아서 runTest가 끝나도록 멈춰 준다.
-        viewModel.goBackToCredentials()
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun verificationBackReturnsToCredentialsWithoutLeaving() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val effects = mutableListOf<SignUpEffect>()
+        backgroundScope.launch { viewModel.effect.toList(effects) }
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.BackClicked)
+        runCurrent()
+
+        val state = viewModel.uiState.value
+        assertEquals(SignUpStep.CREDENTIALS, state.step)
+        assertEquals("", state.verificationCode)
+        assertEquals("a@b.com", state.email)
+        assertTrue(effects.isEmpty())
+    }
+
+    @Test fun verifyIsEnabledOnlyWhenCodeIsFilled() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        assertFalse(viewModel.uiState.value.canVerifyCode)
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        assertTrue(viewModel.uiState.value.canVerifyCode)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun nonNumericCodeShowsErrorUntilEdited() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("abc"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(setOf("verificationCode"), viewModel.uiState.value.fieldErrors.keys)
+        assertTrue(authRepository.verifyCodeRequests.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        assertTrue(viewModel.uiState.value.fieldErrors.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun verifyFailedShowsFieldErrorAndMessage() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val error = async { viewModel.errorMsg.first() }
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.failure(IllegalStateException("인증 실패")))
+        runCurrent()
+
+        assertEquals("인증 실패", viewModel.uiState.value.fieldErrors["verificationCode"])
+        assertEquals("인증 실패", error.await())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun verifySucceededSignsUpAndMovesToNickname() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.success(Unit))
+        authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
+        authRepository.loginResponse.complete(
+            Result.success(LoginSession(1, "a@b.com", "정령", "access", "refresh", "Bearer"))
+        )
+        runCurrent()
+
+        assertEquals(listOf("a@b.com" to 123456), authRepository.verifyCodeRequests)
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+        authRepository.restoreSessionRequested.await()
+    }
+
+    @Test fun resendSucceededClearsCodeAndShowsToast() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val effects = mutableListOf<SignUpEffect>()
+        backgroundScope.launch { viewModel.effect.toList(effects) }
+        runCurrent()
+        // 첫 발송은 토스트를 띄우지 않는다.
+        assertTrue(effects.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
+        viewModel.onEvent(SignUpEvent.ResendClicked)
+        runCurrent()
+
+        assertEquals("", viewModel.uiState.value.verificationCode)
+        assertEquals(listOf<SignUpEffect>(SignUpEffect.ShowResendSucceeded), effects)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun resendFailedShowsErrorWithoutSuccessToast() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val effects = mutableListOf<SignUpEffect>()
+        backgroundScope.launch { viewModel.effect.toList(effects) }
+        val error = async { viewModel.errorMsg.first() }
+        runCurrent()
+
+        authRepository.sendVerificationResponse = CompletableDeferred(Result.failure(IllegalStateException("발송 실패")))
+        viewModel.onEvent(SignUpEvent.ResendClicked)
+        runCurrent()
+
+        assertEquals("발송 실패", error.await())
+        assertTrue(effects.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
     }
 }

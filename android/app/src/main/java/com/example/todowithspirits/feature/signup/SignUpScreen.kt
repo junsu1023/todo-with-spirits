@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.feature.signup.state.SignUpEffect
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
@@ -46,15 +47,12 @@ fun SignUpScreen(
     ObserveAsEffect(signUpViewModel.effect) { effect ->
         when (effect) {
             SignUpEffect.NavigateBack -> onBack()
+            SignUpEffect.ShowResendSucceeded -> ToastUtil.show(context, resendSuccessMsg)
         }
     }
 
     BackHandler(enabled = uiState.step != SignUpStep.CREDENTIALS) {
-        when (uiState.step) {
-            SignUpStep.EMAIL_VERIFICATION -> signUpViewModel.goBackToCredentials()
-            SignUpStep.NICKNAME -> signUpViewModel.goBackToEmailVerification()
-            SignUpStep.CREDENTIALS -> Unit
-        }
+        signUpViewModel.onEvent(SignUpEvent.BackClicked)
     }
 
     Box(
@@ -71,14 +69,7 @@ fun SignUpScreen(
 
             SignUpStep.EMAIL_VERIFICATION -> EmailVerificationStep(
                 uiState = uiState,
-                onCodeChange = signUpViewModel::setVerificationCode,
-                onBack = signUpViewModel::goBackToCredentials,
-                onVerify = signUpViewModel::verifyEmailCode,
-                onResend = {
-                    signUpViewModel.resendVerificationEmail(
-                        onSuccess = { ToastUtil.show(context, resendSuccessMsg) }
-                    )
-                }
+                onEvent = signUpViewModel::onEvent
             )
 
             SignUpStep.NICKNAME -> NicknameStep(

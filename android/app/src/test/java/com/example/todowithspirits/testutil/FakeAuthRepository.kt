@@ -28,7 +28,11 @@ class FakeAuthRepository : AuthRepository {
     val loginRequests = mutableListOf<Pair<String, String>>()
     val checkEmailResponse = CompletableDeferred<Result<EmailAvailability>>()
     val checkEmailRequests = mutableListOf<String>()
-    val sendVerificationResponse = CompletableDeferred<Result<Unit>>()
+    // 재발송 응답을 따로 정할 수 있도록 교체할 수 있다.
+    var sendVerificationResponse = CompletableDeferred<Result<Unit>>()
+    val verifyCodeResponse = CompletableDeferred<Result<Unit>>()
+    val verifyCodeRequests = mutableListOf<Pair<String, Int>>()
+    val signUpResponse = CompletableDeferred<Result<SignUpResult>>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
 
     override suspend fun socialLogin(
@@ -53,6 +57,14 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun sendEmailVerification(email: String): Result<Unit> = sendVerificationResponse.await()
 
+    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> {
+        verifyCodeRequests += email to code
+        return verifyCodeResponse.await()
+    }
+
+    override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> =
+        signUpResponse.await()
+
     // TodoWidgetRepository.requestUpdate()가 여기까지만 진행되고 실제 위젯(Glance)은 건드리지 않도록 멈춰 둔다.
     override suspend fun restoreSession(): Boolean {
         restoreSessionRequested.complete(Unit)
@@ -65,8 +77,6 @@ class FakeAuthRepository : AuthRepository {
     override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> = notUsed()
     override suspend fun getSubscription(): Result<Subscription> = notUsed()
     override suspend fun resendEmailVerification(): Result<Unit> = notUsed()
-    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> = notUsed()
-    override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> = notUsed()
     override fun getLoginMethod(): LoginMethod? = notUsed()
 
     private fun notUsed(): Nothing = error("이 테스트에서는 쓰지 않는다")
