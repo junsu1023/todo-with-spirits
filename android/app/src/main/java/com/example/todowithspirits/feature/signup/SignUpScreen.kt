@@ -62,22 +62,10 @@ fun SignUpScreen(
             .background(SpiritTodoTheme.color.surfaceColor1)
     ) {
         when(uiState.step) {
-            SignUpStep.CREDENTIALS -> NicknameStep(
+            SignUpStep.CREDENTIALS -> CredentialsStep(
                 uiState = uiState,
-                onNicknameChange = signUpViewModel::setNickname,
-                onSignUpClick = {
-                    signUpViewModel.completeSignUp(
-                        onSuccess = {
-                            ToastUtil.show(context, "회원가입이 완료되었습니다")
-                            onSignUpSuccess()
-                        }
-                    )
-                }
+                onEvent = signUpViewModel::onEvent
             )
-//                CredentialsStep(
-//                uiState = uiState,
-//                onEvent = signUpViewModel::onEvent
-//            )
 
             SignUpStep.EMAIL_VERIFICATION -> EmailVerificationStep(
                 uiState = uiState,
