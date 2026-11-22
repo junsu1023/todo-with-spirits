@@ -48,10 +48,6 @@ fun EmailLoginScreen(
     val isLoading by emailLoginViewModel.isLoading.collectAsStateWithLifecycle()
     var loginErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(emailLoginViewModel.errorMsg) {
-
-    }
-
     LaunchedEffect(emailLoginViewModel) {
         emailLoginViewModel.errorMsg.collect { message -> loginErrorMessage = message }
     }
@@ -60,30 +56,26 @@ fun EmailLoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.white)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
         ) {
-            TopNaviBar(
-                leftIconRes = R.drawable.todo_back1,
-                onLeftIconClick = onBack,
-                title = stringResource(R.string.login)
-            )
+            EmailLoginHeader(onBack = onBack)
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 18.dp)
+                    .padding(horizontal = 14.dp)
                     .padding(top = 34.dp)
             ) {
                 Text(
                     text = stringResource(R.string.email),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.systemGrey,
+                    color = SpiritTodoTheme.color.font02,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -96,13 +88,13 @@ fun EmailLoginScreen(
                     keyboardType = KeyboardType.Email
                 )
 
-                Spacer(Modifier.height(36.dp))
+                Spacer(Modifier.height(32.dp))
 
                 Text(
                     text = stringResource(R.string.password),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.systemGrey,
+                    color = SpiritTodoTheme.color.font02,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -115,13 +107,12 @@ fun EmailLoginScreen(
                 )
             }
 
-            Spacer(Modifier.height(32.dp))
             Spacer(Modifier.weight(1f))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 18.dp),
+                    .padding(horizontal = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SpiritsTodoPrimaryButton(
@@ -130,16 +121,16 @@ fun EmailLoginScreen(
                     onClick = { emailLoginViewModel.login(onSuccess = onLoginSuccess) }
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(2.dp))
 
                 Text(
                     text = stringResource(R.string.find_password),
-                    fontSize = 13.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
+                    fontSize = 14.sp,
+                    color = SpiritTodoTheme.color.font01,
                     modifier = Modifier.noRippleClickable { onFindPasswordClick() }
                 )
 
-                Spacer(Modifier.height(63.dp))
+                Spacer(Modifier.height(73.dp))
             }
         }
 
@@ -152,4 +143,14 @@ fun EmailLoginScreen(
             )
         }
     }
+}
+
+@Composable
+private fun EmailLoginHeader(onBack: () -> Unit) {
+    TopNaviBar(
+        leftIconRes = R.drawable.todo_back1,
+        onLeftIconClick = onBack,
+        title = stringResource(R.string.login),
+        modifier = Modifier.padding(horizontal = 17.dp)
+    )
 }

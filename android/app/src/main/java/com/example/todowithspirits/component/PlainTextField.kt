@@ -64,17 +64,17 @@ fun PlainTextField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(45.dp)
+            .height(42.dp)
             .border(
                 width = 1.dp,
                 color = when {
-                    isFocused -> SpiritTodoTheme.color.mainTextAndStroke
-                    isError -> SpiritTodoTheme.color.systemRed
-                    else -> SpiritTodoTheme.color.systemArea
+                    isFocused -> SpiritTodoTheme.color.font01
+                    isError -> SpiritTodoTheme.color.colorSub02
+                    else -> SpiritTodoTheme.color.stroke01
                 },
                 shape = RoundedCornerShape(6.dp)
             )
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField(
@@ -83,8 +83,8 @@ fun PlainTextField(
                 .weight(1f)
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TextStyle(
-                fontSize = 16.sp,
-                color = SpiritTodoTheme.color.todoTextMain
+                fontSize = 14.sp,
+                color = SpiritTodoTheme.color.font01
             ),
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             lineLimits = TextFieldLineLimits.SingleLine,
@@ -94,8 +94,8 @@ fun PlainTextField(
                         Text(
                             text = placeholder,
                             style = TextStyle(
-                                fontSize = 16.sp,
-                                color = SpiritTodoTheme.color.systemGrey
+                                fontSize = 14.sp,
+                                color = SpiritTodoTheme.color.fontGrey
                             )
                         )
                     }
@@ -106,14 +106,10 @@ fun PlainTextField(
         )
 
         if(isFocused && value.isNotEmpty()) {
-            Spacer(Modifier.width(6.dp))
-
             Image(
-                painter = painterResource(R.drawable.widgetly_cross_24),
+                painter = painterResource(R.drawable.widgetly_cross_20),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(16.dp)
-                    .noRippleClickable { textFieldState.clearText() }
+                modifier = Modifier.noRippleClickable { textFieldState.clearText() }
             )
         }
     }
