@@ -137,7 +137,7 @@ fun EmailLoginScreen(
                     onClick = { onEvent(EmailLoginEvent.LoginClicked) }
                 )
 
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Text(
                     text = stringResource(R.string.find_password),
