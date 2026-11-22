@@ -17,12 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
+// 로딩 중에는 아래 화면의 터치를 막는다. 별도 window인 Dialog와 시스템 뒤로가기는 막지 않는다.
 @Composable
 fun LoadingOverlay(
     isLoading: Boolean,
@@ -35,7 +37,14 @@ fun LoadingOverlay(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(background),
+            .background(background)
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        awaitPointerEvent().changes.forEach { it.consume() }
+                    }
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         LoadingIndicator(size = indicatorSize)

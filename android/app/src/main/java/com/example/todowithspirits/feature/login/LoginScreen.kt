@@ -38,13 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.domain.model.SocialProvider
-import com.example.todowithspirits.BuildConfig
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.login.state.LoginEffect
+import com.example.todowithspirits.feature.login.state.LoginEvent
+import com.example.todowithspirits.feature.login.state.LoginUiState
 import com.example.todowithspirits.feature.login.viewmodel.LoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 import kotlinx.coroutines.launch
 
@@ -52,65 +54,56 @@ private const val SOCIAL_LOGIN_TOP_RATIO = 388f / 800f
 private const val SIGN_UP_BOTTOM_RATIO = 102f / 800f
 
 @Composable
-fun LoginScreen(
-    loginViewModel: LoginViewModel = hiltViewModel(),
-    onSignUpClick: () -> Unit,
-    onEmailLoginClick: () -> Unit,
-    onLoginSuccess: () -> Unit = {}
+fun LoginRoute(
+    navigateToHome: () -> Unit,
+    navigateToEmailLogin: () -> Unit,
+    navigateToSignUp: () -> Unit,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle()
 
     LaunchedEffect(loginViewModel) {
         loginViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
-    val onKakaoLoginClick: () -> Unit = {
-        scope.launch {
-            runCatching { KakaoLoginClient.login(context) }
-                .onSuccess { kakaoUser ->
-                    loginViewModel.socialLogin(
-                        provider = SocialProvider.KAKAO,
-                        providerUserId = kakaoUser.kakaoUserId,
-                        providerAccessToken = kakaoUser.accessToken,
-                        email = kakaoUser.email,
-                        onSuccess = onLoginSuccess
-                    )
-                }
-                .onFailure { error ->
-                    ToastUtil.show(context, error.localizedMessage ?: "카카오 로그인에 실패했습니다")
-                }
+    ObserveAsEffect(loginViewModel.effect) { effect ->
+        when (effect) {
+            // 수집 블록은 STOPPED에서 취소된다. 카카오톡으로 넘어가도 인증이 이어지도록 화면 scope에서 실행한다.
+            is LoginEffect.StartSocialAuth -> scope.launch {
+                val result = runCatching { SocialAuthClient.login(context, effect.provider) }
+                loginViewModel.onEvent(LoginEvent.SocialAuthFinished(effect.provider, result))
+            }
+            LoginEffect.NavigateToHome -> navigateToHome()
+            LoginEffect.NavigateToEmailLogin -> navigateToEmailLogin()
+            LoginEffect.NavigateToSignUp -> navigateToSignUp()
         }
     }
 
-    val onGoogleLoginClick: () -> Unit = {
-        scope.launch {
-            runCatching { GoogleLoginClient.login(context, BuildConfig.GOOGLE_WEB_CLIENT_ID) }
-                .onSuccess { googleUser ->
-                    loginViewModel.socialLogin(
-                        provider = SocialProvider.GOOGLE,
-                        providerUserId = googleUser.googleUserId,
-                        providerAccessToken = googleUser.idToken,
-                        email = googleUser.email,
-                        onSuccess = onLoginSuccess
-                    )
-                }
-                .onFailure { error ->
-                    ToastUtil.show(context, error.localizedMessage ?: "구글 로그인에 실패했습니다")
-                }
-        }
-    }
+    LoginScreen(
+        uiState = uiState,
+        isLoading = isLoading,
+        onEvent = loginViewModel::onEvent
+    )
+}
 
+@Composable
+fun LoginScreen(
+    uiState: LoginUiState,
+    isLoading: Boolean,
+    onEvent: (LoginEvent) -> Unit
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         LoginContent(
-            onKakaoLoginClick = onKakaoLoginClick,
-            onGoogleLoginClick = onGoogleLoginClick,
-            onEmailLoginClick = onEmailLoginClick,
-            onSignUpClick = onSignUpClick
+            onKakaoLoginClick = { onEvent(LoginEvent.KakaoLoginClicked) },
+            onGoogleLoginClick = { onEvent(LoginEvent.GoogleLoginClicked) },
+            onEmailLoginClick = { onEvent(LoginEvent.EmailLoginClicked) },
+            onSignUpClick = { onEvent(LoginEvent.SignUpClicked) }
         )
 
-        LoadingOverlay(isLoading = isLoading)
+        LoadingOverlay(isLoading = isLoading || uiState.isAuthenticating)
     }
 }
 
