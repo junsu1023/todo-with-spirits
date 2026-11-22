@@ -8,7 +8,7 @@ import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.GetTaskCalendarUseCase
 import com.example.domain.usecase.RestoreSessionUseCase
 import com.example.domain.usecase.SocialLoginUseCase
-import com.example.todowithspirits.feature.login.SocialAuthUser
+import com.example.todowithspirits.client.SocialAuthUser
 import com.example.todowithspirits.feature.login.state.LoginEffect
 import com.example.todowithspirits.feature.login.state.LoginEvent
 import com.example.todowithspirits.testutil.FakeAuthRepository

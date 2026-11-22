@@ -6,7 +6,7 @@ import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
 import com.example.domain.model.SocialProvider
 import com.example.domain.usecase.SocialLoginUseCase
-import com.example.todowithspirits.feature.login.SocialAuthUser
+import com.example.todowithspirits.client.SocialAuthUser
 import com.example.todowithspirits.feature.login.state.LoginEffect
 import com.example.todowithspirits.feature.login.state.LoginEvent
 import com.example.todowithspirits.feature.login.state.LoginUiState

@@ -1,7 +1,7 @@
 package com.example.todowithspirits.feature.login.state
 
 import com.example.domain.model.SocialProvider
-import com.example.todowithspirits.feature.login.SocialAuthUser
+import com.example.todowithspirits.client.SocialAuthUser
 
 sealed interface LoginEvent {
     data object KakaoLoginClicked : LoginEvent

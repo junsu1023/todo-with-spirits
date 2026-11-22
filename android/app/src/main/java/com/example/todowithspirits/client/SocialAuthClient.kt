@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.login
+package com.example.todowithspirits.client
 
 import android.content.Context
 import com.example.domain.model.SocialProvider

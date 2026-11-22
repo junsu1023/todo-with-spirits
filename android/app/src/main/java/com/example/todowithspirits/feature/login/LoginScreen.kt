@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.client.SocialAuthClient
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.state.LoginEffect
