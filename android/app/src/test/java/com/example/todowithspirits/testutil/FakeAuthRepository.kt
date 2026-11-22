@@ -26,6 +26,9 @@ class FakeAuthRepository : AuthRepository {
     val socialLoginRequests = mutableListOf<SocialLoginRequest>()
     val loginResponse = CompletableDeferred<Result<LoginSession>>()
     val loginRequests = mutableListOf<Pair<String, String>>()
+    val checkEmailResponse = CompletableDeferred<Result<EmailAvailability>>()
+    val checkEmailRequests = mutableListOf<String>()
+    val sendVerificationResponse = CompletableDeferred<Result<Unit>>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
 
     override suspend fun socialLogin(
@@ -43,20 +46,25 @@ class FakeAuthRepository : AuthRepository {
         return loginResponse.await()
     }
 
+    override suspend fun checkEmail(email: String): Result<EmailAvailability> {
+        checkEmailRequests += email
+        return checkEmailResponse.await()
+    }
+
+    override suspend fun sendEmailVerification(email: String): Result<Unit> = sendVerificationResponse.await()
+
     // TodoWidgetRepository.requestUpdate()가 여기까지만 진행되고 실제 위젯(Glance)은 건드리지 않도록 멈춰 둔다.
     override suspend fun restoreSession(): Boolean {
         restoreSessionRequested.complete(Unit)
         awaitCancellation()
     }
 
-    override suspend fun checkEmail(email: String): Result<EmailAvailability> = notUsed()
     override suspend fun logout(): Result<Unit> = notUsed()
     override suspend fun withdraw(): Result<Unit> = notUsed()
     override suspend fun getUserProfile(): Result<UserProfile> = notUsed()
     override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> = notUsed()
     override suspend fun getSubscription(): Result<Subscription> = notUsed()
     override suspend fun resendEmailVerification(): Result<Unit> = notUsed()
-    override suspend fun sendEmailVerification(email: String): Result<Unit> = notUsed()
     override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> = notUsed()
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> = notUsed()
     override fun getLoginMethod(): LoginMethod? = notUsed()

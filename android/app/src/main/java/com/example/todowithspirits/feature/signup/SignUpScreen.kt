@@ -20,8 +20,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.feature.signup.state.SignUpEffect
 import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
 enum class SignUpStep { CREDENTIALS, EMAIL_VERIFICATION, NICKNAME }
@@ -41,6 +43,12 @@ fun SignUpScreen(
         signUpViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
+    ObserveAsEffect(signUpViewModel.effect) { effect ->
+        when (effect) {
+            SignUpEffect.NavigateBack -> onBack()
+        }
+    }
+
     BackHandler(enabled = uiState.step != SignUpStep.CREDENTIALS) {
         when (uiState.step) {
             SignUpStep.EMAIL_VERIFICATION -> signUpViewModel.goBackToCredentials()
@@ -58,11 +66,7 @@ fun SignUpScreen(
         when(uiState.step) {
             SignUpStep.CREDENTIALS -> CredentialsStep(
                 uiState = uiState,
-                onEmailChange = signUpViewModel::setEmail,
-                onPasswordChange = signUpViewModel::setPassword,
-                onConfirmPasswordChange = signUpViewModel::setConfirmPassword,
-                onBack = onBack,
-                onNext = signUpViewModel::validateCredentials
+                onEvent = signUpViewModel::onEvent
             )
 
             SignUpStep.EMAIL_VERIFICATION -> EmailVerificationStep(

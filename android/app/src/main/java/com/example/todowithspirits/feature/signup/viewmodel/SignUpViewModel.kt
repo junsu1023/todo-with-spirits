@@ -13,15 +13,20 @@ import com.example.domain.usecase.UpdateUserProfileUseCase
 import com.example.domain.usecase.VerifyEmailCodeUseCase
 import com.example.todowithspirits.feature.signup.SignUpStep
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEffect
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.util.isValidEmail
 import com.example.todowithspirits.util.isValidPasswordFormat
 import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,9 +45,22 @@ class SignUpViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> get() = _uiState.asStateFlow()
 
+    private val _effect = Channel<SignUpEffect>(Channel.BUFFERED)
+    val effect: Flow<SignUpEffect> = _effect.receiveAsFlow()
+
     private var verificationTimerJob: Job? = null
 
-    fun setEmail(email: String) {
+    fun onEvent(event: SignUpEvent) {
+        when (event) {
+            SignUpEvent.BackClicked -> sendEffect(SignUpEffect.NavigateBack)
+            is SignUpEvent.EmailChanged -> setEmail(event.email)
+            is SignUpEvent.PasswordChanged -> setPassword(event.password)
+            is SignUpEvent.ConfirmPasswordChanged -> setConfirmPassword(event.confirmPassword)
+            SignUpEvent.CredentialsNextClicked -> validateCredentials()
+        }
+    }
+
+    private fun setEmail(email: String) {
         _uiState.update {
             it.copy(
                 email = email,
@@ -51,7 +69,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setPassword(password: String) {
+    private fun setPassword(password: String) {
         _uiState.update {
             it.copy(
                 password = password,
@@ -60,7 +78,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setConfirmPassword(confirmPassword: String) {
+    private fun setConfirmPassword(confirmPassword: String) {
         _uiState.update {
             it.copy(
                 confirmPassword = confirmPassword,
@@ -87,7 +105,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun validateCredentials() {
+    private fun validateCredentials() {
         val state = _uiState.value
         val errors = mutableMapOf<String, String>()
 
@@ -296,6 +314,10 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun sendEffect(effect: SignUpEffect) {
+        viewModelScope.launch { _effect.send(effect) }
     }
 
     companion object {

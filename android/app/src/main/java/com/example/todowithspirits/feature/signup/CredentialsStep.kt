@@ -31,22 +31,14 @@ import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun CredentialsStep(
     uiState: SignUpUiState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onConfirmPasswordChange: (String) -> Unit,
-    onBack: () -> Unit,
-    onNext: () -> Unit
+    onEvent: (SignUpEvent) -> Unit
 ) {
-    val canProceed = uiState.email.isNotBlank() &&
-            uiState.password.isNotBlank() &&
-            uiState.confirmPassword.isNotBlank() &&
-            uiState.fieldErrors.isEmpty()
-
     val focusManager = LocalFocusManager.current
 
     val density = LocalDensity.current
@@ -56,7 +48,7 @@ fun CredentialsStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CredentialHeader(onBack)
+        CredentialHeader(onBack = { onEvent(SignUpEvent.BackClicked) })
 
         Column(
             modifier = Modifier
@@ -76,7 +68,7 @@ fun CredentialsStep(
 
             PlainTextField(
                 value = uiState.email,
-                onValueChange = onEmailChange,
+                onValueChange = { onEvent(SignUpEvent.EmailChanged(it)) },
                 placeholder = stringResource(R.string.email_placeholder),
                 keyboardType = KeyboardType.Email,
                 isError = uiState.fieldErrors["email"] != null
@@ -98,7 +90,7 @@ fun CredentialsStep(
 
             PasswordField(
                 value = uiState.password,
-                onValueChange = onPasswordChange,
+                onValueChange = { onEvent(SignUpEvent.PasswordChanged(it)) },
                 placeholder = stringResource(R.string.password_placeholder),
                 isError = uiState.fieldErrors["password"] != null
             )
@@ -126,7 +118,7 @@ fun CredentialsStep(
 
                     PasswordField(
                         value = uiState.confirmPassword,
-                        onValueChange = onConfirmPasswordChange,
+                        onValueChange = { onEvent(SignUpEvent.ConfirmPasswordChanged(it)) },
                         placeholder = stringResource(R.string.password_confirm_placeholder),
                         isError = uiState.fieldErrors["confirmPassword"] != null
                     )
@@ -145,11 +137,11 @@ fun CredentialsStep(
         ) {
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.next),
-                enabled = canProceed,
+                enabled = uiState.canProceedCredentials,
                 modifier = Modifier.imePadding(),
                 onClick = {
                     focusManager.clearFocus()
-                    onNext()
+                    onEvent(SignUpEvent.CredentialsNextClicked)
                 }
             )
 
