@@ -26,6 +26,12 @@
     <string name="alarm">알림</string>
     <string name="check">확인</string>
     <string name="month">%s월</string>
+    <string name="login_with_kakao">카카오 로그인</string>
+    <string name="login_with_google">Google로 로그인</string>
+    <string name="login_with_email">이메일로 로그인</string>
+    <string name="no_account_question">아직 계정이 없으신가요?</string>
+    <string name="sign_up_with_email">이메일로 회원가입</string>
+    <string name="find_password">비밀번호 찾기</string>
 
 
     <string name="email">이메일</string>
@@ -37,12 +43,6 @@
     <string name="next">다음</string>
     <string name="login">로그인</string>
     <string name="sign_up">회원가입</string>
-    <string name="login_with_kakao">카카오 로그인</string>
-    <string name="login_with_google">Google로 로그인</string>
-    <string name="login_with_email">이메일로 로그인</string>
-    <string name="no_account_question">아직 계정이 없으신가요?</string>
-    <string name="sign_up_with_email">이메일로 회원가입</string>
-    <string name="find_password">비밀번호 찾기</string>
     <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
