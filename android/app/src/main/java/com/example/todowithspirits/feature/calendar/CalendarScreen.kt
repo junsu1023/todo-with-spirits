@@ -29,7 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.BottomShadow
-import com.example.todowithspirits.component.CalendarView
+import com.example.todowithspirits.component.calendar.CalendarView
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TaskFilterBar
 import com.example.todowithspirits.component.TopNaviBar

@@ -12,14 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-private val HOURS = (0..23).toList()
-private val MINUTES = (0..59).toList()
 private val ITEM_HEIGHT = 45.dp
 private const val VISIBLE_ITEMS_COUNT = 5
 private const val REPEAT_COUNT = 300
@@ -45,7 +44,7 @@ fun TimeWheelPicker(
                 .height(35.dp)
                 .padding(horizontal = 14.dp)
                 .clip(RoundedCornerShape(81.dp))
-                .background(SpiritTodoTheme.color.surfaceColor13)
+                .background(SpiritTodoTheme.color.back02)
         )
 
         Row(
@@ -54,7 +53,7 @@ fun TimeWheelPicker(
             horizontalArrangement = Arrangement.Center
         ) {
             WheelColumn(
-                items = HOURS,
+                items = (0..23).toList(),
                 initialIndex = initialHour,
                 onItemSelected = {
                     selectedHour = it
@@ -70,7 +69,7 @@ fun TimeWheelPicker(
             )
 
             WheelColumn(
-                items = MINUTES,
+                items = (0..59).toList(),
                 initialIndex = initialMinute,
                 onItemSelected = {
                     selectedMinute = it
@@ -156,8 +155,9 @@ private fun WheelColumn(
                     Text(
                         text = actualIndex.toString().padStart(2, '0'),
                         fontSize = 28.sp,
-                        color = if(selectedIndex == index) SpiritTodoTheme.color.mainTextAndStroke
-                                else SpiritTodoTheme.color.onSurfaceColor8
+                        fontWeight = FontWeight.Medium,
+                        color = if(selectedIndex == index) SpiritTodoTheme.color.font01
+                                else SpiritTodoTheme.color.font02
                     )
                 }
             }

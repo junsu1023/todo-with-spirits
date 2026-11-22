@@ -28,8 +28,14 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
+import com.example.todowithspirits.feature.add.component.SettingCheckboxItem
+import com.example.todowithspirits.feature.add.component.SettingDivider
+import com.example.todowithspirits.feature.add.component.SettingGroup
+import com.example.todowithspirits.feature.add.component.TaskAlarmRow
+import com.example.todowithspirits.feature.add.component.TaskDateRow
+import com.example.todowithspirits.feature.add.component.TaskRepeatRow
+import com.example.todowithspirits.feature.add.component.TaskTimeRow
 import com.example.todowithspirits.feature.add.component.TaskTitleField
-import com.example.todowithspirits.feature.add.component.TodoForm
 import com.example.todowithspirits.feature.add.state.AddEffect
 import com.example.todowithspirits.feature.add.state.AddEvent
 import com.example.todowithspirits.feature.add.state.AddUiState
@@ -81,32 +87,23 @@ fun AddScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.back01)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
         ) {
-            TopNaviBar(
-                title = stringResource(if (uiState.isEditMode) R.string.edit_todo else R.string.add_todo),
-                leftComposable = {
-                    Image(
-                        painter = painterResource(R.drawable.todo_back1),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(26.dp)
-                            .noRippleClickable { onEvent(AddEvent.BackClicked) }
-                    )
-                }
+            AddHeader(
+                isEditMode = uiState.isEditMode,
+                onBackClicked = { onEvent(AddEvent.BackClicked) }
             )
 
-            // 시간 휠·캘린더가 펼쳐지면 길어지므로 스크롤한다. 확인 버튼은 아래에 고정되고 키보드 위로 따라 올라간다.
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = AddHorizontalMargin)
+                    .padding(horizontal = 14.dp)
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -115,9 +112,19 @@ fun AddScreen(
                     onTitleChange = { onEvent(AddEvent.TitleChanged(it)) }
                 )
 
-                Spacer(modifier = Modifier.height(22.dp))
+                Spacer(modifier = Modifier.height(26.dp))
 
-                TodoForm(uiState = uiState, onEvent = onEvent)
+                ImportantCheckBox(
+                    isImportant = uiState.isImportant,
+                    onCheckChanged = { onEvent(AddEvent.ImportantChanged(it)) }
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                TaskOptionCard(
+                    uiState = uiState,
+                    onEvent = onEvent
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -132,5 +139,81 @@ fun AddScreen(
         }
 
         LoadingOverlay(isLoading = isLoading)
+    }
+}
+
+@Composable
+private fun AddHeader(
+    isEditMode: Boolean,
+    onBackClicked: () -> Unit
+) {
+    TopNaviBar(
+        modifier = Modifier.padding(horizontal = 17.dp),
+        title = stringResource(if (isEditMode) R.string.edit_todo else R.string.add_todo),
+        leftComposable = {
+            Image(
+                painter = painterResource(R.drawable.todo_back1),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(26.dp)
+                    .noRippleClickable { onBackClicked() }
+            )
+        }
+    )
+}
+
+@Composable
+private fun ImportantCheckBox(
+    isImportant: Boolean,
+    onCheckChanged: (Boolean) -> Unit
+) {
+    SettingGroup {
+        SettingCheckboxItem(
+            icon = painterResource(R.drawable.widgetly_important_20),
+            label = stringResource(R.string.important),
+            checked = isImportant,
+            onCheckedChange = { check -> onCheckChanged(check) }
+        )
+    }
+}
+
+@Composable
+private fun TaskOptionCard(
+    uiState: AddUiState,
+    onEvent: (AddEvent) -> Unit
+) {
+    SettingGroup {
+        TaskDateRow(
+            date = uiState.date,
+            onDateSelected = { date -> onEvent(AddEvent.DateChanged(date)) }
+        )
+
+        SettingDivider()
+
+        TaskTimeRow(
+            isEnabled = uiState.isTimeEnabled,
+            dueTime = uiState.dueTime,
+            onEnabledChange = { enabled -> onEvent(AddEvent.TimeEnabledChanged(enabled)) },
+            onTimeSelected = { time -> onEvent(AddEvent.DueTimeChanged(time)) }
+        )
+
+        SettingDivider()
+
+        TaskRepeatRow(
+            date = uiState.date,
+            repeatOption = uiState.repeatOption,
+            selectedWeekDays = uiState.selectedWeekDays,
+            selectedMonthDays = uiState.selectedMonthDays,
+            onRepeatOptionSelected = { option -> onEvent(AddEvent.RepeatOptionChanged(option)) },
+            onWeekDayToggled = { day -> onEvent(AddEvent.WeekDayToggled(day)) },
+            onMonthDayToggled = { day -> onEvent(AddEvent.MonthDayToggled(day)) }
+        )
+
+        SettingDivider()
+
+        TaskAlarmRow(
+            alarmOption = uiState.alarmOption,
+            onAlarmOptionSelected = { option -> onEvent(AddEvent.AlarmOptionChanged(option)) }
+        )
     }
 }
