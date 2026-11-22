@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,32 +49,63 @@ fun TodoDetailPopup(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .width(274.dp)
                 .background(SpiritTodoTheme.color.white, RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 18.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Title(task.title, task.isImportant)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Title(
+                    title = task.title,
+                    isImportant = task.isImportant,
+                    modifier = Modifier.padding(horizontal = 28.dp)
+                )
 
-            Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(4.dp))
 
-            Detail(task.date, task.time)
+                Detail(task.date, task.time)
 
-            Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(18.dp))
 
-            ActionButtonArea(onDelete, onEdit)
+                ActionButtonArea(onDelete, onEdit)
+            }
+
+            CloseButton(
+                onClick = onDismiss,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
         }
     }
+}
+@Composable
+private fun CloseButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Image(
+        painter = painterResource(R.drawable.widgetly_cross_24),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(SpiritTodoTheme.color.stroke01),
+        modifier = modifier
+            .padding(top = 2.dp, end = 4.dp)
+            .noRippleClickable(onClick = onClick)
+            .padding(8.dp)
+    )
 }
 
 @Composable
 private fun Title(
     title: String,
-    isImportant: Boolean
+    isImportant: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
