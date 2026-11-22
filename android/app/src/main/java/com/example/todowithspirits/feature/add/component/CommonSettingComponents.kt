@@ -239,6 +239,7 @@ fun SettingDateItem(
         label = label,
         subContent = {
             ExpandableDatePicker(
+                isExpanded = expanded,
                 selectedDate = date,
                 onDateSelected = onDateSelected
             )
@@ -256,12 +257,13 @@ fun SettingDateItem(
 
 @Composable
 fun ExpandableDatePicker(
+    isExpanded: Boolean,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     isDateSelected: (LocalDate) -> Boolean = { it == selectedDate }
 ) {
     AnimatedVisibility(
-        visible = true,
+        visible = isExpanded,
         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
     ) {

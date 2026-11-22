@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,12 +62,7 @@ fun TimeWheelPicker(
                 }
             )
 
-            Text(
-                text = ":",
-                fontSize = 28.sp,
-                modifier = Modifier.padding(horizontal = 12.dp),
-                color = SpiritTodoTheme.color.mainTextAndStroke
-            )
+            WheelSeparator(modifier = Modifier.padding(horizontal = 16.dp))
 
             WheelColumn(
                 items = (0..59).toList(),
@@ -136,15 +132,7 @@ private fun WheelColumn(
                         .graphicsLayer {
                             val visibleItem = visibleItemsMap[index]
                             if (visibleItem != null) {
-                                val distanceFromCenter = (visibleItem.offset + visibleItem.size / 2f) - viewportCenter
-                                val fraction = (distanceFromCenter / (ITEM_HEIGHT.toPx() * 2.5f)).coerceIn(-1f, 1f)
-                                val scale = 1f - (abs(fraction) * 0.4f)
-
-                                rotationX = fraction * 70f
-                                scaleX = scale
-                                scaleY = scale
-                                translationY = -distanceFromCenter * 0.1f
-                                cameraDistance = 16f * density
+                                applyWheelTransform((visibleItem.offset + visibleItem.size / 2f) - viewportCenter)
                             }
                         }
                         .noRippleClickable {
@@ -163,4 +151,37 @@ private fun WheelColumn(
             }
         }
     }
+}
+
+@Composable
+private fun WheelSeparator(modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        repeat(VISIBLE_ITEMS_COUNT) { row ->
+            val rowFromCenter = row - VISIBLE_ITEMS_COUNT / 2
+
+            Box(
+                modifier = Modifier
+                    .height(ITEM_HEIGHT)
+                    .graphicsLayer { applyWheelTransform(rowFromCenter * ITEM_HEIGHT.toPx()) },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = ":",
+                    fontSize = 28.sp,
+                    color = if (rowFromCenter == 0) SpiritTodoTheme.color.font01 else SpiritTodoTheme.color.font02
+                )
+            }
+        }
+    }
+}
+
+private fun GraphicsLayerScope.applyWheelTransform(distanceFromCenter: Float) {
+    val fraction = (distanceFromCenter / (ITEM_HEIGHT.toPx() * 2.5f)).coerceIn(-1f, 1f)
+    val scale = 1f - (abs(fraction) * 0.4f)
+
+    rotationX = fraction * 70f
+    scaleX = scale
+    scaleY = scale
+    translationY = -distanceFromCenter * 0.1f
+    cameraDistance = 16f * density
 }

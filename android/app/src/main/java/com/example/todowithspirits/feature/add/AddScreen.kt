@@ -44,8 +44,6 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
-private val AddHorizontalMargin = 18.dp
-
 @Composable
 fun AddRoute(
     taskId: Long?,
@@ -133,8 +131,8 @@ fun AddScreen(
                 text = stringResource(R.string.check),
                 onClick = { onEvent(AddEvent.ConfirmClicked) },
                 enabled = uiState.canConfirm,
-                containerColor = SpiritTodoTheme.color.pointPink,
-                modifier = Modifier.padding(start = AddHorizontalMargin, end = AddHorizontalMargin, bottom = 24.dp)
+                containerColor = SpiritTodoTheme.color.key01,
+                modifier = Modifier.padding(start = 14.dp, end = 14.dp, bottom =48.dp)
             )
         }
 
