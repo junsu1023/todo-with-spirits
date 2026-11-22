@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
-// 로딩 중에는 아래 화면의 터치를 막는다. 별도 window인 Dialog와 시스템 뒤로가기는 막지 않는다.
 @Composable
 fun LoadingOverlay(
     isLoading: Boolean,

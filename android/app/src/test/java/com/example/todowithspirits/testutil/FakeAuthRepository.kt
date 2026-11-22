@@ -12,7 +12,7 @@ import com.example.domain.repository.AuthRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 
-// 소셜 로그인 테스트용 AuthRepository 더블.
+// 로그인 테스트용 AuthRepository 더블.
 class FakeAuthRepository : AuthRepository {
     data class SocialLoginRequest(
         val provider: SocialProvider,
@@ -24,6 +24,8 @@ class FakeAuthRepository : AuthRepository {
     // 응답 시점을 테스트에서 정한다.
     val socialLoginResponse = CompletableDeferred<Result<SocialLoginSession>>()
     val socialLoginRequests = mutableListOf<SocialLoginRequest>()
+    val loginResponse = CompletableDeferred<Result<LoginSession>>()
+    val loginRequests = mutableListOf<Pair<String, String>>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
 
     override suspend fun socialLogin(
@@ -36,6 +38,11 @@ class FakeAuthRepository : AuthRepository {
         return socialLoginResponse.await()
     }
 
+    override suspend fun login(email: String, password: String): Result<LoginSession> {
+        loginRequests += email to password
+        return loginResponse.await()
+    }
+
     // TodoWidgetRepository.requestUpdate()가 여기까지만 진행되고 실제 위젯(Glance)은 건드리지 않도록 멈춰 둔다.
     override suspend fun restoreSession(): Boolean {
         restoreSessionRequested.complete(Unit)
@@ -43,7 +50,6 @@ class FakeAuthRepository : AuthRepository {
     }
 
     override suspend fun checkEmail(email: String): Result<EmailAvailability> = notUsed()
-    override suspend fun login(email: String, password: String): Result<LoginSession> = notUsed()
     override suspend fun logout(): Result<Unit> = notUsed()
     override suspend fun withdraw(): Result<Unit> = notUsed()
     override suspend fun getUserProfile(): Result<UserProfile> = notUsed()
