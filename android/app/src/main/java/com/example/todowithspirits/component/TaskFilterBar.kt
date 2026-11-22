@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -69,7 +70,8 @@ fun TaskFilterBar(
                 Text(
                     text = sortLabel,
                     color = SpiritTodoTheme.color.font01,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    modifier = Modifier.offset(y = (-1).dp)
                 )
 
                 Image(
