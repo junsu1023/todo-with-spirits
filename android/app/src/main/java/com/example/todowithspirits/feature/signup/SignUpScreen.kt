@@ -48,6 +48,10 @@ fun SignUpScreen(
         when (effect) {
             SignUpEffect.NavigateBack -> onBack()
             SignUpEffect.ShowResendSucceeded -> ToastUtil.show(context, resendSuccessMsg)
+            SignUpEffect.SignUpCompleted -> {
+                ToastUtil.show(context, "회원가입이 완료되었습니다")
+                onSignUpSuccess()
+            }
         }
     }
 
@@ -74,15 +78,7 @@ fun SignUpScreen(
 
             SignUpStep.NICKNAME -> NicknameStep(
                 uiState = uiState,
-                onNicknameChange = signUpViewModel::setNickname,
-                onSignUpClick = {
-                    signUpViewModel.completeSignUp(
-                        onSuccess = {
-                            ToastUtil.show(context, "회원가입이 완료되었습니다")
-                            onSignUpSuccess()
-                        }
-                    )
-                }
+                onEvent = signUpViewModel::onEvent
             )
         }
 

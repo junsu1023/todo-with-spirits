@@ -60,6 +60,8 @@ class SignUpViewModel @Inject constructor(
             is SignUpEvent.VerificationCodeChanged -> setVerificationCode(event.code)
             SignUpEvent.VerifyClicked -> verifyEmailCode()
             SignUpEvent.ResendClicked -> resendVerificationEmail()
+            is SignUpEvent.NicknameChanged -> setNickname(event.nickname)
+            SignUpEvent.NicknameConfirmClicked -> completeSignUp()
         }
     }
 
@@ -98,7 +100,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setNickname(nickname: String) {
+    private fun setNickname(nickname: String) {
         _uiState.update {
             it.copy(
                 nickname = nickname,
@@ -305,14 +307,14 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun completeSignUp(onSuccess: () -> Unit) {
+    private fun completeSignUp() {
         val nickname = _uiState.value.nickname
 
         viewModelScope.launchWithLoading {
             updateUserProfileUseCase(nickname = nickname)
                 .onSuccess {
                     Log.d(TAG, "updateUserProfile success = $it")
-                    onSuccess()
+                    sendEffect(SignUpEffect.SignUpCompleted)
                 }
                 .onFailure { error ->
                     Log.e(TAG, "updateUserProfile failed!", error)

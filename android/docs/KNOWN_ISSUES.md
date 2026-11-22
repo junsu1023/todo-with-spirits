@@ -172,7 +172,7 @@
 | 항목 | 내용 | 시점 |
 | --- | --- | --- |
 | 비밀번호 찾기 | 화면이 없어 눌러도 반응 없음. `EmailLoginRoute`에 `navigateToFindPassword`만 넘기면 연결됨 | 화면이 생길 때 |
-| `NicknameStep` 전환 | 콜백 방식이고 `completeSignUp(onSuccess)` 람다가 남음. 전환 시 `SignUpRoute` 분리, `SignUpUiState`의 `state/` 이동까지 | BUG-03과 함께 |
+| 회원가입 구조 마무리 | 세 단계 모두 onEvent 전환 완료. `SignUpRoute`/`SignUpScreen` 분리, `SignUpUiState`의 `state/` 이동이 남음 | BUG-03과 함께 |
 | 세로 고정 예외 | 600dp 이상 화면용 `PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY`는 targetSdk 37부터 무효 | targetSdk 37로 올릴 때 |
 
 ## 확인 필요 (버그인지 미확정)

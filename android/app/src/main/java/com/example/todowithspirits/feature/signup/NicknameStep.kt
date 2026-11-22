@@ -29,13 +29,13 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun NicknameStep(
     uiState: SignUpUiState,
-    onNicknameChange: (String) -> Unit,
-    onSignUpClick: () -> Unit
+    onEvent: (SignUpEvent) -> Unit
 ) {
     val density = LocalDensity.current
     val statusBarTopDp = with(density) { WindowInsets.statusBars.getTop(density).toDp() }
@@ -90,7 +90,7 @@ fun NicknameStep(
 
             PlainTextField(
                 value = uiState.nickname,
-                onValueChange = onNicknameChange,
+                onValueChange = { onEvent(SignUpEvent.NicknameChanged(it)) },
                 placeholder = stringResource(R.string.nickname_optional_placeholder),
                 isError = uiState.fieldErrors["nickname"] != null
             )
@@ -105,7 +105,7 @@ fun NicknameStep(
         ) {
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.check),
-                onClick = onSignUpClick
+                onClick = { onEvent(SignUpEvent.NicknameConfirmClicked) }
             )
 
             Spacer(Modifier.height(buttonBottomMargin))

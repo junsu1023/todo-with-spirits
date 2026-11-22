@@ -4,7 +4,10 @@ import android.content.ContextWrapper
 import com.example.domain.exception.FieldValidationException
 import com.example.domain.model.EmailAvailability
 import com.example.domain.model.LoginSession
+import com.example.domain.model.LoginType
 import com.example.domain.model.SignUpResult
+import com.example.domain.model.UserProfile
+import com.example.domain.model.UserRole
 import com.example.domain.usecase.CancelTaskCompletionUseCase
 import com.example.domain.usecase.CheckEmailAvailabilityUseCase
 import com.example.domain.usecase.CompleteTaskUseCase
@@ -41,8 +44,9 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 
-// 회원가입 이메일·비밀번호 입력, 이메일 인증 단계의 Event → UiState / Effect 흐름을 검증한다.
+// 회원가입 세 단계(이메일·비밀번호, 이메일 인증, 닉네임)의 Event → UiState / Effect 흐름을 검증한다.
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignUpViewModelEventTest {
     private val testDispatcher = StandardTestDispatcher()
@@ -74,6 +78,19 @@ class SignUpViewModelEventTest {
             cancelTaskCompletionUseCase = CancelTaskCompletionUseCase(taskRepository),
             taskRefreshBus = TaskRefreshBus()
         )
+    )
+
+    private val profile = UserProfile(
+        userId = 1,
+        email = "a@b.com",
+        emailVerificationStatus = "VERIFIED",
+        loginType = LoginType.LOCAL,
+        nickname = "정령",
+        premium = false,
+        provider = null,
+        representativeSpiritId = null,
+        role = UserRole.USER,
+        createdAt = LocalDateTime.of(2026, 11, 22, 0, 0)
     )
 
     private fun SignUpViewModel.submit(
@@ -287,15 +304,53 @@ class SignUpViewModelEventTest {
         viewModel.onEvent(SignUpEvent.BackClicked)
     }
 
-    @Test fun devCodeSkipsVerifyAndSignUpInDebug() = runTest(testDispatcher) {
-        val viewModel = buildViewModelAtVerification()
+    @Test fun nicknameConfirmedSavesAndSendsCompleted() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        val effects = mutableListOf<SignUpEffect>()
+        backgroundScope.launch { viewModel.effect.toList(effects) }
 
-        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("123456"))
-        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        viewModel.onEvent(SignUpEvent.NicknameChanged("정령"))
+        viewModel.onEvent(SignUpEvent.NicknameConfirmClicked)
         runCurrent()
 
-        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
-        assertTrue(authRepository.verifyCodeRequests.isEmpty())
-        assertTrue(authRepository.loginRequests.isEmpty())
+        assertEquals(listOf<String?>("정령"), authRepository.updatedNicknames)
+        assertTrue(viewModel.isLoading.value)
+        assertTrue(effects.isEmpty())
+
+        authRepository.updateProfileResponse.complete(Result.success(profile))
+        runCurrent()
+
+        assertFalse(viewModel.isLoading.value)
+        assertEquals(listOf<SignUpEffect>(SignUpEffect.SignUpCompleted), effects)
+    }
+
+    @Test fun nicknameFieldErrorIsShownUntilEdited() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+
+        viewModel.onEvent(SignUpEvent.NicknameConfirmClicked)
+        authRepository.updateProfileResponse.complete(
+            Result.failure(FieldValidationException(mapOf("nickname" to "사용할 수 없습니다"), "오류"))
+        )
+        runCurrent()
+
+        assertEquals("사용할 수 없습니다", viewModel.uiState.value.fieldErrors["nickname"])
+
+        viewModel.onEvent(SignUpEvent.NicknameChanged("정령"))
+        assertTrue(viewModel.uiState.value.fieldErrors.isEmpty())
+    }
+
+    @Test fun nicknameSaveFailedShowsErrorWithoutCompleting() = runTest(testDispatcher) {
+        val viewModel = buildViewModel()
+        val effects = mutableListOf<SignUpEffect>()
+        backgroundScope.launch { viewModel.effect.toList(effects) }
+        val error = async { viewModel.errorMsg.first() }
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.NicknameConfirmClicked)
+        authRepository.updateProfileResponse.complete(Result.failure(IllegalStateException("저장 실패")))
+        runCurrent()
+
+        assertEquals("저장 실패", error.await())
+        assertTrue(effects.isEmpty())
     }
 }

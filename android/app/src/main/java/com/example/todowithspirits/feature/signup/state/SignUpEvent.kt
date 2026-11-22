@@ -10,4 +10,6 @@ sealed interface SignUpEvent {
     data class VerificationCodeChanged(val code: String) : SignUpEvent
     data object VerifyClicked : SignUpEvent
     data object ResendClicked : SignUpEvent
+    data class NicknameChanged(val nickname: String) : SignUpEvent
+    data object NicknameConfirmClicked : SignUpEvent
 }

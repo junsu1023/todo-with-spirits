@@ -33,6 +33,8 @@ class FakeAuthRepository : AuthRepository {
     val verifyCodeResponse = CompletableDeferred<Result<Unit>>()
     val verifyCodeRequests = mutableListOf<Pair<String, Int>>()
     val signUpResponse = CompletableDeferred<Result<SignUpResult>>()
+    val updateProfileResponse = CompletableDeferred<Result<UserProfile>>()
+    val updatedNicknames = mutableListOf<String?>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
 
     override suspend fun socialLogin(
@@ -65,6 +67,11 @@ class FakeAuthRepository : AuthRepository {
     override suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult> =
         signUpResponse.await()
 
+    override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> {
+        updatedNicknames += nickname
+        return updateProfileResponse.await()
+    }
+
     // TodoWidgetRepository.requestUpdate()가 여기까지만 진행되고 실제 위젯(Glance)은 건드리지 않도록 멈춰 둔다.
     override suspend fun restoreSession(): Boolean {
         restoreSessionRequested.complete(Unit)
@@ -74,7 +81,6 @@ class FakeAuthRepository : AuthRepository {
     override suspend fun logout(): Result<Unit> = notUsed()
     override suspend fun withdraw(): Result<Unit> = notUsed()
     override suspend fun getUserProfile(): Result<UserProfile> = notUsed()
-    override suspend fun updateUserProfile(nickname: String?, representativeSpiritId: Long?): Result<UserProfile> = notUsed()
     override suspend fun getSubscription(): Result<Subscription> = notUsed()
     override suspend fun resendEmailVerification(): Result<Unit> = notUsed()
     override fun getLoginMethod(): LoginMethod? = notUsed()
