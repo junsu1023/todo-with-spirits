@@ -36,14 +36,13 @@
     <string name="email_placeholder">example@email.com</string>
     <string name="password">비밀번호</string>
     <string name="password_placeholder">비밀번호를 입력해주세요</string>
+    <string name="password_format_hint">영문/숫자/특수문자 중 2가지 포함 20자 내</string>
     <string name="login">로그인</string>
-
-    <string name="password_simple_placeholder">비밀번호</string>
-    <string name="password_format_hint">8자 이상 영문/숫자/특수문자 중 2가지 포함</string>
-    <string name="next">다음</string>
-    <string name="sign_up">회원가입</string>
-    <string name="login_failed_title">로그인에 실패했습니다.</string>
     <string name="password_confirm_placeholder">비밀번호를 다시 입력해주세요</string>
+    <string name="login_failed_title">로그인에 실패했습니다.</string>
+    <string name="next">다음</string>
+
+    <string name="sign_up">회원가입</string>
     <string name="nickname_optional_placeholder">닉네임을 입력해주세요</string>
     <string name="alarm_desc">알림을 설정하고 중요한 플랜을 놓치지 마세요!</string>
     <string name="new_alarm">새로운 알림</string>

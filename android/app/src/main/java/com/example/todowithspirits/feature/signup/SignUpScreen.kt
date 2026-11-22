@@ -97,11 +97,11 @@ fun SignUpScreen(
 
 @Composable
 fun FieldHintText(text: String, isError: Boolean) {
-    Spacer(Modifier.height(6.dp))
+    Spacer(Modifier.height(5.dp))
 
     Text(
         text = text,
         fontSize = 12.sp,
-        color = if(isError) SpiritTodoTheme.color.systemRed else SpiritTodoTheme.color.systemGrey
+        color = if(isError) SpiritTodoTheme.color.colorSub02 else SpiritTodoTheme.color.fontGrey
     )
 }

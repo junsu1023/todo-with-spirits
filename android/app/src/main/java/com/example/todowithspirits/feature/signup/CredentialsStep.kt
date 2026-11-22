@@ -56,26 +56,20 @@ fun CredentialsStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopNaviBar(
-            leftIconRes = R.drawable.todo_back1,
-            onLeftIconClick = onBack,
-            title = stringResource(R.string.sign_up)
-        )
+        CredentialHeader(onBack)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 14.dp)
                 .padding(top = 34.dp)
         ) {
             Text(
                 text = stringResource(R.string.email),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.systemGrey,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 2.dp)
+                color = SpiritTodoTheme.color.font02,
+                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
             )
 
             Spacer(Modifier.height(6.dp))
@@ -83,21 +77,21 @@ fun CredentialsStep(
             PlainTextField(
                 value = uiState.email,
                 onValueChange = onEmailChange,
-                placeholder = "example@email.com",
+                placeholder = stringResource(R.string.email_placeholder),
                 keyboardType = KeyboardType.Email,
                 isError = uiState.fieldErrors["email"] != null
             )
 
             uiState.fieldErrors["email"]?.let { FieldHintText(text = it, isError = true) }
 
-            Spacer(Modifier.height(if(uiState.fieldErrors["email"] != null) 46.dp else 26.dp))
+            Spacer(Modifier.height(if(uiState.fieldErrors["email"] != null) 42.dp else 24.dp))
 
             Text(
                 text = stringResource(R.string.password),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.systemGrey,
-                modifier = Modifier.fillMaxWidth()
+                color = SpiritTodoTheme.color.font02,
+                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
             )
 
             Spacer(Modifier.height(6.dp))
@@ -105,7 +99,7 @@ fun CredentialsStep(
             PasswordField(
                 value = uiState.password,
                 onValueChange = onPasswordChange,
-                placeholder = stringResource(R.string.password_simple_placeholder),
+                placeholder = stringResource(R.string.password_placeholder),
                 isError = uiState.fieldErrors["password"] != null
             )
 
@@ -115,7 +109,7 @@ fun CredentialsStep(
             )
 
             AnimatedVisibility(
-                visible = uiState.password.length >= 8,
+                visible = uiState.password.length >= 2,
                 enter = fadeIn(animationSpec = tween(700)) +
                         slideInVertically(
                             animationSpec = tween(700),
@@ -128,7 +122,7 @@ fun CredentialsStep(
                         )
             ) {
                 Column {
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(10.dp))
 
                     PasswordField(
                         value = uiState.confirmPassword,
@@ -138,8 +132,6 @@ fun CredentialsStep(
                     )
 
                     uiState.fieldErrors["confirmPassword"]?.let { FieldHintText(text = it, isError = true) }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -149,7 +141,7 @@ fun CredentialsStep(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp)
+                .padding(horizontal = 14.dp)
         ) {
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.next),
@@ -164,4 +156,13 @@ fun CredentialsStep(
             Spacer(Modifier.height(bottomSpacerHeight))
         }
     }
+}
+
+@Composable
+private fun CredentialHeader(onBack: () -> Unit) {
+    TopNaviBar(
+        leftIconRes = R.drawable.widgetly_back_24,
+        onLeftIconClick = onBack,
+        title = stringResource(R.string.sign_up)
+    )
 }
