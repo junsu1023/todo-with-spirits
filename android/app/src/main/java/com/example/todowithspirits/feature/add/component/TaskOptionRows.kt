@@ -112,6 +112,7 @@ fun TaskRepeatRow(
                 }
                 RepeatOption.MONTHLY -> {
                     ExpandableDatePicker(
+                        isExpanded = true,
                         selectedDate = date,
                         onDateSelected = { selected -> onMonthDayToggled(selected.dayOfMonth) },
                         isDateSelected = { it.dayOfMonth in selectedMonthDays }

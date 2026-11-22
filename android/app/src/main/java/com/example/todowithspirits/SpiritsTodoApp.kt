@@ -73,7 +73,7 @@ fun SpiritsTodoApp(mainViewModel: MainViewModel = hiltViewModel()) {
                 }
             )
         },
-        containerColor = SpiritTodoTheme.color.surfaceColor1
+        containerColor = SpiritTodoTheme.color.back01
     ) { innerPadding ->
         SpiritsTodoNavigation(
             navController = navController,
