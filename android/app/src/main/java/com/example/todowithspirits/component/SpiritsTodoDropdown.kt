@@ -1,5 +1,6 @@
 package com.example.todowithspirits.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,6 +60,7 @@ fun SpiritsTodoDropdown(
                 Surface(
                     modifier = Modifier.width(dropdownWidth),
                     shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, SpiritTodoTheme.color.stroke01),
                     shadowElevation = 4.dp,
                     color = SpiritTodoTheme.color.white
                 ) {

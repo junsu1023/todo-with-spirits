@@ -95,18 +95,17 @@ fun TaskRepeatRow(
     onMonthDayToggled: (Int) -> Unit
 ) {
     SettingSelectorItem(
-        icon = painterResource(R.drawable.todo_repeat),
+        icon = painterResource(R.drawable.widgetly_repeat_20),
         label = stringResource(R.string.repeat),
         value = repeatOption.displayName,
         options = RepeatOption.getAllDisplayNames(),
         onOptionSelected = { label -> onRepeatOptionSelected(RepeatOption.fromDisplayName(label)) },
-        isValueHighlighted = repeatOption == RepeatOption.WEEKLY || repeatOption == RepeatOption.MONTHLY,
         subContent = {
             when (repeatOption) {
                 RepeatOption.WEEKLY -> DayOfWeekSelector(
                     selectedDays = selectedWeekDays,
                     onDayToggled = onWeekDayToggled,
-                    modifier = Modifier.padding(start = 10.dp, top = 12.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
                 )
                 RepeatOption.MONTHLY -> MonthlyCalendarView(
                     selectedDays = selectedMonthDays,

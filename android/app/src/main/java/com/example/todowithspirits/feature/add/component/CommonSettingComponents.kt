@@ -186,9 +186,6 @@ fun SettingCheckboxItem(
     )
 }
 
-/**
- * @param isValueHighlighted 값을 강조(분홍)할지. 예: 반복 매주/매월로 아래 선택 영역이 펼쳐진 상태
- */
 @Composable
 fun SettingSelectorItem(
     icon: Painter,
@@ -196,7 +193,6 @@ fun SettingSelectorItem(
     value: String,
     options: List<String>,
     onOptionSelected: (String) -> Unit,
-    isValueHighlighted: Boolean = false,
     subContent: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     BaseSettingRow(
@@ -208,7 +204,7 @@ fun SettingSelectorItem(
                 value = value,
                 options = options,
                 onOptionSelected = onOptionSelected,
-                selectedOptionColor = SpiritTodoTheme.color.pointPink
+                selectedOptionColor = SpiritTodoTheme.color.key02
             ) { expand ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -217,13 +213,13 @@ fun SettingSelectorItem(
                     Text(
                         text = value,
                         fontSize = 14.sp,
-                        color = if (isValueHighlighted) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.todoTextMain
+                        color = SpiritTodoTheme.color.font01
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Image(
-                        painter = painterResource(R.drawable.expand_icon),
+                        painter = painterResource(R.drawable.widgetly_expand_18),
                         contentDescription = null,
                         modifier = Modifier.size(12.dp)
                     )
@@ -270,7 +266,6 @@ fun SettingDateItem(
     )
 }
 
-// 반복 '매주'에서 요일 선택. 누른 채로 좌우로 끌면 지나간 요일을 한 번에 켜거나 끈다.
 @Composable
 fun DayOfWeekSelector(
     selectedDays: Set<DayOfWeek>,
@@ -371,19 +366,19 @@ fun DayOfWeekSelector(
                         itemBounds[index] = coordinates.boundsInParent()
                     }
                     .border(
-                        width = if(isSelected) 1.dp else 0.dp,
-                        color = if(isSelected) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.transparent,
+                        width = 1.dp,
+                        color = if(isSelected) SpiritTodoTheme.color.font02 else SpiritTodoTheme.color.stroke01,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .background(
-                        color = SpiritTodoTheme.color.surfaceColor1,
+                        color = SpiritTodoTheme.color.white,
                         shape = RoundedCornerShape(4.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = label,
-                    color = if(isSelected) SpiritTodoTheme.color.pointPink else SpiritTodoTheme.color.onSurfaceColor8,
+                    color = if(isSelected) SpiritTodoTheme.color.font01 else SpiritTodoTheme.color.fontGrey,
                     fontSize = 16.sp
                 )
             }
