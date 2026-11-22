@@ -223,7 +223,7 @@ fun VerificationCodeField(
                 .weight(1f)
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TextStyle(
-                fontSize = 4.sp,
+                fontSize = 14.sp,
                 color = SpiritTodoTheme.color.font01
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
