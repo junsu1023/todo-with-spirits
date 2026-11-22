@@ -239,7 +239,6 @@ fun SettingDateItem(
         label = label,
         subContent = {
             ExpandableDatePicker(
-                visible = expanded,
                 selectedDate = date,
                 onDateSelected = onDateSelected
             )
@@ -255,20 +254,17 @@ fun SettingDateItem(
     )
 }
 
-// 설정 행 아래로 펼쳐지는 달력. 날짜 행과 반복 '매월'이 같은 모양·애니메이션으로 쓴다.
 @Composable
 fun ExpandableDatePicker(
-    visible: Boolean,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     isDateSelected: (LocalDate) -> Boolean = { it == selectedDate }
 ) {
     AnimatedVisibility(
-        visible = visible,
+        visible = true,
         enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
     ) {
-        // 아래쪽은 BaseSettingRow의 아래 패딩 14와 합쳐 구분선까지 20이 되도록 6만 둔다.
         Column(modifier = Modifier.padding(top = 20.dp, bottom = 6.dp)) {
             DatePickerCalendar(
                 selectedDate = selectedDate,

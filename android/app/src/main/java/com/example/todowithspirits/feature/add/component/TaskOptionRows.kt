@@ -112,7 +112,6 @@ fun TaskRepeatRow(
                 }
                 RepeatOption.MONTHLY -> {
                     ExpandableDatePicker(
-                        visible = repeatOption == RepeatOption.MONTHLY,
                         selectedDate = date,
                         onDateSelected = { selected -> onMonthDayToggled(selected.dayOfMonth) },
                         isDateSelected = { it.dayOfMonth in selectedMonthDays }
@@ -130,7 +129,7 @@ fun TaskAlarmRow(
     onAlarmOptionSelected: (AlarmOption) -> Unit
 ) {
     SettingSelectorItem(
-        icon = painterResource(R.drawable.todo_alarm2),
+        icon = painterResource(R.drawable.widgetly_alarm_20),
         label = stringResource(R.string.alarm),
         value = alarmOption.displayName,
         options = AlarmOption.entries.map { it.displayName },
