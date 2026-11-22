@@ -52,7 +52,7 @@ fun TodoDetailPopup(
             modifier = Modifier
                 .width(274.dp)
                 .background(SpiritTodoTheme.color.white, RoundedCornerShape(8.dp))
-                .padding(horizontal = 18.dp, vertical = 24.dp),
+                .padding(horizontal = 12.dp, vertical = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Title(task.title, task.isImportant)
