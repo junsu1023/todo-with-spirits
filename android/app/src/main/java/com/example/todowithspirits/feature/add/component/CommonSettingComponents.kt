@@ -120,10 +120,6 @@ fun BaseSettingRow(
     }
 }
 
-/**
- * @param valueText 스위치 왼쪽에 보여줄 값 (예: 켜진 시간). 누르면 [onValueClick].
- * @param isValueHighlighted 값을 강조(분홍)할지. 예: 시간 휠이 펼쳐진 상태
- */
 @Composable
 fun SettingSwitchItem(
     icon: Painter,
@@ -242,18 +238,11 @@ fun SettingDateItem(
         icon = icon,
         label = label,
         subContent = {
-            AnimatedVisibility(
+            ExpandableDatePicker(
                 visible = expanded,
-                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-            ) {
-                Column(modifier = Modifier.padding(top = 20.dp, bottom = 6.dp)) {
-                    DatePickerCalendar(
-                        selectedDate = date,
-                        onDateSelected = { date -> onDateSelected(date) }
-                    )
-                }
-            }
+                selectedDate = date,
+                onDateSelected = onDateSelected
+            )
         },
         action = {
             Text(
@@ -264,6 +253,30 @@ fun SettingDateItem(
             )
         }
     )
+}
+
+// 설정 행 아래로 펼쳐지는 달력. 날짜 행과 반복 '매월'이 같은 모양·애니메이션으로 쓴다.
+@Composable
+fun ExpandableDatePicker(
+    visible: Boolean,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    isDateSelected: (LocalDate) -> Boolean = { it == selectedDate }
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+    ) {
+        // 아래쪽은 BaseSettingRow의 아래 패딩 14와 합쳐 구분선까지 20이 되도록 6만 둔다.
+        Column(modifier = Modifier.padding(top = 20.dp, bottom = 6.dp)) {
+            DatePickerCalendar(
+                selectedDate = selectedDate,
+                onDateSelected = onDateSelected,
+                isDateSelected = isDateSelected
+            )
+        }
+    }
 }
 
 @Composable

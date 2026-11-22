@@ -41,7 +41,9 @@ fun DatePickerCalendar(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    firstDayOfWeek: DayOfWeek = DayOfWeek.MONDAY
+    firstDayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
+    // 선택 표시할 날짜. 기본은 selectedDate 하나이고, 여러 날짜를 고르는 경우(반복 매월) 바꿔 넘긴다.
+    isDateSelected: (LocalDate) -> Boolean = { it == selectedDate }
 ) {
     val weekDays = remember(firstDayOfWeek) { weekDayLabels(firstDayOfWeek) }
     val textMeasurer = rememberTextMeasurer()
@@ -74,7 +76,7 @@ fun DatePickerCalendar(
     ) { month ->
         DatePickerMonthGrid(
             month = month,
-            selectedDate = selectedDate,
+            isDateSelected = isDateSelected,
             onDateSelected = onDateSelected,
             firstDayOfWeek = firstDayOfWeek,
             weekDayWidths = weekDayWidths
@@ -139,7 +141,7 @@ private fun DatePickerWeekHeader(
 @Composable
 private fun DatePickerMonthGrid(
     month: YearMonth,
-    selectedDate: LocalDate,
+    isDateSelected: (LocalDate) -> Boolean,
     onDateSelected: (LocalDate) -> Unit,
     firstDayOfWeek: DayOfWeek,
     weekDayWidths: List<Int>
@@ -159,7 +161,7 @@ private fun DatePickerMonthGrid(
                     ) {
                         DatePickerDay(
                             day = calendarDay.date.dayOfMonth,
-                            isSelected = calendarDay.date == selectedDate,
+                            isSelected = isDateSelected(calendarDay.date),
                             isCurrentMonth = calendarDay.isCurrentMonth
                         )
                     }

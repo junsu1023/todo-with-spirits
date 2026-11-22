@@ -200,6 +200,7 @@ private fun TaskOptionCard(
         SettingDivider()
 
         TaskRepeatRow(
+            date = uiState.date,
             repeatOption = uiState.repeatOption,
             selectedWeekDays = uiState.selectedWeekDays,
             selectedMonthDays = uiState.selectedMonthDays,

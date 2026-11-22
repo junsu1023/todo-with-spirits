@@ -87,6 +87,7 @@ fun TaskTimeRow(
 
 @Composable
 fun TaskRepeatRow(
+    date: LocalDate,
     repeatOption: RepeatOption,
     selectedWeekDays: Set<DayOfWeek>,
     selectedMonthDays: Set<Int>,
@@ -101,17 +102,22 @@ fun TaskRepeatRow(
         options = RepeatOption.getAllDisplayNames(),
         onOptionSelected = { label -> onRepeatOptionSelected(RepeatOption.fromDisplayName(label)) },
         subContent = {
-            when (repeatOption) {
-                RepeatOption.WEEKLY -> DayOfWeekSelector(
-                    selectedDays = selectedWeekDays,
-                    onDayToggled = onWeekDayToggled,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
-                )
-                RepeatOption.MONTHLY -> MonthlyCalendarView(
-                    selectedDays = selectedMonthDays,
-                    onDayToggled = onMonthDayToggled,
-                    modifier = Modifier.padding(start = 12.dp, top = 16.dp, end = 12.dp)
-                )
+            when(repeatOption) {
+                RepeatOption.WEEKLY -> {
+                    DayOfWeekSelector(
+                        selectedDays = selectedWeekDays,
+                        onDayToggled = onWeekDayToggled,
+                        modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
+                    )
+                }
+                RepeatOption.MONTHLY -> {
+                    ExpandableDatePicker(
+                        visible = repeatOption == RepeatOption.MONTHLY,
+                        selectedDate = date,
+                        onDateSelected = { selected -> onMonthDayToggled(selected.dayOfMonth) },
+                        isDateSelected = { it.dayOfMonth in selectedMonthDays }
+                    )
+                }
                 else -> Unit
             }
         }
