@@ -63,12 +63,10 @@ fun EmailVerificationStep(
     onResend: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-
     val density = LocalDensity.current
     val imeBottomDp = with(density) { WindowInsets.ime.getBottom(density).toDp() }
     val bottomSpacerHeight = (60.dp - imeBottomDp).coerceAtLeast(1.dp)
-
-    val emailHighlightColor = SpiritTodoTheme.color.mainTextAndStroke
+    val emailHighlightColor = SpiritTodoTheme.color.key02
     val descriptionSuffix = stringResource(R.string.verification_code_description_suffix)
     val descriptionBody = stringResource(R.string.verification_code_description_body)
     val description = remember(uiState.email, descriptionSuffix, descriptionBody) {
@@ -85,34 +83,30 @@ fun EmailVerificationStep(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopNaviBar(
-            leftIconRes = R.drawable.todo_back1,
-            onLeftIconClick = onBack,
-            title = stringResource(R.string.sign_up)
-        )
+        VerificationHeader(onBack)
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 34.dp)
+                .padding(horizontal = 18.dp)
+                .padding(top = 21.dp)
         ) {
             Text(
                 text = stringResource(R.string.verification_code_title),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = SpiritTodoTheme.color.todoTextMain
+                fontWeight = FontWeight.Medium,
+                color = SpiritTodoTheme.color.font01
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
 
             Text(
                 text = description,
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.color.systemGrey
+                color = SpiritTodoTheme.color.fontGrey
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(26.dp))
 
             VerificationCodeField(
                 value = uiState.verificationCode,
@@ -129,22 +123,22 @@ fun EmailVerificationStep(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp),
+                .padding(horizontal = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = stringResource(R.string.verification_email_not_received),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.systemGrey
+                fontWeight = FontWeight.Light,
+                color = SpiritTodoTheme.color.fontGrey
             )
-
-            Spacer(Modifier.height(2.dp))
 
             Row {
                 Text(
                     text = stringResource(R.string.verification_email_resend_hint_prefix),
                     fontSize = 12.sp,
-                    color = SpiritTodoTheme.color.systemGrey
+                    fontWeight = FontWeight.Light,
+                    color = SpiritTodoTheme.color.fontGrey
                 )
 
                 Spacer(Modifier.width(4.dp))
@@ -152,13 +146,13 @@ fun EmailVerificationStep(
                 Text(
                     text = stringResource(R.string.verification_email_resend_action),
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.mainTextAndStroke,
+                    fontWeight = FontWeight.SemiBold,
+                    color = SpiritTodoTheme.color.font01,
                     modifier = Modifier.noRippleClickable(onClick = onResend)
                 )
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.check),
@@ -173,6 +167,16 @@ fun EmailVerificationStep(
             Spacer(Modifier.height(bottomSpacerHeight))
         }
     }
+}
+
+@Composable
+private fun VerificationHeader(onBack: () -> Unit) {
+    TopNaviBar(
+        leftIconRes = R.drawable.widgetly_back_24,
+        onLeftIconClick = onBack,
+        title = stringResource(R.string.sign_up),
+        modifier = Modifier.padding(horizontal = 17.dp)
+    )
 }
 
 @Composable
@@ -208,13 +212,13 @@ fun VerificationCodeField(
             .border(
                 width = 1.dp,
                 color = when {
-                    isFocused -> SpiritTodoTheme.color.mainTextAndStroke
-                    isError -> SpiritTodoTheme.color.systemRed
-                    else -> SpiritTodoTheme.color.systemArea
+                    isFocused -> SpiritTodoTheme.color.font01
+                    isError -> SpiritTodoTheme.color.colorSub02
+                    else -> SpiritTodoTheme.color.stroke01
                 },
                 shape = RoundedCornerShape(6.dp)
             )
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField(
@@ -223,8 +227,8 @@ fun VerificationCodeField(
                 .weight(1f)
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TextStyle(
-                fontSize = 16.sp,
-                color = SpiritTodoTheme.color.todoTextMain
+                fontSize = 4.sp,
+                color = SpiritTodoTheme.color.font01
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             lineLimits = TextFieldLineLimits.SingleLine,
@@ -234,8 +238,8 @@ fun VerificationCodeField(
                         Text(
                             text = stringResource(R.string.verification_code_placeholder),
                             style = TextStyle(
-                                fontSize = 16.sp,
-                                color = SpiritTodoTheme.color.systemGrey
+                                fontSize = 14.sp,
+                                color = SpiritTodoTheme.color.fontGrey
                             )
                         )
                     }
@@ -246,25 +250,19 @@ fun VerificationCodeField(
         )
 
         if (value.isNotEmpty()) {
-            Spacer(Modifier.width(8.dp))
-
             Image(
-                painter = painterResource(R.drawable.widgetly_cross_24),
+                painter = painterResource(R.drawable.widgetly_cross_20),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(SpiritTodoTheme.color.systemGrey),
-                modifier = Modifier
-                    .size(16.dp)
-                    .noRippleClickable { textFieldState.clearText() }
+                modifier = Modifier.noRippleClickable { textFieldState.clearText() }
             )
         }
 
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(10.dp))
 
         Text(
             text = "%02d:%02d".format(minutes, seconds),
             fontSize = 14.sp,
-            fontWeight = FontWeight.Light,
-            color = SpiritTodoTheme.color.mainTextAndStroke
+            color = SpiritTodoTheme.color.key01B
         )
     }
 }
