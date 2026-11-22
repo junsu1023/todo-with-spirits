@@ -189,7 +189,7 @@ private fun DatePickerDay(
         text = day.toString(),
         color = when {
             isSelected -> SpiritTodoTheme.color.white
-            !isCurrentMonth -> SpiritTodoTheme.color.surfaceColor15
+            !isCurrentMonth -> SpiritTodoTheme.color.fontGrey
             else -> SpiritTodoTheme.color.font01
         },
         fontSize = 12.sp,

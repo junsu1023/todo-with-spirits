@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,122 +30,143 @@ import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
 import com.example.todowithspirits.feature.login.component.LoginFailureDialog
+import com.example.todowithspirits.feature.login.state.EmailLoginEffect
+import com.example.todowithspirits.feature.login.state.EmailLoginEvent
+import com.example.todowithspirits.feature.login.state.EmailLoginUiState
 import com.example.todowithspirits.feature.login.viewmodel.EmailLoginViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 
 @Composable
-fun EmailLoginScreen(
-    emailLoginViewModel: EmailLoginViewModel = hiltViewModel(),
-    onBack: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {},
-    onFindPasswordClick: () -> Unit = {}
+fun EmailLoginRoute(
+    navigateBack: () -> Unit,
+    navigateToHome: () -> Unit,
+    navigateToFindPassword: () -> Unit = {},
+    emailLoginViewModel: EmailLoginViewModel = hiltViewModel()
 ) {
     val uiState by emailLoginViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by emailLoginViewModel.isLoading.collectAsStateWithLifecycle()
-    var loginErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(emailLoginViewModel.errorMsg) {
-
+    ObserveAsEffect(emailLoginViewModel.effect) { effect ->
+        when (effect) {
+            EmailLoginEffect.NavigateBack -> navigateBack()
+            EmailLoginEffect.NavigateToHome -> navigateToHome()
+            EmailLoginEffect.NavigateToFindPassword -> navigateToFindPassword()
+        }
     }
 
-    LaunchedEffect(emailLoginViewModel) {
-        emailLoginViewModel.errorMsg.collect { message -> loginErrorMessage = message }
-    }
+    EmailLoginScreen(
+        uiState = uiState,
+        isLoading = isLoading,
+        onEvent = emailLoginViewModel::onEvent
+    )
+}
 
+@Composable
+fun EmailLoginScreen(
+    uiState: EmailLoginUiState,
+    isLoading: Boolean,
+    onEvent: (EmailLoginEvent) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.white)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
         ) {
-            TopNaviBar(
-                leftIconRes = R.drawable.todo_back1,
-                onLeftIconClick = onBack,
-                title = stringResource(R.string.login)
-            )
+            EmailLoginHeader(onBack = { onEvent(EmailLoginEvent.BackClicked) })
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 18.dp)
+                    .padding(horizontal = 14.dp)
                     .padding(top = 34.dp)
             ) {
                 Text(
                     text = stringResource(R.string.email),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
+                    color = SpiritTodoTheme.color.font02,
+                    modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
                 )
 
                 Spacer(Modifier.height(6.dp))
 
                 PlainTextField(
                     value = uiState.email,
-                    onValueChange = { emailLoginViewModel.setEmail(it) },
+                    onValueChange = { onEvent(EmailLoginEvent.EmailChanged(it)) },
                     placeholder = stringResource(R.string.email_placeholder),
                     keyboardType = KeyboardType.Email
                 )
 
-                Spacer(Modifier.height(36.dp))
+                Spacer(Modifier.height(32.dp))
 
                 Text(
                     text = stringResource(R.string.password),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.fillMaxWidth()
+                    color = SpiritTodoTheme.color.font02,
+                    modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
                 )
 
                 Spacer(Modifier.height(6.dp))
 
                 PasswordField(
                     value = uiState.password,
-                    onValueChange = { emailLoginViewModel.setPassword(it) },
+                    onValueChange = { onEvent(EmailLoginEvent.PasswordChanged(it)) },
                     placeholder = stringResource(R.string.password_placeholder)
                 )
             }
 
-            Spacer(Modifier.height(32.dp))
             Spacer(Modifier.weight(1f))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 18.dp),
+                    .padding(horizontal = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SpiritsTodoPrimaryButton(
                     text = stringResource(R.string.login),
-                    enabled = uiState.email.isNotBlank() && uiState.password.isNotBlank(),
-                    onClick = { emailLoginViewModel.login(onSuccess = onLoginSuccess) }
+                    enabled = uiState.canLogin,
+                    onClick = { onEvent(EmailLoginEvent.LoginClicked) }
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Text(
                     text = stringResource(R.string.find_password),
-                    fontSize = 13.sp,
-                    color = SpiritTodoTheme.color.systemGrey,
-                    modifier = Modifier.noRippleClickable { onFindPasswordClick() }
+                    fontSize = 14.sp,
+                    color = SpiritTodoTheme.color.font01,
+                    modifier = Modifier.noRippleClickable { onEvent(EmailLoginEvent.FindPasswordClicked) }
                 )
 
-                Spacer(Modifier.height(63.dp))
+                Spacer(Modifier.height(73.dp))
             }
         }
 
         LoadingOverlay(isLoading = isLoading)
 
-        loginErrorMessage?.let { message ->
+        uiState.errorMessage?.let { message ->
             LoginFailureDialog(
                 message = message,
-                onConfirm = { loginErrorMessage = null }
+                onConfirm = { onEvent(EmailLoginEvent.ErrorDialogDismissed) }
             )
         }
     }
+}
+
+@Composable
+private fun EmailLoginHeader(onBack: () -> Unit) {
+    TopNaviBar(
+        leftIconRes = R.drawable.widgetly_back_24,
+        onLeftIconClick = onBack,
+        title = stringResource(R.string.login),
+        modifier = Modifier.padding(horizontal = 17.dp)
+    )
 }

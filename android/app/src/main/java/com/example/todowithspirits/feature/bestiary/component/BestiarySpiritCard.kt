@@ -55,7 +55,7 @@ fun BestiarySpiritCard(
                     if (spirit.isOwned) {
                         Modifier
                             .background(SpiritTodoTheme.color.surfaceColor1, CardShape)
-                            .border(1.dp, SpiritTodoTheme.color.surfaceColor15, CardShape)
+                            .border(1.dp, SpiritTodoTheme.color.temporaryColor1, CardShape)
                     } else {
                         Modifier.background(SpiritTodoTheme.color.surfaceColor17, CardShape)
                     }

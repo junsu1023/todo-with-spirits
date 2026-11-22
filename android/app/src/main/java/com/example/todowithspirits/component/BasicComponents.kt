@@ -36,13 +36,13 @@ fun SpiritsTodoSwitch(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     thumbSize: Dp,
-    checkedColor: Color = SpiritTodoTheme.color.mainArea
+    checkedColor: Color = SpiritTodoTheme.color.font01
 ) {
     BoxWithConstraints(
         modifier = modifier
             .clip(CircleShape)
             .background(
-                if(checked) checkedColor else SpiritTodoTheme.color.surfaceColor15
+                if(checked) checkedColor else SpiritTodoTheme.color.stroke01
             )
             .toggleable(
                 value = checked,
@@ -64,7 +64,7 @@ fun SpiritsTodoSwitch(
             modifier = Modifier
                 .padding(start = thumbOffset)
                 .size(thumbSize)
-                .background(SpiritTodoTheme.color.surfaceColor1, CircleShape)
+                .background(SpiritTodoTheme.color.white, CircleShape)
         )
     }
 }
@@ -91,7 +91,7 @@ fun SpiritsTodoPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    containerColor: Color = SpiritTodoTheme.color.mainArea
+    containerColor: Color = SpiritTodoTheme.color.key01
 ) {
     val throttledOnClick = rememberThrottledOnClick(onClick = onClick)
 
@@ -104,14 +104,14 @@ fun SpiritsTodoPrimaryButton(
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
-            disabledContainerColor = SpiritTodoTheme.color.systemArea,
-            disabledContentColor = SpiritTodoTheme.color.systemGrey
+            disabledContainerColor = SpiritTodoTheme.color.back01,
+            disabledContentColor = SpiritTodoTheme.color.fontGrey
         )
     ) {
         Text(
             text = text,
-            color = if(enabled) SpiritTodoTheme.color.surfaceColor1 else SpiritTodoTheme.color.systemGrey,
-            fontSize = 16.sp
+            color = if(enabled) SpiritTodoTheme.color.white else SpiritTodoTheme.color.fontGrey,
+            fontSize = 15.sp
         )
     }
 }

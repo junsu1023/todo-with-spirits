@@ -1,10 +1,11 @@
-package com.example.todowithspirits.feature.login
+package com.example.todowithspirits.client
 
 import android.content.Context
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -25,6 +26,9 @@ object KakaoLoginClient {
         val accountCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             when {
                 token != null -> continuation.resume(token)
+                error.isUserCancelled() -> continuation.resumeWithException(
+                    CancellationException("사용자가 카카오 로그인을 취소했습니다", error)
+                )
                 error != null -> continuation.resumeWithException(error)
                 else -> continuation.resumeWithException(IllegalStateException("카카오 로그인에 실패했습니다"))
             }
@@ -33,8 +37,7 @@ object KakaoLoginClient {
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
             UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
                 // 사용자가 카카오톡 로그인 화면에서 직접 취소한 경우 카카오계정 로그인으로 넘어가지 않는다.
-                val isUserCancelled = error is ClientError && error.reason == ClientErrorCause.Cancelled
-                if (error != null && !isUserCancelled) {
+                if (error != null && !error.isUserCancelled()) {
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = accountCallback)
                 } else {
                     accountCallback(token, error)
@@ -44,6 +47,9 @@ object KakaoLoginClient {
             UserApiClient.instance.loginWithKakaoAccount(context, callback = accountCallback)
         }
     }
+
+    private fun Throwable?.isUserCancelled(): Boolean =
+        this is ClientError && reason == ClientErrorCause.Cancelled
 
     private suspend fun fetchUserInfo(accessToken: String): KakaoUserInfo = suspendCancellableCoroutine { continuation ->
         UserApiClient.instance.me { user, error ->

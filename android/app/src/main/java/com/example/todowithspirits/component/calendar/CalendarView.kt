@@ -210,9 +210,9 @@ private fun DayArea(
         Text(
             text = day,
             color = when {
-                isSelected -> SpiritTodoTheme.color.onSurfaceColor3
-                !isCurrentMonth -> SpiritTodoTheme.color.surfaceColor15
-                else -> SpiritTodoTheme.color.todoTextMain
+                isSelected -> SpiritTodoTheme.color.white
+                !isCurrentMonth -> SpiritTodoTheme.color.fontGrey
+                else -> SpiritTodoTheme.color.font01
             },
             fontSize = when {
                 isSelected -> 10.sp

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.DimPopup
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
@@ -212,12 +213,7 @@ private fun WithdrawConfirmDialog(
     onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(SpiritTodoTheme.color.dimColor),
-        contentAlignment = Alignment.Center
-    ) {
+    DimPopup(onDismiss = onCancel) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.85f)

@@ -13,15 +13,20 @@ import com.example.domain.usecase.UpdateUserProfileUseCase
 import com.example.domain.usecase.VerifyEmailCodeUseCase
 import com.example.todowithspirits.feature.signup.SignUpStep
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEffect
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.util.isValidEmail
 import com.example.todowithspirits.util.isValidPasswordFormat
 import com.example.todowithspirits.widget.TodoWidgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,9 +45,35 @@ class SignUpViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> get() = _uiState.asStateFlow()
 
+    private val _effect = Channel<SignUpEffect>(Channel.BUFFERED)
+    val effect: Flow<SignUpEffect> = _effect.receiveAsFlow()
+
     private var verificationTimerJob: Job? = null
 
-    fun setEmail(email: String) {
+    fun onEvent(event: SignUpEvent) {
+        when (event) {
+            SignUpEvent.BackClicked -> goBack()
+            is SignUpEvent.EmailChanged -> setEmail(event.email)
+            is SignUpEvent.PasswordChanged -> setPassword(event.password)
+            is SignUpEvent.ConfirmPasswordChanged -> setConfirmPassword(event.confirmPassword)
+            SignUpEvent.CredentialsNextClicked -> validateCredentials()
+            is SignUpEvent.VerificationCodeChanged -> setVerificationCode(event.code)
+            SignUpEvent.VerifyClicked -> verifyEmailCode()
+            SignUpEvent.ResendClicked -> resendVerificationEmail()
+            is SignUpEvent.NicknameChanged -> setNickname(event.nickname)
+            SignUpEvent.NicknameConfirmClicked -> completeSignUp()
+        }
+    }
+
+    private fun goBack() {
+        when (_uiState.value.step) {
+            SignUpStep.CREDENTIALS -> sendEffect(SignUpEffect.NavigateBack)
+            SignUpStep.EMAIL_VERIFICATION -> goBackToCredentials()
+            SignUpStep.NICKNAME -> goBackToEmailVerification()
+        }
+    }
+
+    private fun setEmail(email: String) {
         _uiState.update {
             it.copy(
                 email = email,
@@ -51,7 +82,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setPassword(password: String) {
+    private fun setPassword(password: String) {
         _uiState.update {
             it.copy(
                 password = password,
@@ -60,7 +91,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setConfirmPassword(confirmPassword: String) {
+    private fun setConfirmPassword(confirmPassword: String) {
         _uiState.update {
             it.copy(
                 confirmPassword = confirmPassword,
@@ -69,7 +100,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setNickname(nickname: String) {
+    private fun setNickname(nickname: String) {
         _uiState.update {
             it.copy(
                 nickname = nickname,
@@ -78,7 +109,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun setVerificationCode(code: String) {
+    private fun setVerificationCode(code: String) {
         _uiState.update {
             it.copy(
                 verificationCode = code,
@@ -87,7 +118,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun validateCredentials() {
+    private fun validateCredentials() {
         val state = _uiState.value
         val errors = mutableMapOf<String, String>()
 
@@ -154,27 +185,26 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    // EmailVerificationStep의 "인증 메일 다시 보내기" 클릭 시 호출된다.
-    fun resendVerificationEmail(onSuccess: () -> Unit = {}) {
+    private fun resendVerificationEmail() {
         val email = _uiState.value.email
 
         viewModelScope.launchWithLoading {
-            sendVerificationEmail(email, onSuccess)
+            sendVerificationEmail(email, onSuccess = { sendEffect(SignUpEffect.ShowResendSucceeded) })
         }
     }
 
-    fun goBackToCredentials() {
+    private fun goBackToCredentials() {
         cancelVerificationTimer()
         _uiState.update {
             it.copy(step = SignUpStep.CREDENTIALS, fieldErrors = emptyMap(), verificationCode = "")
         }
     }
 
-    fun goBackToEmailVerification() {
+    private fun goBackToEmailVerification() {
         _uiState.update { it.copy(step = SignUpStep.EMAIL_VERIFICATION, fieldErrors = emptyMap()) }
     }
 
-    fun verifyEmailCode() {
+    private fun verifyEmailCode() {
         val state = _uiState.value
         val code = state.verificationCode.toIntOrNull()
 
@@ -277,14 +307,14 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun completeSignUp(onSuccess: () -> Unit) {
+    private fun completeSignUp() {
         val nickname = _uiState.value.nickname
 
         viewModelScope.launchWithLoading {
             updateUserProfileUseCase(nickname = nickname)
                 .onSuccess {
                     Log.d(TAG, "updateUserProfile success = $it")
-                    onSuccess()
+                    sendEffect(SignUpEffect.SignUpCompleted)
                 }
                 .onFailure { error ->
                     Log.e(TAG, "updateUserProfile failed!", error)
@@ -296,6 +326,10 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun sendEffect(effect: SignUpEffect) {
+        viewModelScope.launch { _effect.send(effect) }
     }
 
     companion object {

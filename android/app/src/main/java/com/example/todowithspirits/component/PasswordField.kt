@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
@@ -65,17 +64,17 @@ fun PasswordField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(42.dp)
             .border(
                 width = 1.dp,
                 color = when {
-                    isFocused -> SpiritTodoTheme.color.mainTextAndStroke
-                    isError -> SpiritTodoTheme.color.systemRed
-                    else -> SpiritTodoTheme.color.systemArea
+                    isFocused -> SpiritTodoTheme.color.font01
+                    isError -> SpiritTodoTheme.color.colorSub02
+                    else -> SpiritTodoTheme.color.stroke01
                 },
                 shape = RoundedCornerShape(6.dp)
             )
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         BasicSecureTextField(
@@ -91,12 +90,12 @@ fun PasswordField(
             textObfuscationMode = if (isVisible) TextObfuscationMode.Visible else TextObfuscationMode.Hidden,
             decorator = { innerTextField ->
                 Box(contentAlignment = Alignment.CenterStart) {
-                    if(value.isEmpty()) {
+                    if (value.isEmpty()) {
                         Text(
                             text = placeholder,
                             style = TextStyle(
                                 fontSize = fontSize.sp,
-                                color = SpiritTodoTheme.color.systemGrey
+                                color = SpiritTodoTheme.color.fontGrey
                             )
                         )
                     }
@@ -107,25 +106,22 @@ fun PasswordField(
         )
 
         if (value.isNotEmpty()) {
-            Spacer(Modifier.width(8.dp))
-
             Image(
-                painter = painterResource(if (isVisible) R.drawable.todo_show else R.drawable.todo_unshow),
+                painter = painterResource(
+                    if (isVisible) R.drawable.widgetly_show_on_20
+                    else R.drawable.widgetly_show_off_20
+                ),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp)
-                    .noRippleClickable { isVisible = !isVisible }
+                modifier = Modifier.noRippleClickable { isVisible = !isVisible }
             )
 
             if (isFocused) {
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(10.dp))
 
                 Image(
-                    painter = painterResource(R.drawable.widgetly_cross_24),
+                    painter = painterResource(R.drawable.widgetly_cross_20),
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .noRippleClickable { textFieldState.clearText() }
+                    modifier = Modifier.noRippleClickable { textFieldState.clearText() }
                 )
             }
         }

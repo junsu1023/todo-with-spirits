@@ -22,13 +22,12 @@ val spiritsLightColor = SpiritColor(
     colorSub01 = Color(0xFF76D8F6),
     colorSub02 = Color(0xFFF79090),
     transparent = Color(0x00000000),
+    temporaryColor1 = Color(0xFFD9D9D9),
 
     surfaceColor1 = Color(0xFFFFFFFF),
     surfaceColor4 = Color(0xFFF6F6F6),
     surfaceColor5 = Color(0xFF353534),
     surfaceColor10 = Color(0xFFFAFAFA),
-    surfaceColor13 = Color(0xFFF4ECFC),
-    surfaceColor15 = Color(0xFFD9D9D9),
     surfaceColor16 = Color(0xFFF7F7F7),
     surfaceColor17 = Color(0xFFF1F1F1),
     onSurfaceColor1 = Color(0xFF9FA8B7),
@@ -36,7 +35,6 @@ val spiritsLightColor = SpiritColor(
     onSurfaceColor3 = Color(0xFFFFFFFF),
     onSurfaceColor5 = Color(0xFF8F8170),
     onSurfaceColor8 = Color(0xFFC7C7C7),
-    onSurfaceColor9 = Color(0xFFC2C2C2),
     dimColor = Color(0x33000000),
     systemGrey = Color(0xFFBCBCBC),
     todoTextMain = Color(0xFF857563),
@@ -49,7 +47,7 @@ val spiritsLightColor = SpiritColor(
     pointPink = Color(0xFFEFA4C6),
     kakaoBg = Color(0xFFFEE500),
     kakaoText = Color(0xD9000000),
-    googleText = Color(0xFF1F1F1F)
+    googleText = Color(0xFF1F1F1F),
 )
 
 class SpiritColor(
@@ -69,13 +67,12 @@ class SpiritColor(
     colorSub01: Color,
     colorSub02: Color,
     transparent: Color,
+    temporaryColor1: Color,
 
     surfaceColor1: Color,
     surfaceColor4: Color,
     surfaceColor5: Color,
     surfaceColor10: Color,
-    surfaceColor13: Color,
-    surfaceColor15: Color,
     surfaceColor16: Color,
     surfaceColor17: Color,
     onSurfaceColor1: Color,
@@ -83,7 +80,6 @@ class SpiritColor(
     onSurfaceColor3: Color,
     onSurfaceColor5: Color,
     onSurfaceColor8: Color,
-    onSurfaceColor9: Color,
     dimColor: Color,
     systemGrey: Color,
     todoTextMain: Color,
@@ -146,6 +142,9 @@ class SpiritColor(
     var transparent by mutableStateOf(transparent)
         private set
 
+    var temporaryColor1 by mutableStateOf(temporaryColor1)
+        private set
+
 
 
     var surfaceColor1 by mutableStateOf(surfaceColor1)
@@ -158,12 +157,6 @@ class SpiritColor(
         private set
 
     var surfaceColor10 by mutableStateOf(surfaceColor10)
-        private set
-
-    var surfaceColor13 by mutableStateOf(surfaceColor13)
-        private set
-
-    var surfaceColor15 by mutableStateOf(surfaceColor15)
         private set
 
     var surfaceColor16 by mutableStateOf(surfaceColor16)
@@ -184,9 +177,6 @@ class SpiritColor(
         private set
 
     var onSurfaceColor8 by mutableStateOf(onSurfaceColor8)
-        private set
-
-    var onSurfaceColor9 by mutableStateOf(onSurfaceColor9)
         private set
 
     var dimColor by mutableStateOf(dimColor)

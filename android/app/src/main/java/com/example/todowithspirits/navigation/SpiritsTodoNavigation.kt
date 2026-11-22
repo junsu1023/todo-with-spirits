@@ -29,8 +29,8 @@ import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
 import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
-import com.example.todowithspirits.feature.login.EmailLoginScreen
-import com.example.todowithspirits.feature.login.LoginScreen
+import com.example.todowithspirits.feature.login.EmailLoginRoute
+import com.example.todowithspirits.feature.login.LoginRoute
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.home.HomeRoute
@@ -106,21 +106,21 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Login.route) {
-            LoginScreen(
-                onSignUpClick = { navController.navigate(Screen.SignUp.route) },
-                onEmailLoginClick = { navController.navigate(Screen.EmailLogin.route) },
-                onLoginSuccess = {
+            LoginRoute(
+                navigateToHome = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
-                }
+                },
+                navigateToEmailLogin = { navController.navigate(Screen.EmailLogin.route) },
+                navigateToSignUp = { navController.navigate(Screen.SignUp.route) }
             )
         }
 
         composable(Screen.EmailLogin.route) {
-            EmailLoginScreen(
-                onBack = onBack,
-                onLoginSuccess = {
+            EmailLoginRoute(
+                navigateBack = onBack,
+                navigateToHome = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }

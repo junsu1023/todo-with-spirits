@@ -20,8 +20,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.feature.signup.state.SignUpEffect
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.feature.signup.viewmodel.SignUpViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
 enum class SignUpStep { CREDENTIALS, EMAIL_VERIFICATION, NICKNAME }
@@ -41,12 +44,19 @@ fun SignUpScreen(
         signUpViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
-    BackHandler(enabled = uiState.step != SignUpStep.CREDENTIALS) {
-        when (uiState.step) {
-            SignUpStep.EMAIL_VERIFICATION -> signUpViewModel.goBackToCredentials()
-            SignUpStep.NICKNAME -> signUpViewModel.goBackToEmailVerification()
-            SignUpStep.CREDENTIALS -> Unit
+    ObserveAsEffect(signUpViewModel.effect) { effect ->
+        when (effect) {
+            SignUpEffect.NavigateBack -> onBack()
+            SignUpEffect.ShowResendSucceeded -> ToastUtil.show(context, resendSuccessMsg)
+            SignUpEffect.SignUpCompleted -> {
+                ToastUtil.show(context, "회원가입이 완료되었습니다")
+                onSignUpSuccess()
+            }
         }
+    }
+
+    BackHandler(enabled = uiState.step != SignUpStep.CREDENTIALS) {
+        signUpViewModel.onEvent(SignUpEvent.BackClicked)
     }
 
     Box(
@@ -58,36 +68,17 @@ fun SignUpScreen(
         when(uiState.step) {
             SignUpStep.CREDENTIALS -> CredentialsStep(
                 uiState = uiState,
-                onEmailChange = signUpViewModel::setEmail,
-                onPasswordChange = signUpViewModel::setPassword,
-                onConfirmPasswordChange = signUpViewModel::setConfirmPassword,
-                onBack = onBack,
-                onNext = signUpViewModel::validateCredentials
+                onEvent = signUpViewModel::onEvent
             )
 
             SignUpStep.EMAIL_VERIFICATION -> EmailVerificationStep(
                 uiState = uiState,
-                onCodeChange = signUpViewModel::setVerificationCode,
-                onBack = signUpViewModel::goBackToCredentials,
-                onVerify = signUpViewModel::verifyEmailCode,
-                onResend = {
-                    signUpViewModel.resendVerificationEmail(
-                        onSuccess = { ToastUtil.show(context, resendSuccessMsg) }
-                    )
-                }
+                onEvent = signUpViewModel::onEvent
             )
 
             SignUpStep.NICKNAME -> NicknameStep(
                 uiState = uiState,
-                onNicknameChange = signUpViewModel::setNickname,
-                onSignUpClick = {
-                    signUpViewModel.completeSignUp(
-                        onSuccess = {
-                            ToastUtil.show(context, "회원가입이 완료되었습니다")
-                            onSignUpSuccess()
-                        }
-                    )
-                }
+                onEvent = signUpViewModel::onEvent
             )
         }
 
@@ -97,11 +88,11 @@ fun SignUpScreen(
 
 @Composable
 fun FieldHintText(text: String, isError: Boolean) {
-    Spacer(Modifier.height(6.dp))
+    Spacer(Modifier.height(5.dp))
 
     Text(
         text = text,
         fontSize = 12.sp,
-        color = if(isError) SpiritTodoTheme.color.systemRed else SpiritTodoTheme.color.systemGrey
+        color = if(isError) SpiritTodoTheme.color.colorSub02 else SpiritTodoTheme.color.fontGrey
     )
 }

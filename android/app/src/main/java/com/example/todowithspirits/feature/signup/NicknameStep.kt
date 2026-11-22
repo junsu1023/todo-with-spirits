@@ -29,13 +29,13 @@ import com.example.todowithspirits.R
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.feature.signup.component.SignUpUiState
+import com.example.todowithspirits.feature.signup.state.SignUpEvent
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
 @Composable
 fun NicknameStep(
     uiState: SignUpUiState,
-    onNicknameChange: (String) -> Unit,
-    onSignUpClick: () -> Unit
+    onEvent: (SignUpEvent) -> Unit
 ) {
     val density = LocalDensity.current
     val statusBarTopDp = with(density) { WindowInsets.statusBars.getTop(density).toDp() }
@@ -57,41 +57,40 @@ fun NicknameStep(
         Spacer(Modifier.weight(1f))
 
         Column(
-            modifier = Modifier.padding(horizontal = 18.dp),
+            modifier = Modifier.padding(horizontal = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(R.drawable.temp_signup),
                 contentDescription = null,
-                modifier = Modifier.size(118.dp)
+                modifier = Modifier.size(120.dp)
             )
 
-            Spacer(Modifier.height(36.dp))
+            Spacer(Modifier.height(24.dp))
 
             Text(
                 text = stringResource(R.string.signup_welcome_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
-                color = SpiritTodoTheme.color.todoTextMain,
+                color = SpiritTodoTheme.color.font01,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(8.dp))
 
             Text(
                 text = stringResource(R.string.signup_welcome_subtitle),
                 fontSize = 14.sp,
-                color = SpiritTodoTheme.color.systemGrey,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                color = SpiritTodoTheme.color.fontGrey,
+                textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(26.dp))
 
             PlainTextField(
                 value = uiState.nickname,
-                onValueChange = onNicknameChange,
+                onValueChange = { onEvent(SignUpEvent.NicknameChanged(it)) },
                 placeholder = stringResource(R.string.nickname_optional_placeholder),
                 isError = uiState.fieldErrors["nickname"] != null
             )
@@ -102,11 +101,11 @@ fun NicknameStep(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 18.dp, end = 16.dp)
+                .padding(horizontal = 14.dp)
         ) {
             SpiritsTodoPrimaryButton(
                 text = stringResource(R.string.check),
-                onClick = onSignUpClick
+                onClick = { onEvent(SignUpEvent.NicknameConfirmClicked) }
             )
 
             Spacer(Modifier.height(buttonBottomMargin))
