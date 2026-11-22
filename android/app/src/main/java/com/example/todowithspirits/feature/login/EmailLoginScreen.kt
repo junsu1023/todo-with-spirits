@@ -92,7 +92,7 @@ fun EmailLoginScreen(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = SpiritTodoTheme.color.font02,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
                 )
 
                 Spacer(Modifier.height(6.dp))
@@ -111,7 +111,7 @@ fun EmailLoginScreen(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = SpiritTodoTheme.color.font02,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
                 )
 
                 Spacer(Modifier.height(6.dp))
