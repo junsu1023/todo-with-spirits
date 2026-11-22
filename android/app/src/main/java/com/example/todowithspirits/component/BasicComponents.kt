@@ -36,13 +36,13 @@ fun SpiritsTodoSwitch(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     thumbSize: Dp,
-    checkedColor: Color = SpiritTodoTheme.color.mainArea
+    checkedColor: Color = SpiritTodoTheme.color.font01
 ) {
     BoxWithConstraints(
         modifier = modifier
             .clip(CircleShape)
             .background(
-                if(checked) checkedColor else SpiritTodoTheme.color.surfaceColor15
+                if(checked) checkedColor else SpiritTodoTheme.color.stroke01
             )
             .toggleable(
                 value = checked,
@@ -64,7 +64,7 @@ fun SpiritsTodoSwitch(
             modifier = Modifier
                 .padding(start = thumbOffset)
                 .size(thumbSize)
-                .background(SpiritTodoTheme.color.surfaceColor1, CircleShape)
+                .background(SpiritTodoTheme.color.white, CircleShape)
         )
     }
 }
