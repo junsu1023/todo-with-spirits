@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.setting.data
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,19 +16,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SettingActionRow
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
+import com.example.todowithspirits.feature.setting.data.state.DataSettingEffect
+import com.example.todowithspirits.feature.setting.data.state.DataSettingEvent
+import com.example.todowithspirits.feature.setting.data.viewmodel.DataSettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 
 @Composable
-fun DataSettingScreen(
-    onBack: () -> Unit = {},
-    onBackupClick: () -> Unit = {},
-    onSyncClick: () -> Unit = {},
-    onExportDataClick: () -> Unit = {}
+fun DataSettingRoute(
+    navigateBack: () -> Unit,
+    dataSettingViewModel: DataSettingViewModel = hiltViewModel()
 ) {
+    ObserveAsEffect(dataSettingViewModel.effect) { effect ->
+        when (effect) {
+            DataSettingEffect.NavigateBack -> navigateBack()
+        }
+    }
+
+    DataSettingScreen(onEvent = dataSettingViewModel::onEvent)
+}
+
+@Composable
+fun DataSettingScreen(onEvent: (DataSettingEvent) -> Unit) {
+    BackHandler { onEvent(DataSettingEvent.BackClicked) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,7 +55,7 @@ fun DataSettingScreen(
         TopNaviBar(
             leftIconRes = R.drawable.widgetly_back_24,
             title = stringResource(R.string.data_setting),
-            onLeftIconClick = onBack,
+            onLeftIconClick = { onEvent(DataSettingEvent.BackClicked) },
             modifier = Modifier.padding(horizontal = 17.dp)
         )
 
@@ -50,18 +67,18 @@ fun DataSettingScreen(
                 .padding(start = 18.dp, end = 14.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            SettingActionRow(label = stringResource(R.string.backup), onClick = onBackupClick)
+            SettingActionRow(label = stringResource(R.string.backup), onClick = { onEvent(DataSettingEvent.BackupClicked) })
 
-            SettingActionRow(label = stringResource(R.string.sync), onClick = onSyncClick)
+            SettingActionRow(label = stringResource(R.string.sync), onClick = { onEvent(DataSettingEvent.SyncClicked) })
 
-            SettingActionRow(label = stringResource(R.string.export_data), onClick = onExportDataClick)
+            SettingActionRow(label = stringResource(R.string.export_data), onClick = { onEvent(DataSettingEvent.ExportDataClicked) })
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.check),
-            onClick = onBack,
+            onClick = { onEvent(DataSettingEvent.ConfirmClicked) },
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 
