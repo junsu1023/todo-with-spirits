@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingEffect
@@ -28,13 +31,20 @@ import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingUiSta
 import com.example.todowithspirits.feature.setting.alarm.viewmodel.AlarmSettingViewModel
 import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
 import com.example.todowithspirits.util.ObserveAsEffect
+import com.example.todowithspirits.util.ToastUtil
 
 @Composable
 fun AlarmSettingRoute(
     navigateBack: () -> Unit,
     alarmSettingViewModel: AlarmSettingViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val uiState by alarmSettingViewModel.uiState.collectAsStateWithLifecycle()
+    val isLoading by alarmSettingViewModel.isLoading.collectAsStateWithLifecycle()
+
+    LaunchedEffect(alarmSettingViewModel) {
+        alarmSettingViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
+    }
 
     ObserveAsEffect(alarmSettingViewModel.effect) { effect ->
         when (effect) {
@@ -44,6 +54,7 @@ fun AlarmSettingRoute(
 
     AlarmSettingScreen(
         uiState = uiState,
+        isLoading = isLoading,
         onEvent = alarmSettingViewModel::onEvent
     )
 }
@@ -51,6 +62,7 @@ fun AlarmSettingRoute(
 @Composable
 fun AlarmSettingScreen(
     uiState: AlarmSettingUiState,
+    isLoading: Boolean,
     onEvent: (AlarmSettingEvent) -> Unit
 ) {
     BackHandler { onEvent(AlarmSettingEvent.BackClicked) }
@@ -98,4 +110,6 @@ fun AlarmSettingScreen(
 
         Spacer(Modifier.height(48.dp))
     }
+
+    LoadingOverlay(isLoading = isLoading)
 }

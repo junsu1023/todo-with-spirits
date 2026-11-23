@@ -1,7 +1,11 @@
 package com.example.todowithspirits.feature.setting.alarm.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.core.tag.TAG
 import com.example.core.viewmodel.BaseViewModel
+import com.example.domain.usecase.GetNotificationSettingUseCase
+import com.example.domain.usecase.UpdateNotificationSettingUseCase
 import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingEffect
 import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingEvent
 import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingType
@@ -17,14 +21,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// TODO 알림 설정 저장/조회 API가 없어 화면 안에서만 값이 바뀐다. 화면을 다시 열면 초기값으로 돌아간다.
 @HiltViewModel
-class AlarmSettingViewModel @Inject constructor() : BaseViewModel() {
+class AlarmSettingViewModel @Inject constructor(
+    private val getNotificationSettingUseCase: GetNotificationSettingUseCase,
+    private val updateNotificationSettingUseCase: UpdateNotificationSettingUseCase
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(AlarmSettingUiState())
     val uiState: StateFlow<AlarmSettingUiState> get() = _uiState.asStateFlow()
 
     private val _effect = Channel<AlarmSettingEffect>(Channel.BUFFERED)
     val effect: Flow<AlarmSettingEffect> = _effect.receiveAsFlow()
+
+    init {
+        loadNotificationSetting()
+    }
 
     fun onEvent(event: AlarmSettingEvent) {
         when (event) {
@@ -34,7 +44,51 @@ class AlarmSettingViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
+    private fun loadNotificationSetting() {
+        viewModelScope.launchWithLoading {
+            getNotificationSettingUseCase()
+                .onSuccess { setting ->
+                    Log.d(TAG, "getNotificationSetting success = $setting")
+                    _uiState.update {
+                        it.copy(
+                            isOnActiveRemind = setting.reminderEnabled,
+                            isOnPostponePlan = setting.postponedTaskEnabled,
+                            isOnRoutineGuide = setting.routineReminderEnabled,
+                            isOnStreakSave = setting.streakSaveEnabled,
+                            isOnNightPush = setting.nightPushEnabled
+                        )
+                    }
+                }
+                .onFailure {
+                    Log.e(TAG, "getNotificationSetting failed!", it)
+                    emitErrorMsg(it.localizedMessage ?: "알림 설정을 불러오지 못했습니다")
+                }
+        }
+    }
+
     private fun toggleAlarm(type: AlarmSettingType, isOn: Boolean) {
+        setAlarm(type, isOn)
+
+        viewModelScope.launch {
+            updateNotificationSetting(type, isOn)
+                .onFailure {
+                    Log.e(TAG, "updateNotificationSetting failed! type = $type", it)
+                    setAlarm(type, !isOn)
+                    emitErrorMsg(it.localizedMessage ?: "알림 설정을 변경하지 못했습니다")
+                }
+        }
+    }
+
+    private suspend fun updateNotificationSetting(type: AlarmSettingType, isOn: Boolean): Result<Unit> =
+        when (type) {
+            AlarmSettingType.ACTIVE_REMIND -> updateNotificationSettingUseCase(reminderEnabled = isOn)
+            AlarmSettingType.POSTPONE_PLAN -> updateNotificationSettingUseCase(postponedTaskEnabled = isOn)
+            AlarmSettingType.ROUTINE_GUIDE -> updateNotificationSettingUseCase(routineReminderEnabled = isOn)
+            AlarmSettingType.STREAK_SAVE -> updateNotificationSettingUseCase(streakSaveEnabled = isOn)
+            AlarmSettingType.NIGHT_PUSH -> updateNotificationSettingUseCase(nightPushEnabled = isOn)
+        }
+
+    private fun setAlarm(type: AlarmSettingType, isOn: Boolean) {
         _uiState.update {
             when (type) {
                 AlarmSettingType.ACTIVE_REMIND -> it.copy(isOnActiveRemind = isOn)
