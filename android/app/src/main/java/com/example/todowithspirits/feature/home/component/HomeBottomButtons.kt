@@ -50,9 +50,10 @@ fun HomeBottomButtons(
         )
 
         HomeBottomButton(
-            icon = R.drawable.widgetly_spirit_forest,
+            icon = R.drawable.widgetly_spirit_forest_disabled, // R.drawable.widgetly_spirit_forest,
             label = R.string.forest,
-            onClick = onForestClick
+            isComingSoon = true, // TODO 정령의 숲 나오면 제거
+            onClick = { /* TODO 정령의 숲 나오면 주석 기 */ } // onForestClick
         )
 
         HomeBottomButton(
@@ -67,7 +68,8 @@ fun HomeBottomButtons(
 private fun HomeBottomButton(
     @DrawableRes icon: Int,
     @StringRes label: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isComingSoon: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -76,11 +78,17 @@ private fun HomeBottomButton(
             .noRippleClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = stringResource(label),
-            tint = Color.Unspecified
-        )
+        Box {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = stringResource(label),
+                tint = Color.Unspecified
+            )
+
+            if (isComingSoon) {
+                ComingSoonBadge(modifier = Modifier.matchParentSize())
+            }
+        }
 
         Box {
             Text(
