@@ -70,8 +70,6 @@ fun SettingMenuRows(
             labelFontSize = 14.sp,
             labelFontWeight = FontWeight.Normal,
             trailingIconRes = if (isSubdued) R.drawable.widgetly_arrow_grey_16 else R.drawable.widgetly_arrow_16,
-            trailingIconTint = null,
-            trailingIconSize = 16.dp,
             onClick = { onMenuClick(menu) }
         )
     }

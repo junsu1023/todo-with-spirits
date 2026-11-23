@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.setting
+package com.example.todowithspirits.feature.setting.data
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SettingActionRow
+import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.theme.SpiritTodoTheme
 
@@ -31,22 +32,23 @@ fun DataSettingScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.back01)
             .verticalScroll(rememberScrollState())
     ) {
         TopNaviBar(
-            leftIconRes = R.drawable.todo_back1,
+            leftIconRes = R.drawable.widgetly_back_24,
             title = stringResource(R.string.data_setting),
-            onLeftIconClick = onBack
+            onLeftIconClick = onBack,
+            modifier = Modifier.padding(horizontal = 17.dp)
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(14.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(30.dp)
+                .padding(start = 18.dp, end = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             SettingActionRow(label = stringResource(R.string.backup), onClick = onBackupClick)
 
@@ -55,6 +57,14 @@ fun DataSettingScreen(
             SettingActionRow(label = stringResource(R.string.export_data), onClick = onExportDataClick)
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(modifier = Modifier.weight(1f))
+
+        SpiritsTodoPrimaryButton(
+            text = stringResource(R.string.check),
+            onClick = onBack,
+            modifier = Modifier.padding(horizontal = 14.dp)
+        )
+
+        Spacer(Modifier.height(48.dp))
     }
 }

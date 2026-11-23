@@ -18,7 +18,7 @@ import com.example.todowithspirits.feature.alarm.AlarmRoute
 import com.example.todowithspirits.feature.bestiary.BestiaryRoute
 import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.setting.main.WithdrawScreen
-import com.example.todowithspirits.feature.setting.DataSettingScreen
+import com.example.todowithspirits.feature.setting.data.DataSettingScreen
 import com.example.todowithspirits.feature.setting.display.DisplaySettingRoute
 import com.example.todowithspirits.feature.setting.alarm.AlarmSettingRoute
 import com.example.todowithspirits.feature.calendar.CalendarRoute
