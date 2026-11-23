@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -49,7 +50,8 @@ private val SpiritSize = 168.dp
 private val StageHorizontalMargin = 18.dp
 private val SpiritMenuIcons = listOf(
     SpiritMenuIcon(SpiritMenuType.ADD, R.drawable.widgetly_float_calendar, (-73).dp, (-70).dp),
-    SpiritMenuIcon(SpiritMenuType.FRIENDSHIP, R.drawable.widgetly_float_friendship, (-29).dp, (-110).dp),
+    // TODO: 정령 기능 나오면 아이콘 widgetly_float_friendship 으로 변경
+    SpiritMenuIcon(SpiritMenuType.FRIENDSHIP, R.drawable.widgetly_float_friendship_disabled, (-29).dp, (-110).dp, isComingSoon = true),
     SpiritMenuIcon(SpiritMenuType.CLOTH, R.drawable.widgetly_float_cloth, 29.dp, (-110).dp),
     SpiritMenuIcon(SpiritMenuType.SETTING, R.drawable.widgetly_float_setting, 73.dp, (-70).dp)
 )
@@ -59,7 +61,8 @@ private data class SpiritMenuIcon(
     val type: SpiritMenuType,
     @param:DrawableRes val iconRes: Int,
     val offsetX: Dp,
-    val offsetY: Dp
+    val offsetY: Dp,
+    val isComingSoon: Boolean = false
 )
 
 @Composable
@@ -222,9 +225,8 @@ fun SpiritStage(
                     else -> null
                 }
 
-                Image(
-                    painter = painterResource(icon.iconRes),
-                    contentDescription = null,
+                // "출시 예정" 라벨이 아이콘과 같이 펼쳐지고 접히도록 같은 Box에 둔다.
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         // 아이콘 중심을 정령 박스 중심 높이에 맞춘 뒤, 진행도만큼 각 위치로 이동한다.
@@ -243,13 +245,24 @@ fun SpiritStage(
                             scaleX = scale
                             scaleY = scale
                             alpha = progress.coerceIn(0f, 1f)
+                            // 영역 밖의 "출시 예정" 라벨이 잘리지 않도록 임시 버퍼 없이 투명도를 적용한다.
+                            compositingStrategy = CompositingStrategy.ModulateAlpha
                         }
                         // 닫히는 중에는 누르지 못하게 한다.
                         .then(
                             if (onClick != null && isMenuVisible) Modifier.noRippleClickable(onClick = onClick)
                             else Modifier
                         )
-                )
+                ) {
+                    Image(
+                        painter = painterResource(icon.iconRes),
+                        contentDescription = null
+                    )
+
+                    if (icon.isComingSoon) {
+                        ComingSoonBadge(modifier = Modifier.matchParentSize())
+                    }
+                }
             }
         }
     }

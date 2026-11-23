@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -50,9 +51,10 @@ fun HomeBottomButtons(
         )
 
         HomeBottomButton(
-            icon = R.drawable.widgetly_spirit_forest,
+            icon = R.drawable.widgetly_spirit_forest_disabled, // R.drawable.widgetly_spirit_forest,
             label = R.string.forest,
-            onClick = onForestClick
+            isComingSoon = true, // TODO 정령의 숲 나오면 제거
+            onClick = { /* TODO 정령의 숲 나오면 주석 기 */ } // onForestClick
         )
 
         HomeBottomButton(
@@ -67,7 +69,8 @@ fun HomeBottomButtons(
 private fun HomeBottomButton(
     @DrawableRes icon: Int,
     @StringRes label: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isComingSoon: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -76,11 +79,23 @@ private fun HomeBottomButton(
             .noRippleClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = stringResource(label),
-            tint = Color.Unspecified
-        )
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = stringResource(label),
+                tint = Color.Unspecified
+            )
+
+            if (isComingSoon) {
+                Icon(
+                    painter = painterResource(R.drawable.widgetly_lock),
+                    contentDescription = "출시 예정",
+                    tint = Color.Unspecified
+                )
+
+                ComingSoonBadge(modifier = Modifier.matchParentSize())
+            }
+        }
 
         Box {
             Text(
@@ -94,10 +109,11 @@ private fun HomeBottomButton(
                     )
                 )
             )
+
             Text(
                 text = stringResource(label),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.font01
+                color = if(isComingSoon) SpiritTodoTheme.color.fontGrey else SpiritTodoTheme.color.font01
             )
         }
     }

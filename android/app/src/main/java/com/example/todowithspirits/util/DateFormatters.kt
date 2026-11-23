@@ -8,3 +8,5 @@ val KoreanMonthDayWithDayFormatter = DateTimeFormatter.ofPattern("M월 d일 (E)"
 val KoreanHourMinuteFormatter = DateTimeFormatter.ofPattern("H시 m분", Locale.KOREAN)
 
 val TimeWheelDueTimeFormatter = DateTimeFormatter.ofPattern("HH : mm")
+
+val NotificationDateFormatter = DateTimeFormatter.ofPattern("MM. dd")
