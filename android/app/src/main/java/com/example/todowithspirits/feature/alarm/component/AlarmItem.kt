@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.alarm.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ fun AlarmItem(alarm: NotificationItem) {
         modifier = Modifier
             .fillMaxWidth()
             .background(SpiritTodoTheme.color.onSurfaceColor3, RoundedCornerShape(8.dp))
+            .border(1.dp, SpiritTodoTheme.color.stroke01, RoundedCornerShape(8.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.Center
     ) {
