@@ -1,6 +1,7 @@
 package com.example.todowithspirits.feature.setting.alarm
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,7 @@ import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingType
 import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingUiState
 import com.example.todowithspirits.feature.setting.alarm.viewmodel.AlarmSettingViewModel
 import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
+import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
@@ -68,7 +70,10 @@ fun AlarmSettingScreen(
     BackHandler { onEvent(AlarmSettingEvent.BackClicked) }
 
     Column(
-        modifier = Modifier.fillMaxSize().navigationBarsPadding()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SpiritTodoTheme.color.back0)
+            .navigationBarsPadding()
     ) {
         Column(
             modifier = Modifier
@@ -76,7 +81,7 @@ fun AlarmSettingScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             TopNaviBar(
-                leftIconRes = R.drawable.todo_back1,
+                leftIconRes = R.drawable.widgetly_back_24,
                 title = stringResource(R.string.alarm_setting),
                 onLeftIconClick = { onEvent(AlarmSettingEvent.BackClicked) },
                 modifier = Modifier.padding(horizontal = 17.dp)

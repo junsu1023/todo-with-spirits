@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.setting
+package com.example.todowithspirits.feature.setting.display
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +26,6 @@ import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.DisplaySelectorRow
 import com.example.todowithspirits.feature.setting.component.DisplayToggleRow
 import com.example.todowithspirits.feature.setting.state.LanguageOptions
-import com.example.todowithspirits.feature.setting.state.PlanSortOptions
-import com.example.todowithspirits.feature.setting.state.ThemeOptions
 import com.example.todowithspirits.feature.setting.viewmodel.DisplaySettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
@@ -49,13 +47,14 @@ fun DisplaySettingScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.back01)
             .verticalScroll(rememberScrollState())
     ) {
         TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
             title = stringResource(R.string.display_setting),
-            onLeftIconClick = onBack
+            onLeftIconClick = onBack,
+            modifier = Modifier.padding(horizontal = 17.dp)
         )
 
         Spacer(Modifier.height(16.dp))
