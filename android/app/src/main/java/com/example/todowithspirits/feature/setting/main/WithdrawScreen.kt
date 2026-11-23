@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.mypage
+package com.example.todowithspirits.feature.setting.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,7 +40,7 @@ import com.example.todowithspirits.component.DimPopup
 import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.mypage.viewmodel.WithdrawViewModel
+import com.example.todowithspirits.feature.setting.main.viewmodel.WithdrawViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
 

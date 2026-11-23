@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
@@ -26,6 +27,8 @@ fun SettingActionRow(
     iconRes: Int? = null,
     description: String? = null,
     labelColor: Color = SpiritTodoTheme.color.todoTextMain,
+    labelFontSize: TextUnit = 16.sp,
+    labelFontWeight: FontWeight = FontWeight.Medium,
     trailingIconRes: Int = R.drawable.fi_rr_angle_small_right,
     trailingIconTint: Color? = SpiritTodoTheme.color.systemGrey,
     trailingIconSize: Dp = 22.dp,
@@ -42,8 +45,8 @@ fun SettingActionRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = label,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = labelFontSize,
+                    fontWeight = labelFontWeight,
                     color = labelColor
                 )
 
@@ -58,8 +61,8 @@ fun SettingActionRow(
         } else {
             Text(
                 text = label,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = labelFontSize,
+                fontWeight = labelFontWeight,
                 color = labelColor,
                 modifier = Modifier.weight(1f)
             )

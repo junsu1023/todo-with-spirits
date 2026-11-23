@@ -36,6 +36,8 @@ class FakeAuthRepository : AuthRepository {
     val updateProfileResponse = CompletableDeferred<Result<UserProfile>>()
     val updatedNicknames = mutableListOf<String?>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
+    val userProfileResponse = CompletableDeferred<Result<UserProfile>>()
+    var savedLoginMethod: LoginMethod? = null
 
     override suspend fun socialLogin(
         provider: SocialProvider,
@@ -80,10 +82,10 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun logout(): Result<Unit> = notUsed()
     override suspend fun withdraw(): Result<Unit> = notUsed()
-    override suspend fun getUserProfile(): Result<UserProfile> = notUsed()
+    override suspend fun getUserProfile(): Result<UserProfile> = userProfileResponse.await()
     override suspend fun getSubscription(): Result<Subscription> = notUsed()
     override suspend fun resendEmailVerification(): Result<Unit> = notUsed()
-    override fun getLoginMethod(): LoginMethod? = notUsed()
+    override fun getLoginMethod(): LoginMethod? = savedLoginMethod
 
     private fun notUsed(): Nothing = error("이 테스트에서는 쓰지 않는다")
 }

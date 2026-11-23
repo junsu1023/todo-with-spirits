@@ -17,23 +17,21 @@ import com.example.todowithspirits.feature.add.AddRoute
 import com.example.todowithspirits.feature.alarm.AlarmRoute
 import com.example.todowithspirits.feature.bestiary.BestiaryRoute
 import com.example.todowithspirits.feature.forest.ForestScreen
-import com.example.todowithspirits.feature.mypage.AccountSettingScreen
-import com.example.todowithspirits.feature.mypage.WithdrawScreen
+import com.example.todowithspirits.feature.setting.main.WithdrawScreen
 import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
-import com.example.todowithspirits.feature.mypage.MyPageScreen
 import com.example.todowithspirits.feature.setting.AlarmSettingScreen
 import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.search.SearchRoute
 import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
-import com.example.todowithspirits.feature.setting.CustomerSupportScreen
 import com.example.todowithspirits.feature.setting.EditProfileScreen
 import com.example.todowithspirits.feature.login.EmailLoginRoute
 import com.example.todowithspirits.feature.login.LoginRoute
 import com.example.todowithspirits.feature.signup.SignUpScreen
 import com.example.todowithspirits.feature.splash.SplashScreen
 import com.example.todowithspirits.feature.home.HomeRoute
+import com.example.todowithspirits.feature.setting.main.MainSettingRoute
 import com.example.todowithspirits.util.ToastUtil
 
 @Composable
@@ -47,11 +45,9 @@ fun SpiritsTodoNavigation(
     }
     val navigateToAlarm: () -> Unit = { navController.navigate(Screen.Alarm.route) }
     val navigateToAlarmSetting: () -> Unit = { navController.navigate(Screen.AlarmSetting.route) }
-    val navigateToAccountSetting: () -> Unit = { navController.navigate(Screen.AccountSetting.route) }
     val navigateToWithdraw: () -> Unit = { navController.navigate(Screen.Withdraw.route) }
     val navigateToDisplaySetting: () -> Unit = { navController.navigate(Screen.DisplaySetting.route) }
     val navigateToDataSetting: () -> Unit = { navController.navigate(Screen.DataSetting.route) }
-    val navigateToCustomerSupport: () -> Unit = { navController.navigate(Screen.CustomerSupport.route) }
     val navigateToNicknameEdit: () -> Unit = { navController.navigate(Screen.EditProfile.route) }
     val navigateToChangePassword: () -> Unit = { navController.navigate(Screen.ChangePassword.route) }
     val navigateToLogout: () -> Unit = {
@@ -142,7 +138,7 @@ fun SpiritsTodoNavigation(
         composable(Screen.Home.route) {
             HomeRoute(
                 navigateToAlarm = navigateToAlarm,
-                navigateToMyPage = { navigateFromHome(Screen.MyPage.route) },
+                navigateToMyPage = { navigateFromHome(Screen.MainSetting.route) },
                 navigateToBestiary = { navigateFromHome(Screen.Bestiary.route) },
                 navigateToForest = { navigateFromHome(Screen.Forest.route) },
                 navigateToCalendar = { navigateFromHome(Screen.Calendar.route) },
@@ -197,23 +193,15 @@ fun SpiritsTodoNavigation(
             AlarmSettingScreen(onBack = onBack)
         }
 
-        composable(Screen.MyPage.route) {
-            MyPageScreen(
-                navigateToAccountSetting = navigateToAccountSetting,
+        composable(Screen.MainSetting.route) {
+            MainSettingRoute(
+                navigateBack = navigateToHome,
+                navigateToEditProfile = navigateToNicknameEdit,
                 navigateToAlarmSetting = navigateToAlarmSetting,
                 navigateToDisplaySetting = navigateToDisplaySetting,
                 navigateToDataSetting = navigateToDataSetting,
-                navigateToCustomerSupport = navigateToCustomerSupport,
-                navigateToLogout = navigateToLogout
-            )
-        }
-
-        composable(Screen.AccountSetting.route) {
-            AccountSettingScreen(
-                onBack = onBack,
-                onNicknameClick = navigateToNicknameEdit,
-                onModifyPasswordClick = navigateToChangePassword,
-                onWithdrawClick = navigateToWithdraw
+                navigateToChangePassword = navigateToChangePassword,
+                navigateToWithdraw = navigateToWithdraw
             )
         }
 
@@ -238,10 +226,6 @@ fun SpiritsTodoNavigation(
 
         composable(Screen.DataSetting.route) {
             DataSettingScreen(onBack = onBack)
-        }
-
-        composable(Screen.CustomerSupport.route) {
-            CustomerSupportScreen(onBack = onBack)
         }
     }
 }
