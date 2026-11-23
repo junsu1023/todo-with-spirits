@@ -72,14 +72,13 @@
     <string name="change_password">비밀번호 변경</string>
     <string name="withdraw">회원탈퇴</string>
     <string name="edit_profile">프로필 변경</string>
-
     <string name="alarm_setting">알림 설정</string>
     <string name="inactivity_reminder_alarm">리마인드 알림</string>
     <string name="periodic_reminder_postponed_alarm">미룬 플랜 정기 알림</string>
     <string name="routine_alarm">루틴 안내 알림</string>
     <string name="strick_save_alarm">스트릭(연속 달성) 세이브 알림</string>
     <string name="receive_night_time_push_alarm">야간 푸시 알림 수신</string>
-    <string name="consent_to_receive_promotions">프로모션 및 시즌 이벤트 수신 동의</string>
+
     <string name="more">더보기</string>
     <string name="display_setting">디스플레이 설정</string>
     <string name="data_setting">데이터 설정</string>

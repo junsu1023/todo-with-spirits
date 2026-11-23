@@ -20,7 +20,7 @@ import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.setting.main.WithdrawScreen
 import com.example.todowithspirits.feature.setting.DataSettingScreen
 import com.example.todowithspirits.feature.setting.DisplaySettingScreen
-import com.example.todowithspirits.feature.setting.AlarmSettingScreen
+import com.example.todowithspirits.feature.setting.alarm.AlarmSettingScreen
 import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.search.SearchRoute
 import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG

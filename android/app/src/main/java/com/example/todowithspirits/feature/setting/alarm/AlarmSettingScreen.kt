@@ -1,4 +1,4 @@
-package com.example.todowithspirits.feature.setting
+package com.example.todowithspirits.feature.setting.alarm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
 import com.example.todowithspirits.feature.setting.viewmodel.AlarmSettingViewModel
@@ -40,16 +41,17 @@ fun AlarmSettingScreen(
             TopNaviBar(
                 leftIconRes = R.drawable.todo_back1,
                 title = stringResource(R.string.alarm_setting),
-                onLeftIconClick = onBack
+                onLeftIconClick = onBack,
+                modifier = Modifier.padding(horizontal = 17.dp)
             )
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(14.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 18.dp, end = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(30.dp)
+                    .padding(start = 18.dp, end = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 AlarmToggleRow(
                     label = stringResource(R.string.inactivity_reminder_alarm),
@@ -80,15 +82,17 @@ fun AlarmSettingScreen(
                     checked = uiState.isOnNightPush,
                     onCheckedChange = { alarmSettingViewModel.setNightPushState(it) }
                 )
-
-                AlarmToggleRow(
-                    label = stringResource(R.string.consent_to_receive_promotions),
-                    checked = uiState.isOnPromotionConsent,
-                    onCheckedChange = { alarmSettingViewModel.setPromotionConsentState(it) }
-                )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SpiritsTodoPrimaryButton(
+            text = stringResource(R.string.check),
+            onClick = { onBack() },
+            modifier = Modifier.padding(horizontal = 14.dp)
+        )
+
+        Spacer(Modifier.height(48.dp))
     }
 }
