@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.setting.editprofile
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,27 +40,47 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.component.noRippleClickable
-import com.example.todowithspirits.feature.setting.viewmodel.EditProfileViewModel
+import com.example.todowithspirits.feature.setting.editprofile.state.EditProfileEffect
+import com.example.todowithspirits.feature.setting.editprofile.state.EditProfileEvent
+import com.example.todowithspirits.feature.setting.editprofile.state.EditProfileUiState
+import com.example.todowithspirits.feature.setting.editprofile.viewmodel.EditProfileViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
 @Composable
-fun EditProfileScreen(
-    editProfileViewModel: EditProfileViewModel = hiltViewModel(),
-    onBack: () -> Unit = {}
+fun EditProfileRoute(
+    navigateBack: () -> Unit,
+    editProfileViewModel: EditProfileViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by editProfileViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by editProfileViewModel.isLoading.collectAsStateWithLifecycle()
-    var value by remember { mutableStateOf("") }
 
     LaunchedEffect(editProfileViewModel) {
         editProfileViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
-    LaunchedEffect(uiState.nickname) {
-        value = uiState.nickname
+    ObserveAsEffect(editProfileViewModel.effect) { effect ->
+        when (effect) {
+            EditProfileEffect.NavigateBack -> navigateBack()
+        }
     }
+
+    EditProfileScreen(
+        uiState = uiState,
+        isLoading = isLoading,
+        onEvent = editProfileViewModel::onEvent
+    )
+}
+
+@Composable
+fun EditProfileScreen(
+    uiState: EditProfileUiState,
+    isLoading: Boolean,
+    onEvent: (EditProfileEvent) -> Unit
+) {
+    BackHandler { onEvent(EditProfileEvent.BackClicked) }
 
     Column(
         modifier = Modifier
@@ -69,7 +90,7 @@ fun EditProfileScreen(
     ) {
         TopNaviBar(
             leftIconRes = R.drawable.todo_back1,
-            onLeftIconClick = onBack,
+            onLeftIconClick = { onEvent(EditProfileEvent.BackClicked) },
             title = stringResource(R.string.edit_profile),
             modifier = Modifier.padding(horizontal = 17.dp)
         )
@@ -90,8 +111,8 @@ fun EditProfileScreen(
             Spacer(Modifier.height(6.dp))
 
             NicknameField(
-                value = value,
-                onValueChange = { value = it }
+                value = uiState.nickname,
+                onValueChange = { onEvent(EditProfileEvent.NicknameChanged(it)) }
             )
         }
 
@@ -99,7 +120,7 @@ fun EditProfileScreen(
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.check),
-            onClick = { editProfileViewModel.updateNickname(value, onSuccess = onBack) },
+            onClick = { onEvent(EditProfileEvent.ConfirmClicked) },
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 

@@ -25,7 +25,7 @@ import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.search.SearchRoute
 import com.example.todowithspirits.feature.search.viewmodel.SEARCH_QUERY_ARG
 import com.example.todowithspirits.feature.setting.ChangePasswordScreen
-import com.example.todowithspirits.feature.setting.editprofile.EditProfileScreen
+import com.example.todowithspirits.feature.setting.editprofile.EditProfileRoute
 import com.example.todowithspirits.feature.login.EmailLoginRoute
 import com.example.todowithspirits.feature.login.LoginRoute
 import com.example.todowithspirits.feature.signup.SignUpScreen
@@ -213,7 +213,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.EditProfile.route) {
-            EditProfileScreen(onBack = onBack)
+            EditProfileRoute(navigateBack = onBack)
         }
 
         composable(Screen.ChangePassword.route) {
