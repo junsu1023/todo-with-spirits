@@ -10,6 +10,7 @@ import com.example.todowithspirits.feature.setting.main.state.MainSettingEffect
 import com.example.todowithspirits.feature.setting.main.state.MainSettingEvent
 import com.example.todowithspirits.feature.setting.main.state.SettingMenu
 import com.example.todowithspirits.testutil.FakeAuthRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -90,5 +91,20 @@ class MainSettingViewModelEventTest {
         viewModel.onEvent(MainSettingEvent.MenuClicked(SettingMenu.WITHDRAW))
 
         assertEquals(MainSettingEffect.NavigateToMenu(SettingMenu.WITHDRAW), viewModel.effect.first())
+    }
+
+    @Test fun resumeAfterReturningRefreshesNickname() = runTest(testDispatcher) {
+        val repository = FakeAuthRepository().apply { userProfileResponse.complete(Result.success(profile)) }
+        val viewModel = buildViewModel(repository)
+        advanceUntilIdle()
+        // 첫 진입 resume은 init 로딩과 겹치므로 건너뛴다.
+        viewModel.onEvent(MainSettingEvent.ScreenResumed)
+
+        // 닉네임 수정 후 돌아온 상황
+        repository.userProfileResponse = CompletableDeferred(Result.success(profile.copy(nickname = "새닉네임")))
+        viewModel.onEvent(MainSettingEvent.ScreenResumed)
+        advanceUntilIdle()
+
+        assertEquals("새닉네임", viewModel.uiState.value.nickname)
     }
 }

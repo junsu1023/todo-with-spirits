@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
@@ -66,6 +68,10 @@ fun MainSettingRoute(
     val context = LocalContext.current
     val uiState by mainSettingViewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by mainSettingViewModel.isLoading.collectAsStateWithLifecycle()
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        mainSettingViewModel.onEvent(MainSettingEvent.ScreenResumed)
+    }
 
     LaunchedEffect(mainSettingViewModel) {
         mainSettingViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }

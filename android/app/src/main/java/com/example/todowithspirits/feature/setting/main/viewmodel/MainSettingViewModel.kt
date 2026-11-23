@@ -35,14 +35,35 @@ class MainSettingViewModel @Inject constructor(
     private val _effect = Channel<MainSettingEffect>(Channel.BUFFERED)
     val effect: Flow<MainSettingEffect> = _effect.receiveAsFlow()
 
+    // 첫 진입 때는 init에서 이미 불러오므로 resume 갱신을 건너뛴다.
+    private var isFirstResume = true
+
     init {
         loadUserProfile()
     }
 
     fun onEvent(event: MainSettingEvent) {
         when (event) {
+            MainSettingEvent.ScreenResumed -> refreshUserProfile()
             MainSettingEvent.BackClicked -> sendEffect(MainSettingEffect.NavigateBack)
             is MainSettingEvent.MenuClicked -> sendEffect(MainSettingEffect.NavigateToMenu(event.menu))
+        }
+    }
+
+    // 닉네임 수정 등 다른 화면에서 바뀐 프로필을 반영한다. 이미 화면에 값이 있으니 로딩 없이 조용히 갱신하고,
+    // 실패해도 기존 값을 그대로 둔다.
+    private fun refreshUserProfile() {
+        if (isFirstResume) {
+            isFirstResume = false
+            return
+        }
+
+        viewModelScope.launch {
+            getUserProfileUseCase()
+                .onSuccess { profile ->
+                    _uiState.update { it.copy(nickname = profile.nickname, email = profile.email) }
+                }
+                .onFailure { Log.e(TAG, "refreshUserProfile failed!", it) }
         }
     }
 

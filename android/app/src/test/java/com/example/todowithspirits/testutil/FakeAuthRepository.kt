@@ -36,7 +36,8 @@ class FakeAuthRepository : AuthRepository {
     val updateProfileResponse = CompletableDeferred<Result<UserProfile>>()
     val updatedNicknames = mutableListOf<String?>()
     val restoreSessionRequested = CompletableDeferred<Unit>()
-    val userProfileResponse = CompletableDeferred<Result<UserProfile>>()
+    // 다시 불러오는 응답을 따로 정할 수 있도록 교체할 수 있다.
+    var userProfileResponse = CompletableDeferred<Result<UserProfile>>()
     var savedLoginMethod: LoginMethod? = null
 
     override suspend fun socialLogin(
