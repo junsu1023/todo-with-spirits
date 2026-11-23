@@ -86,6 +86,8 @@
     <string name="backup">백업</string>
     <string name="sync">동기화</string>
     <string name="export_data">데이터 내보내기</string>
+    <string name="current_password">기존 비밀번호</string>
+    <string name="new_password">새로운 비밀번호</string>
 
     <string name="more">더보기</string>
     <string name="withdraw_stay_title">%s님,\n벌써 헤어지기엔 너무 아쉬워요…</string>
@@ -96,10 +98,6 @@
     <string name="withdraw_dialog_message">탈퇴 시 소중하게 키운 기록과 재화가\n모두 사라져 복구할 수 없어요.</string>
     <string name="withdraw_dialog_confirm">탈퇴</string>
     <string name="cancel">취소</string>
-    <string name="current_password">기존 비밀번호</string>
-    <string name="new_password">새로운 비밀번호</string>
-    <string name="new_password_placeholder">(영문, 숫자, 특수문자를 포함한 20자 내)</string>
-    <string name="confirm_password_placeholder">비밀번호 확인</string>
     <string name="sort_by_time">시간 순</string>
     <string name="sort_by_important">중요 순</string>
     <string name="sort_by_complete">완료 순</string>

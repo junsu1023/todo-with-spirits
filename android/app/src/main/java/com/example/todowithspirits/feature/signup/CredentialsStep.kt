@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todowithspirits.R
+import com.example.todowithspirits.component.FieldHintText
 import com.example.todowithspirits.component.PasswordField
 import com.example.todowithspirits.component.PlainTextField
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
