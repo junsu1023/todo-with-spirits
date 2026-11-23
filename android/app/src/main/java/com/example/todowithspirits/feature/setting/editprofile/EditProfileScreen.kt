@@ -89,7 +89,7 @@ fun EditProfileScreen(
             .background(SpiritTodoTheme.color.back01)
     ) {
         TopNaviBar(
-            leftIconRes = R.drawable.todo_back1,
+            leftIconRes = R.drawable.widgetly_back_24,
             onLeftIconClick = { onEvent(EditProfileEvent.BackClicked) },
             title = stringResource(R.string.edit_profile),
             modifier = Modifier.padding(horizontal = 17.dp)
