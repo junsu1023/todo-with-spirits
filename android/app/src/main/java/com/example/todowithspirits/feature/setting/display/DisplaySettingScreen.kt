@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.setting.display
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,15 +27,19 @@ import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.DisplaySelectorRow
 import com.example.todowithspirits.feature.setting.component.DisplayToggleRow
-import com.example.todowithspirits.feature.setting.state.LanguageOptions
+import com.example.todowithspirits.feature.setting.display.state.DisplaySettingEffect
+import com.example.todowithspirits.feature.setting.display.state.DisplaySettingEvent
+import com.example.todowithspirits.feature.setting.display.state.DisplaySettingUiState
+import com.example.todowithspirits.feature.setting.display.state.LanguageOptions
 import com.example.todowithspirits.feature.setting.display.viewmodel.DisplaySettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
 @Composable
-fun DisplaySettingScreen(
-    displaySettingViewModel: DisplaySettingViewModel = hiltViewModel(),
-    onBack: () -> Unit = {}
+fun DisplaySettingRoute(
+    navigateBack: () -> Unit,
+    displaySettingViewModel: DisplaySettingViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by displaySettingViewModel.uiState.collectAsStateWithLifecycle()
@@ -43,6 +48,27 @@ fun DisplaySettingScreen(
     LaunchedEffect(displaySettingViewModel) {
         displaySettingViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
+
+    ObserveAsEffect(displaySettingViewModel.effect) { effect ->
+        when (effect) {
+            DisplaySettingEffect.NavigateBack -> navigateBack()
+        }
+    }
+
+    DisplaySettingScreen(
+        uiState = uiState,
+        isLoading = isLoading,
+        onEvent = displaySettingViewModel::onEvent
+    )
+}
+
+@Composable
+fun DisplaySettingScreen(
+    uiState: DisplaySettingUiState,
+    isLoading: Boolean,
+    onEvent: (DisplaySettingEvent) -> Unit
+) {
+    BackHandler { onEvent(DisplaySettingEvent.BackClicked) }
 
     Column(
         modifier = Modifier
@@ -54,7 +80,7 @@ fun DisplaySettingScreen(
         TopNaviBar(
             leftIconRes = R.drawable.widgetly_back_24,
             title = stringResource(R.string.display_setting),
-            onLeftIconClick = onBack,
+            onLeftIconClick = { onEvent(DisplaySettingEvent.BackClicked) },
             modifier = Modifier.padding(horizontal = 17.dp)
         )
 
@@ -69,20 +95,20 @@ fun DisplaySettingScreen(
             DisplayToggleRow(
                 label = stringResource(R.string.dark_mode),
                 checked = uiState.isDarkMode,
-                onCheckedChange = { displaySettingViewModel.setDarkMode(it) }
+                onCheckedChange = { onEvent(DisplaySettingEvent.DarkModeToggled(it)) }
             )
 
             DisplayToggleRow(
                 label = stringResource(R.string.show_plan_dday),
                 checked = uiState.isShowPlanDday,
-                onCheckedChange = { displaySettingViewModel.setShowPlanDday(it) }
+                onCheckedChange = { onEvent(DisplaySettingEvent.PlanDdayToggled(it)) }
             )
 
             DisplaySelectorRow(
                 label = stringResource(R.string.language),
                 value = uiState.languageOption,
                 options = LanguageOptions,
-                onOptionSelected = { displaySettingViewModel.setLanguageOption(it) }
+                onOptionSelected = { onEvent(DisplaySettingEvent.LanguageSelected(it)) }
             )
         }
 
@@ -90,7 +116,7 @@ fun DisplaySettingScreen(
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.check),
-            onClick = onBack,
+            onClick = { onEvent(DisplaySettingEvent.ConfirmClicked) },
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 

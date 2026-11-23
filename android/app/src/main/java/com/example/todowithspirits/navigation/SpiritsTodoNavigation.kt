@@ -19,7 +19,7 @@ import com.example.todowithspirits.feature.bestiary.BestiaryRoute
 import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.setting.main.WithdrawScreen
 import com.example.todowithspirits.feature.setting.DataSettingScreen
-import com.example.todowithspirits.feature.setting.display.DisplaySettingScreen
+import com.example.todowithspirits.feature.setting.display.DisplaySettingRoute
 import com.example.todowithspirits.feature.setting.alarm.AlarmSettingRoute
 import com.example.todowithspirits.feature.calendar.CalendarRoute
 import com.example.todowithspirits.feature.search.SearchRoute
@@ -221,7 +221,7 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.DisplaySetting.route) {
-            DisplaySettingScreen(onBack = onBack)
+            DisplaySettingRoute(navigateBack = onBack)
         }
 
         composable(Screen.DataSetting.route) {
