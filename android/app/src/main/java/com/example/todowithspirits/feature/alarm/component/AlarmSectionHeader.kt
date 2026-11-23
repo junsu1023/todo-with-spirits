@@ -10,8 +10,7 @@ import com.example.todowithspirits.theme.SpiritTodoTheme
 fun AlarmSectionHeader(title: String) {
     Text(
         text = title,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = SpiritTodoTheme.color.systemGrey
+        fontSize = 14.sp,
+        color = SpiritTodoTheme.color.font01
     )
 }

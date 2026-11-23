@@ -11,34 +11,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.NotificationCategory
 import com.example.domain.model.NotificationItem
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.NotificationDateFormatter
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @Composable
 fun AlarmItem(alarm: NotificationItem) {
     val isNew = !alarm.read
-    val labelColor = if (isNew) SpiritTodoTheme.color.mainTextAndStroke else SpiritTodoTheme.color.systemGrey
+    val labelColor = if (isNew) {
+        when (alarm.category) {
+            NotificationCategory.SYSTEM -> SpiritTodoTheme.color.font02
+            NotificationCategory.EVENT -> SpiritTodoTheme.color.key02
+            else -> SpiritTodoTheme.color.key01
+        }
+    } else SpiritTodoTheme.color.fontGrey
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
             .background(SpiritTodoTheme.color.onSurfaceColor3, RoundedCornerShape(8.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.height(12.dp))
-
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 14.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = alarm.category.displayName,
@@ -49,7 +52,7 @@ fun AlarmItem(alarm: NotificationItem) {
             Text(
                 text = formatNotificationTime(alarm.createdAt),
                 fontSize = 12.sp,
-                color = labelColor
+                color = SpiritTodoTheme.color.fontGrey
             )
         }
 
@@ -57,16 +60,11 @@ fun AlarmItem(alarm: NotificationItem) {
 
         Text(
             text = alarm.content,
-            fontSize = 14.sp,
-            color = SpiritTodoTheme.color.todoTextMain,
-            modifier = Modifier.padding(horizontal = 14.dp)
+            fontSize = 12.sp,
+            color = SpiritTodoTheme.color.font01
         )
-
-        Spacer(modifier = Modifier.height(14.dp))
     }
 }
-
-private val notificationDateFormatter = DateTimeFormatter.ofPattern("MM. dd")
 
 private fun formatNotificationTime(createdAt: LocalDateTime, now: LocalDateTime = LocalDateTime.now()): String {
     val minutes = ChronoUnit.MINUTES.between(createdAt, now)
@@ -78,6 +76,6 @@ private fun formatNotificationTime(createdAt: LocalDateTime, now: LocalDateTime 
         minutes < 60 -> "${minutes}분 전"
         hours < 24 -> "${hours}시간 전"
         days < 7 -> "${days}일 전"
-        else -> createdAt.format(notificationDateFormatter)
+        else -> createdAt.format(NotificationDateFormatter)
     }
 }
