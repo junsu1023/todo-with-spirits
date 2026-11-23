@@ -14,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.auth.SessionExpiredNotifier
 import com.example.todowithspirits.feature.add.AddRoute
-import com.example.todowithspirits.feature.alarm.AlarmScreen
+import com.example.todowithspirits.feature.alarm.AlarmRoute
 import com.example.todowithspirits.feature.bestiary.BestiaryRoute
 import com.example.todowithspirits.feature.forest.ForestScreen
 import com.example.todowithspirits.feature.mypage.AccountSettingScreen
@@ -187,9 +187,9 @@ fun SpiritsTodoNavigation(
         }
 
         composable(Screen.Alarm.route) {
-            AlarmScreen(
-                onBack = onBack,
-                onSettingClick = navigateToAlarmSetting
+            AlarmRoute(
+                navigateBack = onBack,
+                navigateToSetting = navigateToAlarmSetting
             )
         }
 

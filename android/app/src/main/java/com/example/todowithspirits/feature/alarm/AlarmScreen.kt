@@ -32,15 +32,19 @@ import com.example.todowithspirits.component.LoadingOverlay
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.alarm.component.AlarmItem
 import com.example.todowithspirits.feature.alarm.component.AlarmSectionHeader
+import com.example.todowithspirits.feature.alarm.state.AlarmEffect
+import com.example.todowithspirits.feature.alarm.state.AlarmEvent
+import com.example.todowithspirits.feature.alarm.state.AlarmUiState
 import com.example.todowithspirits.feature.alarm.viewmodel.AlarmViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
+import com.example.todowithspirits.util.ObserveAsEffect
 import com.example.todowithspirits.util.ToastUtil
 
 @Composable
-fun AlarmScreen(
-    alarmViewModel: AlarmViewModel = hiltViewModel(),
-    onBack: () -> Unit,
-    onSettingClick: () -> Unit = {}
+fun AlarmRoute(
+    navigateBack: () -> Unit,
+    navigateToSetting: () -> Unit,
+    alarmViewModel: AlarmViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by alarmViewModel.uiState.collectAsStateWithLifecycle()
@@ -50,15 +54,27 @@ fun AlarmScreen(
         alarmViewModel.errorMsg.collect { message -> ToastUtil.show(context, message) }
     }
 
-    val leaveScreen: () -> Unit = {
-        alarmViewModel.markAllAsRead()
-        onBack()
+    ObserveAsEffect(alarmViewModel.effect) { effect ->
+        when (effect) {
+            AlarmEffect.NavigateBack -> navigateBack()
+            AlarmEffect.NavigateToSetting -> navigateToSetting()
+        }
     }
 
-    BackHandler(onBack = leaveScreen)
+    AlarmScreen(
+        uiState = uiState,
+        isLoading = isLoading,
+        onEvent = alarmViewModel::onEvent
+    )
+}
 
-    val newAlarms = uiState.notifications.filter { !it.read }
-    val pastAlarms = uiState.notifications.filter { it.read }
+@Composable
+fun AlarmScreen(
+    uiState: AlarmUiState,
+    isLoading: Boolean,
+    onEvent: (AlarmEvent) -> Unit
+) {
+    BackHandler { onEvent(AlarmEvent.BackClicked) }
 
     Column(
         modifier = Modifier
@@ -67,9 +83,8 @@ fun AlarmScreen(
             .background(SpiritTodoTheme.color.surfaceColor4)
     ) {
         AlarmHeader(
-            onLeaveScreen = leaveScreen,
-            markAllAsRead = { alarmViewModel.markAllAsRead() },
-            onSettingClick = onSettingClick
+            onBackClick = { onEvent(AlarmEvent.BackClicked) },
+            onSettingClick = { onEvent(AlarmEvent.SettingClicked) }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -85,19 +100,19 @@ fun AlarmScreen(
                     EmptyAlarmState()
                 }
             } else {
-                if (newAlarms.isNotEmpty()) {
+                if (uiState.newAlarms.isNotEmpty()) {
                     AlarmContents(
                         header = stringResource(R.string.new_alarm),
-                        alarms = newAlarms
+                        alarms = uiState.newAlarms
                     )
 
                     Spacer(Modifier.height(34.dp))
                 }
 
-                if (pastAlarms.isNotEmpty()) {
+                if (uiState.pastAlarms.isNotEmpty()) {
                     AlarmContents(
                         header = stringResource(R.string.past_alarm),
-                        alarms = pastAlarms
+                        alarms = uiState.pastAlarms
                     )
                 }
             }
@@ -111,19 +126,15 @@ fun AlarmScreen(
 
 @Composable
 private fun AlarmHeader(
-    onLeaveScreen: () -> Unit,
-    markAllAsRead: () -> Unit,
+    onBackClick: () -> Unit,
     onSettingClick: () -> Unit
 ) {
     TopNaviBar(
         leftIconRes = R.drawable.widgetly_back_24,
         title = stringResource(R.string.alarm),
         rightIconRes = R.drawable.widgetly_setting_24,
-        onLeftIconClick = onLeaveScreen,
-        onRightIconClick = {
-            markAllAsRead()
-            onSettingClick()
-        },
+        onLeftIconClick = onBackClick,
+        onRightIconClick = onSettingClick,
         modifier = Modifier.padding(horizontal = 17.dp)
     )
 }
