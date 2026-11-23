@@ -22,11 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.LoadingOverlay
+import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
 import com.example.todowithspirits.feature.setting.component.DisplaySelectorRow
 import com.example.todowithspirits.feature.setting.component.DisplayToggleRow
 import com.example.todowithspirits.feature.setting.state.LanguageOptions
-import com.example.todowithspirits.feature.setting.viewmodel.DisplaySettingViewModel
+import com.example.todowithspirits.feature.setting.display.viewmodel.DisplaySettingViewModel
 import com.example.todowithspirits.theme.SpiritTodoTheme
 import com.example.todowithspirits.util.ToastUtil
 
@@ -51,19 +52,19 @@ fun DisplaySettingScreen(
             .verticalScroll(rememberScrollState())
     ) {
         TopNaviBar(
-            leftIconRes = R.drawable.todo_back1,
+            leftIconRes = R.drawable.widgetly_back_24,
             title = stringResource(R.string.display_setting),
             onLeftIconClick = onBack,
             modifier = Modifier.padding(horizontal = 17.dp)
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(4.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(30.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             DisplayToggleRow(
                 label = stringResource(R.string.dark_mode),
@@ -85,7 +86,15 @@ fun DisplaySettingScreen(
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(modifier = Modifier.weight(1f))
+
+        SpiritsTodoPrimaryButton(
+            text = stringResource(R.string.check),
+            onClick = onBack,
+            modifier = Modifier.padding(horizontal = 14.dp)
+        )
+
+        Spacer(Modifier.height(48.dp))
     }
 
     LoadingOverlay(isLoading = isLoading)

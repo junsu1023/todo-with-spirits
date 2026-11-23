@@ -72,7 +72,7 @@ fun AlarmSettingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SpiritTodoTheme.color.back0)
+            .background(SpiritTodoTheme.color.back01)
             .navigationBarsPadding()
     ) {
         Column(

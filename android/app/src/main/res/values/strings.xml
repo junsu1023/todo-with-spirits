@@ -78,9 +78,12 @@
     <string name="routine_alarm">루틴 안내 알림</string>
     <string name="strick_save_alarm">스트릭(연속 달성) 세이브 알림</string>
     <string name="receive_night_time_push_alarm">야간 푸시 알림 수신</string>
+    <string name="display_setting">디스플레이 설정</string>
+    <string name="dark_mode">다크모드</string>
+    <string name="show_plan_dday">플랜 디데이 표시</string>
+    <string name="language">언어 시스템</string>
 
     <string name="more">더보기</string>
-    <string name="display_setting">디스플레이 설정</string>
     <string name="data_setting">데이터 설정</string>
     <string name="backup">백업</string>
     <string name="sync">동기화</string>
@@ -97,9 +100,6 @@
     <string name="new_password">새로운 비밀번호</string>
     <string name="new_password_placeholder">(영문, 숫자, 특수문자를 포함한 20자 내)</string>
     <string name="confirm_password_placeholder">비밀번호 확인</string>
-    <string name="dark_mode">다크모드</string>
-    <string name="show_plan_dday">플랜 디데이 표시</string>
-    <string name="language">언어</string>
     <string name="sort_by_time">시간 순</string>
     <string name="sort_by_important">중요 순</string>
     <string name="sort_by_complete">완료 순</string>

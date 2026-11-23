@@ -27,16 +27,16 @@ fun DisplayToggleRow(
     SettingsRow {
         Text(
             text = label,
-            fontSize = 16.sp,
-            color = SpiritTodoTheme.color.todoTextMain,
+            fontSize = 14.sp,
+            color = SpiritTodoTheme.color.font01,
             modifier = Modifier.weight(1f)
         )
 
         SpiritsTodoSwitch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.width(48.dp).height(24.dp),
-            thumbSize = 20.dp
+            modifier = Modifier.width(44.dp).height(22.dp),
+            thumbSize = 18.dp
         )
     }
 }
@@ -51,8 +51,8 @@ fun DisplaySelectorRow(
     SettingsRow {
         Text(
             text = label,
-            fontSize = 16.sp,
-            color = SpiritTodoTheme.color.todoTextMain,
+            fontSize = 14.sp,
+            color = SpiritTodoTheme.color.font01,
             modifier = Modifier.weight(1f)
         )
 
@@ -62,8 +62,8 @@ fun DisplaySelectorRow(
             onOptionSelected = onOptionSelected,
             dropdownWidth = 96.dp,
             dropdownGap = 3.dp,
-            itemVerticalPadding = 14.dp,
-            unselectedOptionColor = SpiritTodoTheme.color.systemGrey
+            itemVerticalPadding = 10.dp,
+            unselectedOptionColor = SpiritTodoTheme.color.font01
         ) { expand ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -71,12 +71,12 @@ fun DisplaySelectorRow(
             ) {
                 Text(
                     text = value,
-                    fontSize = 16.sp,
-                    color = SpiritTodoTheme.color.systemGrey
+                    fontSize = 14.sp,
+                    color = SpiritTodoTheme.color.font01
                 )
 
                 Image(
-                    painter = painterResource(R.drawable.todo_arrow2_20),
+                    painter = painterResource(R.drawable.widgetly_right_16),
                     contentDescription = null
                 )
             }
