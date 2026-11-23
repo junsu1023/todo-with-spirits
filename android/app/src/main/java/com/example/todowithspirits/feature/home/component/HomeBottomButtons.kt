@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -78,7 +79,7 @@ private fun HomeBottomButton(
             .noRippleClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box {
+        Box(contentAlignment = Alignment.Center) {
             Icon(
                 painter = painterResource(icon),
                 contentDescription = stringResource(label),
@@ -86,6 +87,12 @@ private fun HomeBottomButton(
             )
 
             if (isComingSoon) {
+                Icon(
+                    painter = painterResource(R.drawable.widgetly_lock),
+                    contentDescription = "출시 예정",
+                    tint = Color.Unspecified
+                )
+
                 ComingSoonBadge(modifier = Modifier.matchParentSize())
             }
         }
@@ -102,10 +109,11 @@ private fun HomeBottomButton(
                     )
                 )
             )
+
             Text(
                 text = stringResource(label),
                 fontSize = 12.sp,
-                color = SpiritTodoTheme.color.font01
+                color = if(isComingSoon) SpiritTodoTheme.color.fontGrey else SpiritTodoTheme.color.font01
             )
         }
     }
