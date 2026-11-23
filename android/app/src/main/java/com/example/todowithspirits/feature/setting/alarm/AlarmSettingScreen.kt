@@ -1,5 +1,6 @@
 package com.example.todowithspirits.feature.setting.alarm
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,24 +12,48 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.todowithspirits.R
 import com.example.todowithspirits.component.SpiritsTodoPrimaryButton
 import com.example.todowithspirits.component.TopNaviBar
+import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingEffect
+import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingEvent
+import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingType
+import com.example.todowithspirits.feature.setting.alarm.state.AlarmSettingUiState
+import com.example.todowithspirits.feature.setting.alarm.viewmodel.AlarmSettingViewModel
 import com.example.todowithspirits.feature.setting.component.AlarmToggleRow
-import com.example.todowithspirits.feature.setting.viewmodel.AlarmSettingViewModel
+import com.example.todowithspirits.util.ObserveAsEffect
+
+@Composable
+fun AlarmSettingRoute(
+    navigateBack: () -> Unit,
+    alarmSettingViewModel: AlarmSettingViewModel = hiltViewModel()
+) {
+    val uiState by alarmSettingViewModel.uiState.collectAsStateWithLifecycle()
+
+    ObserveAsEffect(alarmSettingViewModel.effect) { effect ->
+        when (effect) {
+            AlarmSettingEffect.NavigateBack -> navigateBack()
+        }
+    }
+
+    AlarmSettingScreen(
+        uiState = uiState,
+        onEvent = alarmSettingViewModel::onEvent
+    )
+}
 
 @Composable
 fun AlarmSettingScreen(
-    alarmSettingViewModel: AlarmSettingViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    uiState: AlarmSettingUiState,
+    onEvent: (AlarmSettingEvent) -> Unit
 ) {
-    val uiState by alarmSettingViewModel.uiState.collectAsStateWithLifecycle()
+    BackHandler { onEvent(AlarmSettingEvent.BackClicked) }
 
     Column(
         modifier = Modifier.fillMaxSize().navigationBarsPadding()
@@ -41,7 +66,7 @@ fun AlarmSettingScreen(
             TopNaviBar(
                 leftIconRes = R.drawable.todo_back1,
                 title = stringResource(R.string.alarm_setting),
-                onLeftIconClick = onBack,
+                onLeftIconClick = { onEvent(AlarmSettingEvent.BackClicked) },
                 modifier = Modifier.padding(horizontal = 17.dp)
             )
 
@@ -53,35 +78,13 @@ fun AlarmSettingScreen(
                     .padding(start = 18.dp, end = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                AlarmToggleRow(
-                    label = stringResource(R.string.inactivity_reminder_alarm),
-                    checked = uiState.isOnActiveRemind,
-                    onCheckedChange = { alarmSettingViewModel.setActiveRemindState(it) }
-                )
-
-                AlarmToggleRow(
-                    label = stringResource(R.string.periodic_reminder_postponed_alarm),
-                    checked = uiState.isOnPostponePlan,
-                    onCheckedChange = { alarmSettingViewModel.setPostponePlanState(it) }
-                )
-
-                AlarmToggleRow(
-                    label = stringResource(R.string.routine_alarm),
-                    checked = uiState.isOnRoutineGuide,
-                    onCheckedChange = { alarmSettingViewModel.setRoutineGuideState(it) }
-                )
-
-                AlarmToggleRow(
-                    label = stringResource(R.string.strick_save_alarm),
-                    checked = uiState.isOnStreakSave,
-                    onCheckedChange = { alarmSettingViewModel.setStreakSaveState(it) }
-                )
-
-                AlarmToggleRow(
-                    label = stringResource(R.string.receive_night_time_push_alarm),
-                    checked = uiState.isOnNightPush,
-                    onCheckedChange = { alarmSettingViewModel.setNightPushState(it) }
-                )
+                AlarmSettingType.entries.forEach { type ->
+                    AlarmToggleRow(
+                        label = stringResource(type.labelRes),
+                        checked = uiState.isOn(type),
+                        onCheckedChange = { onEvent(AlarmSettingEvent.AlarmToggled(type, it)) }
+                    )
+                }
             }
         }
 
@@ -89,7 +92,7 @@ fun AlarmSettingScreen(
 
         SpiritsTodoPrimaryButton(
             text = stringResource(R.string.check),
-            onClick = { onBack() },
+            onClick = { onEvent(AlarmSettingEvent.ConfirmClicked) },
             modifier = Modifier.padding(horizontal = 14.dp)
         )
 
