@@ -49,7 +49,7 @@ private val SpiritPeekSize = 32.dp
 
 // Glance는 SpiritTodoTheme을 쓸 수 없어 같은 색 토큰을 ColorProvider로 감싸 쓴다.
 internal object WidgetColors {
-    val background get() = spiritsLightColor.surfaceColor1
+    val background get() = spiritsLightColor.white
     val taskRow get() = spiritsLightColor.surfaceColor16
     val date get() = spiritsLightColor.pointPink
     val text get() = spiritsLightColor.todoTextMain

@@ -63,7 +63,7 @@ fun WithdrawScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.white)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopNaviBar(
@@ -120,7 +120,7 @@ fun WithdrawScreen(
                 WithdrawActionButton(
                     text = stringResource(R.string.withdraw_leave_button),
                     backgroundColor = SpiritTodoTheme.color.mainArea,
-                    textColor = SpiritTodoTheme.color.surfaceColor1,
+                    textColor = SpiritTodoTheme.color.white,
                     onClick = { showConfirmDialog = true },
                     modifier = Modifier.weight(1f)
                 )
@@ -217,7 +217,7 @@ private fun WithdrawConfirmDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .background(SpiritTodoTheme.color.surfaceColor1, RoundedCornerShape(12.dp))
+                .background(SpiritTodoTheme.color.white, RoundedCornerShape(12.dp))
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -252,7 +252,7 @@ private fun WithdrawConfirmDialog(
                 WithdrawActionButton(
                     text = stringResource(R.string.withdraw_dialog_confirm),
                     backgroundColor = SpiritTodoTheme.color.mainArea,
-                    textColor = SpiritTodoTheme.color.surfaceColor1,
+                    textColor = SpiritTodoTheme.color.white,
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 )

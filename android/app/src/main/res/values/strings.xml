@@ -91,7 +91,6 @@
     <string name="sort_by_affection">호감도 순</string>
     <string name="bestiary_tab_all">전체</string>
     <string name="bestiary_tab_category">카테고리 별</string>
-    <string name="more">더보기</string>
     <string name="withdraw_stay_title">%s님,\n벌써 헤어지기엔 너무 아쉬워요…</string>
     <string name="withdraw_stay_subtitle">탈퇴 대신 잠시 쉬어가는 건 어떨까요?\n계정은 그대로 두고 편하게 쉬다 오시는 걸 추천드려요.</string>
     <string name="withdraw_stay_button">더 머무르기</string>

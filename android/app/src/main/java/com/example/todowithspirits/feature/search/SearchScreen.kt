@@ -86,7 +86,7 @@ fun SearchScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SpiritTodoTheme.color.surfaceColor1)
+                .background(SpiritTodoTheme.color.white)
         ) {
             TopNaviBar(
                 title = stringResource(R.string.search_title),

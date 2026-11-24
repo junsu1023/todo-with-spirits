@@ -76,8 +76,8 @@ fun ForestScreen(onReturnToHome: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.white)
     ) {
-        LoadingOverlay(isLoading = true, background = SpiritTodoTheme.color.surfaceColor1)
+        LoadingOverlay(isLoading = true, background = SpiritTodoTheme.color.white)
     }
 }

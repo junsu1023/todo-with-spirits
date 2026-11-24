@@ -166,7 +166,7 @@ fun CalendarScreen(
                         onRecentClear = { onEvent(CalendarEvent.RecentSearchesCleared) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(SpiritTodoTheme.color.surfaceColor1)
+                            .background(SpiritTodoTheme.color.white)
                     )
 
                     Box(

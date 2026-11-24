@@ -43,7 +43,7 @@ fun BestiaryTabRow(
                     .height(36.dp)
                     .then(
                         if (isSelected) {
-                            Modifier.background(SpiritTodoTheme.color.pointPink, TabShape)
+                            Modifier.background(SpiritTodoTheme.color.colorSub02, TabShape)
                         } else {
                             Modifier
                                 .background(SpiritTodoTheme.color.white, TabShape)

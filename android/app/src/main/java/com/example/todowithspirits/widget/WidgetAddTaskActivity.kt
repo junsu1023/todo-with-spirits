@@ -52,7 +52,7 @@ class WidgetAddTaskActivity : ComponentActivity() {
                             }
                         )
                     },
-                    containerColor = SpiritTodoTheme.color.surfaceColor1
+                    containerColor = SpiritTodoTheme.color.white
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         AddRoute(

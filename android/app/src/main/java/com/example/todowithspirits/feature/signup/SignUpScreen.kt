@@ -58,7 +58,7 @@ fun SignUpScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1)
+            .background(SpiritTodoTheme.color.white)
     ) {
         when(uiState.step) {
             SignUpStep.CREDENTIALS -> CredentialsStep(
