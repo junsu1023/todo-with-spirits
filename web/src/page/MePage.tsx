@@ -98,8 +98,9 @@ export function MePage() {
 					</div>
 
 					<div className="flex items-center gap-5">
+						{/* 서버 응답이 imageUrl → image.url로 바뀜 (웹용 에셋이 없으면 null → 기본 이미지) */}
 						<img
-							src={spirit?.imageUrl || sampleSpiritImage}
+							src={spirit?.image?.url || sampleSpiritImage}
 							alt={spirit?.spiritName ?? '정령'}
 							className="h-24 w-24 shrink-0 rounded-xl object-cover"
 							onError={(e) => {
@@ -113,25 +114,31 @@ export function MePage() {
 									<span className="text-lg font-bold text-gray-800">
 										{spirit?.spiritName ?? '—'}
 									</span>
+									{/* 정령 단계(stage)가 서버 응답에서 제거됨
 									<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#B286FD] text-xs font-bold text-white">
 										{spirit?.stage ?? '—'}
 									</span>
+									*/}
 								</div>
+								{/* 서버 exp가 상한 없는 누적값이 되어 %·진행 바 대신 아래 누적 숫자만 보여준다
 								<span className="text-2xl font-bold text-[#B286FD]">
 									{spirit?.exp ?? 0}%
 								</span>
+								*/}
 							</div>
 
 							<span className="text-xs text-gray-400">
 								EXP {spirit?.exp ?? 0}
 							</span>
 
+							{/*
 							<div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
 								<div
 									className="h-full rounded-full bg-[#B286FD] transition-all"
 									style={{ width: `${spirit?.exp ?? 0}%` }}
 								/>
 							</div>
+							*/}
 
 							<div className="mt-1 flex gap-2">
 								<Link

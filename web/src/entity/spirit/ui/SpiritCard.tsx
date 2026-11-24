@@ -13,7 +13,9 @@ export function SpiritCard({
 	isSelected: boolean
 	onClick: () => void
 }) {
-	const expPercent = Math.round((spirit.exp / 100) * 100)
+	// 정령 단계·경험치(stage, exp)가 정령도감 응답에서 제거됨
+	// todo: 호감도(affection) 등 보여줄 값이 정해지면 다시 연결
+	// const expPercent = Math.round((spirit.exp / 100) * 100)
 	return (
 		<button
 			type="button"
@@ -27,9 +29,10 @@ export function SpiritCard({
 		>
 			{/* 정령 이미지 */}
 			<div className="relative">
+				{/* 서버 응답이 imageUrl → image.url로 바뀜 (웹용 에셋이 없으면 null → 기본 이미지) */}
 				<img
-					src={spirit.imageUrl || sampleSpiritImage}
-					alt={spirit.spiritName}
+					src={spirit.image?.url || sampleSpiritImage}
+					alt={spirit.spiritName ?? spirit.speciesName}
 					className="h-16 w-16 rounded-xl object-cover"
 					onError={(e) => { e.currentTarget.src = sampleSpiritImage }}
 				/>
@@ -40,17 +43,19 @@ export function SpiritCard({
 				)}
 			</div>
 
-			{/* 이름 + 레벨 */}
+			{/* 이름 (레벨은 정령 단계가 서버 응답에서 제거됨) */}
 			<div className="flex items-center gap-1">
 				<span className="text-sm font-semibold text-gray-800">
-					{spirit.spiritName}
+					{spirit.spiritName ?? spirit.speciesName}
 				</span>
+				{/*
 				<span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#B286FD] text-[10px] font-bold text-white">
 					{spirit.stage}
 				</span>
+				*/}
 			</div>
 
-			{/* EXP 바 */}
+			{/* EXP 바: 정령도감 응답에 경험치가 없음 (위 expPercent 참고)
 			<div className="w-full">
 				<div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
 					<div
@@ -62,6 +67,7 @@ export function SpiritCard({
 					{expPercent}%
 				</span>
 			</div>
+			*/}
 		</button>
 	)
 }
