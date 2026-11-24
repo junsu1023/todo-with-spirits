@@ -200,8 +200,8 @@ export function AccountPage() {
 									) : (
 										<>
 											<span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-500">
-												{me.emailVerificationStatus === 'PENDING'
-													? '인증 대기'
+												{me.emailVerificationStatus === 'NEEDS_REVERIFICATION'
+													? '재인증 필요'
 													: '미인증'}
 											</span>
 											{resendSuccess ? (

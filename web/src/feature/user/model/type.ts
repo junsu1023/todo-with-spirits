@@ -1,4 +1,9 @@
-export type EmailVerificationStatus = 'VERIFIED' | 'UNVERIFIED' | 'PENDING'
+// 서버 EmailVerificationStatus. NEEDS_REVERIFICATION은 이메일을 바꾼 뒤 다시 인증해야 하는 상태 (User.updateEmail)
+// PENDING은 서버에 없는 값이라 NEEDS_REVERIFICATION으로 바꿈
+export type EmailVerificationStatus =
+	| 'VERIFIED'
+	| 'UNVERIFIED'
+	| 'NEEDS_REVERIFICATION'
 export type PlanType = 'MONTHLY' | 'YEARLY'
 
 export interface SubscriptionDetail {
