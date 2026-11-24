@@ -49,36 +49,39 @@ fun TodoDetailPopup(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Box(
-            modifier = Modifier
-                .width(274.dp)
-                .background(SpiritTodoTheme.color.white, RoundedCornerShape(8.dp))
-        ) {
-            Column(
+        // Dialog는 별도 window라 테마의 360dp 기준 스케일이 빠지므로 다시 적용한다.
+        SpiritTodoTheme {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 18.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .width(308.dp)
+                    .background(SpiritTodoTheme.color.white, RoundedCornerShape(8.dp))
             ) {
-                Title(
-                    title = task.title,
-                    isImportant = task.isImportant,
-                    modifier = Modifier.padding(horizontal = 28.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 18.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Title(
+                        title = task.title,
+                        isImportant = task.isImportant,
+                        modifier = Modifier.padding(horizontal = 28.dp)
+                    )
+
+                    Spacer(Modifier.height(4.dp))
+
+                    Detail(task.date, task.time)
+
+                    Spacer(Modifier.height(18.dp))
+
+                    ActionButtonArea(onDelete, onEdit)
+                }
+
+                CloseButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.TopEnd)
                 )
-
-                Spacer(Modifier.height(4.dp))
-
-                Detail(task.date, task.time)
-
-                Spacer(Modifier.height(18.dp))
-
-                ActionButtonArea(onDelete, onEdit)
             }
-
-            CloseButton(
-                onClick = onDismiss,
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
         }
     }
 }

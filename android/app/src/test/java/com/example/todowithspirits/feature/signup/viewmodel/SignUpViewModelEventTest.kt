@@ -264,9 +264,89 @@ class SignUpViewModelEventTest {
         )
         runCurrent()
 
-        assertEquals(listOf("a@b.com" to 654321), authRepository.verifyCodeRequests)
+        assertEquals(listOf("a@b.com" to "654321"), authRepository.verifyCodeRequests)
         assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
         authRepository.restoreSessionRequested.await()
+    }
+
+    // BUG-01: 0으로 시작하는 코드가 숫자로 바뀌어 앞자리 0이 사라지면 안 된다.
+    @Test fun codeStartingWithZeroIsSentAsIs() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("012345"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(listOf("a@b.com" to "012345"), authRepository.verifyCodeRequests)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun codeShorterThanSixDigitsIsNotSent() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("12345"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(setOf("verificationCode"), viewModel.uiState.value.fieldErrors.keys)
+        assertTrue(authRepository.verifyCodeRequests.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    // BUG-03: 닉네임 단계에서 뒤로가면 인증 단계가 아닌 로그인 화면(이전 화면)으로 나간다.
+    @Test fun backClickedAtNicknameNavigatesBack() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.success(Unit))
+        authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
+        authRepository.loginResponse.complete(
+            Result.success(LoginSession(1, "a@b.com", "정령", "access", "refresh", "Bearer"))
+        )
+        runCurrent()
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+
+        assertEquals(SignUpEffect.NavigateBack, viewModel.effect.first())
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+    }
+
+    // BUG-08: 인증 요청 중 뒤로가기는 무시되고, 응답이 오면 닉네임 단계로 이어진다.
+    @Test fun backClickedWhileVerifyingIsIgnored() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+        assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
+
+        authRepository.verifyCodeResponse.complete(Result.success(Unit))
+        authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
+        authRepository.loginResponse.complete(
+            Result.success(LoginSession(1, "a@b.com", "정령", "access", "refresh", "Bearer"))
+        )
+        runCurrent()
+
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+        authRepository.restoreSessionRequested.await()
+    }
+
+    @Test fun backClickedAfterVerifyFailedGoesBack() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.failure(IllegalStateException("인증 실패")))
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+
+        assertEquals(SignUpStep.CREDENTIALS, viewModel.uiState.value.step)
     }
 
     @Test fun resendSucceededClearsCodeAndShowsToast() = runTest(testDispatcher) {
@@ -300,6 +380,24 @@ class SignUpViewModelEventTest {
 
         assertEquals("발송 실패", error.await())
         assertTrue(effects.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    // BUG-06: 인증 화면에서 재발송이 필드 오류로 실패하면 토스트로 알린다.
+    @Test fun resendFieldErrorShowsToast() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val error = async { viewModel.errorMsg.first() }
+        runCurrent()
+
+        authRepository.sendVerificationResponse = CompletableDeferred(
+            Result.failure(FieldValidationException(mapOf("email" to "이미 존재하는 계정입니다."), "bad request"))
+        )
+        viewModel.onEvent(SignUpEvent.ResendClicked)
+        runCurrent()
+
+        assertEquals("이미 존재하는 계정입니다.", error.await())
+        assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
 
         viewModel.onEvent(SignUpEvent.BackClicked)
     }

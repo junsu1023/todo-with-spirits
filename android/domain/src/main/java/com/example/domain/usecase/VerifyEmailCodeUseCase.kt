@@ -7,5 +7,5 @@ import javax.inject.Inject
 class VerifyEmailCodeUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(email: String, code: Int): Result<Unit> = authRepository.verifyEmailCode(email, code)
+    suspend operator fun invoke(email: String, code: String): Result<Unit> = authRepository.verifyEmailCode(email, code)
 }

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -21,8 +20,12 @@ import kotlin.coroutines.EmptyCoroutineContext
 공통 기능(로딩, 에러 메시지)/코루틴 실행 편의 기능 제공
  */
 open class BaseViewModel: ViewModel() {
-    protected val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading.asStateFlow()
+
+    // 겹친 요청이 모두 끝날 때까지 로딩을 유지하기 위한 진행 중 요청 수
+    private val loadingLock = Any()
+    private var loadingCount = 0
 
     protected val _errorMsg = MutableSharedFlow<String>()
     val errorMsg: SharedFlow<String> get() = _errorMsg.asSharedFlow()
@@ -37,8 +40,8 @@ open class BaseViewModel: ViewModel() {
         context = context,
         start = start
     ) {
+        changeLoadingCount(1)
         try {
-            _isLoading.update { true }
             block()
         } catch (e: Exception) {
             if(e is CancellationException) {
@@ -49,8 +52,13 @@ open class BaseViewModel: ViewModel() {
                 emitErrorMsg(e.localizedMessage ?: "알 수 없는 에러 발생")
             }
         } finally {
-            _isLoading.update { false }
+            changeLoadingCount(-1)
         }
+    }
+
+    private fun changeLoadingCount(delta: Int) = synchronized(loadingLock) {
+        loadingCount += delta
+        _isLoading.value = loadingCount > 0
     }
 
     fun emitErrorMsg(msg: String) {

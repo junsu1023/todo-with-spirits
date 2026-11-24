@@ -85,7 +85,7 @@ class AuthRepositoryImpl @Inject constructor(
             .recoverFieldValidationErrors()
     }
 
-    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> {
+    override suspend fun verifyEmailCode(email: String, code: String): Result<Unit> {
         return authRemoteDataSource.verifyEmailCode(email, code)
             .recoverFieldValidationErrors()
     }

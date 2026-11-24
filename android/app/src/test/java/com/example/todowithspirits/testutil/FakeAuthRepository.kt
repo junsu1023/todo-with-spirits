@@ -31,7 +31,7 @@ class FakeAuthRepository : AuthRepository {
     // 재발송 응답을 따로 정할 수 있도록 교체할 수 있다.
     var sendVerificationResponse = CompletableDeferred<Result<Unit>>()
     val verifyCodeResponse = CompletableDeferred<Result<Unit>>()
-    val verifyCodeRequests = mutableListOf<Pair<String, Int>>()
+    val verifyCodeRequests = mutableListOf<Pair<String, String>>()
     val signUpResponse = CompletableDeferred<Result<SignUpResult>>()
     val updateProfileResponse = CompletableDeferred<Result<UserProfile>>()
     val updatedNicknames = mutableListOf<String?>()
@@ -62,7 +62,7 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun sendEmailVerification(email: String): Result<Unit> = sendVerificationResponse.await()
 
-    override suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> {
+    override suspend fun verifyEmailCode(email: String, code: String): Result<Unit> {
         verifyCodeRequests += email to code
         return verifyCodeResponse.await()
     }
