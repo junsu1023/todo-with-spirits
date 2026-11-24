@@ -4,8 +4,6 @@
 - 확인 방법: **코드 읽기 기준이며 기기·서버에서 재현하지 않았다.** (단위 테스트 실패인 BUG-14만 실제로 재현됨)
 - 경로: 저장소 루트 기준. `app/…`은 `android/app/src/main/java/com/example/todowithspirits/…`, `back/…`은 `back/src/main/java/com/oow/todowithspirit/…`
 - 줄 번호는 바뀌므로 함수명으로 찾는다.
-- [CLAUDE.md](../.claude/CLAUDE.md)의 현재 수정 범위는 UI다. 아래는 범위를 벗어나므로 **착수 전에 사용자 승인을 받는다.**
-  - `core`: BUG-10
 - 고치면 요약 표의 상태를 바꾸고, 전부 끝나면 이 문서는 지운다.
 
 ## 요약
@@ -23,7 +21,7 @@
 | BUG-07 | 중간 | Android | 화면에 없는 필드 오류가 오면 `다음` 버튼이 계속 비활성 | - | 해당 없음 |
 | BUG-08 | 중간 | Android | 인증 요청 중 시간 초과·뒤로가기와 응답이 경합 | - | 완료 |
 | BUG-09 | 중간 | Server | 메일 발송에 실패해도 성공 응답 | - | 수정 안 함 |
-| BUG-10 | 중간 | Android | 요청이 겹치면 로딩과 터치 차단이 일찍 풀림 | `core` 수정 | 대기 |
+| BUG-10 | 중간 | Android | 요청이 겹치면 로딩과 터치 차단이 일찍 풀림 | - | 완료 |
 | BUG-11 | 중간 | Android | 알림 설정 화면에 로딩·터치 차단 없음 | - | 대기 |
 | BUG-12 | 낮음 | Android | 로그인 실패 팝업이 떠도 키보드와 입력이 남음 | 기기 확인 | 대기 |
 | BUG-13 | 낮음 | Android | 홈 상세 팝업만 작게 보임 | 카드 폭 Figma 확인 | 대기 |
@@ -137,6 +135,7 @@
 - **원인**: `android/core`의 `BaseViewModel.launchWithLoading`이 Boolean 하나를 쓴다. 요청 A, B가 겹치면 먼저 끝난 쪽이 `false`로 만든다.
 - **수정**: 진행 중인 요청 수를 세고 0일 때만 해제한다.
 - **완료 조건**: 겹친 요청이 모두 끝날 때까지 `isLoading`이 `true`이다.
+- **상태**: 완료 (2026-11-24). 진행 중 요청 수가 0일 때만 해제한다. 하위 클래스가 카운터를 우회하지 못하도록 `_isLoading`을 `private`으로 바꿨다. `BaseViewModelLoadingTest`로 확인.
 
 ### BUG-11. 알림 설정 화면에 로딩·터치 차단 없음
 
