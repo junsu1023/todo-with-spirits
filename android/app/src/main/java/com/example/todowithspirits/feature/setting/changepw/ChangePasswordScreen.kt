@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,6 +114,7 @@ fun ChangePasswordScreen(
                 value = uiState.currentPassword,
                 onValueChange = { onEvent(ChangePasswordEvent.CurrentPasswordChanged(it)) },
                 placeholder = stringResource(R.string.password_placeholder),
+                modifier = Modifier.background(SpiritTodoTheme.color.white, RoundedCornerShape(6.dp)),
                 isError = uiState.fieldErrors["currentPassword"] != null
             )
 
@@ -128,6 +130,7 @@ fun ChangePasswordScreen(
                 value = uiState.newPassword,
                 onValueChange = { onEvent(ChangePasswordEvent.NewPasswordChanged(it)) },
                 placeholder = stringResource(R.string.password_placeholder),
+                modifier = Modifier.background(SpiritTodoTheme.color.white, RoundedCornerShape(6.dp)),
                 isError = uiState.fieldErrors["newPassword"] != null
             )
 
@@ -156,6 +159,7 @@ fun ChangePasswordScreen(
                         value = uiState.confirmPassword,
                         onValueChange = { onEvent(ChangePasswordEvent.ConfirmPasswordChanged(it)) },
                         placeholder = stringResource(R.string.password_confirm_placeholder),
+                        modifier = Modifier.background(SpiritTodoTheme.color.white, RoundedCornerShape(6.dp)),
                         isError = uiState.fieldErrors["confirmPassword"] != null
                     )
 
