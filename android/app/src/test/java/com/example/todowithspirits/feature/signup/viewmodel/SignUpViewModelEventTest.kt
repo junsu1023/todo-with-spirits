@@ -264,9 +264,35 @@ class SignUpViewModelEventTest {
         )
         runCurrent()
 
-        assertEquals(listOf("a@b.com" to 654321), authRepository.verifyCodeRequests)
+        assertEquals(listOf("a@b.com" to "654321"), authRepository.verifyCodeRequests)
         assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
         authRepository.restoreSessionRequested.await()
+    }
+
+    // BUG-01: 0으로 시작하는 코드가 숫자로 바뀌어 앞자리 0이 사라지면 안 된다.
+    @Test fun codeStartingWithZeroIsSentAsIs() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("012345"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(listOf("a@b.com" to "012345"), authRepository.verifyCodeRequests)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
+    @Test fun codeShorterThanSixDigitsIsNotSent() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("12345"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        assertEquals(setOf("verificationCode"), viewModel.uiState.value.fieldErrors.keys)
+        assertTrue(authRepository.verifyCodeRequests.isEmpty())
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
     }
 
     @Test fun resendSucceededClearsCodeAndShowsToast() = runTest(testDispatcher) {

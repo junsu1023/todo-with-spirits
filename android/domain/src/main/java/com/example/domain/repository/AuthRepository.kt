@@ -35,7 +35,7 @@ interface AuthRepository {
 
     suspend fun sendEmailVerification(email: String): Result<Unit>
 
-    suspend fun verifyEmailCode(email: String, code: Int): Result<Unit>
+    suspend fun verifyEmailCode(email: String, code: String): Result<Unit>
 
     suspend fun signUp(email: String, password: String, nickname: String?): Result<SignUpResult>
 

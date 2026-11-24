@@ -59,6 +59,6 @@ class AuthRemoteDataSource @Inject constructor(
     suspend fun sendEmailVerification(email: String): Result<Unit> =
         apiCallUnit { authApi.sendEmailVerification(SendEmailVerificationRequest(email)) }
 
-    suspend fun verifyEmailCode(email: String, code: Int): Result<Unit> =
+    suspend fun verifyEmailCode(email: String, code: String): Result<Unit> =
         apiCallUnit { authApi.verifyEmailCode(VerifyEmailCodeRequest(email, code)) }
 }

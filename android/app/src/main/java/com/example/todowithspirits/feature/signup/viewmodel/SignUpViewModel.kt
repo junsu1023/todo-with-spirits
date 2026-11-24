@@ -206,9 +206,9 @@ class SignUpViewModel @Inject constructor(
 
     private fun verifyEmailCode() {
         val state = _uiState.value
-        val code = state.verificationCode.toIntOrNull()
+        val code = state.verificationCode
 
-        if (code == null) {
+        if (!code.matches(Regex("\\d{6}"))) {
             _uiState.update { it.copy(fieldErrors = mapOf("verificationCode" to "인증번호를 다시 확인해주세요.")) }
             return
         }
