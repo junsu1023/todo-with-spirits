@@ -73,7 +73,8 @@ export function RoutineForm() {
 				repeatDaysOfMonth: values.repeatDaysOfMonth,
 			}),
 			...(values.repeatEndDate && { repeatEndDate: values.repeatEndDate }),
-			...(values.memo && { memo: values.memo }),
+			// 메모는 API에서 제거됨
+			// ...(values.memo && { memo: values.memo }),
 		})
 	}
 

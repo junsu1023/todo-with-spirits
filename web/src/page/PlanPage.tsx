@@ -13,7 +13,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/entity/task'
 import { getTaskCalendar, isRoutine } from '@/entity/task'
-import type { Category } from '@/entity/task/model/type'
+// 카테고리 선택이 빠지면서 사용 안 함
+// import type { Category } from '@/entity/task/model/type'
 import { PlanItemForm } from '@/feature/task'
 import {
 	completeTask,
@@ -47,25 +48,27 @@ function toDateString(date: Date) {
 	return `${y}-${m}-${d}`
 }
 
-const CATEGORY_LABEL: Partial<Record<string, string>> = {
-	FINANCE: '금융',
-	GROWTH: '자기계발',
-	HEALTH: '건강',
-	HOBBY: '취미',
-	RELATIONSHIP: '인간관계/약속',
-	WORK: '업무/커리어',
-	ETC: '기타',
-}
-
-const LABEL_TO_CATEGORY: Record<string, Category> = {
-	금융: 'FINANCE',
-	자기계발: 'GROWTH',
-	건강: 'HEALTH',
-	취미: 'HOBBY',
-	'인간관계/약속': 'RELATIONSHIP',
-	'업무/커리어': 'WORK',
-	기타: 'ETC',
-}
+// 카테고리·공개 상태·메모는 할 일 API에서 제거됨 (entity/task/model/type.ts 참고)
+// todo: 백엔드에서 다시 제공하면 주석 해제
+// const CATEGORY_LABEL: Partial<Record<string, string>> = {
+// 	FINANCE: '금융',
+// 	GROWTH: '자기계발',
+// 	HEALTH: '건강',
+// 	HOBBY: '취미',
+// 	RELATIONSHIP: '인간관계/약속',
+// 	WORK: '업무/커리어',
+// 	ETC: '기타',
+// }
+//
+// const LABEL_TO_CATEGORY: Record<string, Category> = {
+// 	금융: 'FINANCE',
+// 	자기계발: 'GROWTH',
+// 	건강: 'HEALTH',
+// 	취미: 'HOBBY',
+// 	'인간관계/약속': 'RELATIONSHIP',
+// 	'업무/커리어': 'WORK',
+// 	기타: 'ETC',
+// }
 
 function toPlanItem(item: CalendarItem): PlanItem {
 	const target = new Date(item.occurrenceDate)
@@ -77,10 +80,10 @@ function toPlanItem(item: CalendarItem): PlanItem {
 	const d = String(target.getDate()).padStart(2, '0')
 	const dateLabel = `${y}. ${m}. ${d} (${weekdays[target.getDay()]})`
 
-	const categoryLabel = item.category
-		? CATEGORY_LABEL[item.category]
-		: undefined
-	const tags = categoryLabel ? [categoryLabel] : []
+	// const categoryLabel = item.category
+	// 	? CATEGORY_LABEL[item.category]
+	// 	: undefined
+	// const tags = categoryLabel ? [categoryLabel] : []
 
 	const repeatType =
 		item.repeatType === 'DAILY' ||
@@ -98,13 +101,13 @@ function toPlanItem(item: CalendarItem): PlanItem {
 		dday,
 		dateLabel,
 		date: item.occurrenceDate,
-		category: categoryLabel,
+		// category: categoryLabel,
 		repeatType,
 		repeatDaysOfWeek: item.repeatDaysOfWeek,
 		repeatDaysOfMonth: item.repeatDaysOfMonth,
 		excludeHolidays: item.excludeHoliday,
-		memo: item.memo ?? undefined,
-		tags,
+		// memo: item.memo ?? undefined,
+		// tags,
 	}
 }
 
@@ -432,12 +435,13 @@ function PlanTaskList({
 							{/* Date */}
 							<span className="text-xs text-gray-400">{item.dateLabel}</span>
 
-							{/* Memo */}
+							{/* Memo는 API에서 제거됨
 							<span className="text-xs text-gray-400">
 								{item.memo ?? '(메모 없음)'}
 							</span>
+							*/}
 							<div className="flex justify-between">
-								{/* Tags */}
+								{/* Tags (카테고리)는 API에서 제거됨
 								{item.tags.length > 0 && (
 									<div className="flex flex-wrap gap-1.5">
 										{item.tags.map((tag) => (
@@ -450,6 +454,7 @@ function PlanTaskList({
 										))}
 									</div>
 								)}
+								*/}
 								<div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
 									<button
 										type="button"
@@ -505,7 +510,7 @@ const BLANK_ITEM: PlanItem = {
 	completed: false,
 	dday: 0,
 	dateLabel: '',
-	tags: [],
+	// tags: [],
 }
 
 export function PlanPage() {
@@ -623,15 +628,15 @@ export function PlanPage() {
 				createMutate({
 					title: updated.title,
 					isAllDay: !updated.time,
-					startDatetime: `${updated.date}T00:00:00`,
+					// startDatetime: `${updated.date}T00:00:00`,
 					endDateTime,
 					isImportant: updated.starred,
 					repeatType: 'NONE',
-					category: updated.category
-						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-						: 'NONE',
-					isPublic: updated.isPublic ?? false,
-					memo: updated.memo,
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
 				})
 				return
 			}
@@ -645,8 +650,8 @@ export function PlanPage() {
 					...(updated.repeatDaysOfMonth?.length && {
 						repeatDaysOfMonth: updated.repeatDaysOfMonth,
 					}),
-					isPublic: updated.isPublic ?? false,
-					memo: updated.memo,
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
 				})
 				return
 			}
@@ -670,11 +675,11 @@ export function PlanPage() {
 					endDateTime,
 					isAllDay: !updated.time,
 					isImportant: updated.starred,
-					category: updated.category
-						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-						: 'NONE',
-					isPublic: updated.isPublic ?? false,
-					memo: updated.memo,
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
 				}),
 			)
 			return
@@ -694,12 +699,12 @@ export function PlanPage() {
 						updated.repeatType === 'MONTHLY'
 							? updated.repeatDaysOfMonth
 							: undefined,
-					category: updated.category
-						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-						: 'NONE',
-					isPublic: updated.isPublic ?? false,
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
 					excludeHoliday: updated.excludeHolidays ?? false,
-					memo: updated.memo,
+					// memo: updated.memo,
 				}),
 			)
 			return

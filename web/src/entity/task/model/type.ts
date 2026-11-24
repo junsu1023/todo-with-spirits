@@ -5,6 +5,7 @@ export type TaskType = 'SCHEDULE' | 'HABIT' | 'ROUTINE'
 // 서버 enum. NONE이면 할 일(단발성), 그 외는 루틴(반복). YEARLY는 서버가 생성·수정을 막는다
 export type RepeatType = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
 
+// 기록(Record) 화면에서 사용. 할 일 API에서는 카테고리가 제거됨
 export type Category =
 	| 'FINANCE'
 	| 'GROWTH'
@@ -53,16 +54,18 @@ export interface TaskScheduleParams {
 }
 
 // 서버 TaskOccurrenceResponse
+// 카테고리·공개 상태·메모는 할 일 API 응답에서 제거됨
+// todo: 백엔드에서 다시 제공하면 주석 해제
 export interface CalendarItem {
 	taskId: number
 	// taskType: TaskType
 	title: string
-	category: Category | null
-	memo: string | null
+	// category: Category | null
+	// memo: string | null
 	isAllDay?: boolean
 	isCompleted: boolean
 	isImportant: boolean
-	isPublic: boolean
+	// isPublic: boolean
 	occurrenceDate: string
 	// 할 일 날짜는 occurrenceDate를 쓴다
 	// endDate?: string | null

@@ -1,11 +1,12 @@
-import type { Category, RepeatType } from '@/entity/task/model/type'
+import type { RepeatType } from '@/entity/task/model/type'
 
 export type NotificationType =
 	| 'NONE'
 	| 'TEN_MINUTES'
 	| 'THIRTY_MINUTES'
 	| 'ONE_HOUR'
-	| 'ONE_DAY'
+// 서버 NotificationType에 없음 (NONE, TEN_MINUTES, THIRTY_MINUTES, ONE_HOUR)
+// 	| 'ONE_DAY'
 
 export type DayOfWeek =
 	| 'MONDAY'
@@ -113,11 +114,12 @@ export interface TaskRequest {
 	repeatDaysOfMonth?: number[]
 	// 루틴일 때만 적용
 	excludeHoliday?: boolean
-	// todo: 아래는 서버 TaskRequest에 없는 값 (보내도 무시됨). 정리 여부 확인 후 처리
-	startDatetime?: string
-	category?: Category
-	isPublic?: boolean
-	memo?: string
+	// 카테고리·공개 상태·메모·시작일시는 서버 TaskRequest에 없음
+	// todo: 백엔드에서 다시 제공하면 주석 해제
+	// startDatetime?: string
+	// category?: Category
+	// isPublic?: boolean
+	// memo?: string
 }
 
 export interface UpdateTaskRequest extends TaskRequest {
@@ -195,12 +197,13 @@ export interface PlanItem {
 	dateLabel: string
 	date?: string
 	time?: string
-	category?: string
-	isPublic?: boolean
+	// 카테고리·공개 상태·메모는 API에서 제거됨
+	// category?: string
+	// isPublic?: boolean
 	repeatType?: 'DAILY' | 'WEEKLY' | 'MONTHLY'
 	repeatDaysOfWeek?: string[]
 	repeatDaysOfMonth?: number[]
 	excludeHolidays?: boolean
-	memo?: string
-	tags: string[]
+	// memo?: string
+	// tags: string[]
 }

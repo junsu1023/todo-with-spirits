@@ -1,8 +1,9 @@
 import {
 	Calendar,
 	Clock,
-	LayoutList,
-	Lock,
+	// 카테고리·공개 상태 행이 빠지면서 사용 안 함
+	// LayoutList,
+	// Lock,
 	RefreshCw,
 	Star,
 	X,
@@ -10,7 +11,7 @@ import {
 import { useState } from 'react'
 import type { DayOfWeek, ItemType, PlanItem } from '../model/type'
 import { calcDday } from '@/shared/lib/dday'
-import { DropdownSelect } from '@/shared/ui/dropdown-select'
+// import { DropdownSelect } from '@/shared/ui/dropdown-select'
 
 const DAYS: { label: string; value: DayOfWeek }[] = [
 	{ label: '일', value: 'SUNDAY' },
@@ -22,15 +23,17 @@ const DAYS: { label: string; value: DayOfWeek }[] = [
 	{ label: '토', value: 'SATURDAY' },
 ]
 
-const CATEGORY_OPTIONS = [
-	'없음',
-	'업무/커리어',
-	'인간관계/약속',
-	'자기계발',
-	'건강',
-	'취미',
-]
-const PUBLIC_OPTIONS = ['비공개', '공개']
+// 카테고리·공개 상태·메모는 할 일 API에서 제거됨 (entity/task/model/type.ts 참고)
+// todo: 백엔드에서 다시 제공하면 주석 해제
+// const CATEGORY_OPTIONS = [
+// 	'없음',
+// 	'업무/커리어',
+// 	'인간관계/약속',
+// 	'자기계발',
+// 	'건강',
+// 	'취미',
+// ]
+// const PUBLIC_OPTIONS = ['비공개', '공개']
 
 function formatDateLabel(date: string, time?: string): string {
 	const d = new Date(date)
@@ -187,9 +190,10 @@ export function PlanItemForm({
 	const [excludeHolidays, setExcludeHolidays] = useState(
 		item.excludeHolidays ?? false,
 	)
-	const [category, setCategory] = useState(item.category ?? '없음')
-	const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
-	const [memo, setMemo] = useState(item.memo ?? '')
+	// 카테고리·공개 상태·메모는 API에서 제거됨
+	// const [category, setCategory] = useState(item.category ?? '없음')
+	// const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
+	// const [memo, setMemo] = useState(item.memo ?? '')
 
 	const isRoutine = type === 'routine'
 
@@ -231,10 +235,10 @@ export function PlanItemForm({
 			repeatDaysOfMonth:
 				isRoutine && repeatType === 'MONTHLY' ? repeatDaysOfMonth : undefined,
 			excludeHolidays: isRoutine ? excludeHolidays : undefined,
-			category,
-			isPublic: isPublic === '공개',
-			memo: memo.trim() || undefined,
-			tags: category !== '없음' ? [category] : [],
+			// category,
+			// isPublic: isPublic === '공개',
+			// memo: memo.trim() || undefined,
+			// tags: category !== '없음' ? [category] : [],
 		})
 	}
 
@@ -346,8 +350,8 @@ export function PlanItemForm({
 							</div>
 						)}
 
-						{/* 공휴일 제외 */}
-						<div className="flex items-center gap-2 border-b border-gray-100 py-3">
+						{/* 공휴일 제외 (카테고리·공개 상태가 빠지면서 마지막 행이 되어 아래 구분선 제거) */}
+						<div className="flex items-center gap-2 py-3">
 							<Checkbox
 								checked={excludeHolidays}
 								onChange={() => setExcludeHolidays((v) => !v)}
@@ -356,6 +360,7 @@ export function PlanItemForm({
 							<span className="text-sm text-gray-500">공휴일 제외</span>
 						</div>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow icon={<LayoutList size={16} />} label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_OPTIONS}
@@ -371,6 +376,7 @@ export function PlanItemForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				) : (
 					<>
@@ -390,7 +396,8 @@ export function PlanItemForm({
 							/>
 						</FormRow>
 
-						<FormRow icon={<Clock size={16} />} label="시간">
+						{/* 카테고리·공개 상태가 빠지면서 마지막 행 */}
+						<FormRow icon={<Clock size={16} />} label="시간" last>
 							<div className="flex items-center gap-3">
 								{timeEnabled && (
 									<input
@@ -407,6 +414,7 @@ export function PlanItemForm({
 							</div>
 						</FormRow>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow icon={<LayoutList size={16} />} label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_OPTIONS}
@@ -422,11 +430,12 @@ export function PlanItemForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				)}
 			</div>
 
-			{/* 메모 */}
+			{/* 메모는 API에서 제거됨
 			<textarea
 				value={memo}
 				onChange={(e) => setMemo(e.target.value)}
@@ -434,6 +443,7 @@ export function PlanItemForm({
 				rows={4}
 				className="flex-1 resize-none rounded-xl bg-gray-50 p-4 text-sm text-gray-700 outline-none placeholder:text-gray-300 focus:ring-1 focus:ring-[#B286FD]"
 			/>
+			*/}
 
 			<button
 				type="button"
