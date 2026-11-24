@@ -198,7 +198,7 @@ class HomeViewModelEventTest {
         assertFalse(viewModel.uiState.value.isSpiritMenuVisible)
     }
 
-    @Test fun spiritMenuAddClickedClosesMenuAndSendsNavigateToCalendar() = runTest(testDispatcher) {
+    @Test fun spiritMenuAddClickedClosesMenuAndSendsNavigateToAdd() = runTest(testDispatcher) {
         val viewModel = buildViewModel()
         viewModel.onEvent(HomeEvent.SpiritClicked)
 
@@ -206,6 +206,6 @@ class HomeViewModelEventTest {
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.value.isSpiritMenuVisible)
-        assertEquals(HomeEffect.NavigateToCalendar, viewModel.effect.first())
+        assertEquals(HomeEffect.NavigateToAdd, viewModel.effect.first())
     }
 }
