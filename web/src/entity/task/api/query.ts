@@ -1,24 +1,18 @@
 import { type ApiResponse, apiClient } from '@/lib/api'
-import type { CalendarDetail, TaskScheduleDetail, TaskScheduleParams } from '../model/type'
+import type { CalendarDetail, TaskScheduleParams } from '../model/type'
 
-function buildSearchParams(params?: TaskScheduleParams) {
-	const searchParams = new URLSearchParams()
-	if (params?.from) searchParams.set('from', params.from)
-	if (params?.to) searchParams.set('to', params.to)
-	return searchParams
-}
+// 서버에서 api/task/schedule, api/task/routine이 없어지고 GET api/task 하나로 합쳐졌다
+// export const getTaskSchedule = (params?: TaskScheduleParams) =>
+// 	apiClient
+// 		.get('api/task/schedule', { searchParams: buildSearchParams(params) })
+// 		.json<ApiResponse<TaskScheduleDetail>>()
 
-export const getTaskSchedule = (params?: TaskScheduleParams) =>
+// export const getRoutineList = (params?: TaskScheduleParams) =>
+// 	apiClient
+// 		.get('api/task/routine', { searchParams: buildSearchParams(params) })
+// 		.json<ApiResponse<TaskScheduleDetail>>()
+
+export const getTaskCalendar = ({ from, to }: TaskScheduleParams) =>
 	apiClient
-		.get('api/task/schedule', { searchParams: buildSearchParams(params) })
-		.json<ApiResponse<TaskScheduleDetail>>()
-
-export const getRoutineList = (params?: TaskScheduleParams) =>
-	apiClient
-		.get('api/task/routine', { searchParams: buildSearchParams(params) })
-		.json<ApiResponse<TaskScheduleDetail>>()
-
-export const getTaskCalendar = (params?: TaskScheduleParams) =>
-	apiClient
-		.get('api/task/calendar', { searchParams: buildSearchParams(params) })
+		.get('api/task', { searchParams: { from, to } })
 		.json<ApiResponse<CalendarDetail>>()

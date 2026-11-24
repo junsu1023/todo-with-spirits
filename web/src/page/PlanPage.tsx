@@ -12,18 +12,16 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/entity/task'
-import { getTaskCalendar } from '@/entity/task'
+import { getTaskCalendar, isRoutine } from '@/entity/task'
 import type { Category } from '@/entity/task/model/type'
 import { PlanItemForm } from '@/feature/task'
 import {
 	completeTask,
-	createRoutine,
-	createSchedule,
+	createTask,
 	deleteTasks,
 	postponeTask,
 	uncompleteTask,
-	updateRoutine,
-	updateSchedule,
+	updateTask,
 } from '@/feature/task/api/mutate'
 import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
 import type {
@@ -31,6 +29,7 @@ import type {
 	ItemType,
 	PlanItem,
 } from '@/feature/task/model/type'
+import { toRoutineUpdate, toScheduleUpdate } from '@/feature/task/model/update'
 import { addDays, calcDday, formatDday } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
@@ -92,7 +91,7 @@ function toPlanItem(item: CalendarItem): PlanItem {
 
 	return {
 		id: item.taskId,
-		type: item.taskType === 'ROUTINE' ? 'routine' : 'todo',
+		type: isRoutine(item) ? 'routine' : 'todo',
 		title: item.title,
 		starred: item.isImportant,
 		completed: item.isCompleted,
@@ -148,7 +147,7 @@ function PlanCalendar({ selectedDate, onDateChange }: PlanCalendarProps) {
 		const dateStr = item.occurrenceDate
 		if (!dateStr) return acc
 		if (!acc[dateStr]) acc[dateStr] = { hasTodo: false, hasRoutine: false }
-		if (item.taskType === 'ROUTINE') acc[dateStr].hasRoutine = true
+		if (isRoutine(item)) acc[dateStr].hasRoutine = true
 		else acc[dateStr].hasTodo = true
 		return acc
 	}, {})
@@ -544,18 +543,9 @@ export function PlanPage() {
 		},
 	})
 
-	const { mutate: updateScheduleMutate } = useMutation({
-		mutationFn: updateSchedule,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
-				setEditingId(null)
-			}
-		},
-	})
-
-	const { mutate: updateRoutineMutate } = useMutation({
-		mutationFn: updateRoutine,
+	// 할 일·루틴 모두 PATCH api/task/{taskId}
+	const { mutate: updateMutate } = useMutation({
+		mutationFn: updateTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -573,18 +563,9 @@ export function PlanPage() {
 		},
 	})
 
-	const { mutate: createScheduleMutate } = useMutation({
-		mutationFn: createSchedule,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
-				setIsAdding(false)
-			}
-		},
-	})
-
-	const { mutate: createRoutineMutate } = useMutation({
-		mutationFn: createRoutine,
+	// 할 일·루틴 모두 POST api/task (repeatType으로 구분)
+	const { mutate: createMutate } = useMutation({
+		mutationFn: createTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -623,7 +604,8 @@ export function PlanPage() {
 
 	const toggleCompleted = (id: number) => {
 		const item = items.find((i) => i.id === id)
-		if (!item) return
+		// 서버 완료 API는 date 필수
+		if (!item?.date) return
 		const vars = { taskId: id, date: item.date }
 		if (item.completed) uncomplete(vars)
 		else complete(vars)
@@ -638,12 +620,13 @@ export function PlanPage() {
 				const endDateTime = updated.time
 					? `${updated.date}T${updated.time}`
 					: `${updated.date}T23:59:59`
-				createScheduleMutate({
+				createMutate({
 					title: updated.title,
 					isAllDay: !updated.time,
 					startDatetime: `${updated.date}T00:00:00`,
 					endDateTime,
 					isImportant: updated.starred,
+					repeatType: 'NONE',
 					category: updated.category
 						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
 						: 'NONE',
@@ -653,7 +636,7 @@ export function PlanPage() {
 				return
 			}
 			if (updated.type === 'routine' && updated.repeatType) {
-				createRoutineMutate({
+				createMutate({
 					title: updated.title,
 					repeatType: updated.repeatType,
 					...(updated.repeatDaysOfWeek?.length && {
@@ -671,43 +654,54 @@ export function PlanPage() {
 			return
 		}
 
-		if (updated.type === 'todo' && updated.date) {
+		// PlanItem에 없는 값(알림, 반복 종료일)은 조회 원본에서 가져와 그대로 보낸다 (안 보내면 서버에서 지워짐)
+		const original =
+			dayData?.result === 'success'
+				? dayData.detail.items.find((i) => i.taskId === updated.id)
+				: undefined
+
+		if (original && updated.type === 'todo' && updated.date) {
 			const endDateTime = updated.time
 				? `${updated.date}T${updated.time}`
 				: `${updated.date}T23:59:59`
-			updateScheduleMutate({
-				taskId: updated.id,
-				title: updated.title,
-				endDateTime,
-				isAllDay: !updated.time,
-				isImportant: updated.starred,
-				category: updated.category
-					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-					: 'NONE',
-				isPublic: updated.isPublic ?? false,
-				memo: updated.memo,
-			})
+			updateMutate(
+				toScheduleUpdate(original, {
+					title: updated.title,
+					endDateTime,
+					isAllDay: !updated.time,
+					isImportant: updated.starred,
+					category: updated.category
+						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+						: 'NONE',
+					isPublic: updated.isPublic ?? false,
+					memo: updated.memo,
+				}),
+			)
 			return
 		}
 
-		if (updated.type === 'routine' && updated.repeatType) {
-			updateRoutineMutate({
-				taskId: updated.id,
-				title: updated.title,
-				repeatType: updated.repeatType,
-				...(updated.repeatDaysOfWeek?.length && {
-					repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
+		if (original && updated.type === 'routine' && updated.repeatType) {
+			updateMutate(
+				toRoutineUpdate(original, {
+					title: updated.title,
+					isImportant: updated.starred,
+					repeatType: updated.repeatType,
+					repeatDaysOfWeek:
+						updated.repeatType === 'WEEKLY'
+							? (updated.repeatDaysOfWeek as DayOfWeek[])
+							: undefined,
+					repeatDaysOfMonth:
+						updated.repeatType === 'MONTHLY'
+							? updated.repeatDaysOfMonth
+							: undefined,
+					category: updated.category
+						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+						: 'NONE',
+					isPublic: updated.isPublic ?? false,
+					excludeHoliday: updated.excludeHolidays ?? false,
+					memo: updated.memo,
 				}),
-				...(updated.repeatDaysOfMonth?.length && {
-					repeatDaysOfMonth: updated.repeatDaysOfMonth,
-				}),
-				category: updated.category
-					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-					: 'NONE',
-				isPublic: updated.isPublic ?? false,
-				excludeHoliday: updated.excludeHolidays ?? false,
-				memo: updated.memo,
-			})
+			)
 			return
 		}
 

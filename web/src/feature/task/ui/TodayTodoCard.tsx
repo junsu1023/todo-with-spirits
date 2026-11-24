@@ -5,15 +5,17 @@ import { Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { getTaskCalendar } from '@/entity/task/api/query'
+import { isRoutine } from '@/entity/task/model/repeat'
 import type { CalendarItem, RepeatType } from '@/entity/task/model/type'
 import {
 	completeTask,
 	deleteTasks,
 	postponeTask,
 	uncompleteTask,
-	updateSchedule,
+	updateTask,
 } from '../api/mutate'
 import { getPostponeErrorMessage } from '../model/postponeErrorMessage'
+import { toScheduleUpdate } from '../model/update'
 import { TaskEditForm } from './TaskEditForm'
 import { TaskInputDock } from './TaskInputDock'
 import { TaskItem } from './TaskItem'
@@ -24,6 +26,7 @@ import { Dialog, DialogPopup } from '@/shared/ui/dialog'
 type DisplayRepeatType = '매일' | '매주' | '매월'
 
 const REPEAT_MAP: Record<RepeatType, DisplayRepeatType | null> = {
+	NONE: null,
 	DAILY: '매일',
 	WEEKLY: '매주',
 	MONTHLY: '매월',
@@ -60,8 +63,8 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 	const [mainTab, setMainTab] = useState<MainTab>('todo')
 
 	const allItems = dayData?.result === 'success' ? dayData.detail.items : []
-	const apiTodos = allItems.filter((i) => i.taskType !== 'ROUTINE')
-	const apiRoutines = allItems.filter((i) => i.taskType === 'ROUTINE')
+	const apiTodos = allItems.filter((i) => !isRoutine(i))
+	const apiRoutines = allItems.filter(isRoutine)
 
 	const displayedTodos =
 		mainTab === 'todo' ? apiTodos : apiTodos.filter((t) => t.isCompleted)
@@ -105,31 +108,20 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 		postponeItem({
 			taskId: item.taskId,
 			// 루틴은 originalDate 필수 (변경 전 발생일)
-			originalDate:
-				item.taskType === 'ROUTINE' ? item.occurrenceDate : undefined,
+			originalDate: isRoutine(item) ? item.occurrenceDate : undefined,
 			newDate: addDays(item.occurrenceDate, 1),
 		})
 
 	const { mutate: toggleImportant } = useMutation({
-		mutationFn: updateSchedule,
+		mutationFn: updateTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') invalidate()
 		},
 	})
 
-	const handleToggleImportant = (todo: CalendarItem) => {
-		const date = todo.endDate ?? dateStr
-		const endDateTime = todo.isAllDay
-			? `${date}T23:59:59`
-			: `${date}T${todo.endTime ?? '23:59:59'}`
-		toggleImportant({
-			taskId: todo.taskId,
-			title: todo.title,
-			endDateTime,
-			isAllDay: todo.isAllDay ?? true,
-			isImportant: !todo.isImportant,
-		})
-	}
+	// 기존 날짜·시간·알림을 그대로 담아 중요 값만 바꾼다 (안 보낸 값은 서버에서 지워짐)
+	const handleToggleImportant = (todo: CalendarItem) =>
+		toggleImportant(toScheduleUpdate(todo, { isImportant: !todo.isImportant }))
 
 	const [editingItem, setEditingItem] = useState<CalendarItem | null>(null)
 

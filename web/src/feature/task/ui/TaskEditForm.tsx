@@ -1,9 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { isRoutine as isRoutineItem } from '@/entity/task/model/repeat'
 import type { CalendarItem, Category } from '@/entity/task/model/type'
-import { updateRoutine, updateSchedule } from '@/feature/task/api/mutate'
+import { updateTask } from '@/feature/task/api/mutate'
 import type { DayOfWeek } from '@/feature/task/model/type'
+import {
+	toRoutineRepeatType,
+	toRoutineUpdate,
+	toScheduleUpdate,
+} from '@/feature/task/model/update'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -129,10 +135,11 @@ interface TaskEditFormProps {
 	onCancel: () => void
 }
 
-function todayStr() {
-	const d = new Date()
-	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
+// 서버 응답에서 endDate가 빠져 할 일 날짜는 occurrenceDate를 쓴다
+// function todayStr() {
+// 	const d = new Date()
+// 	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+// }
 
 export function TaskEditForm({
 	item,
@@ -141,7 +148,7 @@ export function TaskEditForm({
 }: TaskEditFormProps) {
 	const queryClient = useQueryClient()
 
-	const isRoutine = item.taskType === 'ROUTINE'
+	const isRoutine = isRoutineItem(item)
 
 	// common
 	const [title, setTitle] = useState(item.title)
@@ -151,21 +158,22 @@ export function TaskEditForm({
 
 	// schedule only
 	const [isImportant, setIsImportant] = useState(item.isImportant)
-	const [date, setDate] = useState(item.endDate ?? todayStr())
+	const [date, setDate] = useState(item.occurrenceDate)
 	const [timeEnabled, setTimeEnabled] = useState(item.isAllDay === false)
 	const [time, setTime] = useState(item.endTime?.slice(0, 5) ?? '00:00')
 
 	// routine only
-	const [repeatType, setRepeatType] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>(
-		item.repeatType === 'DAILY' ||
-			item.repeatType === 'WEEKLY' ||
-			item.repeatType === 'MONTHLY'
-			? item.repeatType
-			: 'DAILY',
+	const [repeatType, setRepeatType] = useState(toRoutineRepeatType(item))
+	// 기존 반복 설정으로 채운다
+	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>(
+		(item.repeatDaysOfWeek ?? []) as DayOfWeek[],
 	)
-	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>([])
-	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>([])
-	const [excludeHolidays, setExcludeHolidays] = useState(false)
+	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>(
+		item.repeatDaysOfMonth ?? [],
+	)
+	const [excludeHolidays, setExcludeHolidays] = useState(
+		item.excludeHoliday ?? false,
+	)
 
 	const invalidate = () => {
 		queryClient.invalidateQueries({
@@ -173,8 +181,9 @@ export function TaskEditForm({
 		})
 	}
 
-	const { mutate: saveSchedule, isPending: isSavingSchedule } = useMutation({
-		mutationFn: updateSchedule,
+	// 할 일·루틴 모두 PATCH api/task/{taskId}
+	const { mutate: save, isPending } = useMutation({
+		mutationFn: updateTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				invalidate()
@@ -182,18 +191,6 @@ export function TaskEditForm({
 			}
 		},
 	})
-
-	const { mutate: saveRoutine, isPending: isSavingRoutine } = useMutation({
-		mutationFn: updateRoutine,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				invalidate()
-				onSuccess()
-			}
-		},
-	})
-
-	const isPending = isSavingSchedule || isSavingRoutine
 
 	const toggleDay = (day: DayOfWeek) =>
 		setRepeatDaysOfWeek((prev) =>
@@ -211,31 +208,36 @@ export function TaskEditForm({
 		if (isRoutine) {
 			if (repeatType === 'WEEKLY' && repeatDaysOfWeek.length === 0) return
 			if (repeatType === 'MONTHLY' && repeatDaysOfMonth.length === 0) return
-			saveRoutine({
-				taskId: item.taskId,
-				title: title.trim(),
-				repeatType,
-				...(repeatType === 'WEEKLY' && { repeatDaysOfWeek }),
-				...(repeatType === 'MONTHLY' && { repeatDaysOfMonth }),
-				excludeHoliday: excludeHolidays,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
-			})
+			// 화면에 없는 값(중요, 알림, 반복 종료일)은 기존 값을 그대로 보낸다
+			save(
+				toRoutineUpdate(item, {
+					title: title.trim(),
+					repeatType,
+					repeatDaysOfWeek: repeatType === 'WEEKLY' ? repeatDaysOfWeek : undefined,
+					repeatDaysOfMonth:
+						repeatType === 'MONTHLY' ? repeatDaysOfMonth : undefined,
+					excludeHoliday: excludeHolidays,
+					category,
+					isPublic: isPublic === '공개',
+					memo: memo.trim() || undefined,
+				}),
+			)
 		} else {
 			const endDateTime = timeEnabled
 				? `${date}T${time}:00`
 				: `${date}T23:59:59`
-			saveSchedule({
-				taskId: item.taskId,
-				title: title.trim(),
-				endDateTime,
-				isAllDay: !timeEnabled,
-				isImportant,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
-			})
+			// 화면에 없는 값(알림)은 기존 값을 그대로 보낸다
+			save(
+				toScheduleUpdate(item, {
+					title: title.trim(),
+					endDateTime,
+					isAllDay: !timeEnabled,
+					isImportant,
+					category,
+					isPublic: isPublic === '공개',
+					memo: memo.trim() || undefined,
+				}),
+			)
 		}
 	}
 

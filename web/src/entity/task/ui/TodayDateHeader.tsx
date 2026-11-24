@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/routes'
 import { getTaskCalendar } from '../api/query'
+import { isRoutine } from '../model/repeat'
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 const WEEKDAYS_KO = [
@@ -78,7 +79,7 @@ export function TodayDateHeader({
 		const dateStr = item.occurrenceDate
 		if (!dateStr) return acc
 		if (!acc[dateStr]) acc[dateStr] = { hasTodo: false, hasRoutine: false }
-		if (item.taskType === 'ROUTINE') {
+		if (isRoutine(item)) {
 			acc[dateStr].hasRoutine = true
 		} else {
 			acc[dateStr].hasTodo = true
