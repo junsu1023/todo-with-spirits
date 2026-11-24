@@ -29,7 +29,8 @@ export const sendEmailVerificationApi = (email: string) =>
 		})
 		.json<ApiResponse<null>>()
 
-export const verifyEmailCodeApi = (body: { email: string; code: number }) =>
+// code: 서버 EmailVerifyRequest는 6자리 문자열 (앞자리 0 포함)
+export const verifyEmailCodeApi = (body: { email: string; code: string }) =>
 	apiClient
 		.post('api/user/email/verify', { json: body, throwHttpErrors: false })
 		.json<ApiResponse<null>>()

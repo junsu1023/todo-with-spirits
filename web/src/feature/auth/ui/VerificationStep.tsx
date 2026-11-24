@@ -64,10 +64,11 @@ export function VerificationStep({
 
 	const { mutate: verify, isPending } = useMutation({
 		mutationFn: async () => {
-			const codeNum = parseInt(code, 10)
-			if (Number.isNaN(codeNum)) throw new Error('invalid_code')
+			// 서버는 6자리 문자열(\d{6})로 받는다. 숫자로 바꾸면 0으로 시작하는 코드의 앞자리 0이 사라진다
+			const trimmedCode = code.trim()
+			if (!/^\d{6}$/.test(trimmedCode)) throw new Error('invalid_code')
 
-			const verifyRes = await verifyEmailCodeApi({ email, code: codeNum })
+			const verifyRes = await verifyEmailCodeApi({ email, code: trimmedCode })
 			if (verifyRes.result !== 'success') throw new Error('wrong_code')
 
 			const signupRes = await signupApi({ email, password })
