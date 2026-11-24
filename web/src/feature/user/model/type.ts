@@ -4,13 +4,18 @@ export type EmailVerificationStatus =
 	| 'VERIFIED'
 	| 'UNVERIFIED'
 	| 'NEEDS_REVERIFICATION'
-export type PlanType = 'MONTHLY' | 'YEARLY'
+// 서버 PlanType. 구독한 적 없으면 FREE (서버가 조회 시 FREE 구독을 만들어 돌려준다)
+export type PlanType = 'FREE' | 'MONTHLY' | 'YEARLY'
 
+// 서버 SubscriptionResponse
 export interface SubscriptionDetail {
 	planType: PlanType
-	startedAt: string
-	expiresAt: string
+	// FREE면 null
+	startedAt: string | null
+	// FREE이거나 만료일 없는 구독이면 null
+	expiresAt: string | null
 	autoRenew: boolean
+	// 유료 구독이 활성 상태인지 (만료일 반영). 유료 플랜이어도 만료되면 false
 	premium: boolean
 }
 export type LoginType = 'LOCAL' | 'SOCIAL'
