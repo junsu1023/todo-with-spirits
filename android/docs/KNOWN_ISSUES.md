@@ -24,7 +24,7 @@
 | BUG-10 | 중간 | Android | 요청이 겹치면 로딩과 터치 차단이 일찍 풀림 | - | 완료 |
 | BUG-11 | 중간 | Android | 알림 설정 화면에 로딩·터치 차단 없음 | - | 완료 |
 | BUG-12 | 낮음 | Android | 로그인 실패 팝업이 떠도 키보드와 입력이 남음 | 기기 확인 | 완료 |
-| BUG-13 | 낮음 | Android | 홈 상세 팝업만 작게 보임 | 카드 폭 Figma 확인 | 대기 |
+| BUG-13 | 낮음 | Android | 홈 상세 팝업만 작게 보임 | - | 완료 |
 | BUG-14 | 낮음 | Test | `HomeViewModelEventTest` 1개 실패 | - | 완료 |
 | BUG-15 | 낮음 | Android | 인증 중 Activity가 재생성되면 소셜 로그인 취소 | 현재는 유지 권장 | 보류 |
 
@@ -157,6 +157,7 @@
 - **원인**: `app/feature/home/component/TodoDetailPopup.kt`의 `Dialog`가 `LocalDensity`를 기기 기본값으로 되돌려 테마의 360dp 기준 스케일이 빠진다.
 - **수정**: `Dialog` 내용을 `SpiritTodoTheme`으로 감싼다. 현재 카드 폭 274dp와 테두리는 Figma에서 다시 확인한다.
 - **완료 조건**: 같은 dp 값이 본 화면과 팝업에서 같은 크기로 보인다.
+- **상태**: 완료 (2026-11-24). `Dialog` 내용을 `SpiritTodoTheme`으로 감싸고, 카드 폭을 Figma(308×152)에 맞춰 274dp → 308dp로 바꿨다. 컴파일만 확인했고 기기 확인이 필요하다.
 
 ### BUG-14. `HomeViewModelEventTest` 실패
 
