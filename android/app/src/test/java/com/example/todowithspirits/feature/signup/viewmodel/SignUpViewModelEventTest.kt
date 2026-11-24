@@ -314,6 +314,41 @@ class SignUpViewModelEventTest {
         assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
     }
 
+    // BUG-08: 인증 요청 중 뒤로가기는 무시되고, 응답이 오면 닉네임 단계로 이어진다.
+    @Test fun backClickedWhileVerifyingIsIgnored() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+        assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
+
+        authRepository.verifyCodeResponse.complete(Result.success(Unit))
+        authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
+        authRepository.loginResponse.complete(
+            Result.success(LoginSession(1, "a@b.com", "정령", "access", "refresh", "Bearer"))
+        )
+        runCurrent()
+
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+        authRepository.restoreSessionRequested.await()
+    }
+
+    @Test fun backClickedAfterVerifyFailedGoesBack() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.failure(IllegalStateException("인증 실패")))
+        runCurrent()
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+
+        assertEquals(SignUpStep.CREDENTIALS, viewModel.uiState.value.step)
+    }
+
     @Test fun resendSucceededClearsCodeAndShowsToast() = runTest(testDispatcher) {
         val viewModel = buildViewModelAtVerification()
         val effects = mutableListOf<SignUpEffect>()

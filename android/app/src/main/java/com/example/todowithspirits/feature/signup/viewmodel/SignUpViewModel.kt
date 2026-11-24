@@ -49,6 +49,8 @@ class SignUpViewModel @Inject constructor(
     val effect: Flow<SignUpEffect> = _effect.receiveAsFlow()
 
     private var verificationTimerJob: Job? = null
+    private var isVerifying = false
+    private var isTimeoutPending = false
 
     fun onEvent(event: SignUpEvent) {
         when (event) {
@@ -68,7 +70,7 @@ class SignUpViewModel @Inject constructor(
     private fun goBack() {
         when (_uiState.value.step) {
             SignUpStep.CREDENTIALS -> sendEffect(SignUpEffect.NavigateBack)
-            SignUpStep.EMAIL_VERIFICATION -> goBackToCredentials()
+            SignUpStep.EMAIL_VERIFICATION -> if (!isVerifying) goBackToCredentials()
             SignUpStep.NICKNAME -> sendEffect(SignUpEffect.NavigateBack)
         }
     }
@@ -203,6 +205,8 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun verifyEmailCode() {
+        if (isVerifying) return
+
         val state = _uiState.value
         val code = state.verificationCode
 
@@ -211,29 +215,50 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
+        isVerifying = true
+
         viewModelScope.launchWithLoading {
-            verifyEmailCodeUseCase(state.email, code).onSuccess {
-                Log.d(TAG, "verifyEmailCode success")
-                cancelVerificationTimer()
-                 performSignUp(
-                     onSuccess = {
-                         _uiState.update {
-                             it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME)
-                         }
-                     }
-                 )
-            }.onFailure { error ->
-                Log.e(TAG, "verifyEmailCode failed!", error)
-
-                val message = if (error is FieldValidationException) {
-                    error.fieldErrors.values.firstOrNull() ?: error.message
-                } else {
-                    error.localizedMessage
-                } ?: "인증번호가 일치하지 않습니다."
-
-                _uiState.update { it.copy(fieldErrors = mapOf("verificationCode" to message)) }
-                emitErrorMsg(message)
+            try {
+                verifyAndSignUp(state.email, code)
+            } finally {
+                isVerifying = false
+                applyPendingTimeout()
             }
+        }
+    }
+
+    private suspend fun verifyAndSignUp(email: String, code: String) {
+        verifyEmailCodeUseCase(email, code).onSuccess {
+            Log.d(TAG, "verifyEmailCode success")
+            cancelVerificationTimer()
+            performSignUp(
+                onSuccess = {
+                    _uiState.update {
+                        it.copy(fieldErrors = emptyMap(), step = SignUpStep.NICKNAME)
+                    }
+                }
+            )
+        }.onFailure { error ->
+            Log.e(TAG, "verifyEmailCode failed!", error)
+
+            val message = if (error is FieldValidationException) {
+                error.fieldErrors.values.firstOrNull() ?: error.message
+            } else {
+                error.localizedMessage
+            } ?: "인증번호가 일치하지 않습니다."
+
+            _uiState.update { it.copy(fieldErrors = mapOf("verificationCode" to message)) }
+            emitErrorMsg(message)
+        }
+    }
+
+    // 요청 중에 만료된 경우, 아직 인증 단계에 머물러 있을 때만(가입 실패 등) 시간 초과를 처리한다.
+    private fun applyPendingTimeout() {
+        if (!isTimeoutPending) return
+
+        isTimeoutPending = false
+        if (_uiState.value.step == SignUpStep.EMAIL_VERIFICATION) {
+            handleVerificationTimeout()
         }
     }
 
@@ -251,7 +276,7 @@ class SignUpViewModel @Inject constructor(
                 _uiState.update { it.copy(verificationRemainingSeconds = remainingSeconds) }
 
                 if (remaining <= 0L) {
-                    handleVerificationTimeout()
+                    if (isVerifying) isTimeoutPending = true else handleVerificationTimeout()
                     break
                 }
 
