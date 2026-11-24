@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
-	BarChart2,
+	// 기록 탭 제거로 사용 안 함
+	// BarChart2,
 	CalendarDays,
 	CalendarRange,
 	LogOut,
@@ -30,7 +31,8 @@ const navItems = [
 	{ label: 'Today', icon: CalendarDays, href: ROUTES.TODAY },
 	{ label: 'Plan', icon: CalendarRange, href: ROUTES.PLAN },
 	{ label: 'Forest', icon: TreePine, href: ROUTES.FOREST },
-	{ label: 'Record', icon: BarChart2, href: ROUTES.RECORD },
+	// 기록 탭 제거: 서버 기록 API 삭제(back becd231), android에도 기록 화면 없음
+	// { label: 'Record', icon: BarChart2, href: ROUTES.RECORD },
 	{ label: 'MyPage', icon: User, href: ROUTES.MYPAGE },
 ]
 

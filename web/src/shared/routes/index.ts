@@ -9,5 +9,6 @@ export const ROUTES = {
 	MYPAGE_SETTING_DISPLAY: '/mypage/setting/display',
 	MYPAGE_SUPPORT: '/mypage/setting/support',
 	FOREST: '/forest',
-	RECORD: '/record',
+	// 기록 탭 제거 (app/router.tsx 참고)
+	// RECORD: '/record',
 } as const
