@@ -290,6 +290,14 @@ export function PlanItemForm({
 			<div className="flex flex-col rounded-xl bg-gray-50 px-4">
 				{isRoutine ? (
 					<>
+						{/* 중요 표시는 할 일·루틴 공통 (서버 할 일·루틴 API 통합 후 루틴도 지원) */}
+						<FormRow icon={<Star size={16} />} label="중요">
+							<Checkbox
+								checked={starred}
+								onChange={() => setStarred((s) => !s)}
+							/>
+						</FormRow>
+
 						{/* 반복 유형 */}
 						<FormRow icon={<RefreshCw size={16} />} label="반복">
 							<div className="flex gap-1.5">

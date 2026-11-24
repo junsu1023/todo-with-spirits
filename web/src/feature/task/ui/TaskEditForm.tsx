@@ -161,8 +161,10 @@ export function TaskEditForm({
 	// const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
 	// const [memo, setMemo] = useState(item.memo ?? '')
 
-	// schedule only
+	// 중요 표시는 할 일·루틴 공통 (서버 할 일·루틴 API 통합 후 루틴도 지원)
 	const [isImportant, setIsImportant] = useState(item.isImportant)
+
+	// schedule only
 	const [date, setDate] = useState(item.occurrenceDate)
 	const [timeEnabled, setTimeEnabled] = useState(item.isAllDay === false)
 	const [time, setTime] = useState(item.endTime?.slice(0, 5) ?? '00:00')
@@ -213,10 +215,11 @@ export function TaskEditForm({
 		if (isRoutine) {
 			if (repeatType === 'WEEKLY' && repeatDaysOfWeek.length === 0) return
 			if (repeatType === 'MONTHLY' && repeatDaysOfMonth.length === 0) return
-			// 화면에 없는 값(중요, 알림, 반복 종료일)은 기존 값을 그대로 보낸다
+			// 화면에 없는 값(알림, 반복 종료일)은 기존 값을 그대로 보낸다
 			save(
 				toRoutineUpdate(item, {
 					title: title.trim(),
+					isImportant,
 					repeatType,
 					repeatDaysOfWeek: repeatType === 'WEEKLY' ? repeatDaysOfWeek : undefined,
 					repeatDaysOfMonth:
@@ -280,6 +283,13 @@ export function TaskEditForm({
 			<div className="flex flex-col rounded-xl bg-gray-50 px-4">
 				{isRoutine ? (
 					<>
+						<FormRow label="중요">
+							<Checkbox
+								checked={isImportant}
+								onChange={() => setIsImportant((v) => !v)}
+							/>
+						</FormRow>
+
 						{/* 반복 */}
 						<FormRow label="반복">
 							<div className="flex gap-1.5">

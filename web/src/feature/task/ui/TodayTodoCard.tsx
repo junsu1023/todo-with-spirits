@@ -15,7 +15,7 @@ import {
 	updateTask,
 } from '../api/mutate'
 import { getPostponeErrorMessage } from '../model/postponeErrorMessage'
-import { toScheduleUpdate } from '../model/update'
+import { toRoutineUpdate, toScheduleUpdate } from '../model/update'
 import { TaskEditForm } from './TaskEditForm'
 import { TaskInputDock } from './TaskInputDock'
 import { TaskItem } from './TaskItem'
@@ -119,9 +119,37 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 		},
 	})
 
-	// 기존 날짜·시간·알림을 그대로 담아 중요 값만 바꾼다 (안 보낸 값은 서버에서 지워짐)
-	const handleToggleImportant = (todo: CalendarItem) =>
-		toggleImportant(toScheduleUpdate(todo, { isImportant: !todo.isImportant }))
+	// 기존 값(날짜·시간·알림·반복)을 그대로 담아 중요 값만 바꾼다 (안 보낸 값은 서버에서 지워짐)
+	const handleToggleImportant = (item: CalendarItem) => {
+		const overrides = { isImportant: !item.isImportant }
+		toggleImportant(
+			isRoutine(item)
+				? toRoutineUpdate(item, overrides)
+				: toScheduleUpdate(item, overrides),
+		)
+	}
+
+	// 할 일·루틴 공통 별 버튼 (루틴 중요 표시는 서버 할 일·루틴 API 통합 후 지원)
+	const renderImportant = (item: CalendarItem) => (
+		<button
+			type="button"
+			onClick={(e) => {
+				e.stopPropagation()
+				handleToggleImportant(item)
+			}}
+			aria-label={item.isImportant ? '중요 해제' : '중요 표시'}
+			className="shrink-0"
+		>
+			<Star
+				size={16}
+				className={
+					item.isImportant
+						? 'fill-[#B286FD] text-[#B286FD]'
+						: 'text-gray-200 hover:text-gray-300'
+				}
+			/>
+		</button>
+	)
 
 	const [editingItem, setEditingItem] = useState<CalendarItem | null>(null)
 
@@ -189,25 +217,7 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 											</span>
 										) : undefined
 									}
-									trailing={
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation()
-												handleToggleImportant(todo)
-											}}
-											className="shrink-0"
-										>
-											<Star
-												size={16}
-												className={
-													todo.isImportant
-														? 'fill-[#B286FD] text-[#B286FD]'
-														: 'text-gray-200 hover:text-gray-300'
-												}
-											/>
-										</button>
-									}
+									trailing={renderImportant(todo)}
 								/>
 							))}
 						</Accordion.Root>
@@ -252,6 +262,7 @@ export function TodayTodoCard({ selectedDate }: TodayTodoCardProps) {
 											{formatRepeat(routine.repeatType)}
 										</span>
 									}
+									trailing={renderImportant(routine)}
 								/>
 							))}
 						</Accordion.Root>

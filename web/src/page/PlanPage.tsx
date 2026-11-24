@@ -643,6 +643,7 @@ export function PlanPage() {
 			if (updated.type === 'routine' && updated.repeatType) {
 				createMutate({
 					title: updated.title,
+					isImportant: updated.starred,
 					repeatType: updated.repeatType,
 					...(updated.repeatDaysOfWeek?.length && {
 						repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
