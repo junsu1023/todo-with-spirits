@@ -30,14 +30,8 @@ export const useAuthStore = create<AuthState>()(
 
 			setAuth: (payload) => set(payload),
 			setTokens: (tokens) => set(tokens),
-			setSocialAuth: ({ userId, accessToken, refreshToken }) =>
-				set({
-					...initialState,
-					userId,
-					accessToken,
-					refreshToken,
-					tokenType: 'Bearer',
-				}),
+			// 일반 로그인과 같은 값을 저장한다 (nickname은 익스텐션 사이드패널 인사말에서 사용)
+			setSocialAuth: (payload) => set({ ...initialState, ...payload }),
 			clearAuth: () => set(initialState),
 		}),
 		{
