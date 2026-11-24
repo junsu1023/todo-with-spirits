@@ -70,11 +70,11 @@ export function RecordPage() {
 		일간: (
 			<RecordDailyReport
 				spiritName={spirit?.spiritName}
-				spiritImageUrl={spirit?.imageUrl}
+				spiritImageUrl={spirit?.image?.url ?? undefined}
 			/>
 		),
 		주간: <RecordWeeklyReport date={weekDate} />,
-		월간: <RecordMonthlyReport date={monthDate} spiritImageUrl={spirit?.imageUrl} />,
+		월간: <RecordMonthlyReport date={monthDate} spiritImageUrl={spirit?.image?.url ?? undefined} />,
 	} satisfies Record<RecordTab, ReactNode>
 
 	return (

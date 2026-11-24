@@ -8,7 +8,8 @@ import { KakaoCallbackPage } from '@/page/KakaoCallbackPage'
 import { LoginPage } from '@/page/LoginPage'
 import { MePage } from '@/page/MePage'
 import { PlanPage } from '@/page/PlanPage'
-import RecordPage from '@/page/RecordPage'
+// 기록 탭 제거: 서버 기록 API 삭제(back becd231), android에도 기록 화면 없음
+// import RecordPage from '@/page/RecordPage'
 import { SettingPage } from '@/page/SettingPage'
 import { TodayPage } from '@/page/TodayPage'
 import { AppLayout } from '@/shared/layout/AppLayout'
@@ -81,10 +82,11 @@ export const router = createBrowserRouter([
 				path: ROUTES.FOREST,
 				element: <ForestPage />,
 			},
-			{
-				path: ROUTES.RECORD,
-				element: <RecordPage />,
-			},
+			// 기록 탭 제거 (위 import 참고)
+			// {
+			// 	path: ROUTES.RECORD,
+			// 	element: <RecordPage />,
+			// },
 		],
 	},
 ])

@@ -15,12 +15,18 @@ export interface SocialLoginRequest {
 	email?: string
 }
 
+// 서버는 소셜 로그인도 일반 로그인과 같은 LoginResponse를 준다 (android SocialLoginResponse와 같음)
+// 소셜 계정은 이메일이 없을 수 있다
 export interface SocialLoginResponse {
-	userId: number
+	tokenType: string
 	accessToken: string
 	refreshToken: string
-	premium: boolean
-	isNewUser: boolean
+	userId: number
+	email: string | null
+	nickname: string
+	// 서버 응답에 없는 값
+	// premium: boolean
+	// isNewUser: boolean
 }
 
 export interface SignupRequest {

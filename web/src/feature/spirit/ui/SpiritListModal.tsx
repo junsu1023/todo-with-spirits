@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import { getSpiritList } from '@/entity/spirit'
+import { getSpiritList, type Spirit } from '@/entity/spirit'
 import { SpiritCard } from '@/entity/spirit/ui/SpiritCard'
 import {
 	Dialog,
@@ -35,6 +35,15 @@ export function SpiritListModal({
 		queryFn: getSpiritList,
 		enabled: open,
 	})
+
+	// GET api/spirits는 정령도감(보유하지 않은 종류 포함)이라 보유한 정령만 보여준다
+	const ownedSpirits =
+		spiritListData?.result === 'success'
+			? spiritListData.detail.filter(
+					(spirit): spirit is Spirit & { spiritId: number } =>
+						spirit.isOwned && spirit.spiritId !== null,
+				)
+			: []
 
 	const { mutate: changeRepresentative, isPending: isChanging } = useMutation({
 		mutationFn: changeRepresentativeSpirit,
@@ -77,14 +86,15 @@ export function SpiritListModal({
 					)}
 					{spiritListData?.result === 'success' && (
 						<div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-							{spiritListData.detail.length > 0 ? (
-								spiritListData.detail.map((spirit) => (
+							{ownedSpirits.length > 0 ? (
+								// 대표 정령 변경(PATCH api/spirits/current)의 id는 정령 개체 id(spiritId)
+								ownedSpirits.map((spirit) => (
 									<SpiritCard
-										key={spirit.id}
+										key={spirit.spiritId}
 										spirit={spirit}
-										isRepresentative={spirit.representative}
-										isSelected={selectedId === spirit.id}
-										onClick={() => setSelectedId(spirit.id)}
+										isRepresentative={spirit.isRepresentative ?? false}
+										isSelected={selectedId === spirit.spiritId}
+										onClick={() => setSelectedId(spirit.spiritId)}
 									/>
 								))
 							) : (

@@ -1,31 +1,41 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import type { CalendarItem, Category } from '@/entity/task/model/type'
-import { updateRoutine, updateSchedule } from '@/feature/task/api/mutate'
+import { isRoutine as isRoutineItem } from '@/entity/task/model/repeat'
+import type { CalendarItem } from '@/entity/task/model/type'
+import { updateTask } from '@/feature/task/api/mutate'
 import type { DayOfWeek } from '@/feature/task/model/type'
-import { DropdownSelect } from '@/shared/ui/dropdown-select'
+import {
+	toRoutineRepeatType,
+	toRoutineUpdate,
+	toScheduleUpdate,
+} from '@/feature/task/model/update'
+
+// 카테고리·공개 상태 선택이 빠지면서 사용 안 함
+// import { DropdownSelect } from '@/shared/ui/dropdown-select'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CATEGORY_OPTIONS: { label: string; value: Category }[] = [
-	{ label: '없음', value: 'NONE' },
-	{ label: '업무/커리어', value: 'WORK' },
-	{ label: '인간관계/약속', value: 'RELATIONSHIP' },
-	{ label: '자기계발', value: 'GROWTH' },
-	{ label: '건강', value: 'HEALTH' },
-	{ label: '취미', value: 'HOBBY' },
-	{ label: '금융', value: 'FINANCE' },
-	{ label: '기타', value: 'ETC' },
-]
-
-const CATEGORY_LABELS = CATEGORY_OPTIONS.map((o) => o.label)
-const labelToCategory = (label: string): Category =>
-	CATEGORY_OPTIONS.find((o) => o.label === label)?.value ?? 'NONE'
-const categoryToLabel = (cat: Category): string =>
-	CATEGORY_OPTIONS.find((o) => o.value === cat)?.label ?? '없음'
-
-const PUBLIC_OPTIONS = ['비공개', '공개']
+// 카테고리·공개 상태·메모는 할 일 API에서 제거됨 (entity/task/model/type.ts 참고)
+// todo: 백엔드에서 다시 제공하면 주석 해제
+// const CATEGORY_OPTIONS: { label: string; value: Category }[] = [
+// 	{ label: '없음', value: 'NONE' },
+// 	{ label: '업무/커리어', value: 'WORK' },
+// 	{ label: '인간관계/약속', value: 'RELATIONSHIP' },
+// 	{ label: '자기계발', value: 'GROWTH' },
+// 	{ label: '건강', value: 'HEALTH' },
+// 	{ label: '취미', value: 'HOBBY' },
+// 	{ label: '금융', value: 'FINANCE' },
+// 	{ label: '기타', value: 'ETC' },
+// ]
+//
+// const CATEGORY_LABELS = CATEGORY_OPTIONS.map((o) => o.label)
+// const labelToCategory = (label: string): Category =>
+// 	CATEGORY_OPTIONS.find((o) => o.label === label)?.value ?? 'NONE'
+// const categoryToLabel = (cat: Category): string =>
+// 	CATEGORY_OPTIONS.find((o) => o.value === cat)?.label ?? '없음'
+//
+// const PUBLIC_OPTIONS = ['비공개', '공개']
 
 const DAY_OPTIONS: { label: string; value: DayOfWeek }[] = [
 	{ label: '일', value: 'SUNDAY' },
@@ -129,10 +139,11 @@ interface TaskEditFormProps {
 	onCancel: () => void
 }
 
-function todayStr() {
-	const d = new Date()
-	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
+// 서버 응답에서 endDate가 빠져 할 일 날짜는 occurrenceDate를 쓴다
+// function todayStr() {
+// 	const d = new Date()
+// 	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+// }
 
 export function TaskEditForm({
 	item,
@@ -141,31 +152,35 @@ export function TaskEditForm({
 }: TaskEditFormProps) {
 	const queryClient = useQueryClient()
 
-	const isRoutine = item.taskType === 'ROUTINE'
+	const isRoutine = isRoutineItem(item)
 
 	// common
 	const [title, setTitle] = useState(item.title)
-	const [category, setCategory] = useState<Category>(item.category ?? 'NONE')
-	const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
-	const [memo, setMemo] = useState(item.memo ?? '')
+	// 카테고리·공개 상태·메모는 API에서 제거됨
+	// const [category, setCategory] = useState<Category>(item.category ?? 'NONE')
+	// const [isPublic, setIsPublic] = useState(item.isPublic ? '공개' : '비공개')
+	// const [memo, setMemo] = useState(item.memo ?? '')
+
+	// 중요 표시는 할 일·루틴 공통 (서버 할 일·루틴 API 통합 후 루틴도 지원)
+	const [isImportant, setIsImportant] = useState(item.isImportant)
 
 	// schedule only
-	const [isImportant, setIsImportant] = useState(item.isImportant)
-	const [date, setDate] = useState(item.endDate ?? todayStr())
+	const [date, setDate] = useState(item.occurrenceDate)
 	const [timeEnabled, setTimeEnabled] = useState(item.isAllDay === false)
 	const [time, setTime] = useState(item.endTime?.slice(0, 5) ?? '00:00')
 
 	// routine only
-	const [repeatType, setRepeatType] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>(
-		item.repeatType === 'DAILY' ||
-			item.repeatType === 'WEEKLY' ||
-			item.repeatType === 'MONTHLY'
-			? item.repeatType
-			: 'DAILY',
+	const [repeatType, setRepeatType] = useState(toRoutineRepeatType(item))
+	// 기존 반복 설정으로 채운다
+	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>(
+		(item.repeatDaysOfWeek ?? []) as DayOfWeek[],
 	)
-	const [repeatDaysOfWeek, setRepeatDaysOfWeek] = useState<DayOfWeek[]>([])
-	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>([])
-	const [excludeHolidays, setExcludeHolidays] = useState(false)
+	const [repeatDaysOfMonth, setRepeatDaysOfMonth] = useState<number[]>(
+		item.repeatDaysOfMonth ?? [],
+	)
+	const [excludeHolidays, setExcludeHolidays] = useState(
+		item.excludeHoliday ?? false,
+	)
 
 	const invalidate = () => {
 		queryClient.invalidateQueries({
@@ -173,8 +188,9 @@ export function TaskEditForm({
 		})
 	}
 
-	const { mutate: saveSchedule, isPending: isSavingSchedule } = useMutation({
-		mutationFn: updateSchedule,
+	// 할 일·루틴 모두 PATCH api/task/{taskId}
+	const { mutate: save, isPending } = useMutation({
+		mutationFn: updateTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				invalidate()
@@ -182,18 +198,6 @@ export function TaskEditForm({
 			}
 		},
 	})
-
-	const { mutate: saveRoutine, isPending: isSavingRoutine } = useMutation({
-		mutationFn: updateRoutine,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				invalidate()
-				onSuccess()
-			}
-		},
-	})
-
-	const isPending = isSavingSchedule || isSavingRoutine
 
 	const toggleDay = (day: DayOfWeek) =>
 		setRepeatDaysOfWeek((prev) =>
@@ -211,31 +215,37 @@ export function TaskEditForm({
 		if (isRoutine) {
 			if (repeatType === 'WEEKLY' && repeatDaysOfWeek.length === 0) return
 			if (repeatType === 'MONTHLY' && repeatDaysOfMonth.length === 0) return
-			saveRoutine({
-				taskId: item.taskId,
-				title: title.trim(),
-				repeatType,
-				...(repeatType === 'WEEKLY' && { repeatDaysOfWeek }),
-				...(repeatType === 'MONTHLY' && { repeatDaysOfMonth }),
-				excludeHoliday: excludeHolidays,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
-			})
+			// 화면에 없는 값(알림, 반복 종료일)은 기존 값을 그대로 보낸다
+			save(
+				toRoutineUpdate(item, {
+					title: title.trim(),
+					isImportant,
+					repeatType,
+					repeatDaysOfWeek: repeatType === 'WEEKLY' ? repeatDaysOfWeek : undefined,
+					repeatDaysOfMonth:
+						repeatType === 'MONTHLY' ? repeatDaysOfMonth : undefined,
+					excludeHoliday: excludeHolidays,
+					// category,
+					// isPublic: isPublic === '공개',
+					// memo: memo.trim() || undefined,
+				}),
+			)
 		} else {
 			const endDateTime = timeEnabled
 				? `${date}T${time}:00`
 				: `${date}T23:59:59`
-			saveSchedule({
-				taskId: item.taskId,
-				title: title.trim(),
-				endDateTime,
-				isAllDay: !timeEnabled,
-				isImportant,
-				category,
-				isPublic: isPublic === '공개',
-				memo: memo.trim() || undefined,
-			})
+			// 화면에 없는 값(알림)은 기존 값을 그대로 보낸다
+			save(
+				toScheduleUpdate(item, {
+					title: title.trim(),
+					endDateTime,
+					isAllDay: !timeEnabled,
+					isImportant,
+					// category,
+					// isPublic: isPublic === '공개',
+					// memo: memo.trim() || undefined,
+				}),
+			)
 		}
 	}
 
@@ -273,6 +283,13 @@ export function TaskEditForm({
 			<div className="flex flex-col rounded-xl bg-gray-50 px-4">
 				{isRoutine ? (
 					<>
+						<FormRow label="중요">
+							<Checkbox
+								checked={isImportant}
+								onChange={() => setIsImportant((v) => !v)}
+							/>
+						</FormRow>
+
 						{/* 반복 */}
 						<FormRow label="반복">
 							<div className="flex gap-1.5">
@@ -333,8 +350,8 @@ export function TaskEditForm({
 							</div>
 						)}
 
-						{/* 공휴일 제외 */}
-						<div className="flex items-center gap-2 border-b border-gray-100 py-3">
+						{/* 공휴일 제외 (카테고리·공개 상태가 빠지면서 마지막 행이 되어 아래 구분선 제거) */}
+						<div className="flex items-center gap-2 py-3">
 							<Checkbox
 								checked={excludeHolidays}
 								onChange={() => setExcludeHolidays((v) => !v)}
@@ -342,6 +359,7 @@ export function TaskEditForm({
 							<span className="text-sm text-gray-500">공휴일 제외</span>
 						</div>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_LABELS}
@@ -357,6 +375,7 @@ export function TaskEditForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				) : (
 					<>
@@ -376,7 +395,8 @@ export function TaskEditForm({
 							/>
 						</FormRow>
 
-						<FormRow label="시간">
+						{/* 카테고리·공개 상태가 빠지면서 마지막 행 */}
+						<FormRow label="시간" last>
 							<div className="flex items-center gap-3">
 								{timeEnabled && (
 									<input
@@ -393,6 +413,7 @@ export function TaskEditForm({
 							</div>
 						</FormRow>
 
+						{/* 카테고리·공개 상태는 API에서 제거됨
 						<FormRow label="카테고리">
 							<DropdownSelect
 								options={CATEGORY_LABELS}
@@ -408,11 +429,12 @@ export function TaskEditForm({
 								onChange={setIsPublic}
 							/>
 						</FormRow>
+						*/}
 					</>
 				)}
 			</div>
 
-			{/* 메모 */}
+			{/* 메모는 API에서 제거됨
 			<textarea
 				value={memo}
 				onChange={(e) => setMemo(e.target.value)}
@@ -420,6 +442,7 @@ export function TaskEditForm({
 				rows={3}
 				className="resize-none rounded-xl bg-gray-50 p-3 text-sm text-gray-700 outline-none placeholder:text-gray-300 focus:ring-1 focus:ring-[#B286FD]"
 			/>
+			*/}
 
 			{/* 버튼 */}
 			<div className="flex gap-2">

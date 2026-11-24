@@ -23,8 +23,8 @@ export interface CalendarItem {
   excludeHoliday?: boolean
   notificationMinutes?: number | null
   notificationAt?: string | null
+  // 게임(정령 성장) 값. 기획 확정 전이라 받기만 하고 화면에서는 쓰지 않는다
   growthValue?: number
-  growthType?: string
   isCompleted: boolean
   completedAt?: string | null
   createdAt?: string

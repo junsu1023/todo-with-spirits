@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Clock, Star, X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { createSchedule } from '@/feature/task/api/mutate'
+import { createTask } from '@/feature/task/api/mutate'
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover'
 import {
 	type ScheduleFormValues,
@@ -67,7 +67,7 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 		})
 
 	const { mutate, isPending } = useMutation({
-		mutationFn: createSchedule,
+		mutationFn: createTask,
 		onSuccess: (res) => {
 			if (res.result !== 'success') return
 			queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -91,9 +91,12 @@ export function ScheduleForm({ dateStr }: ScheduleFormProps) {
 		mutate({
 			title: values.title,
 			isAllDay: values.isAllDay,
-			startDatetime: `${resolvedDate}T00:00:00`,
+			// 시작일시는 API에서 제거됨 (endDateTime 날짜로 저장)
+			// startDatetime: `${resolvedDate}T00:00:00`,
 			endDateTime,
 			isImportant: values.isImportant,
+			// NONE = 할 일 (서버 할 일·루틴 API 통합)
+			repeatType: 'NONE',
 		})
 	}
 

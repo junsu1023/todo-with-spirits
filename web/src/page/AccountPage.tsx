@@ -8,6 +8,7 @@ import {
 	updateMe,
 } from '@/feature/user/api/mutate'
 import { getMe, getMySubscription } from '@/feature/user/api/query'
+import type { PlanType } from '@/feature/user/model/type'
 import { ROUTES } from '@/shared/routes'
 import { Card } from '@/shared/ui/card'
 import {
@@ -21,6 +22,12 @@ import {
 const PROVIDER_LABEL: Record<string, string> = {
 	KAKAO: '카카오',
 	GOOGLE: '구글',
+}
+
+const PLAN_LABEL: Record<PlanType, string> = {
+	FREE: '무료 플랜',
+	MONTHLY: '월간 구독',
+	YEARLY: '연간 구독',
 }
 
 function formatDate(iso: string) {
@@ -39,12 +46,16 @@ export function AccountPage() {
 	})
 	const me = meData?.result === 'success' ? meData.detail : null
 
-	const { data: subData } = useQuery({
+	// 무료 사용자도 조회한다 (서버가 FREE 구독을 돌려줌). 유료 구독이 만료된 경우를 구분하기 위해
+	const { data: subData, isPending: isSubPending } = useQuery({
 		queryKey: ['user', 'subscription'],
 		queryFn: getMySubscription,
-		enabled: !!me?.premium,
+		enabled: !!me,
 	})
 	const subscription = subData?.result === 'success' ? subData.detail : null
+	// 유료 플랜이었지만 만료되어 지금은 무료로 이용 중
+	const isExpired =
+		!me?.premium && !!subscription && subscription.planType !== 'FREE'
 
 	const [nickname, setNickname] = useState('')
 
@@ -111,18 +122,30 @@ export function AccountPage() {
 								<span className="rounded-full bg-[#F3E8FF] px-2.5 py-0.5 text-xs font-semibold text-[#B286FD]">
 									프리미엄
 								</span>
-								<span className="text-sm text-gray-700">프리미엄 이용 중</span>
+								<span className="text-sm text-gray-700">
+									{subscription
+										? `${PLAN_LABEL[subscription.planType]} 이용 중`
+										: '프리미엄 이용 중'}
+								</span>
 							</div>
 							<DialogTrigger className="text-xs text-gray-400 hover:text-gray-600">
 								상세 보기
 							</DialogTrigger>
 						</div>
 					) : (
-						<div className="flex items-center justify-between">
-							<span className="text-sm text-gray-500">
-								현재 무료 플랜 이용 중
-							</span>
-							<DialogTrigger className="rounded-lg bg-[#B286FD] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
+						<div className="flex items-center justify-between gap-3">
+							<div className="flex flex-col gap-0.5">
+								<span className="text-sm text-gray-500">
+									{isExpired ? '구독이 만료됐어요' : '현재 무료 플랜 이용 중'}
+								</span>
+								{isExpired && subscription?.expiresAt && (
+									<span className="text-xs text-gray-400">
+										{PLAN_LABEL[subscription.planType]} ·{' '}
+										{formatDate(subscription.expiresAt)} 만료
+									</span>
+								)}
+							</div>
+							<DialogTrigger className="shrink-0 rounded-lg bg-[#B286FD] px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90">
 								유료 플랜 보기
 							</DialogTrigger>
 						</div>
@@ -133,37 +156,55 @@ export function AccountPage() {
 						<DialogTitle>
 							{me?.premium ? '프리미엄 플랜' : '유료 플랜 안내'}
 						</DialogTitle>
-						{me?.premium && subscription ? (
-							<div className="flex flex-col gap-3">
-								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-500">구독 유형</span>
-									<span className="text-sm font-medium text-gray-800">
-										{subscription.planType === 'MONTHLY'
-											? '월간 구독'
-											: '연간 구독'}
-									</span>
+						{me?.premium ? (
+							subscription ? (
+								<div className="flex flex-col gap-3">
+									<PlanRow
+										label="구독 유형"
+										value={PLAN_LABEL[subscription.planType]}
+									/>
+									<PlanRow
+										label="시작일"
+										value={
+											subscription.startedAt
+												? formatDate(subscription.startedAt)
+												: '—'
+										}
+									/>
+									{/* 자동 갱신이면 만료일이 곧 다음 갱신일. 만료일이 없으면 기한 없는 구독 */}
+									<PlanRow
+										label={subscription.autoRenew ? '다음 갱신일' : '만료일'}
+										value={
+											subscription.expiresAt
+												? formatDate(subscription.expiresAt)
+												: '기한 없음'
+										}
+									/>
+									<PlanRow
+										label="자동 갱신"
+										value={subscription.autoRenew ? '켜짐' : '꺼짐'}
+									/>
 								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-500">시작일</span>
-									<span className="text-sm text-gray-800">
-										{formatDate(subscription.startedAt)}
-									</span>
-								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-500">만료일</span>
-									<span className="text-sm text-gray-800">
-										{formatDate(subscription.expiresAt)}
-									</span>
-								</div>
-								<div className="flex items-center justify-between">
-									<span className="text-sm text-gray-500">자동 갱신</span>
-									<span className="text-sm text-gray-800">
-										{subscription.autoRenew ? '켜짐' : '꺼짐'}
-									</span>
-								</div>
-							</div>
+							) : (
+								<p className="text-sm text-gray-400">
+									{isSubPending
+										? '구독 정보를 불러오는 중...'
+										: '구독 정보를 불러오지 못했어요. 잠시 후 다시 시도해주세요.'}
+								</p>
+							)
 						) : (
-							<p className="text-sm text-gray-400">plan 관련 내용 추가 예정</p>
+							<div className="flex flex-col gap-2">
+								{isExpired && subscription?.expiresAt && (
+									<p className="text-sm text-gray-600">
+										이용하던 {PLAN_LABEL[subscription.planType]}이{' '}
+										{formatDate(subscription.expiresAt)}에 만료됐어요.
+									</p>
+								)}
+								{/* todo: 결제 API가 생기면 유료 플랜 안내·구독하기 연결 */}
+								<p className="text-sm text-gray-400">
+									유료 플랜은 준비 중이에요. 조금만 기다려주세요!
+								</p>
+							</div>
 						)}
 						<DialogClose className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50">
 							닫기
@@ -200,8 +241,8 @@ export function AccountPage() {
 									) : (
 										<>
 											<span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-500">
-												{me.emailVerificationStatus === 'PENDING'
-													? '인증 대기'
+												{me.emailVerificationStatus === 'NEEDS_REVERIFICATION'
+													? '재인증 필요'
 													: '미인증'}
 											</span>
 											{resendSuccess ? (
@@ -283,6 +324,15 @@ export function AccountPage() {
 			>
 				{isPending ? '저장 중...' : '저장'}
 			</button>
+		</div>
+	)
+}
+
+function PlanRow({ label, value }: { label: string; value: string }) {
+	return (
+		<div className="flex items-center justify-between">
+			<span className="text-sm text-gray-500">{label}</span>
+			<span className="text-sm font-medium text-gray-800">{value}</span>
 		</div>
 	)
 }

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { createRoutine } from '@/feature/task/api/mutate'
+import { createTask } from '@/feature/task/api/mutate'
 import { type RoutineFormValues, routineSchema } from '../model/routineSchema'
 import type { DayOfWeek } from '../model/type'
 
@@ -36,7 +36,7 @@ export function RoutineForm() {
 	})
 
 	const { mutate, isPending } = useMutation({
-		mutationFn: createRoutine,
+		mutationFn: createTask,
 		onSuccess: (res) => {
 			if (res.result !== 'success') return
 			queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -73,7 +73,8 @@ export function RoutineForm() {
 				repeatDaysOfMonth: values.repeatDaysOfMonth,
 			}),
 			...(values.repeatEndDate && { repeatEndDate: values.repeatEndDate }),
-			...(values.memo && { memo: values.memo }),
+			// 메모는 API에서 제거됨
+			// ...(values.memo && { memo: values.memo }),
 		})
 	}
 

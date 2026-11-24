@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { Flame } from 'lucide-react'
+// 오늘의 성장 포인트가 빠지면서 사용 안 함
+// import { Flame } from 'lucide-react'
 import { getCurrentSpirit } from '@/entity/spirit'
 import sampleSpiritImage from '@/shared/assets/sample-spirit.png'
 import { Card } from '@/shared/ui/card'
@@ -34,17 +35,20 @@ export function TodaySpiritCard() {
 
 	const spirit = data?.result === 'success' ? data.detail : null
 
-	const todayPoints = spirit
-		? (spirit.focusExp ?? 0) +
-			(spirit.vitalityExp ?? 0) +
-			(spirit.consistencyExp ?? 0) +
-			(spirit.creativityExp ?? 0)
-		: 0
+	// 특성별 경험치(focusExp 등)가 서버 응답에서 제거됨
+	// todo: 오늘의 성장 포인트를 보여줄 값이 정해지면 다시 연결
+	// const todayPoints = spirit
+	// 	? (spirit.focusExp ?? 0) +
+	// 		(spirit.vitalityExp ?? 0) +
+	// 		(spirit.consistencyExp ?? 0) +
+	// 		(spirit.creativityExp ?? 0)
+	// 	: 0
 
 	return (
 		<Card className="flex flex-col items-center gap-4 p-6">
+			{/* 서버 응답이 imageUrl → image.url로 바뀜 (웹용 에셋이 없으면 null → 기본 이미지) */}
 			<img
-				src={spirit?.imageUrl || sampleSpiritImage}
+				src={spirit?.image?.url || sampleSpiritImage}
 				alt={spirit?.spiritName ?? '정령'}
 				className="h-[120px] w-[120px] rounded-xl object-cover"
 				onError={(e) => {
@@ -66,24 +70,28 @@ export function TodaySpiritCard() {
 							<span className="text-sm font-semibold text-[#8F8170]">
 								{spirit?.spiritName ?? '—'}
 							</span>
+							{/* 정령 단계(stage)가 서버 응답에서 제거됨
 							<span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#B286FD] text-[10px] font-bold text-white">
 								{spirit?.stage ?? 1}
 							</span>
+							*/}
 						</div>
+						{/* 서버 exp는 상한 없는 누적값이라 / 100 대신 누적 숫자만 보여준다 */}
 						<span className="text-xs text-gray-400">
-							{spirit?.exp ?? 0} / 100
+							EXP {spirit?.exp ?? 0}
 						</span>
 					</div>
 
-					{/* EXP 바 */}
+					{/* EXP 바: 서버 exp가 상한 없는 누적값이 되어 진행률로 표시할 수 없음
 					<div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
 						<div
 							className="h-full rounded-full bg-[#B286FD] transition-all"
 							style={{ width: `${spirit?.exp ?? 0}%` }}
 						/>
 					</div>
+					*/}
 
-					{/* 오늘의 성장 포인트 */}
+					{/* 오늘의 성장 포인트: 특성별 경험치가 서버 응답에서 제거됨 (위 todayPoints 참고)
 					<div className="flex items-center gap-1.5 rounded-md bg-[#F3E8FF] px-3 py-2">
 						<Flame size={14} className="text-[#B286FD]" />
 						<span className="text-sm font-medium text-[#6B42E2]">
@@ -93,6 +101,7 @@ export function TodaySpiritCard() {
 							+{todayPoints}
 						</span>
 					</div>
+					*/}
 				</div>
 			</div>
 		</Card>

@@ -12,18 +12,17 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { CalendarItem } from '@/entity/task'
-import { getTaskCalendar } from '@/entity/task'
-import type { Category } from '@/entity/task/model/type'
+import { getTaskCalendar, isRoutine } from '@/entity/task'
+// 카테고리 선택이 빠지면서 사용 안 함
+// import type { Category } from '@/entity/task/model/type'
 import { PlanItemForm } from '@/feature/task'
 import {
 	completeTask,
-	createRoutine,
-	createSchedule,
+	createTask,
 	deleteTasks,
 	postponeTask,
 	uncompleteTask,
-	updateRoutine,
-	updateSchedule,
+	updateTask,
 } from '@/feature/task/api/mutate'
 import { getPostponeErrorMessage } from '@/feature/task/model/postponeErrorMessage'
 import type {
@@ -31,6 +30,7 @@ import type {
 	ItemType,
 	PlanItem,
 } from '@/feature/task/model/type'
+import { toRoutineUpdate, toScheduleUpdate } from '@/feature/task/model/update'
 import { addDays, calcDday, formatDday } from '@/shared/lib/dday'
 import { Card } from '@/shared/ui/card'
 import { DropdownSelect } from '@/shared/ui/dropdown-select'
@@ -48,25 +48,27 @@ function toDateString(date: Date) {
 	return `${y}-${m}-${d}`
 }
 
-const CATEGORY_LABEL: Partial<Record<string, string>> = {
-	FINANCE: '금융',
-	GROWTH: '자기계발',
-	HEALTH: '건강',
-	HOBBY: '취미',
-	RELATIONSHIP: '인간관계/약속',
-	WORK: '업무/커리어',
-	ETC: '기타',
-}
-
-const LABEL_TO_CATEGORY: Record<string, Category> = {
-	금융: 'FINANCE',
-	자기계발: 'GROWTH',
-	건강: 'HEALTH',
-	취미: 'HOBBY',
-	'인간관계/약속': 'RELATIONSHIP',
-	'업무/커리어': 'WORK',
-	기타: 'ETC',
-}
+// 카테고리·공개 상태·메모는 할 일 API에서 제거됨 (entity/task/model/type.ts 참고)
+// todo: 백엔드에서 다시 제공하면 주석 해제
+// const CATEGORY_LABEL: Partial<Record<string, string>> = {
+// 	FINANCE: '금융',
+// 	GROWTH: '자기계발',
+// 	HEALTH: '건강',
+// 	HOBBY: '취미',
+// 	RELATIONSHIP: '인간관계/약속',
+// 	WORK: '업무/커리어',
+// 	ETC: '기타',
+// }
+//
+// const LABEL_TO_CATEGORY: Record<string, Category> = {
+// 	금융: 'FINANCE',
+// 	자기계발: 'GROWTH',
+// 	건강: 'HEALTH',
+// 	취미: 'HOBBY',
+// 	'인간관계/약속': 'RELATIONSHIP',
+// 	'업무/커리어': 'WORK',
+// 	기타: 'ETC',
+// }
 
 function toPlanItem(item: CalendarItem): PlanItem {
 	const target = new Date(item.occurrenceDate)
@@ -78,10 +80,10 @@ function toPlanItem(item: CalendarItem): PlanItem {
 	const d = String(target.getDate()).padStart(2, '0')
 	const dateLabel = `${y}. ${m}. ${d} (${weekdays[target.getDay()]})`
 
-	const categoryLabel = item.category
-		? CATEGORY_LABEL[item.category]
-		: undefined
-	const tags = categoryLabel ? [categoryLabel] : []
+	// const categoryLabel = item.category
+	// 	? CATEGORY_LABEL[item.category]
+	// 	: undefined
+	// const tags = categoryLabel ? [categoryLabel] : []
 
 	const repeatType =
 		item.repeatType === 'DAILY' ||
@@ -92,20 +94,26 @@ function toPlanItem(item: CalendarItem): PlanItem {
 
 	return {
 		id: item.taskId,
-		type: item.taskType === 'ROUTINE' ? 'routine' : 'todo',
+		type: isRoutine(item) ? 'routine' : 'todo',
 		title: item.title,
 		starred: item.isImportant,
 		completed: item.isCompleted,
 		dday,
 		dateLabel,
 		date: item.occurrenceDate,
-		category: categoryLabel,
+		// 할 일의 시간 (HH:mm). 없으면 수정 폼이 시간 없음으로 열려 저장 시 하루 종일로 바뀐다
+		// 루틴은 시간을 쓰지 않는다
+		time:
+			!isRoutine(item) && !item.isAllDay && item.endTime
+				? item.endTime.slice(0, 5)
+				: undefined,
+		// category: categoryLabel,
 		repeatType,
 		repeatDaysOfWeek: item.repeatDaysOfWeek,
 		repeatDaysOfMonth: item.repeatDaysOfMonth,
 		excludeHolidays: item.excludeHoliday,
-		memo: item.memo ?? undefined,
-		tags,
+		// memo: item.memo ?? undefined,
+		// tags,
 	}
 }
 
@@ -148,7 +156,7 @@ function PlanCalendar({ selectedDate, onDateChange }: PlanCalendarProps) {
 		const dateStr = item.occurrenceDate
 		if (!dateStr) return acc
 		if (!acc[dateStr]) acc[dateStr] = { hasTodo: false, hasRoutine: false }
-		if (item.taskType === 'ROUTINE') acc[dateStr].hasRoutine = true
+		if (isRoutine(item)) acc[dateStr].hasRoutine = true
 		else acc[dateStr].hasTodo = true
 		return acc
 	}, {})
@@ -433,12 +441,13 @@ function PlanTaskList({
 							{/* Date */}
 							<span className="text-xs text-gray-400">{item.dateLabel}</span>
 
-							{/* Memo */}
+							{/* Memo는 API에서 제거됨
 							<span className="text-xs text-gray-400">
 								{item.memo ?? '(메모 없음)'}
 							</span>
+							*/}
 							<div className="flex justify-between">
-								{/* Tags */}
+								{/* Tags (카테고리)는 API에서 제거됨
 								{item.tags.length > 0 && (
 									<div className="flex flex-wrap gap-1.5">
 										{item.tags.map((tag) => (
@@ -451,6 +460,7 @@ function PlanTaskList({
 										))}
 									</div>
 								)}
+								*/}
 								<div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
 									<button
 										type="button"
@@ -506,7 +516,7 @@ const BLANK_ITEM: PlanItem = {
 	completed: false,
 	dday: 0,
 	dateLabel: '',
-	tags: [],
+	// tags: [],
 }
 
 export function PlanPage() {
@@ -544,18 +554,9 @@ export function PlanPage() {
 		},
 	})
 
-	const { mutate: updateScheduleMutate } = useMutation({
-		mutationFn: updateSchedule,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
-				setEditingId(null)
-			}
-		},
-	})
-
-	const { mutate: updateRoutineMutate } = useMutation({
-		mutationFn: updateRoutine,
+	// 할 일·루틴 모두 PATCH api/task/{taskId}
+	const { mutate: updateMutate } = useMutation({
+		mutationFn: updateTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -573,18 +574,9 @@ export function PlanPage() {
 		},
 	})
 
-	const { mutate: createScheduleMutate } = useMutation({
-		mutationFn: createSchedule,
-		onSuccess: (res) => {
-			if (res.result === 'success') {
-				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
-				setIsAdding(false)
-			}
-		},
-	})
-
-	const { mutate: createRoutineMutate } = useMutation({
-		mutationFn: createRoutine,
+	// 할 일·루틴 모두 POST api/task (repeatType으로 구분)
+	const { mutate: createMutate } = useMutation({
+		mutationFn: createTask,
 		onSuccess: (res) => {
 			if (res.result === 'success') {
 				queryClient.invalidateQueries({ queryKey: ['task', 'calendar'] })
@@ -623,7 +615,8 @@ export function PlanPage() {
 
 	const toggleCompleted = (id: number) => {
 		const item = items.find((i) => i.id === id)
-		if (!item) return
+		// 서버 완료 API는 date 필수
+		if (!item?.date) return
 		const vars = { taskId: id, date: item.date }
 		if (item.completed) uncomplete(vars)
 		else complete(vars)
@@ -638,23 +631,25 @@ export function PlanPage() {
 				const endDateTime = updated.time
 					? `${updated.date}T${updated.time}`
 					: `${updated.date}T23:59:59`
-				createScheduleMutate({
+				createMutate({
 					title: updated.title,
 					isAllDay: !updated.time,
-					startDatetime: `${updated.date}T00:00:00`,
+					// startDatetime: `${updated.date}T00:00:00`,
 					endDateTime,
 					isImportant: updated.starred,
-					category: updated.category
-						? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-						: 'NONE',
-					isPublic: updated.isPublic ?? false,
-					memo: updated.memo,
+					repeatType: 'NONE',
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
 				})
 				return
 			}
 			if (updated.type === 'routine' && updated.repeatType) {
-				createRoutineMutate({
+				createMutate({
 					title: updated.title,
+					isImportant: updated.starred,
 					repeatType: updated.repeatType,
 					...(updated.repeatDaysOfWeek?.length && {
 						repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
@@ -662,8 +657,8 @@ export function PlanPage() {
 					...(updated.repeatDaysOfMonth?.length && {
 						repeatDaysOfMonth: updated.repeatDaysOfMonth,
 					}),
-					isPublic: updated.isPublic ?? false,
-					memo: updated.memo,
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
 				})
 				return
 			}
@@ -671,43 +666,54 @@ export function PlanPage() {
 			return
 		}
 
-		if (updated.type === 'todo' && updated.date) {
+		// PlanItem에 없는 값(알림, 반복 종료일)은 조회 원본에서 가져와 그대로 보낸다 (안 보내면 서버에서 지워짐)
+		const original =
+			dayData?.result === 'success'
+				? dayData.detail.items.find((i) => i.taskId === updated.id)
+				: undefined
+
+		if (original && updated.type === 'todo' && updated.date) {
 			const endDateTime = updated.time
 				? `${updated.date}T${updated.time}`
 				: `${updated.date}T23:59:59`
-			updateScheduleMutate({
-				taskId: updated.id,
-				title: updated.title,
-				endDateTime,
-				isAllDay: !updated.time,
-				isImportant: updated.starred,
-				category: updated.category
-					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-					: 'NONE',
-				isPublic: updated.isPublic ?? false,
-				memo: updated.memo,
-			})
+			updateMutate(
+				toScheduleUpdate(original, {
+					title: updated.title,
+					endDateTime,
+					isAllDay: !updated.time,
+					isImportant: updated.starred,
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
+					// memo: updated.memo,
+				}),
+			)
 			return
 		}
 
-		if (updated.type === 'routine' && updated.repeatType) {
-			updateRoutineMutate({
-				taskId: updated.id,
-				title: updated.title,
-				repeatType: updated.repeatType,
-				...(updated.repeatDaysOfWeek?.length && {
-					repeatDaysOfWeek: updated.repeatDaysOfWeek as DayOfWeek[],
+		if (original && updated.type === 'routine' && updated.repeatType) {
+			updateMutate(
+				toRoutineUpdate(original, {
+					title: updated.title,
+					isImportant: updated.starred,
+					repeatType: updated.repeatType,
+					repeatDaysOfWeek:
+						updated.repeatType === 'WEEKLY'
+							? (updated.repeatDaysOfWeek as DayOfWeek[])
+							: undefined,
+					repeatDaysOfMonth:
+						updated.repeatType === 'MONTHLY'
+							? updated.repeatDaysOfMonth
+							: undefined,
+					// category: updated.category
+					// 	? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
+					// 	: 'NONE',
+					// isPublic: updated.isPublic ?? false,
+					excludeHoliday: updated.excludeHolidays ?? false,
+					// memo: updated.memo,
 				}),
-				...(updated.repeatDaysOfMonth?.length && {
-					repeatDaysOfMonth: updated.repeatDaysOfMonth,
-				}),
-				category: updated.category
-					? (LABEL_TO_CATEGORY[updated.category] ?? 'NONE')
-					: 'NONE',
-				isPublic: updated.isPublic ?? false,
-				excludeHoliday: updated.excludeHolidays ?? false,
-				memo: updated.memo,
-			})
+			)
 			return
 		}
 
