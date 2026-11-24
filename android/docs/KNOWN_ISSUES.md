@@ -22,7 +22,7 @@
 | BUG-08 | 중간 | Android | 인증 요청 중 시간 초과·뒤로가기와 응답이 경합 | - | 완료 |
 | BUG-09 | 중간 | Server | 메일 발송에 실패해도 성공 응답 | - | 수정 안 함 |
 | BUG-10 | 중간 | Android | 요청이 겹치면 로딩과 터치 차단이 일찍 풀림 | - | 완료 |
-| BUG-11 | 중간 | Android | 알림 설정 화면에 로딩·터치 차단 없음 | - | 대기 |
+| BUG-11 | 중간 | Android | 알림 설정 화면에 로딩·터치 차단 없음 | - | 완료 |
 | BUG-12 | 낮음 | Android | 로그인 실패 팝업이 떠도 키보드와 입력이 남음 | 기기 확인 | 대기 |
 | BUG-13 | 낮음 | Android | 홈 상세 팝업만 작게 보임 | 카드 폭 Figma 확인 | 대기 |
 | BUG-14 | 낮음 | Test | `HomeViewModelEventTest` 1개 실패 | 올바른 이동 목적지 | 대기 |
@@ -142,6 +142,7 @@
 - **원인**: `app/feature/setting/AlarmSettingScreen.kt`에 `LoadingOverlay`가 없다. ViewModel은 `launchWithLoading`을 6곳에서 쓴다.
 - **수정**: `isLoading`을 수집해 `LoadingOverlay`를 최상단에 둔다.
 - **완료 조건**: 요청 중 다른 설정을 누를 수 없다.
+- **상태**: 완료 (2026-11-24). 알림 설정을 서버 API와 onEvent 구조로 바꾸면서 `feature/setting/alarm/AlarmSettingScreen.kt`가 `isLoading`을 받아 `LoadingOverlay`를 띄운다. 로딩은 화면 진입 조회에만 쓴다. 토글은 디스플레이 설정과 같이 로딩 없이 즉시 저장하고 실패하면 되돌린다.
 
 ### BUG-12. 실패 팝업이 떠도 키보드와 입력이 남음
 
