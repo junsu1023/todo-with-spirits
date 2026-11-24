@@ -70,7 +70,7 @@ private fun SplashContent(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .background(SpiritTodoTheme.color.surfaceColor1),
+            .background(SpiritTodoTheme.color.white),
     ) {
         val canvasWidthPx = constraints.maxWidth.toFloat()
         val canvasHeightPx = constraints.maxHeight.toFloat()

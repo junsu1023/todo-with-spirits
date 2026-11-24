@@ -34,6 +34,7 @@ class BestiaryViewModel @Inject constructor(
     fun onEvent(event: BestiaryEvent) {
         when (event) {
             BestiaryEvent.BackClicked -> sendEffect(BestiaryEffect.NavigateBack)
+            is BestiaryEvent.TabSelected -> _uiState.update { it.copy(selectedTab = event.tab) }
             BestiaryEvent.UnownedOnlyToggled -> _uiState.update { it.copy(isUnownedOnly = !it.isUnownedOnly) }
             is BestiaryEvent.SortOptionSelected -> _uiState.update { it.copy(sortOption = event.option) }
         }

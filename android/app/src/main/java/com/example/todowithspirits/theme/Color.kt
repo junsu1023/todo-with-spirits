@@ -9,6 +9,7 @@ val spiritsLightColor = SpiritColor(
     white = Color(0xFFFFFFFF),
     back01 = Color(0xFFFDFBFA),
     back02 = Color(0xFFF8F4F1),
+    back03 = Color(0xFFF1DFC7),
     stroke01 = Color(0xFFECEAE4),
     font01 = Color(0xFF857563),
     font02 = Color(0xFFCFB6A0),
@@ -24,12 +25,8 @@ val spiritsLightColor = SpiritColor(
     transparent = Color(0x00000000),
     temporaryColor1 = Color(0xFFD9D9D9),
 
-    surfaceColor1 = Color(0xFFFFFFFF),
     surfaceColor4 = Color(0xFFF6F6F6),
-    surfaceColor5 = Color(0xFF353534),
-    surfaceColor10 = Color(0xFFFAFAFA),
     surfaceColor16 = Color(0xFFF7F7F7),
-    surfaceColor17 = Color(0xFFF1F1F1),
     onSurfaceColor1 = Color(0xFF9FA8B7),
     onSurfaceColor2 = Color(0xFFD1D1D6),
     onSurfaceColor3 = Color(0xFFFFFFFF),
@@ -54,6 +51,7 @@ class SpiritColor(
     white: Color,
     back01: Color,
     back02: Color,
+    back03: Color,
     stroke01: Color,
     font01: Color,
     font02: Color,
@@ -69,12 +67,8 @@ class SpiritColor(
     transparent: Color,
     temporaryColor1: Color,
 
-    surfaceColor1: Color,
     surfaceColor4: Color,
-    surfaceColor5: Color,
-    surfaceColor10: Color,
     surfaceColor16: Color,
-    surfaceColor17: Color,
     onSurfaceColor1: Color,
     onSurfaceColor2: Color,
     onSurfaceColor3: Color,
@@ -101,6 +95,9 @@ class SpiritColor(
         private set
 
     var back02 by mutableStateOf(back02)
+        private set
+
+    var back03 by mutableStateOf(back03)
         private set
 
     var stroke01 by mutableStateOf(stroke01)
@@ -146,23 +143,10 @@ class SpiritColor(
         private set
 
 
-
-    var surfaceColor1 by mutableStateOf(surfaceColor1)
-        private set
-
     var surfaceColor4 by mutableStateOf(surfaceColor4)
         private set
 
-    var surfaceColor5 by mutableStateOf(surfaceColor5)
-        private set
-
-    var surfaceColor10 by mutableStateOf(surfaceColor10)
-        private set
-
     var surfaceColor16 by mutableStateOf(surfaceColor16)
-        private set
-
-    var surfaceColor17 by mutableStateOf(surfaceColor17)
         private set
 
     var onSurfaceColor1 by mutableStateOf(onSurfaceColor1)
