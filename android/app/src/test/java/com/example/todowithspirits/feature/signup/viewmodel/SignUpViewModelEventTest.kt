@@ -295,6 +295,25 @@ class SignUpViewModelEventTest {
         viewModel.onEvent(SignUpEvent.BackClicked)
     }
 
+    // BUG-03: 닉네임 단계에서 뒤로가면 인증 단계가 아닌 로그인 화면(이전 화면)으로 나간다.
+    @Test fun backClickedAtNicknameNavigatesBack() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        viewModel.onEvent(SignUpEvent.VerificationCodeChanged("654321"))
+        viewModel.onEvent(SignUpEvent.VerifyClicked)
+        authRepository.verifyCodeResponse.complete(Result.success(Unit))
+        authRepository.signUpResponse.complete(Result.success(SignUpResult("a@b.com", "정령", 1)))
+        authRepository.loginResponse.complete(
+            Result.success(LoginSession(1, "a@b.com", "정령", "access", "refresh", "Bearer"))
+        )
+        runCurrent()
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+
+        assertEquals(SignUpEffect.NavigateBack, viewModel.effect.first())
+        assertEquals(SignUpStep.NICKNAME, viewModel.uiState.value.step)
+    }
+
     @Test fun resendSucceededClearsCodeAndShowsToast() = runTest(testDispatcher) {
         val viewModel = buildViewModelAtVerification()
         val effects = mutableListOf<SignUpEffect>()

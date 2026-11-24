@@ -69,7 +69,7 @@ class SignUpViewModel @Inject constructor(
         when (_uiState.value.step) {
             SignUpStep.CREDENTIALS -> sendEffect(SignUpEffect.NavigateBack)
             SignUpStep.EMAIL_VERIFICATION -> goBackToCredentials()
-            SignUpStep.NICKNAME -> goBackToEmailVerification()
+            SignUpStep.NICKNAME -> sendEffect(SignUpEffect.NavigateBack)
         }
     }
 
@@ -198,10 +198,6 @@ class SignUpViewModel @Inject constructor(
         _uiState.update {
             it.copy(step = SignUpStep.CREDENTIALS, fieldErrors = emptyMap(), verificationCode = "")
         }
-    }
-
-    private fun goBackToEmailVerification() {
-        _uiState.update { it.copy(step = SignUpStep.EMAIL_VERIFICATION, fieldErrors = emptyMap()) }
     }
 
     private fun verifyEmailCode() {
