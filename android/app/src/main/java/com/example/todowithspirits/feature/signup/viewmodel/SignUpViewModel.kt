@@ -177,10 +177,12 @@ class SignUpViewModel @Inject constructor(
         }.onFailure { error ->
             Log.e(TAG, "sendEmailVerification failed!", error)
 
-            if (error is FieldValidationException) {
+            if (error is FieldValidationException && _uiState.value.step == SignUpStep.CREDENTIALS) {
                 _uiState.update { it.copy(fieldErrors = error.fieldErrors) }
             } else {
-                emitErrorMsg(error.localizedMessage ?: "인증 메일 발송에 실패했습니다")
+                val message = (error as? FieldValidationException)?.fieldErrors?.values?.firstOrNull()
+                    ?: error.localizedMessage
+                emitErrorMsg(message ?: "인증 메일 발송에 실패했습니다")
             }
         }
     }

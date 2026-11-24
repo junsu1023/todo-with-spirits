@@ -349,6 +349,24 @@ class SignUpViewModelEventTest {
         viewModel.onEvent(SignUpEvent.BackClicked)
     }
 
+    // BUG-06: 인증 화면에서 재발송이 필드 오류로 실패하면 토스트로 알린다.
+    @Test fun resendFieldErrorShowsToast() = runTest(testDispatcher) {
+        val viewModel = buildViewModelAtVerification()
+        val error = async { viewModel.errorMsg.first() }
+        runCurrent()
+
+        authRepository.sendVerificationResponse = CompletableDeferred(
+            Result.failure(FieldValidationException(mapOf("email" to "이미 존재하는 계정입니다."), "bad request"))
+        )
+        viewModel.onEvent(SignUpEvent.ResendClicked)
+        runCurrent()
+
+        assertEquals("이미 존재하는 계정입니다.", error.await())
+        assertEquals(SignUpStep.EMAIL_VERIFICATION, viewModel.uiState.value.step)
+
+        viewModel.onEvent(SignUpEvent.BackClicked)
+    }
+
     @Test fun nicknameConfirmedSavesAndSendsCompleted() = runTest(testDispatcher) {
         val viewModel = buildViewModel()
         val effects = mutableListOf<SignUpEffect>()
