@@ -2,7 +2,7 @@
   "name": "todo-with-spirits-extension",
   "description": "브라우저 사이드패널에서 바로 쓰는 todo-with-spirits",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "wxt",
