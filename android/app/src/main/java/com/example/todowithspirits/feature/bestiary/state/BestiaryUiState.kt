@@ -3,14 +3,17 @@ package com.example.todowithspirits.feature.bestiary.state
 import androidx.compose.runtime.Immutable
 import com.example.domain.model.SpiritCollectionItem
 import com.example.todowithspirits.feature.bestiary.model.BestiarySortOption
+import com.example.todowithspirits.feature.bestiary.model.BestiaryTab
 
 @Immutable
 data class BestiaryUiState(
     // 서버가 내려준 도감 순서
     val spirits: List<SpiritCollectionItem> = emptyList(),
+    val selectedTab: BestiaryTab = BestiaryTab.ALL,
     val isUnownedOnly: Boolean = false,
-    val sortOption: BestiarySortOption = BestiarySortOption.BESTIARY
+    val sortOption: BestiarySortOption = BestiarySortOption.AFFECTION
 ) {
+    val tabs: List<BestiaryTab> = BestiaryTab.entries
     val sortOptions: List<BestiarySortOption> = BestiarySortOption.entries
 
     val visibleSpirits: List<SpiritCollectionItem>
@@ -24,6 +27,8 @@ data class BestiaryUiState(
                     compareByDescending<SpiritCollectionItem> { it.isOwned }
                         .thenByDescending { it.spiritId ?: 0L }
                 )
+                // 미보유는 호감도가 0이라 뒤로 간다. 같은 호감도는 도감 순서를 유지한다.
+                BestiarySortOption.AFFECTION -> filtered.sortedByDescending { it.affectionLevel }
             }
         }
 }
