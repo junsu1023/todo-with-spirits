@@ -271,11 +271,14 @@ export function PlanItemForm({
 			{/* 타입 탭 */}
 			<div className="flex gap-2">
 				{(['todo', 'routine'] as ItemType[]).map((t) => (
+					// 수정 중에는 할 일↔루틴을 바꿀 수 없다 (다른 탭 비활성화)
+					// todo: 할 일↔루틴 전환이 필요하면 repeatType만 바꿔 PATCH api/task/{taskId}로 보낼 수 있음 (화면 흐름 정한 뒤 지원)
 					<button
 						key={t}
 						type="button"
 						onClick={() => setType(t)}
-						className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+						disabled={!isCreate && t !== type}
+						className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
 							type === t
 								? 'border-[#B286FD] text-[#B286FD]'
 								: 'border-gray-200 text-gray-400 hover:border-gray-300'
