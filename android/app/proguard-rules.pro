@@ -22,3 +22,7 @@
 
 # Room은 *_Impl 클래스를 리플렉션(기본 생성자)으로 만든다. R8 full mode에서 생성자가 제거되지 않도록 유지.
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
+
+# Kakao SDK 공식 가이드 규칙. 모델(OAuthToken, ClientErrorCause 등)을 Gson/리플렉션으로 다루므로 필드명을 유지해야 한다.
+-keep class com.kakao.sdk.**.model.* { <fields>; }
+-keep class * extends com.google.gson.TypeAdapter
