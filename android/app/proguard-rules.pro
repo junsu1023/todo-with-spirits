@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Room은 *_Impl 클래스를 리플렉션(기본 생성자)으로 만든다. R8 full mode에서 생성자가 제거되지 않도록 유지.
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
