@@ -114,6 +114,7 @@ dependencies {
 
     // Widget
     implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Image
     implementation(libs.coil.compose)
