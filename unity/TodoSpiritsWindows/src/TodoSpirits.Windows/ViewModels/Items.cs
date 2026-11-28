@@ -38,7 +38,7 @@ public readonly record struct Occ(TodoItem Item, DateOnly Date)
 }
 
 /// <summary>화면에 그리는 일정 한 줄. Refresh 때마다 새로 만든다.</summary>
-public sealed class TaskRow(Occ occ, DateOnly today, TimeOnly now, bool justDone = false)
+public sealed class TaskRow(Occ occ, DateOnly today, TimeOnly now, bool justDone = false, bool justNew = false, bool selected = false)
 {
     public TodoItem Item { get; } = occ.Item;
     /// <summary>이 줄이 나타내는 날짜 (반복 일정이면 그 회차의 날짜).</summary>
@@ -48,6 +48,19 @@ public sealed class TaskRow(Occ occ, DateOnly today, TimeOnly now, bool justDone
     public bool Important => Item.Important;
     public bool IsOverdue => !Done && Date == today && Item.Time is { } t && t < now;
     public string Sub => (Item.Time is { } t ? Fmt.Time(t) : "하루 종일") + (IsOverdue ? " · 시간이 지났어요" : "");
+    public string TimeText => Item.Time is { } t ? Fmt.Time(t) : "하루 종일";
+    /// <summary>시간이 지난 일정에만 붙는 꼬리말 (시안: 이 부분만 분홍 굵은 글자).</summary>
+    public string OverdueText => IsOverdue ? " · 시간이 지났어요" : "";
+    /// <summary>어제 하지 못한 일(지난 날짜의 끝내지 않은 한 번짜리 일정)인가.</summary>
+    public bool IsCarry => !Done && !Recur.IsRepeating(Item) && Date < today;
+    /// <summary>상세 패널이 열려 있는 줄.</summary>
+    public bool IsSelected { get; } = selected;
+    /// <summary>방금 추가한 줄: 톡 튀어나오며 나타난다.</summary>
+    public bool JustNew { get; } = justNew;
+    public string DdayText { get; init; } = "";
+    public bool HasDday => DdayText.Length > 0 && !Done;
+    public string DoneMenu => Done ? "완료 취소" : "완료";
+    public string ImportantMenu => Important ? "중요 표시 해제" : "중요 표시";
     public string CarrySub => Fmt.Short(Date) + (Item.Time is { } t ? " " + Fmt.Time(t) : "");
     public string RepeatText => Recur.Summary(Item);
     public bool HasRepeat => Recur.IsRepeating(Item);
@@ -71,6 +84,12 @@ public sealed class DayCell
     public bool HasImportant { get; init; }
     public string FirstTitle { get; init; } = "";
     public bool FirstImportant { get; init; }
+    /// <summary>첫 일정 말고도 끝내지 않은 중요 일정이 있다 ("외 n개" 앞에 별).</summary>
+    public bool RestImportant { get; init; }
+    public bool ShowRestStar => RestImportant && !IsOther && !AllDone && Total > 1;
+    public bool ShowAllDone => AllDone && !IsOther;
+    /// <summary>이번 달 칸에만 마우스를 올리면 빠른 추가 "+"가 뜬다.</summary>
+    public bool CanQuickAdd => !IsOther && !IsBlank;
 
     public string Num => IsBlank ? "" : Date.Day.ToString();
     public string Dow => Fmt.Dow(Date);

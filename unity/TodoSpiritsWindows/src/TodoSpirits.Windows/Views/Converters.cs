@@ -32,3 +32,12 @@ public sealed class BoolVis : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => Binding.DoNothing;
 }
+
+/// <summary>두 값의 문자열이 같으면 true. 메뉴에서 "지금 고른 값" 표시에 쓴다.</summary>
+public sealed class SameText : IMultiValueConverter
+{
+    public object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
+        values.Length == 2 && values[0] is not null && string.Equals(values[0]?.ToString(), values[1]?.ToString(), StringComparison.Ordinal);
+
+    public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture) => throw new NotSupportedException();
+}

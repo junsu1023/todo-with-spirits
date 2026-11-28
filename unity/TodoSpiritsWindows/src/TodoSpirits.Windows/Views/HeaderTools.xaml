@@ -1,0 +1,35 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.HeaderTools"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:TodoSpirits.Windows.Views" VerticalAlignment="Center">
+    <StackPanel Orientation="Horizontal">
+        <!-- 검색 칸 (.search): 닫혀 있으면 너비 0 -->
+        <Border x:Name="Pill" Width="0" Height="42" CornerRadius="21" Background="{DynamicResource Card}" Effect="{DynamicResource CardShadow}" ClipToBounds="True" Margin="0,0,6,0">
+            <Grid Margin="16,0">
+                <TextBox x:Name="Box" FontSize="14" Height="Auto" VerticalAlignment="Center" AutomationProperties.Name="일정 검색"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Template>
+                        <ControlTemplate TargetType="TextBox">
+                            <ScrollViewer x:Name="PART_ContentHost" Background="Transparent"/>
+                        </ControlTemplate>
+                    </TextBox.Template>
+                </TextBox>
+                <TextBlock Text="일정 검색" FontSize="14" Foreground="{DynamicResource Text2}" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=Box}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </Border>
+        <Button Style="{StaticResource IconBtn}" Tag="{StaticResource IcSearch}" ToolTip="검색 (Ctrl+F)" AutomationProperties.Name="검색" Margin="0,0,6,0"
+                Command="{Binding ToggleSearchCommand}"/>
+        <v:BellButton/>
+    </StackPanel>
+</UserControl>

@@ -1,16 +1,23 @@
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
+using TodoSpirits.Windows.ViewModels;
 
 namespace TodoSpirits.Windows.Views;
 
 public partial class HomeView : UserControl
 {
-    public HomeView() => InitializeComponent();
+    private MainViewModel? _vm;
 
-    // 검색 칸이 열리면 바로 칠 수 있게 한다
-    private void OnSearchVisible(object sender, DependencyPropertyChangedEventArgs e)
+    public HomeView()
     {
-        if (e.NewValue is true) Dispatcher.BeginInvoke(DispatcherPriority.Input, () => SearchBox.Focus());
+        InitializeComponent();
+        DataContextChanged += (_, _) =>
+        {
+            if (_vm is not null) _vm.SummaryBumped -= OnBump;
+            _vm = DataContext as MainViewModel;
+            if (_vm is not null) _vm.SummaryBumped += OnBump;
+        };
     }
+
+    // 일정을 끝내면 남은 수가 살짝 튄다 (시안 bump)
+    private void OnBump() { if (IsVisible) Motion.Play(LeftNum, "Bump"); }
 }

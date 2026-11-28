@@ -2,13 +2,21 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:TodoSpirits.Windows.Views">
+    <!-- 시안: unity/windows-ui/design/settings-v4.html. 왼쪽 목록(248) + 간격 28 + 창(최대 560).
+         서버·계정이 있어야 하는 창은 시안의 모양만 두고 동작하지 않는다 (성공한 척하지 않는다). -->
     <UserControl.Resources>
-        <Style x:Key="PaneTitle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-            <Setter Property="FontSize" Value="20"/>
-            <Setter Property="FontWeight" Value="ExtraBold"/>
-            <Setter Property="Margin" Value="4,0,0,14"/>
-        </Style>
+        <!-- 시안에만 있고 공용 아이콘 사전에 아직 없는 아이콘 (24×24, rect·circle 은 경로로 풀어 적음) -->
+        <Geometry x:Key="IcPc">M5 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M8 20h8 M12 16v4</Geometry>
+        <Geometry x:Key="IcMega">M18 8a3 3 0 0 1 0 6 M10 8v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-5 M12 8l4.6-3.8A0.8 0.8 0 0 1 18 5v12a0.8 0.8 0 0 1-1.4 0.6L12 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h8</Geometry>
+        <Geometry x:Key="IcFile">M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z M14 3v5h5 M9 13h6 M9 17h6</Geometry>
+        <Geometry x:Key="IcKey">M4 15a4 4 0 1 0 8 0a4 4 0 1 0-8 0 M10.8 12.2 20 3 M17 6l2 2 M14 9l2 2</Geometry>
+        <Geometry x:Key="IcOut">M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2 M9 12h12 M18 9l3 3-3 3</Geometry>
+        <Geometry x:Key="IcUserX">M6 8a4 4 0 1 0 8 0a4 4 0 1 0-8 0 M3 21a7 7 0 0 1 11-5.7 M17 15l4 4 M21 15l-4 4</Geometry>
+        <Geometry x:Key="IcEyeOff">M3 3l18 18 M10.6 10.6a2 2 0 0 0 2.8 2.8 M9.4 5.2A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1 M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6</Geometry>
+
+        <!-- ───── 글자 ───── -->
         <Style x:Key="RowTitle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
         <Style x:Key="RowNote" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -16,40 +24,169 @@
             <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="TextTrimming" Value="None"/>
-            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="Margin" Value="0,3,0,0"/>
         </Style>
-        <Style x:Key="Note" TargetType="TextBlock" BasedOn="{StaticResource RowNote}">
-            <Setter Property="Margin" Value="6,10,6,0"/>
+        <!-- 오른쪽 값 (.val) -->
+        <Style x:Key="RowVal" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- 제목 바로 아래 설명 (.pane-desc): 앞 블록과의 간격 16 을 8 로 당긴다 -->
+        <Style x:Key="PaneDesc" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Setter Property="LineHeight" Value="21"/>
+            <Setter Property="Margin" Value="4,-8,4,16"/>
+        </Style>
+        <!-- 카드 아래 작은 안내 (.pane-note) -->
+        <Style x:Key="PaneNote" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource Grey}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Setter Property="LineHeight" Value="18"/>
+            <Setter Property="Margin" Value="6,-4,6,16"/>
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="Margin" Value="4,0,4,8"/>
+        </Style>
+        <Style x:Key="Placeholder" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource Grey}"/>
+            <Setter Property="Margin" Value="17,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
         </Style>
         <Style x:Key="Line" TargetType="Border">
             <Setter Property="Height" Value="1"/>
             <Setter Property="Background" Value="{DynamicResource Stroke}"/>
         </Style>
-        <!-- 왼쪽 목록 -->
-        <Style x:Key="SectionItem" TargetType="ListBoxItem">
-            <Setter Property="Cursor" Value="Hand"/>
-            <!-- 화면 읽기 프로그램이 항목 이름을 읽을 수 있게 -->
-            <Setter Property="AutomationProperties.Name" Value="{Binding Label}"/>
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+        <!-- 블록 사이 16 (.pane-in gap) -->
+        <Style x:Key="Block" TargetType="Border" BasedOn="{StaticResource CardBorder}">
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+        <!-- "준비 중" 꼬리표 (.tag-tbd) -->
+        <Style x:Key="TbdTag" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Back02}"/>
+            <Setter Property="CornerRadius" Value="9"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="TbdText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Tbd}"/>
+        </Style>
+        <!-- 계정 창 맨 위의 한 줄 안내 -->
+        <Style x:Key="AccountNotice" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Back02}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- ───── 창 제목: 22px 라임 아이콘 + 20px 제목, 오른쪽에 "저장됨" (Tag = 아이콘, Content = 제목) ───── -->
+        <Style x:Key="PaneHead" TargetType="ContentControl">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Margin" Value="4,2,4,16"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <StackPanel>
-                        <TextBlock Text="{Binding Header}" FontSize="12" Foreground="{DynamicResource Text2}" Margin="12,8,0,6" Visibility="{Binding HasHeader, Converter={StaticResource BoolVis}}"/>
-                        <Border x:Name="b" Background="Transparent" CornerRadius="12" Height="42" Padding="14,0" Margin="0,0,0,4">
+                    <ControlTemplate TargetType="ContentControl">
+                        <Grid>
                             <StackPanel Orientation="Horizontal">
-                                <v:Icon x:Name="ic" Data="{Binding Icon}" Width="18" Height="18" Foreground="{DynamicResource Text2}" Margin="0,0,11,0" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="t" Text="{Binding Label}" FontSize="14" VerticalAlignment="Center"/>
+                                <v:Icon Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Width="22" Height="22" Foreground="{DynamicResource LimeT}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" FontSize="20" FontWeight="ExtraBold" VerticalAlignment="Center"/>
                             </StackPanel>
+                            <StackPanel x:Name="saved" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0" IsHitTestVisible="False">
+                                <StackPanel.RenderTransform>
+                                    <TranslateTransform x:Name="savedShift" Y="4"/>
+                                </StackPanel.RenderTransform>
+                                <v:Icon Data="{StaticResource IcCheck}" Width="14" Height="14" Thickness="2.6" Foreground="{DynamicResource LimeT}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="저장됨" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource LimeT}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding SavedOn}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard><Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="saved" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="savedShift" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.2"/>
+                                    </Storyboard></BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard><Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="saved" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="savedShift" Storyboard.TargetProperty="Y" To="4" Duration="0:0:0.2"/>
+                                    </Storyboard></BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ───── 왼쪽 목록 ───── -->
+        <!-- 프로필 카드 (.me-card): 고르면 3px 라임 띠 -->
+        <Style x:Key="MeCard" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Command" Value="{Binding SelectSectionCommand}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="ring" Margin="-3" CornerRadius="21" Background="{DynamicResource LimeRing}" Visibility="Collapsed"/>
+                            <Border x:Name="b" Background="{DynamicResource Card}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" CornerRadius="18" Padding="12" Effect="{DynamicResource CardShadow}">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource PanelBg}"/>
+                            </Trigger>
+                            <Trigger Property="v:Ui.Selected" Value="True">
+                                <Setter TargetName="ring" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- 목록 한 줄 (.set-item): Tag = 아이콘, CommandParameter = 창 이름. 고른 줄은 흰 바탕 + 그림자 + 굵은 글자 + 라임 아이콘 -->
+        <Style x:Key="SetItem" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Command" Value="{Binding SelectSectionCommand}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="Transparent" CornerRadius="12" MinHeight="38" Padding="12,0">
+                            <DockPanel>
+                                <v:Icon x:Name="ic" DockPanel.Dock="Left" Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Width="18" Height="18" Foreground="{DynamicResource Text2}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="t" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center"/>
+                            </DockPanel>
                         </Border>
-                        </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="b" Property="Background" Value="{DynamicResource Back02}"/>
                             </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
+                            <Trigger Property="v:Ui.Selected" Value="True">
                                 <Setter TargetName="b" Property="Background" Value="{DynamicResource Card}"/>
-                                <Setter TargetName="b" Property="Effect" Value="{StaticResource CardShadow}"/>
+                                <Setter TargetName="b" Property="Effect" Value="{DynamicResource CardShadow}"/>
                                 <Setter TargetName="t" Property="FontWeight" Value="ExtraBold"/>
                                 <Setter TargetName="ic" Property="Foreground" Value="{DynamicResource LimeT}"/>
                             </Trigger>
@@ -58,188 +195,745 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- 묶음 제목 (.set-sec) -->
+        <Style x:Key="SetSec" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="Margin" Value="12,10,12,6"/>
+        </Style>
+
+        <!-- ───── 스위치 줄 (.opt-row.click): 줄 어디를 눌러도 켜지고 꺼진다. Content = 제목, Tag = 도움말, v:Ui.Radius = 카드 모서리에 맞춘 둥글기 ───── -->
+        <Style x:Key="OptSwitch" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="v:Ui.Radius" Value="0"/>
+            <Setter Property="AutomationProperties.Name" Value="{Binding Content, RelativeSource={RelativeSource Self}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="b" Background="Transparent" MinHeight="58" Padding="18,0" CornerRadius="{Binding (v:Ui.Radius), RelativeSource={RelativeSource TemplatedParent}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,9,12,9">
+                                    <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" TextTrimming="None"/>
+                                    <TextBlock x:Name="note" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" FontSize="12" Foreground="{DynamicResource Text2}" TextWrapping="Wrap" TextTrimming="None" Margin="0,3,0,0"/>
+                                </StackPanel>
+                                <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                          IsHitTestVisible="False" Focusable="False"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource PanelBg}"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="{x:Null}">
+                                <Setter TargetName="note" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 스위치가 없는 줄 (.opt-row) -->
+        <Style x:Key="OptRow" TargetType="Grid">
+            <Setter Property="MinHeight" Value="58"/>
+            <Setter Property="Margin" Value="18,0"/>
+        </Style>
+
+        <!-- ───── 눌러서 여는 줄 (.list-item): 버튼 · 토글 공용. 못 쓰는 줄은 올려도 바뀌지 않는다 ───── -->
+        <Style x:Key="ListRow" TargetType="ButtonBase">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="v:Ui.Radius" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Border x:Name="b" Background="Transparent" MinHeight="56" Padding="18,0" CornerRadius="{Binding (v:Ui.Radius), RelativeSource={RelativeSource TemplatedParent}}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource PanelBg}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ListIcon" TargetType="v:Icon">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- 줄 오른쪽의 작은 글자 (.date) -->
+        <Style x:Key="ListSide" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource Grey}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ───── 접었다 펴는 안내 (.qa): Tag = 번호, Header = 제목, Content = 본문 ───── -->
+        <Style x:Key="Qa" TargetType="Expander">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="v:Ui.Radius" Value="0"/>
+            <Setter Property="AutomationProperties.Name" Value="{Binding Header, RelativeSource={RelativeSource Self}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Cursor="Hand" FocusVisualStyle="{StaticResource FocusRing}"
+                                          HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent" MinHeight="56" Padding="18,0">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                                <DockPanel>
+                                    <v:Icon DockPanel.Dock="Right" Data="{StaticResource IcChevDown}" Width="16" Height="16" Foreground="{DynamicResource Text2}" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                                        <v:Icon.RenderTransform>
+                                            <RotateTransform x:Name="rot"/>
+                                        </v:Icon.RenderTransform>
+                                    </v:Icon>
+                                    <TextBlock DockPanel.Dock="Left" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Width="16" Margin="0,0,10,0" FontSize="15" FontWeight="ExtraBold"
+                                               Foreground="{DynamicResource LimeT}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" FontSize="15" FontWeight="Bold" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </ToggleButton>
+                            <TextBlock x:Name="body" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" Visibility="Collapsed" Margin="44,0,18,16"
+                                       FontSize="13" LineHeight="22" TextWrapping="Wrap" TextTrimming="None" v:Motion.Enter="Up"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="body" Property="Visibility" Value="Visible"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard><Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="rot" Storyboard.TargetProperty="Angle" To="180" Duration="0:0:0.2"/>
+                                    </Storyboard></BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard><Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="rot" Storyboard.TargetProperty="Angle" To="0" Duration="0:0:0.2"/>
+                                    </Storyboard></BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ───── 버튼 ───── -->
+        <!-- 닉네임 "확인" (.mini.lime, 높이 50) -->
+        <Style x:Key="LimeConfirm" TargetType="Button" BasedOn="{StaticResource Pill}">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="22,0"/>
+            <Setter Property="v:Ui.Radius" Value="25"/>
+            <Setter Property="Background" Value="{DynamicResource Lime}"/>
+            <Setter Property="Foreground" Value="{DynamicResource OnLime}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource LimeB}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- 대표 정령 알약 (.mini-sp) -->
+        <Style x:Key="MiniSpirit" TargetType="Button" BasedOn="{StaticResource Pill}">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="6,0,12,0"/>
+            <Setter Property="v:Ui.Radius" Value="21"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+        </Style>
+        <!-- 값 + 아래 화살표 (.tf-val.dd) -->
+        <Style x:Key="DropVal" TargetType="Button" BasedOn="{StaticResource Flat}">
+            <Setter Property="Padding" Value="8,5,6,5"/>
+            <Setter Property="v:Ui.Radius" Value="8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!-- 연한 버튼 (.btn-soft) · 라벤더 버튼 (.btn-lav) -->
+        <Style x:Key="SoftBtn" TargetType="Button" BasedOn="{StaticResource Flat}">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="{DynamicResource Back02}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Hover}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="LavBtn" TargetType="Button" BasedOn="{StaticResource Flat}">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="Background" Value="{DynamicResource Lav}"/>
+            <Setter Property="Foreground" Value="{DynamicResource OnLav}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource OnLav}"/>
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- 밑줄 글자 버튼 (.set-foot button) -->
+        <Style x:Key="FootLink" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" Padding="0,2">
+                            <TextBlock Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" FontSize="11" TextDecorations="Underline" Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="74"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="248"/>
+            <ColumnDefinition Width="28"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="설정" FontSize="26" FontWeight="ExtraBold" Margin="2,16,0,14" Grid.ColumnSpan="2"/>
 
-        <StackPanel Grid.Row="1" Margin="0,0,18,0">
-            <Border Style="{StaticResource CardBorder}" Padding="14,12" Margin="0,0,0,12">
-                <StackPanel Orientation="Horizontal">
-                    <Border Width="42" Height="42" CornerRadius="21" Background="{DynamicResource PinkOp}">
-                        <TextBlock Text="{Binding AvatarText}" FontSize="17" FontWeight="ExtraBold" Foreground="{DynamicResource PinkB}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Nickname, TargetNullValue=닉네임 없음, FallbackValue=닉네임 없음}" FontSize="15" FontWeight="Bold" MaxWidth="130"/>
-                        <TextBlock Text="이 컴퓨터에 저장" FontSize="12" Foreground="{DynamicResource Text2}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-            <ListBox ItemsSource="{Binding Sections}" SelectedValuePath="Key" SelectedValue="{Binding SettingsSection}" ItemContainerStyle="{StaticResource SectionItem}"
-                     Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="설정 항목"/>
-        </StackPanel>
+        <!-- 머리줄: 제목 + 알림 종 -->
+        <TextBlock Text="설정" FontSize="26" FontWeight="ExtraBold" Margin="2,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="3"/>
+        <v:BellButton Grid.Column="2" HorizontalAlignment="Right"/>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="0,0,-14,0" Padding="0,0,14,0">
-            <Grid MaxWidth="560" HorizontalAlignment="Left" Margin="0,0,0,24">
+        <!-- ═════ 왼쪽 목록: 혼자 스크롤된다 ═════ -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="-4,0,-4,20" Padding="4,3,4,8" Focusable="False">
+            <StackPanel x:Name="SectionList" PreviewKeyDown="OnListKeyDown">
+                <Button Style="{StaticResource MeCard}" CommandParameter="profile" AutomationProperties.Name="프로필">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Left" Width="42" Height="42" CornerRadius="21" Background="{DynamicResource PinkOp}" Margin="0,0,12,0">
+                            <TextBlock Text="{Binding AvatarText}" FontSize="17" FontWeight="ExtraBold" Foreground="{DynamicResource PinkB}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding ProfileName}" FontSize="15" FontWeight="Bold"/>
+                            <TextBlock Text="이 컴퓨터에 저장" FontSize="12" Foreground="{DynamicResource Text2}" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Button>
 
-                <!-- 프로필 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=profile}" v:Motion.Enter="Up">
-                    <TextBlock Text="프로필" Style="{StaticResource PaneTitle}"/>
-                    <TextBlock Text="닉네임" FontSize="13" Foreground="{DynamicResource Text2}" Margin="6,0,0,6"/>
-                    <TextBox Height="50" MaxLength="10" Text="{Binding Nickname, UpdateSourceTrigger=LostFocus}" AutomationProperties.Name="닉네임" KeyDown="OnCommitOnEnter"/>
-                    <TextBlock Text="{Binding NicknameCount}" FontSize="11" Foreground="{DynamicResource Grey}" HorizontalAlignment="Right" Margin="0,6,6,0"/>
-                    <TextBlock Style="{StaticResource Note}" Text="최대 10자. 입력하고 Enter 를 누르거나 다른 곳을 누르면 저장돼요. 홈 인사말에 쓰여요."/>
-                    <TextBlock Style="{StaticResource Note}" Text="계정 로그인 · 비밀번호 변경 · 회원탈퇴는 서버와 연결한 뒤에 넣을 예정이에요."/>
-                </StackPanel>
+                <TextBlock Text="시스템 설정" Style="{StaticResource SetSec}"/>
+                <Button Style="{StaticResource SetItem}" Content="알림" Tag="{StaticResource IcBell}" CommandParameter="notify"/>
+                <Button Style="{StaticResource SetItem}" Content="디스플레이" Tag="{StaticResource IcPalette}" CommandParameter="display"/>
+                <Button Style="{StaticResource SetItem}" Content="PC 설정" Tag="{StaticResource IcPc}" CommandParameter="pc"/>
+                <Button Style="{StaticResource SetItem}" Content="데이터" Tag="{StaticResource IcDb}" CommandParameter="data"/>
 
-                <!-- 디스플레이 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=display}" v:Motion.Enter="Up">
-                    <TextBlock Text="디스플레이 설정" Style="{StaticResource PaneTitle}"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,4">
-                        <StackPanel>
-                            <Grid MinHeight="56">
-                                <TextBlock Text="다크모드" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding IsDark}" HorizontalAlignment="Right" AutomationProperties.Name="다크모드"/>
-                            </Grid>
-                            <Border Style="{StaticResource Line}"/>
-                            <Grid MinHeight="56">
-                                <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
-                                    <TextBlock Text="Windows 설정 따라가기" Style="{StaticResource RowTitle}"/>
-                                    <TextBlock Style="{StaticResource RowNote}" Text="켜면 Windows 의 라이트/다크를 따라가요. 다크모드를 직접 바꾸면 꺼져요."/>
+                <TextBlock Text="고객 지원" Style="{StaticResource SetSec}"/>
+                <!-- 시안의 NEW 꼬리표는 실제 공지가 생기면 붙인다 (지금은 공지가 없다) -->
+                <Button Style="{StaticResource SetItem}" Content="공지사항" Tag="{StaticResource IcMega}" CommandParameter="notice"/>
+                <Button Style="{StaticResource SetItem}" Content="이용 안내" Tag="{StaticResource IcBook}" CommandParameter="guide"/>
+                <Button Style="{StaticResource SetItem}" Content="QnA" Tag="{StaticResource IcHelp}" CommandParameter="qna"/>
+                <Button Style="{StaticResource SetItem}" Content="약관 및 정책" Tag="{StaticResource IcFile}" CommandParameter="terms"/>
+
+                <TextBlock Text="계정" Style="{StaticResource SetSec}"/>
+                <Button Style="{StaticResource SetItem}" Content="비밀번호 변경" Tag="{StaticResource IcKey}" CommandParameter="password"/>
+                <Button Style="{StaticResource SetItem}" Content="로그아웃" Tag="{StaticResource IcOut}" CommandParameter="logout"/>
+                <Button Style="{StaticResource SetItem}" Content="회원탈퇴" Tag="{StaticResource IcUserX}" CommandParameter="withdraw" Foreground="{DynamicResource Text2}"/>
+
+                <Grid Margin="12,6,12,0">
+                    <TextBlock Text="{Binding VersionText}" FontSize="11" Foreground="{DynamicResource Grey}" VerticalAlignment="Center"/>
+                    <Button Style="{StaticResource FootLink}" Content="업데이트 확인" HorizontalAlignment="Right" Command="{Binding CheckUpdateCommand}"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ═════ 오른쪽 창 ═════ -->
+        <ScrollViewer x:Name="PaneScroll" Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="-4,0,-14,20" Padding="4,2,14,8" Focusable="False">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <!-- 넓어도 560 까지만, 좁으면 줄어든다 -->
+                    <ColumnDefinition Width="560*" MaxWidth="560"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="PaneHost">
+
+                    <!-- ───── 프로필 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=profile}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcUser}" Content="프로필"/>
+                        <Border Style="{StaticResource Block}" Padding="18">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left" Width="64" Height="64" CornerRadius="32" Background="{DynamicResource PinkOp}" Margin="0,0,16,0">
+                                    <TextBlock Text="{Binding AvatarText}" FontSize="24" FontWeight="ExtraBold" Foreground="{DynamicResource PinkB}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource MiniSpirit}" VerticalAlignment="Center" Margin="12,0,0,0" ToolTip="정령 도감으로"
+                                        Command="{Binding NavigateCommand}" CommandParameter="dex">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Representative.Art, FallbackValue={x:Null}}" Width="30" Height="30" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        <TextBlock Text="{Binding Representative.Name, StringFormat='대표 정령 · {0}', FallbackValue='대표 정령'}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding ProfileName}" FontSize="18" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding ServerStatus}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding FollowSystem}" HorizontalAlignment="Right" AutomationProperties.Name="Windows 설정 따라가기"/>
+                            </DockPanel>
+                        </Border>
+
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="닉네임" Style="{StaticResource FieldLabel}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox MaxLength="{Binding NicknameLimit}" Text="{Binding NicknameDraft, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="닉네임" KeyDown="OnNickKeyDown"/>
+                                <TextBlock Text="비워 두면 랜덤으로 지어드려요">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding NicknameDraft}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <Button Grid.Column="1" Style="{StaticResource LimeConfirm}" Content="확인" Margin="8,0,0,0" Command="{Binding ConfirmNicknameCommand}"/>
                             </Grid>
+                            <TextBlock Text="{Binding NicknameCount}" FontSize="11" HorizontalAlignment="Right" Margin="6,6,6,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Setter Property="Foreground" Value="{DynamicResource Grey}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding NicknameFull}" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource PinkB}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,4" Margin="0,12,0,0">
-                        <Grid MinHeight="56">
-                            <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
-                                <TextBlock Text="바탕화면 정령" Style="{StaticResource RowTitle}"/>
-                                <TextBlock Style="{StaticResource RowNote}" Text="정령이 바탕화면을 돌아다녀요. 누르면 오늘 일정, 오른쪽 버튼으로 누르면 메뉴가 나와요."/>
-                                <TextBlock Style="{StaticResource RowNote}" Text="{Binding SpiritStatusText}" Foreground="{DynamicResource LimeT}"/>
+
+                        <Border Style="{StaticResource Block}">
+                            <Grid Style="{StaticResource OptRow}">
+                                <TextBlock Text="연동 계정" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding AccountText}" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Text2}"/>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource Block}" Padding="16" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolVis}}">
+                            <StackPanel IsEnabled="{Binding CanUseAccount}">
+                                <Expander Header="연동 이메일 변경">
+                                    <StackPanel Margin="0,8,0,0">
+                                        <TextBlock Text="새 이메일" Style="{StaticResource FieldLabel}"/>
+                                        <TextBox x:Name="NewAccountEmail" MaxLength="254" AutomationProperties.Name="새 이메일"/>
+                                        <Button Content="이메일 변경" Style="{StaticResource SoftBtn}" Click="OnChangeAccountEmail" Margin="0,6,0,0"/>
+                                    </StackPanel>
+                                </Expander>
+                                <StackPanel Margin="0,10,0,0" Visibility="{Binding NeedsEmailVerification, Converter={StaticResource BoolVis}}">
+                                    <Button Content="연동 계정 인증번호 받기" Style="{StaticResource SoftBtn}" Click="OnSendAccountVerification"/>
+                                    <TextBlock Text="인증번호" Style="{StaticResource FieldLabel}" Margin="0,6,0,0"/>
+                                    <TextBox x:Name="AccountVerificationCode" MaxLength="6" AutomationProperties.Name="연동 계정 인증번호"/>
+                                    <Button Content="이메일 인증" Style="{StaticResource SoftBtn}" Click="OnVerifyAccountEmail" Margin="0,6,0,0"/>
+                                </StackPanel>
+                                <DockPanel Margin="0,12,0,0">
+                                    <Button DockPanel.Dock="Left" Content="내 구독 조회" Style="{StaticResource Pill}" Click="OnLoadSubscription"/>
+                                    <TextBlock Text="{Binding SubscriptionText}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                </DockPanel>
                             </StackPanel>
-                            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding SpiritEnabled}" HorizontalAlignment="Right" AutomationProperties.Name="바탕화면 정령"/>
+                        </Border>
+                        <Border Style="{StaticResource Block}" Padding="16" Visibility="{Binding IsSignedIn, Converter={StaticResource BoolVis}, ConverterParameter=inv}">
+                            <StackPanel IsEnabled="{Binding CanSignIn}">
+                                <TextBlock Text="이메일" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="AccountEmail" AutomationProperties.Name="이메일" MaxLength="254" Margin="0,0,0,8" KeyDown="OnAccountEnter"/>
+                                <TextBlock Text="비밀번호" Style="{StaticResource FieldLabel}"/>
+                                <PasswordBox x:Name="AccountPassword" AutomationProperties.Name="비밀번호" MaxLength="128" MinHeight="38" Margin="0,0,0,8" KeyDown="OnAccountEnter"/>
+                                <Button Style="{StaticResource Primary}" Content="이메일로 로그인" Click="OnLoginClick"/>
+                                <Expander Header="이메일로 회원가입" Margin="0,12,0,0">
+                                    <StackPanel Margin="0,8,0,0">
+                                        <TextBlock Style="{StaticResource PaneNote}" Text="위에 이메일과 비밀번호를 입력한 뒤 인증번호를 받아 주세요."/>
+                                        <Button Style="{StaticResource SoftBtn}" Content="인증번호 받기" Click="OnSendSignupCode"/>
+                                        <TextBox x:Name="SignupCode" MaxLength="6" Margin="0,8,0,8" AutomationProperties.Name="이메일 인증번호"/>
+                                        <Button Style="{StaticResource Primary}" Content="인증 후 가입" Click="OnRegisterClick"/>
+                                    </StackPanel>
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ───── 알림 ───── -->
+                    <StackPanel IsEnabled="{Binding CanEditSettings}" Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=notify}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcBell}" Content="알림 설정"/>
+                        <TextBlock Style="{StaticResource PaneDesc}" Text="Windows 알림 센터로 보내드려요."/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="17,17,0,0" Content="리마인드 알림" IsChecked="{Binding NotifyRemind}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="미룬 플랜 정기 알림" IsChecked="{Binding NotifyPostponed}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="루틴 안내 알림" IsChecked="{Binding NotifyRoutine}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="스트릭(연속 달성) 세이브 알림" IsChecked="{Binding NotifyStreak}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="0,0,17,17" Content="야간 푸시 알림 수신" IsChecked="{Binding NotifyNight}"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="리마인드 알림을 켜면 일정에 정해 둔 알림 시각에 Windows 알림이 떠요. 꺼도 앱의 알림 패널에는 쌓여요. 야간 푸시를 끄면 밤 10시부터 아침 8시까지는 Windows 알림을 띄우지 않아요."/>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="미룬 플랜 · 루틴 · 스트릭 알림은 아직 고른 값만 기억해 둬요."/>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="알림은 앱이 켜져 있을 때만 울려요. 앱을 완전히 끄면 알림도 오지 않아요."/>
+                    </StackPanel>
+
+                    <!-- ───── 디스플레이 ───── -->
+                    <StackPanel IsEnabled="{Binding CanEditSettings}" Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=display}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcPalette}" Content="디스플레이 설정"/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="17,17,0,0" Content="다크모드" IsChecked="{Binding IsDark}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="Windows 설정 따라가기" Tag="켜면 Windows 의 라이트/다크를 따라가요. 다크모드를 직접 바꾸면 꺼져요." IsChecked="{Binding FollowSystem}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="플랜 디데이 표시" IsChecked="{Binding ShowDday}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Grid Style="{StaticResource OptRow}">
+                                    <TextBlock Text="언어" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
+                                    <Button Style="{StaticResource DropVal}" HorizontalAlignment="Right" Margin="0,0,-6,0" Click="OnLanguageClick" AutomationProperties.Name="언어">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Language}" FontSize="14" VerticalAlignment="Center"/>
+                                            <v:Icon Data="{StaticResource IcChevDown}" Width="14" Height="14" Foreground="{DynamicResource Text2}" Margin="2,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="언어는 아직 고른 값만 기억해 둬요. 지금은 한국어로만 보여요."/>
+                        <Border Style="{StaticResource Block}">
+                            <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="17" Content="바탕화면 정령" Tag="정령이 바탕화면을 돌아다녀요. 누르면 오늘 일정, 오른쪽 버튼으로 누르면 메뉴가 나와요." IsChecked="{Binding SpiritEnabled}"/>
+                        </Border>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="{Binding SpiritStatusText}" Foreground="{DynamicResource LimeT}"/>
+                        <Border Style="{StaticResource Block}">
+                            <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="17" Content="글자 대비 높이기" Tag="기본으로 켜져 있어요. 끄면 라이트 모드 글자가 Figma 원래 색(더 옅은 색)으로 바뀌어요." IsChecked="{Binding ContrastMore}"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ───── PC 설정 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=pc}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcPc}" Content="PC 설정"/>
+                        <TextBlock Style="{StaticResource PaneDesc}" Text="윈도우 앱에서만 쓰는 설정이에요."/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <CheckBox Style="{StaticResource OptSwitch}" v:Ui.Radius="17,17,0,0" Content="Windows 시작 시 자동 실행" IsChecked="{Binding AutoStart}"/>
+                                <Border Style="{StaticResource Line}"/>
+                                <CheckBox Style="{StaticResource OptSwitch}" Content="창을 닫으면 트레이로" IsChecked="{Binding CloseToTray}"
+                                          Tag="켜면 창을 닫아도 앱이 트레이에 남아 알림과 정령이 유지돼요. 끝내려면 트레이 아이콘을 오른쪽 버튼으로 눌러 종료를 고르세요."/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Grid Style="{StaticResource OptRow}">
+                                    <StackPanel VerticalAlignment="Center" Margin="0,9,80,9">
+                                        <TextBlock Text="단축키" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Style="{StaticResource RowNote}" Text="Ctrl+N 일정 추가 · Ctrl+F 검색 · Ctrl+B 사이드바"/>
+                                    </StackPanel>
+                                    <Button Content="모두 보기" Tag="{StaticResource IcKeys}" Style="{StaticResource Pill}" HorizontalAlignment="Right" VerticalAlignment="Center" Command="{Binding ToggleHelpCommand}"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ───── 데이터 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=data}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcDb}" Content="데이터 설정"/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <Button Style="{StaticResource ListRow}" v:Ui.Radius="17,17,0,0" Command="{Binding BackupCommand}" AutomationProperties.Name="백업">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Style="{StaticResource ListSide}" Text="{Binding LastBackupText}"/>
+                                        <v:Icon DockPanel.Dock="Left" Data="{StaticResource IcDb}" Style="{StaticResource ListIcon}"/>
+                                        <TextBlock Text="백업" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Button>
+                                <Border Style="{StaticResource Line}"/>
+                                <Button Style="{StaticResource ListRow}" Command="{Binding SyncCommand}" AutomationProperties.Name="계정 동기화">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding ServerStatus}" Style="{StaticResource ListSide}"/>
+                                        <v:Icon DockPanel.Dock="Left" Data="{StaticResource IcPc}" Style="{StaticResource ListIcon}"/>
+                                        <TextBlock Text="동기화" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Button>
+                                <Border Style="{StaticResource Line}"/>
+                                <Button Style="{StaticResource ListRow}" v:Ui.Radius="0,0,17,17" Command="{Binding ExportCsvCommand}" AutomationProperties.Name="데이터 내보내기 CSV">
+                                    <DockPanel>
+                                        <v:Icon DockPanel.Dock="Right" Data="{StaticResource IcChevRight}" Width="16" Height="16" Foreground="{DynamicResource Grey}" VerticalAlignment="Center"/>
+                                        <TextBlock DockPanel.Dock="Right" Style="{StaticResource ListSide}" Text="CSV" Margin="0,0,2,0"/>
+                                        <v:Icon DockPanel.Dock="Left" Data="{StaticResource IcFile}" Style="{StaticResource ListIcon}"/>
+                                        <TextBlock Text="데이터 내보내기" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                        <DockPanel Margin="4,0,4,16">
+                            <Button DockPanel.Dock="Right" Content="저장 폴더 열기" Style="{StaticResource Pill}" Command="{Binding OpenDataFolderCommand}"/>
+                            <TextBlock Text="{Binding TaskCountText}" FontSize="13" Foreground="{DynamicResource Text2}" VerticalAlignment="Center"/>
+                        </DockPanel>
+                        <TextBlock Style="{StaticResource PaneNote}" Margin="6,0,6,16"
+                                   Text="로그인하면 계정 일정을 동기화해요. 백업은 이 PC에 저장한 일정을 복사하고, CSV는 현재 불러온 일정을 내보내요."/>
+                    </StackPanel>
+
+                    <!-- ───── 공지사항: 서버가 없어서 보여 줄 공지가 없다 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=notice}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcMega}" Content="공지사항"/>
+                        <Border Style="{StaticResource Block}" Padding="18,28,18,24">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Image Source="/Assets/spirit_neutral.png" Width="96" Opacity="0.9" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="아직 공지사항이 없어요" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                                <TextBlock Text="공지사항 기능은 준비 중이에요." FontSize="13" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ───── 이용 안내 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=guide}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcBook}" Content="이용 안내"/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <Expander Style="{StaticResource Qa}" IsExpanded="True" Tag="1" Header="일정을 추가해요"
+                                          Content="홈이나 캘린더의 &quot;+ 일정 추가&quot;를 누르거나 Ctrl+N 을 눌러요. 중요한 일정은 ★ 로 표시할 수 있어요."/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Expander Style="{StaticResource Qa}" Tag="2" Header="일정을 끝내요"
+                                          Content="일정 왼쪽의 동그라미를 누르면 완료돼요. 잘못 눌렀으면 아래 &quot;되돌리기&quot;를 눌러요."/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Expander Style="{StaticResource Qa}" Tag="3" Header="어제 못 한 일을 골라요"
+                                          Content="끝내지 못한 지난 일정은 홈의 &quot;어제 하지 못한 일&quot;에 모여요. 자동으로 넘어가지 않고, &quot;오늘 하기&quot;로 직접 골라요."/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Expander Style="{StaticResource Qa}" Tag="4" Header="캘린더로 한눈에 봐요"
+                                          Content="주간 · 월간 · 연간으로 바꿔 볼 수 있어요. 월간에서 날짜를 두 번 누르면 그 날 일정을 추가해요."/>
+                                <Border Style="{StaticResource Line}"/>
+                                <Expander Style="{StaticResource Qa}" Tag="5" Header="반복과 알림을 정해요"
+                                          Content="일정을 열어 반복(매일 · 매주 · 매월)을 고르면 그 날짜마다 나타나요. 시간을 정한 일정은 알림 시각도 고를 수 있어요."/>
+                            </StackPanel>
+                        </Border>
+                        <Button Content="단축키 보기" Tag="{StaticResource IcKeys}" Style="{StaticResource Pill}" HorizontalAlignment="Left" Margin="4,0,0,16" Command="{Binding ToggleHelpCommand}"/>
+                    </StackPanel>
+
+                    <!-- ───── QnA: 서버가 없어서 아직 비어 있다 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=qna}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcHelp}" Content="QnA"/>
+                        <Border Style="{StaticResource Block}" Padding="18,28,18,24">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Image Source="/Assets/spirit_neutral.png" Width="96" Opacity="0.9" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="준비 중이에요" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                                <TextBlock Text="질문과 답변은 서버와 연결한 뒤에 볼 수 있어요." FontSize="13" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="앱 쓰는 법은 왼쪽의 이용 안내에서 볼 수 있어요."/>
+                    </StackPanel>
+
+                    <!-- ───── 약관 및 정책 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=terms}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcFile}" Content="약관 및 정책"/>
+                        <Border Style="{StaticResource Block}">
+                            <StackPanel>
+                                <Button Style="{StaticResource ListRow}" v:Ui.Radius="17,17,0,0" IsEnabled="False" AutomationProperties.Name="서비스 이용약관 (준비 중)">
+                                    <DockPanel>
+                                        <Border DockPanel.Dock="Right" Style="{StaticResource TbdTag}">
+                                            <TextBlock Text="준비 중" Style="{StaticResource TbdText}"/>
+                                        </Border>
+                                        <TextBlock Text="서비스 이용약관" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Button>
+                                <Border Style="{StaticResource Line}"/>
+                                <Button Style="{StaticResource ListRow}" IsEnabled="False" AutomationProperties.Name="개인정보 처리방침 (준비 중)">
+                                    <DockPanel>
+                                        <Border DockPanel.Dock="Right" Style="{StaticResource TbdTag}">
+                                            <TextBlock Text="준비 중" Style="{StaticResource TbdText}"/>
+                                        </Border>
+                                        <TextBlock Text="개인정보 처리방침" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Button>
+                                <Border Style="{StaticResource Line}"/>
+                                <ToggleButton x:Name="LicenseToggle" Style="{StaticResource ListRow}" v:Ui.Radius="0,0,17,17" AutomationProperties.Name="오픈소스 라이선스">
+                                    <DockPanel>
+                                        <v:Icon DockPanel.Dock="Right" Width="16" Height="16" Foreground="{DynamicResource Grey}" VerticalAlignment="Center">
+                                            <v:Icon.Style>
+                                                <Style TargetType="v:Icon">
+                                                    <Setter Property="Data" Value="{StaticResource IcChevRight}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, ElementName=LicenseToggle}" Value="True">
+                                                            <Setter Property="Data" Value="{StaticResource IcChevDown}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </v:Icon.Style>
+                                        </v:Icon>
+                                        <TextBlock Text="오픈소스 라이선스" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </ToggleButton>
+                                <StackPanel Margin="18,0,18,16" Visibility="{Binding IsChecked, ElementName=LicenseToggle, Converter={StaticResource BoolVis}}" v:Motion.Enter="Up">
+                                    <TextBlock FontSize="13" LineHeight="22" TextWrapping="Wrap" TextTrimming="None">
+                                        <Run Text="Todo with Spirits" FontWeight="Bold"/><Run Text=" · "/><Run Text="{Binding VersionText, Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="13" LineHeight="22" TextWrapping="Wrap" TextTrimming="None" Text="글꼴 · 나눔스퀘어라운드 — SIL Open Font License 1.1"/>
+                                    <TextBlock FontSize="13" LineHeight="22" TextWrapping="Wrap" TextTrimming="None" Text="실행 환경 · .NET (WPF) — MIT License"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Style="{StaticResource PaneDesc}" Margin="4,-8,4,16" Text="글꼴: 나눔스퀘어라운드 (SIL Open Font License 1.1)"/>
+                        <TextBlock Style="{StaticResource PaneNote}" Text="서비스 이용약관과 개인정보 처리방침은 준비 중이에요."/>
+                    </StackPanel>
+
+                    <!-- ───── 비밀번호 변경: 시안의 모양만. 계정이 없어서 입력을 받지 않는다 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=password}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcKey}" Content="비밀번호 변경"/>
+                        <Border Style="{StaticResource AccountNotice}">
+                            <TextBlock Text="비밀번호 변경 기능은 준비 중이에요." FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" TextWrapping="Wrap" TextTrimming="None"/>
+                        </Border>
+                        <StackPanel IsEnabled="False">
+                            <StackPanel Margin="0,0,0,16" Opacity="0.6">
+                                <TextBlock Text="기존 비밀번호" Style="{StaticResource FieldLabel}"/>
+                                <Grid>
+                                    <TextBox IsReadOnly="True" Focusable="False" AutomationProperties.Name="기존 비밀번호 (준비 중)"/>
+                                    <TextBlock Text="기존 비밀번호" Style="{StaticResource Placeholder}"/>
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,0,16" Opacity="0.6">
+                                <TextBlock Text="새로운 비밀번호" Style="{StaticResource FieldLabel}"/>
+                                <Grid>
+                                    <TextBox IsReadOnly="True" Focusable="False" AutomationProperties.Name="새로운 비밀번호 (준비 중)"/>
+                                    <TextBlock Text="새로운 비밀번호" Style="{StaticResource Placeholder}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0">
+                                        <Border Width="34" Height="34">
+                                            <v:Icon Data="{StaticResource IcEyeOff}" Width="18" Height="18" Foreground="{DynamicResource Text2}"/>
+                                        </Border>
+                                        <Border Width="34" Height="34" Margin="2,0,0,0">
+                                            <v:Icon Data="{StaticResource IcX}" Width="18" Height="18" Foreground="{DynamicResource Text2}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                                <!-- 안전도 막대 (.strength) -->
+                                <DockPanel Margin="6,10,6,0">
+                                    <TextBlock DockPanel.Dock="Right" Text="안전도" FontSize="12" Foreground="{DynamicResource Text2}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <UniformGrid Columns="3" VerticalAlignment="Center">
+                                        <Border Height="6" CornerRadius="3" Background="{DynamicResource Track}" Margin="0,0,2,0"/>
+                                        <Border Height="6" CornerRadius="3" Background="{DynamicResource Track}" Margin="2,0"/>
+                                        <Border Height="6" CornerRadius="3" Background="{DynamicResource Track}" Margin="2,0,0,0"/>
+                                    </UniformGrid>
+                                </DockPanel>
+                                <!-- 규칙 (.rules) -->
+                                <StackPanel Margin="6,10,6,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="14" Height="14" Stroke="{DynamicResource CheckB}" StrokeThickness="1.5" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="영문/숫자/특수문자 중 2가지 이상 포함" FontSize="12" Foreground="{DynamicResource Text2}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <Ellipse Width="14" Height="14" Stroke="{DynamicResource CheckB}" StrokeThickness="1.5" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="8자 이상 20자 이내" FontSize="12" Foreground="{DynamicResource Text2}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Style="{StaticResource Primary}" Content="다음" Margin="0,0,0,16"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- ───── 로그아웃 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=logout}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcOut}" Content="로그아웃"/>
+                        <Border Style="{StaticResource AccountNotice}">
+                            <TextBlock Text="로그아웃하면 다른 기기에서도 다시 로그인해야 할 수 있어요." FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" TextWrapping="Wrap" TextTrimming="None"/>
+                        </Border>
+                        <Border Style="{StaticResource Block}" Padding="18,24,18,18">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Image x:Name="LogoutArt" Source="/Assets/spirit_neutral.png" Width="120" Opacity="0.85" RenderOptions.BitmapScalingMode="HighQuality" IsVisibleChanged="OnArtVisibleChanged"/>
+                                <TextBlock Text="다음에 또 만나요!" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                <TextBlock Text="로그아웃해도 일정은 계정에 그대로 남아 있어요." FontSize="13" LineHeight="22" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" TextAlignment="Center"
+                                           TextWrapping="Wrap" TextTrimming="None" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Style="{StaticResource Primary}" Content="로그아웃" Command="{Binding SignOutCommand}" Margin="0,0,0,16"/>
+                    </StackPanel>
+
+                    <!-- ───── 회원탈퇴 ───── -->
+                    <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=withdraw}">
+                        <ContentControl Style="{StaticResource PaneHead}" Tag="{StaticResource IcUserX}" Content="회원탈퇴"/>
+                        <Border Style="{StaticResource AccountNotice}">
+                            <TextBlock Text="탈퇴하면 서버의 계정 데이터가 삭제돼요. 이 PC에 따로 저장한 일정은 남아요." FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" TextWrapping="Wrap" TextTrimming="None"/>
+                        </Border>
+                        <Border Style="{StaticResource Block}" Padding="18,24,18,18">
+                            <StackPanel HorizontalAlignment="Center">
+                                <!-- 비 오는 동그라미 (.rainy): 옅은 바탕 + 세로 빗줄기 -->
+                                <Grid Width="170" Height="150" HorizontalAlignment="Center">
+                                    <Ellipse Opacity="0.9">
+                                        <Ellipse.Fill>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="#33857563" Offset="0"/>
+                                                <GradientStop Color="#1F857563" Offset="0.7"/>
+                                                <GradientStop Color="#00857563" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <Ellipse>
+                                        <Ellipse.Fill>
+                                            <DrawingBrush TileMode="Tile" Viewport="0,0,7,150" ViewportUnits="Absolute" Stretch="None" AlignmentX="Left" AlignmentY="Top">
+                                                <DrawingBrush.Drawing>
+                                                    <DrawingGroup>
+                                                        <GeometryDrawing Brush="Transparent">
+                                                            <GeometryDrawing.Geometry>
+                                                                <RectangleGeometry Rect="0,0,7,150"/>
+                                                            </GeometryDrawing.Geometry>
+                                                        </GeometryDrawing>
+                                                        <GeometryDrawing Brush="#29857563">
+                                                            <GeometryDrawing.Geometry>
+                                                                <RectangleGeometry Rect="0,0,2,150"/>
+                                                            </GeometryDrawing.Geometry>
+                                                        </GeometryDrawing>
+                                                    </DrawingGroup>
+                                                </DrawingBrush.Drawing>
+                                            </DrawingBrush>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <Image x:Name="WithdrawArt" Source="/Assets/spirit_neutral.png" Width="110" RenderOptions.BitmapScalingMode="HighQuality" IsVisibleChanged="OnArtVisibleChanged"/>
+                                </Grid>
+                                <TextBlock Text="{Binding WithdrawHello}" FontSize="12" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                <TextBlock Text="벌써 헤어지기엔 너무 아쉬워요..." FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                <TextBlock FontSize="13" LineHeight="22" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None" Margin="0,10,0,0">
+                                    탈퇴 대신 잠시 쉬어가는 건 어떨까요?<LineBreak/>계정은 그대로 두고 편하게 쉬다 오시는 걸 추천드려요.
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Style="{StaticResource SoftBtn}" Content="더 머무르기" Command="{Binding SelectSectionCommand}" CommandParameter="profile"/>
+                            <Button Grid.Column="2" Style="{StaticResource LavBtn}" Content="탈퇴하기" IsEnabled="{Binding CanUseAccount}" Click="OnWithdrawClick"/>
                         </Grid>
-                    </Border>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,4" Margin="0,12,0,0">
-                        <Grid MinHeight="56">
-                            <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
-                                <TextBlock Text="글자 대비 높이기" Style="{StaticResource RowTitle}"/>
-                                <TextBlock Style="{StaticResource RowNote}" Text="기본으로 켜져 있어요. 끄면 라이트 모드 글자가 Figma 원래 색(더 옅은 색)으로 바뀌어요."/>
-                            </StackPanel>
-                            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding ContrastMore}" HorizontalAlignment="Right" AutomationProperties.Name="글자 대비 높이기"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-
-                <!-- 알림 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=notify}" v:Motion.Enter="Up">
-                    <TextBlock Text="알림 설정" Style="{StaticResource PaneTitle}"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,4">
-                        <StackPanel>
-                            <Grid Height="54">
-                                <TextBlock Text="리마인드 알림" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding NotifyRemind}" HorizontalAlignment="Right" AutomationProperties.Name="리마인드 알림"/>
-                            </Grid>
-                            <Border Style="{StaticResource Line}"/>
-                            <Grid Height="54">
-                                <TextBlock Text="미룬 플랜 정기 알림" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding NotifyPostponed}" HorizontalAlignment="Right" AutomationProperties.Name="미룬 플랜 정기 알림"/>
-                            </Grid>
-                            <Border Style="{StaticResource Line}"/>
-                            <Grid Height="54">
-                                <TextBlock Text="루틴 안내 알림" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding NotifyRoutine}" HorizontalAlignment="Right" AutomationProperties.Name="루틴 안내 알림"/>
-                            </Grid>
-                            <Border Style="{StaticResource Line}"/>
-                            <Grid Height="54">
-                                <TextBlock Text="스트릭(연속 달성) 세이브 알림" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding NotifyStreak}" HorizontalAlignment="Right" AutomationProperties.Name="스트릭 세이브 알림"/>
-                            </Grid>
-                            <Border Style="{StaticResource Line}"/>
-                            <Grid Height="54">
-                                <TextBlock Text="야간 푸시 알림 수신" Style="{StaticResource RowTitle}" VerticalAlignment="Center"/>
-                                <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding NotifyNight}" HorizontalAlignment="Right" AutomationProperties.Name="야간 푸시 알림 수신"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                    <TextBlock Style="{StaticResource Note}" Text="리마인드 알림을 켜면 일정에 정해 둔 알림 시각에 Windows 알림이 떠요. 꺼도 앱의 알림 패널에는 쌓여요. 야간 푸시를 끄면 밤 10시부터 아침 8시까지는 Windows 알림을 띄우지 않아요."/>
-                    <TextBlock Style="{StaticResource Note}" Text="미룬 플랜 · 루틴 · 스트릭 알림은 아직 고른 값만 기억해 둬요."/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,4" Margin="0,14,0,0">
-                        <Grid MinHeight="56">
-                            <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
-                                <TextBlock Text="창을 닫으면 트레이로" Style="{StaticResource RowTitle}"/>
-                                <TextBlock Style="{StaticResource RowNote}" Text="켜면 창을 닫아도 앱이 트레이에 남아 알림과 정령이 유지돼요. 끝내려면 트레이 아이콘을 오른쪽 버튼으로 눌러 종료를 고르세요."/>
-                            </StackPanel>
-                            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding CloseToTray}" HorizontalAlignment="Right" AutomationProperties.Name="창을 닫으면 트레이로"/>
-                        </Grid>
-                    </Border>
-                    <TextBlock Style="{StaticResource Note}" Text="알림은 앱이 켜져 있을 때만 울려요. 앱을 완전히 끄면 알림도 오지 않아요."/>
-                </StackPanel>
-
-                <!-- 데이터 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=data}" v:Motion.Enter="Up">
-                    <TextBlock Text="데이터 설정" Style="{StaticResource PaneTitle}"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,14">
-                        <StackPanel>
-                            <TextBlock Text="일정이 저장되는 곳" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" Text="{Binding TaskCountText}"/>
-                            <TextBox Text="{Binding DataPath, Mode=OneWay}" IsReadOnly="True" Height="40" FontSize="12" Margin="0,10,0,10" AutomationProperties.Name="저장 위치"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="폴더 열기" Tag="{StaticResource IcDb}" Style="{StaticResource Pill}" Command="{Binding OpenDataFolderCommand}"/>
-                                <Button Content="CSV 로 내보내기" Style="{StaticResource Pill}" Margin="8,0,0,0" Command="{Binding ExportCsvCommand}"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <TextBlock Style="{StaticResource Note}" Text="일정은 이 컴퓨터에만 저장돼요. 백업 · 동기화는 서버와 연결한 뒤에 넣을 예정이에요."/>
-                </StackPanel>
-
-                <!-- 이용 안내 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=guide}" v:Motion.Enter="Up">
-                    <TextBlock Text="이용 안내" Style="{StaticResource PaneTitle}"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,14">
-                        <StackPanel>
-                            <TextBlock Text="1  일정을 추가해요" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" FontSize="13" Text="홈이나 캘린더의 &quot;+ 일정 추가&quot;를 누르거나 Ctrl+N 을 눌러요. 중요한 일정은 ★ 로 표시할 수 있어요."/>
-                            <Border Style="{StaticResource Line}" Margin="0,12"/>
-                            <TextBlock Text="2  일정을 끝내요" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" FontSize="13" Text="일정 왼쪽의 동그라미를 누르면 완료돼요. 잘못 눌렀으면 아래 &quot;되돌리기&quot;를 눌러요."/>
-                            <Border Style="{StaticResource Line}" Margin="0,12"/>
-                            <TextBlock Text="3  어제 못 한 일을 골라요" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" FontSize="13" Text="끝내지 못한 지난 일정은 홈의 &quot;어제 하지 못한 일&quot;에 모여요. 자동으로 넘어가지 않고, &quot;오늘 하기&quot;로 직접 골라요."/>
-                            <Border Style="{StaticResource Line}" Margin="0,12"/>
-                            <TextBlock Text="4  캘린더로 한눈에 봐요" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" FontSize="13" Text="주간 · 월간 · 연간으로 바꿔 볼 수 있어요. 월간에서 날짜를 두 번 누르면 그 날 일정을 추가해요."/>
-                            <Border Style="{StaticResource Line}" Margin="0,12"/>
-                            <TextBlock Text="5  반복과 알림을 정해요" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" FontSize="13" Text="일정을 열어 반복(매일 · 매주 · 매월)을 고르면 그 날짜마다 나타나요. 시간을 정한 일정은 알림 시각도 고를 수 있어요."/>
-                        </StackPanel>
-                    </Border>
-                    <Button Content="단축키 보기" Tag="{StaticResource IcKeys}" Style="{StaticResource Pill}" HorizontalAlignment="Left" Margin="0,12,0,0" Command="{Binding ToggleHelpCommand}"/>
-                </StackPanel>
-
-                <!-- 앱 정보 -->
-                <StackPanel Visibility="{Binding SettingsSection, Converter={StaticResource EqVis}, ConverterParameter=about}" v:Motion.Enter="Up">
-                    <TextBlock Text="앱 정보" Style="{StaticResource PaneTitle}"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="18,14">
-                        <StackPanel>
-                            <TextBlock Text="Todo with Spirits" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" Text="{Binding VersionText}"/>
-                            <Border Style="{StaticResource Line}" Margin="0,12"/>
-                            <TextBlock Text="글꼴" Style="{StaticResource RowTitle}"/>
-                            <TextBlock Style="{StaticResource RowNote}" Text="나눔스퀘어라운드 — SIL Open Font License 1.1"/>
-                        </StackPanel>
-                    </Border>
-                    <TextBlock Style="{StaticResource Note}" Text="공지사항 · QnA · 약관 및 정책은 서버와 연결한 뒤에 넣을 예정이에요."/>
-                </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </ScrollViewer>
     </Grid>

@@ -1,0 +1,127 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.DayPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:TodoSpirits.Windows.Views">
+    <!-- 월간 캘린더의 날짜 패널 (시안 calendar-v4.html 의 .panel): 제목 74 · 통계 · 일정 추가 · 완료 제외 / 정렬 · 목록 -->
+    <UserControl.Resources>
+        <!-- 완료 제외 체크 (20px, 모서리 6, 켜면 갈색 채움) -->
+        <Style x:Key="SmallCheck" TargetType="CheckBox">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border x:Name="b" Width="20" Height="20" CornerRadius="6" BorderBrush="{DynamicResource CheckB}" BorderThickness="2" Background="Transparent" Margin="0,0,8,0">
+                                <v:Icon x:Name="c" Data="{StaticResource IcCheck}" Width="12" Height="12" Thickness="2.8" Foreground="{DynamicResource OnText}" Opacity="0"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Text}"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Text}"/>
+                                <Setter TargetName="c" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="SortOption">
+            <Button x:Name="o" Cursor="Hand" Height="36" FontSize="14" Content="{Binding}" AutomationProperties.Name="{Binding}"
+                    Command="{Binding DataContext.PickDaySortCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="Transparent" BorderBrush="{DynamicResource Stroke}" BorderThickness="0,0,0,1" Padding="14,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource MenuHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <DataTemplate.Triggers>
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource SameText}">
+                            <Binding/>
+                            <Binding Path="DataContext.DaySort" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter TargetName="o" Property="Foreground" Value="{DynamicResource PinkB}"/>
+                    <Setter TargetName="o" Property="FontWeight" Value="ExtraBold"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource PanelBg}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1,0,0,0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="74"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding DayPanelTitle}" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <StackPanel Grid.Row="1" Margin="22,0,22,0">
+                <TextBlock Text="{Binding SelectedStat}" FontSize="13" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,-10,0,12"/>
+                <Button Style="{StaticResource Primary}" Content="일정 추가" Tag="{StaticResource IcPlus}" ToolTip="Ctrl+N" AutomationProperties.Name="일정 추가" Command="{Binding AddCommand}" Margin="0,0,0,14"/>
+                <Grid Margin="2,0,0,10">
+                    <CheckBox Style="{StaticResource SmallCheck}" Content="완료 제외" IsChecked="{Binding CalHideDone}" AutomationProperties.Name="완료 제외" HorizontalAlignment="Left"/>
+                    <Button x:Name="SortBtn" HorizontalAlignment="Right" Cursor="Hand" FontSize="13" Foreground="{DynamicResource Text2}" AutomationProperties.Name="정렬"
+                            Command="{Binding ToggleDaySortMenuCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="b" Background="Transparent" CornerRadius="8" Padding="8,4,4,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding DaySort}" VerticalAlignment="Center"/>
+                                        <v:Icon Data="{StaticResource IcChevDown}" Width="14" Height="14" Margin="2,0,0,0" Foreground="{DynamicResource Text2}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="b" Property="Background" Value="{DynamicResource Back02}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <!-- 메뉴가 떠 있을 때 버튼을 다시 누르면 닫히기만 하게 한다 -->
+                                    <DataTrigger Binding="{Binding DaySortMenuOpen}" Value="True">
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Popup IsOpen="{Binding DaySortMenuOpen, Mode=TwoWay}" StaysOpen="False" AllowsTransparency="True" PlacementTarget="{Binding ElementName=SortBtn}" Placement="Bottom"
+                           HorizontalOffset="-14" PopupAnimation="Fade">
+                        <Border Margin="14,6,14,26" MinWidth="96" Background="{DynamicResource Elev}" BorderBrush="{DynamicResource ElevRing}" BorderThickness="1" CornerRadius="12" Padding="0,4,0,3"
+                                Effect="{DynamicResource FloatShadow}">
+                            <ItemsControl ItemsSource="{Binding DaySortOptions}" ItemTemplate="{StaticResource SortOption}" Focusable="False"/>
+                        </Border>
+                    </Popup>
+                </Grid>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="Body" Margin="22,2,22,22">
+                    <ItemsControl ItemsSource="{Binding DayTasks}" ItemTemplate="{StaticResource TaskCard}" Focusable="False"/>
+                    <StackPanel Margin="0,48,0,48" HorizontalAlignment="Center" Visibility="{Binding DayEmpty, Converter={StaticResource BoolVis}}">
+                        <v:Icon Data="{StaticResource IcSad}" Width="44" Height="44" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding DayEmptyText}" FontSize="14" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

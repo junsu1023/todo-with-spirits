@@ -1,0 +1,14 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.BellButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:TodoSpirits.Windows.Views" VerticalAlignment="Center">
+    <!-- 머리줄의 알림 종 + 읽지 않은 수. 모든 화면이 같이 쓴다 (시안 .iconbtn + .badge) -->
+    <Grid Width="42" Height="42">
+        <Button Style="{StaticResource IconBtn}" Tag="{StaticResource IcBell}" ToolTip="알림" AutomationProperties.Name="알림" Command="{Binding ToggleNotiCommand}"/>
+        <Border Background="{DynamicResource Pink}" BorderBrush="{DynamicResource Back01}" BorderThickness="2" CornerRadius="10.5" MinWidth="21" Height="21" Padding="4,0"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="21,1,-8,0" IsHitTestVisible="False"
+                Visibility="{Binding HasUnread, Converter={StaticResource BoolVis}}">
+            <TextBlock Text="{Binding UnreadBadge}" FontSize="10" FontWeight="ExtraBold" Foreground="{DynamicResource OnPink}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</UserControl>

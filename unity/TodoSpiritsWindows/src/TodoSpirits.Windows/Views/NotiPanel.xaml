@@ -3,72 +3,165 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:TodoSpirits.Windows.Views"
              xmlns:vm="clr-namespace:TodoSpirits.Windows.ViewModels">
-    <!-- 알림 패널: 울린 일정 알림이 쌓인다. 누르면 그 일정을 연다 -->
+    <!-- 알림 플라이아웃 (시안 .flyout): 머리 70 · 분류 탭 · 새로운 알림 / 지난 알림 -->
+    <UserControl.Resources>
+        <!-- 알림 한 줄 (.noti): 읽지 않은 것은 카드, 지난 것은 평평하다. 지우기 X 는 마우스를 올릴 때만 보인다 -->
+        <DataTemplate x:Key="Noti" DataType="{x:Type vm:NotiRow}">
+            <Button Cursor="Hand" Margin="0,0,0,6" HorizontalContentAlignment="Stretch" FocusVisualStyle="{StaticResource FocusRing}" ToolTip="이 일정 열기" AutomationProperties.Name="{Binding Title}"
+                    Command="{Binding DataContext.OpenNotiCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="16" Padding="12,12,10,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="26"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Width="36" Height="36" CornerRadius="18" Background="{DynamicResource Back02}" VerticalAlignment="Top">
+                                    <v:Icon Data="{StaticResource IcBell}" Width="18" Height="18" Foreground="{DynamicResource Text2}"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <Grid Margin="0,0,0,3">
+                                        <TextBlock Text="시스템" FontSize="12" FontWeight="ExtraBold" Foreground="{DynamicResource Text2}"/>
+                                        <TextBlock Text="{Binding Ago}" FontSize="12" Foreground="{DynamicResource Grey}" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <TextBlock x:Name="msg" FontSize="13" LineHeight="20" TextWrapping="Wrap" TextTrimming="None">
+                                        <Run Text="{Binding Title, Mode=OneWay}" FontWeight="Bold"/><LineBreak/><Run Text="{Binding Body, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <Ellipse x:Name="dot" Grid.Column="2" Width="8" Height="8" Fill="{DynamicResource Pink}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,2,0" ToolTip="읽지 않음"/>
+                                <Button x:Name="x" Grid.Column="2" Style="{StaticResource IconBtn}" Width="26" Height="26" Tag="{StaticResource IcX}" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                        Foreground="{DynamicResource Text2}" ToolTip="지우기" AutomationProperties.Name="알림 지우기" Opacity="0" v:Ui.Radius="13" v:Ui.IconSize="14"
+                                        Command="{Binding DataContext.DeleteNotiCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Back02}"/>
+                                <Setter TargetName="x" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="x" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Unread}" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Card}"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Stroke}"/>
+                                <Setter TargetName="b" Property="Effect" Value="{DynamicResource CardShadow}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Unread}" Value="False">
+                                <Setter TargetName="dot" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="msg" Property="Foreground" Value="{DynamicResource Text2}"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <!-- 분류 탭 (.fly-tab) -->
+        <DataTemplate x:Key="Tab" DataType="{x:Type vm:NotiTab}">
+            <Grid Margin="0,0,6,0">
+                <Button x:Name="t" Content="{Binding Label}" Height="32" Padding="14,0" FontSize="13" FontWeight="Bold" v:Ui.Radius="16" AutomationProperties.Name="{Binding Label}"
+                        Command="{Binding DataContext.SetNotiFilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Key}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource Flat}">
+                            <Setter Property="Background" Value="{DynamicResource Back02}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsOn}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource Text}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource OnText}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Ellipse Width="6" Height="6" Fill="{DynamicResource Pink}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,6,0" IsHitTestVisible="False"
+                         Visibility="{Binding HasNew, Converter={StaticResource BoolVis}}"/>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="Sec" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+            <Setter Property="Margin" Value="6,14,6,8"/>
+        </Style>
+    </UserControl.Resources>
+
     <Border Background="{DynamicResource PanelBg}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1,0,0,0">
-        <Grid Margin="22,0,22,22">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="64"/>
+                <RowDefinition Height="70"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid>
+
+            <DockPanel Margin="22,0,12,0">
+                <Button DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Tag="{StaticResource IcX}" ToolTip="닫기 (Esc)" AutomationProperties.Name="알림 닫기" v:Ui.IconSize="20"
+                        Command="{Binding ToggleNotiCommand}"/>
+                <Button DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Tag="{StaticResource IcGear}" ToolTip="알림 설정" AutomationProperties.Name="알림 설정" v:Ui.IconSize="20"
+                        Command="{Binding OpenNotiSettingsCommand}"/>
+                <Button DockPanel.Dock="Right" Content="모두 읽음" Style="{StaticResource Flat}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource Text2}" Padding="10,6" v:Ui.Radius="14"
+                        VerticalAlignment="Center" Command="{Binding ReadAllNotiCommand}" Visibility="{Binding HasUnread, Converter={StaticResource BoolVis}}"/>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="알림" FontSize="20" FontWeight="ExtraBold"/>
-                    <Border Background="{DynamicResource PinkOp}" CornerRadius="10" Padding="8,1" Margin="8,0,0,0" VerticalAlignment="Center"
+                    <TextBlock Text="알림" FontSize="18" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+                    <Border Background="{DynamicResource Pink}" CornerRadius="10" Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center"
                             Visibility="{Binding HasUnread, Converter={StaticResource BoolVis}}">
-                        <TextBlock Text="{Binding UnreadBadge}" FontSize="12" FontWeight="ExtraBold" Foreground="{DynamicResource PinkB}"/>
+                        <TextBlock Text="{Binding UnreadBadge}" FontSize="11" FontWeight="ExtraBold" Foreground="{DynamicResource OnPink}"/>
                     </Border>
                 </StackPanel>
-                <Button Style="{StaticResource IconBtn}" Tag="{StaticResource IcX}" HorizontalAlignment="Right" ToolTip="닫기 (Esc)" AutomationProperties.Name="알림 닫기"
-                        Command="{Binding ToggleNotiCommand}"/>
-            </Grid>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
-                <Button Content="모두 읽음" Tag="{StaticResource IcCheck}" Style="{StaticResource Pill}" Command="{Binding ReadAllNotiCommand}"/>
-                <Button Content="모두 지우기" Tag="{StaticResource IcTrash}" Style="{StaticResource Pill}" Margin="8,0,0,0" Command="{Binding ClearNotiCommand}"/>
-            </StackPanel>
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,0,-14,0" Padding="0,0,14,0">
-                <StackPanel>
-                    <ItemsControl ItemsSource="{Binding Notifications}" Focusable="False">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:NotiRow}">
-                                <Button Style="{StaticResource CardButton}" ToolTip="이 일정 열기"
-                                        Command="{Binding DataContext.OpenNotiCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border Width="34" Height="34" CornerRadius="17" Background="{DynamicResource LimeOp}" VerticalAlignment="Top">
-                                            <v:Icon Data="{StaticResource IcBell}" Width="17" Height="17" Foreground="{DynamicResource LimeT}"/>
-                                        </Border>
-                                        <StackPanel Grid.Column="1" Margin="12,0,6,0">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock x:Name="t" Text="{Binding Title}" FontSize="14" FontWeight="Bold" MaxWidth="190"/>
-                                                <Ellipse Width="7" Height="7" Fill="{DynamicResource Pink}" Margin="7,0,0,0" VerticalAlignment="Center" ToolTip="읽지 않음"
-                                                         Visibility="{Binding Unread, Converter={StaticResource BoolVis}}"/>
-                                            </StackPanel>
-                                            <TextBlock Text="{Binding Body}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,3,0,0" TextWrapping="Wrap" TextTrimming="None"/>
-                                            <TextBlock Text="{Binding Ago}" FontSize="12" Foreground="{DynamicResource Grey}" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                        <Button Grid.Column="2" Style="{StaticResource IconBtn}" Width="28" Height="28" Tag="{StaticResource IcX}" VerticalAlignment="Top" ToolTip="이 알림 지우기"
-                                                Foreground="{DynamicResource Text2}"
-                                                Command="{Binding DataContext.DeleteNotiCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                    </Grid>
-                                </Button>
-                                <DataTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding Unread}" Value="False">
-                                        <Setter TargetName="t" Property="FontWeight" Value="Normal"/>
-                                        <Setter TargetName="t" Property="Foreground" Value="{DynamicResource Text2}"/>
-                                    </DataTrigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <StackPanel Margin="0,60,0,0" HorizontalAlignment="Center" Visibility="{Binding NotiEmpty, Converter={StaticResource BoolVis}}">
-                        <v:Icon Data="{StaticResource IcBell}" Width="36" Height="36" Foreground="{DynamicResource Grey}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="아직 알림이 없어요" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,4"/>
-                        <TextBlock Text="일정에 시간과 알림을 정하면 여기에 쌓여요." FontSize="13" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+            </DockPanel>
+
+            <Border Grid.Row="1" BorderBrush="{DynamicResource Stroke}" BorderThickness="0,0,0,1" Padding="18,0,12,12">
+                <ItemsControl ItemsSource="{Binding NotiTabs}" ItemTemplate="{StaticResource Tab}" Focusable="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Border>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16,10,16,20">
+                    <!-- 안내 띠: 리마인드 알림을 꺼 둔 경우에만 -->
+                    <Border CornerRadius="16" Background="{DynamicResource Banner}" Margin="2,4,2,6" Visibility="{Binding NotiBannerOn, Converter={StaticResource BoolVis}}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Width="32" Height="32" Tag="{StaticResource IcX}" Foreground="{DynamicResource OnText}" Margin="0,0,6,0" Opacity="0.8"
+                                    ToolTip="안내 닫기" AutomationProperties.Name="안내 닫기" v:Ui.Radius="16" v:Ui.IconSize="15" Background="Transparent" Command="{Binding CloseNotiBannerCommand}"/>
+                            <Button Cursor="Hand" Command="{Binding OpenNotiSettingsCommand}" AutomationProperties.Name="알림 설정으로">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <DockPanel Background="Transparent" Margin="16,12,6,12">
+                                            <v:Icon DockPanel.Dock="Left" Data="{StaticResource IcBell}" Width="18" Height="18" Foreground="{DynamicResource OnText}" Margin="0,0,10,0"/>
+                                            <v:Icon DockPanel.Dock="Right" Data="{StaticResource IcChevRight}" Width="18" Height="18" Foreground="{DynamicResource OnText}"/>
+                                            <TextBlock Text="알림을 설정하고 중요한 플랜을 놓치지 마세요!" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource OnText}" VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+
+                    <TextBlock Text="새로운 알림" Style="{StaticResource Sec}" Visibility="{Binding HasNewNotis, Converter={StaticResource BoolVis}}"/>
+                    <ItemsControl x:Name="NewList" ItemsSource="{Binding NewNotis}" ItemTemplate="{StaticResource Noti}" Focusable="False"/>
+                    <TextBlock Text="지난 알림" Style="{StaticResource Sec}" Visibility="{Binding HasOldNotis, Converter={StaticResource BoolVis}}"/>
+                    <ItemsControl x:Name="OldList" ItemsSource="{Binding OldNotis}" ItemTemplate="{StaticResource Noti}" Focusable="False"/>
+                    <Button Content="알림 더 보기" Command="{Binding LoadMoreNoticesCommand}" Margin="8"
+                            Visibility="{Binding MoreNotifications, Converter={StaticResource BoolVis}}"/>
+
+                    <!-- 시안에는 없지만 쌓인 알림을 한 번에 비울 길은 남겨 둔다 -->
+                    <Button Content="모두 지우기" Style="{StaticResource Flat}" FontSize="12" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,8,0,0"
+                            Command="{Binding ClearNotiCommand}" Visibility="{Binding HasNotis, Converter={StaticResource BoolVis}}"/>
+
+                    <StackPanel Margin="0,56,0,56" HorizontalAlignment="Center" Visibility="{Binding NotiListEmpty, Converter={StaticResource BoolVis}}">
+                        <Image Source="/Assets/spirit_neutral.png" Width="72" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality" v:Motion.Float="True"/>
+                        <TextBlock Text="{Binding NotiEmptyText}" FontSize="14" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

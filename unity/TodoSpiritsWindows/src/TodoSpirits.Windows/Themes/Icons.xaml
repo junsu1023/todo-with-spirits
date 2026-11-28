@@ -33,5 +33,8 @@
     <Geometry x:Key="IcHeart">M12 20s-7.5-4.6-9.2-9.3C1.6 7.3 4 4 7.3 4c2 0 3.5 1.1 4.7 2.7C13.2 5.1 14.7 4 16.7 4 20 4 22.4 7.3 21.2 10.7 19.5 15.4 12 20 12 20z</Geometry>
     <Geometry x:Key="IcRepeat">M4 12V9a3 3 0 0 1 3-3h13l-3-3 M20 6l-3 3 M20 12v3a3 3 0 0 1-3 3H4l3 3 M4 18l3-3</Geometry>
     <Geometry x:Key="IcKeys">M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z M7 10h0.01 M11 10h0.01 M15 10h0.01 M8 14h8</Geometry>
+    <Geometry x:Key="IcUpDown">M8 10l4-4 4 4 M8 14l4 4 4-4</Geometry>
+    <Geometry x:Key="IcPencil">M4 20h4L18.5 9.5a2.8 2.8 0 0 0-4-4L4 16v4z M13.5 6.5l4 4</Geometry>
+    <Geometry x:Key="IcMenu">M4 6h16 M4 12h16 M4 18h16</Geometry>
     <Geometry x:Key="IcArrowDay">M5 12h14 M13 6l6 6-6 6</Geometry>
 </ResourceDictionary>

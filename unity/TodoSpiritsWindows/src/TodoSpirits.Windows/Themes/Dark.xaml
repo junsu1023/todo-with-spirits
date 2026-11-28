@@ -34,6 +34,39 @@
     <!-- 도감 그림 칸: Figma 캡처에서 잘라 쓴 그림에 흰 바탕이 있어 칸도 흰색으로 둔다 (투명 원본을 받으면 바꾼다) -->
     <SolidColorBrush x:Key="Frame" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="HeartOff" Color="#7A6C5F"/>
-    <DropShadowEffect x:Key="LimeGlow" BlurRadius="18" ShadowDepth="5" Direction="270" Opacity="0.07" Color="#C9E43A"/>
     <LinearGradientBrush x:Key="SummaryTint" StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#2A2622" Offset="0.55"/><GradientStop Color="#2F2629" Offset="1"/></LinearGradientBrush>
+    <!-- 보조 토큰 · 그림자 (app.css 의 같은 이름) -->
+    <SolidColorBrush x:Key="LimeB" Color="#B5CF27"/>
+    <SolidColorBrush x:Key="SelB" Color="#6B5F52"/>
+    <SolidColorBrush x:Key="Scroll" Color="#4A423A"/>
+    <SolidColorBrush x:Key="Track" Color="#4A433C"/>
+    <SolidColorBrush x:Key="SegOn" Color="#3A342E"/>
+    <SolidColorBrush x:Key="ElevRing" Color="#4E463E"/>
+    <SolidColorBrush x:Key="Focus" Color="#99C9E43A"/>
+    <SolidColorBrush x:Key="CarryBg" Color="#26221D"/>
+    <SolidColorBrush x:Key="CarryB" Color="#4A4036"/>
+    <SolidColorBrush x:Key="Chev" Color="#6B6058"/>
+    <SolidColorBrush x:Key="ErrB" Color="#A8524C"/>
+    <SolidColorBrush x:Key="BannerHover" Color="#463E36"/>
+    <SolidColorBrush x:Key="HeroGlow" Color="#3A2634"/>
+    <SolidColorBrush x:Key="Lav" Color="#B9A2F0"/>
+    <SolidColorBrush x:Key="Scrim" Color="#47000000"/>
+    <SolidColorBrush x:Key="ScrimSoft" Color="#0F000000"/>
+    <SolidColorBrush x:Key="CardHover" Color="#2F2A25"/>
+    <SolidColorBrush x:Key="MenuHover" Color="#423B34"/>
+    <SolidColorBrush x:Key="SelRing" Color="#33B9A895"/>
+    <SolidColorBrush x:Key="CloseHover" Color="#E86F66"/>
+    <SolidColorBrush x:Key="OnPink" Color="#2A1020"/>
+    <SolidColorBrush x:Key="Banner" Color="#3A332C"/>
+    <SolidColorBrush x:Key="Tbd" Color="#B9A895"/>
+    <SolidColorBrush x:Key="NotiSys" Color="#B9A895"/>
+    <SolidColorBrush x:Key="OnLav" Color="#1E1533"/>
+    <SolidColorBrush x:Key="CheckDone" Color="#B9A895"/>
+    <DropShadowEffect x:Key="CardShadow" BlurRadius="10" ShadowDepth="2" Direction="270" Opacity="0.28" Color="#000000"/>
+    <DropShadowEffect x:Key="LiftShadow" BlurRadius="14" ShadowDepth="4" Direction="270" Opacity="0.34" Color="#000000"/>
+    <DropShadowEffect x:Key="FloatShadow" BlurRadius="32" ShadowDepth="12" Direction="270" Opacity="0.4" Color="#000000"/>
+    <DropShadowEffect x:Key="ModalShadow" BlurRadius="60" ShadowDepth="24" Direction="270" Opacity="0.45" Color="#000000"/>
+    <DropShadowEffect x:Key="SideShadow" BlurRadius="40" ShadowDepth="0" Direction="270" Opacity="0.4" Color="#000000"/>
+    <DropShadowEffect x:Key="LimeGlow" BlurRadius="16" ShadowDepth="6" Direction="270" Opacity="0.07" Color="#C9E43A"/>
+    <DropShadowEffect x:Key="KnobShadow" BlurRadius="3" ShadowDepth="1" Direction="270" Opacity="0.15" Color="#000000"/>
 </ResourceDictionary>

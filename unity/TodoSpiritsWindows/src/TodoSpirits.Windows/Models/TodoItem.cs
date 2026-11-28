@@ -3,6 +3,10 @@ namespace TodoSpirits.Windows.Models;
 /// <summary>저장되는 일정 한 건. 시간은 시각만 있고 길이는 없다.</summary>
 public sealed class TodoItem
 {
+    internal long? ServerId { get; init; }
+    internal DateOnly? ServerStartDate { get; init; }
+    internal DateOnly? RepeatEndDate { get; init; }
+    internal bool ExcludeHoliday { get; init; }
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Title { get; set; } = "";
     public DateOnly Date { get; set; }
@@ -22,6 +26,8 @@ public sealed class TodoItem
 /// <summary>알림 패널에 쌓이는 알림 한 건.</summary>
 public sealed class NotiItem
 {
+    internal long? ServerId { get; init; }
+    internal string Category { get; init; } = "sys";
     public Guid Id { get; set; } = Guid.NewGuid();
     public DateTime When { get; set; }
     public string Title { get; set; } = "";
@@ -56,4 +62,10 @@ public sealed class AppData
     /// <summary>이미 울린 알림("일정 id|날짜"). 같은 알림이 두 번 울리지 않게 한다.</summary>
     public List<string> FiredAlarms { get; set; } = [];
     public List<TodoItem> Tasks { get; set; } = [];
+    /// <summary>일정 카드에 디데이를 보여 준다 (설정 › 디스플레이).</summary>
+    public bool ShowDday { get; set; } = true;
+    /// <summary>고른 언어: 시스템 / 한국어 / English / 日本語 / 中文. 아직은 값만 기억한다.</summary>
+    public string Language { get; set; } = "시스템";
+    /// <summary>마지막으로 백업한 시각 (설정 › 데이터). 한 번도 안 했으면 비어 있다.</summary>
+    public DateTime? LastBackup { get; set; }
 }

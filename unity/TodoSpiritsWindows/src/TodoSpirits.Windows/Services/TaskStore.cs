@@ -34,7 +34,7 @@ public sealed class TaskStore
         if (!File.Exists(FilePath)) return new AppData();
         try
         {
-            return JsonSerializer.Deserialize<AppData>(File.ReadAllText(FilePath), Options) ?? new AppData();
+            return Normalize(JsonSerializer.Deserialize<AppData>(File.ReadAllText(FilePath), Options) ?? new AppData());
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
         {
@@ -43,6 +43,29 @@ public sealed class TaskStore
             warning = $"저장 파일을 읽지 못해 빈 상태로 시작했어요. 원본은 {Path.GetFileName(backup)} 로 남겨 두었어요.";
             return new AppData();
         }
+    }
+
+    /// <summary>
+    /// 손으로 고쳤거나 옛 버전이 쓴 파일에서 빠진 값 · 범위를 벗어난 값을 바로잡는다.
+    /// 나머지 코드는 목록이 null 이 아니고 반복 요일 · 날짜가 범위 안이라고 믿고 쓴다.
+    /// </summary>
+    private static AppData Normalize(AppData data)
+    {
+        data.Theme ??= "light"; data.CalendarMode ??= "month"; data.Nickname ??= ""; data.RepresentativeId ??= "wind";
+        data.Notifications = (data.Notifications ?? []).Where(n => n is not null).ToList();
+        foreach (var n in data.Notifications) { n.Title ??= ""; n.Body ??= ""; }
+        data.FiredAlarms = (data.FiredAlarms ?? []).Where(k => k is not null).ToList();
+        data.Tasks = (data.Tasks ?? []).Where(t => t is not null).ToList();
+        foreach (var t in data.Tasks)
+        {
+            t.Title ??= "";
+            if (!Recur.Options.Contains(t.Repeat)) t.Repeat = Recur.None;
+            if (!Alarm.Options.Contains(t.Alarm)) t.Alarm = Alarm.None;
+            var (min, max) = t.Repeat == Recur.Weekly ? (0, 6) : (1, 31);
+            t.RepeatDays = (t.RepeatDays ?? []).Where(d => d >= min && d <= max).Distinct().ToList();
+            t.DoneDates = (t.DoneDates ?? []).Distinct().ToList();
+        }
+        return data;
     }
 
     public void Save(AppData data)

@@ -13,46 +13,52 @@ public sealed class MiniDay
     public string Num => Date.Day.ToString();
 }
 
-/// <summary>도감 카테고리별 보기의 한 묶음.</summary>
-public sealed record SpiritGroup(string Name, string CountText, IReadOnlyList<SpiritRow> Spirits);
-
 /// <summary>시안의 세부 요소: 사이드바 숨김, 검색, 홈 칩, 우클릭 메뉴, 일정 패널의 달력·시간, 도감 보기 방식.</summary>
 public sealed partial class MainViewModel
 {
     private void InitPolish()
     {
-        ToggleNavCommand = new RelayCommand(_ => NavVisible = !NavVisible);
-        ToggleSearchCommand = new RelayCommand(_ => { SearchOpen = !SearchOpen; if (!SearchOpen) SearchText = ""; });
+        ToggleNavCommand = new RelayCommand(_ => TogglePin());
+        NavMenuCommand = new RelayCommand(_ => { if (NavPinned) TogglePin(); else { NavPeekSticky = !NavPeek; NavPeek = !NavPeek; } });
+        // 검색 버튼: 닫혀 있으면 열고, 검색어가 비어 있을 때만 닫는다. Ctrl+F 는 열기만 한다.
+        ToggleSearchCommand = new RelayCommand(_ => { if (!SearchOpen) SearchOpen = true; else if (!IsSearching) SearchOpen = false; else SearchFocusRequested?.Invoke(); });
+        OpenSearchCommand = new RelayCommand(_ => { if (Page is not ("home" or "calendar")) return; SearchOpen = true; SearchFocusRequested?.Invoke(); });
+        CloseSearchCommand = new RelayCommand(_ => { SearchText = ""; SearchOpen = false; });
+        ToggleOnlyImportantCommand = new RelayCommand(_ => { _onlyImportant = !_onlyImportant; Refresh(); });
+        ToggleEditSectionCommand = new RelayCommand(p => { var k = (string)p!; EditOpen = EditOpen == k ? "" : k; });
+        PickRepeatCommand = new RelayCommand(p => { EditOpen = ""; EditRepeat = (string)p!; });
+        PickAlarmCommand = new RelayCommand(p => { EditOpen = ""; EditAlarm = (string)p!; });
         ToggleHideDoneCommand = new RelayCommand(_ => { _homeHideDone = !_homeHideDone; Refresh(); });
-        ToggleImportantCommand = new RelayCommand(p => { var t = ((TaskRow)p!).Item; t.Important = !t.Important; Commit(); });
+        ToggleImportantCommand = new RelayCommand(p =>
+        {
+            var item = ((TaskRow)p!).Item;
+            if (IsSignedIn) { _ = ToggleServerImportant(item); return; }
+            item.Important = !item.Important;
+            Commit();
+        }, _ => !_serverBusy);
         PostponeCommand = new RelayCommand(p =>
         {
-            var t = ((TaskRow)p!).Item; var from = t.Date;
+            var t = ((TaskRow)p!).Item;
             if (Recur.IsRepeating(t)) { ShowToast("반복 일정은 미룰 수 없어요. 날짜나 반복을 바꿔 주세요.", null); return; }
-            t.Date = (t.Date < Today ? Today : t.Date).AddDays(1);
-            Commit();
-            ShowToast($"{Fmt.Short(t.Date)}로 미뤘어요", () => { t.Date = from; Commit(); });
-        });
-        DeleteRowCommand = new RelayCommand(p =>
-        {
-            var t = ((TaskRow)p!).Item; var index = _data.Tasks.IndexOf(t);
-            if (index < 0) return;
-            _data.Tasks.RemoveAt(index);
-            if (_editing == t) ClosePanel();
-            Commit();
-            ShowToast(Recur.IsRepeating(t) ? $"\"{t.Title}\" 반복 일정을 모두 삭제했어요" : $"\"{t.Title}\" 삭제했어요", () => { _data.Tasks.Insert(Math.Min(index, _data.Tasks.Count), t); Commit(); });
-        });
+            var date = (t.Date < Today ? Today : t.Date).AddDays(1);
+            MoveOne(t, date, $"{Fmt.Short(date)}로 미뤘어요");
+        }, _ => !_serverBusy);
+        DeleteRowCommand = new RelayCommand(p => DeleteItem(((TaskRow)p!).Item), _ => !_serverBusy);
 
-        ToggleEditCalCommand = new RelayCommand(_ => { EditCalOpen = !EditCalOpen; });
+        ToggleEditCalCommand = new RelayCommand(_ => { EditOpen = EditOpen == "date" ? "" : "date"; });
         EditCalPrevCommand = new RelayCommand(_ => { _editCalMonth = _editCalMonth.AddMonths(-1); RaiseEditCal(); });
         EditCalNextCommand = new RelayCommand(_ => { _editCalMonth = _editCalMonth.AddMonths(1); RaiseEditCal(); });
-        PickEditDateCommand = new RelayCommand(p => { EditDate = ((MiniDay)p!).Date.ToDateTime(TimeOnly.MinValue); });
+        PickEditDateCommand = new RelayCommand(p =>
+        {
+            var from = _editing?.Date;
+            EditDate = ((MiniDay)p!).Date.ToDateTime(TimeOnly.MinValue);
+            EditOpen = ""; // 고르면 접는다
+            if (_editing is { } t && from is { } f && f != t.Date && !Recur.IsRepeating(t)) ShowToast($"{Fmt.Short(t.Date)}로 옮겼어요", null);
+        });
         HourUpCommand = new RelayCommand(_ => EditHour = (EditHour + 1) % 24);
         HourDownCommand = new RelayCommand(_ => EditHour = (EditHour + 23) % 24);
         MinuteUpCommand = new RelayCommand(_ => EditMinuteIndex = (EditMinuteIndex + 1) % 12);
         MinuteDownCommand = new RelayCommand(_ => EditMinuteIndex = (EditMinuteIndex + 11) % 12);
-
-        SetDexModeCommand = new RelayCommand(p => { _dexMode = (string)p!; Raise(string.Empty); });
     }
 
     // ---------- 사이드바 ----------
@@ -62,11 +68,16 @@ public sealed partial class MainViewModel
         get => !_data.NavHidden;
         set { if (_data.NavHidden == !value) return; _data.NavHidden = !value; Persist(); Raise(); Raise(nameof(NavTip)); }
     }
-    public string NavTip => NavVisible ? "사이드바 숨기기 (Ctrl+B)" : "사이드바 보이기 (Ctrl+B)";
+    public string NavTip => NavPinned ? "사이드바 숨기기 (Ctrl+B)" : "사이드바 고정 (Ctrl+B)";
     public string ProfileName => _data.Nickname.Length > 0 ? _data.Nickname : "닉네임 없음";
 
     // ---------- 검색 · 홈 칩 ----------
     public ICommand ToggleSearchCommand { get; private set; } = null!;
+    public ICommand OpenSearchCommand { get; private set; } = null!;
+    public ICommand CloseSearchCommand { get; private set; } = null!;
+    public ICommand ToggleOnlyImportantCommand { get; private set; } = null!;
+    /// <summary>검색 칸에 글자를 칠 수 있게 초점을 달라는 신호.</summary>
+    public event Action? SearchFocusRequested;
     public ICommand ToggleHideDoneCommand { get; private set; } = null!;
 
     private bool _searchOpen;
@@ -79,15 +90,22 @@ public sealed partial class MainViewModel
     private bool _homeHideDone;
     public bool HomeHideDone => _homeHideDone;
 
+    private bool _onlyImportant;
+    /// <summary>홈의 "중요 일정" 칩을 눌러 중요한 일정만 보는 중.</summary>
+    public bool OnlyImportant => _onlyImportant;
+    public bool IsFiltering => IsSearching || _onlyImportant;
+
     private bool Match(TodoItem t) => !IsSearching || t.Title.Contains(_searchText.Trim(), StringComparison.CurrentCultureIgnoreCase);
-    private bool ShowOnHome(Occ o) => Match(o.Item) && !(_homeHideDone && o.Done);
+    private bool ShowOnHome(TodoItem t) => Match(t) && (!_onlyImportant || t.Important);
 
     public int ImportantLeft { get; private set; }
-    public bool HasImportantLeft => ImportantLeft > 0;
+    public bool HasImportantLeft => ImportantLeft > 0 || _onlyImportant;
     public string ImportantChip => $"중요 일정이 {ImportantLeft}건 있어요!";
     public bool HasDoneToday => TodayDone > 0;
-    public string DoneChip => _homeHideDone ? $"완료 숨김 ({TodayDone})" : $"완료 ({TodayDone})";
-    public bool HomeNoMatch => IsSearching && !HasCarry && !HasTimed && !HasAllDay;
+    public bool HasTodayTasks => TodayTotal > 0;
+    public string DoneChip => $"완료 ({TodayDone})";
+    public bool HomeNoMatch => IsFiltering && !HasCarry && !HasTimed && !HasAllDay && !HasDoneRows;
+    public string HomeNoMatchText => IsSearching ? "검색한 일정이 없어요" : "조건에 맞는 일정이 없어요";
 
     // ---------- 우클릭 메뉴 ----------
     public ICommand ToggleImportantCommand { get; private set; } = null!;
@@ -104,28 +122,45 @@ public sealed partial class MainViewModel
     public ICommand MinuteUpCommand { get; private set; } = null!;
     public ICommand MinuteDownCommand { get; private set; } = null!;
 
-    private bool _editCalOpen;
-    public bool EditCalOpen { get => _editCalOpen; set { if (Set(ref _editCalOpen, value) && value) { _editCalMonth = FirstOfMonth(EditDateOnly); RaiseEditCal(); } } }
+    public ICommand ToggleEditSectionCommand { get; private set; } = null!;
+    public ICommand PickRepeatCommand { get; private set; } = null!;
+    public ICommand PickAlarmCommand { get; private set; } = null!;
+
+    private string _editOpen = "";
+    /// <summary>패널에서 펼친 항목: "" / date / time / repeat / alarm. 한 번에 하나만 펼친다.</summary>
+    public string EditOpen
+    {
+        get => _editOpen;
+        set
+        {
+            if (!Set(ref _editOpen, value ?? "")) return;
+            if (_editOpen == "date") { _editCalMonth = FirstOfMonth(EditDateOnly); RaiseEditCal(); }
+            Raise(nameof(EditCalOpen)); Raise(nameof(EditTimeOpen)); Raise(nameof(RepeatMenuOpen)); Raise(nameof(AlarmMenuOpen));
+        }
+    }
+    public bool EditCalOpen { get => _editOpen == "date"; set => EditOpen = value ? "date" : ""; }
+    public bool EditTimeOpen => _editOpen == "time" && EditHasTime;
+    public bool RepeatMenuOpen { get => _editOpen == "repeat"; set { if (!value && _editOpen == "repeat") EditOpen = ""; } }
+    public bool AlarmMenuOpen { get => _editOpen == "alarm"; set { if (!value && _editOpen == "alarm") EditOpen = ""; } }
 
     private DateOnly _editCalMonth = FirstOfMonth(DateOnly.FromDateTime(DateTime.Now));
     private static DateOnly FirstOfMonth(DateOnly d) => new(d.Year, d.Month, 1);
     private DateOnly EditDateOnly => DateOnly.FromDateTime(EditDate ?? DateTime.Now);
 
     public string EditDateText { get { var d = EditDateOnly; return $"{d.Year}. {d.Month:00}. {d.Day:00} ({Fmt.Dow(d)})"; } }
-    public string EditCalTitle => $"{_editCalMonth.Year}년 {_editCalMonth.Month}월";
+    public string EditCalTitle => _editCalMonth.Year == Today.Year ? $"{_editCalMonth.Month}월" : $"{_editCalMonth.Year}년 {_editCalMonth.Month}월";
     public IReadOnlyList<MiniDay> EditCalCells
     {
         get
         {
-            var start = _editCalMonth.AddDays(-(int)_editCalMonth.DayOfWeek);
             var selected = EditDateOnly;
-            return Enumerable.Range(0, 42).Select(i => start.AddDays(i)).Select(d => new MiniDay
-            {
-                Date = d, IsOther = d.Month != _editCalMonth.Month, IsSelected = d == selected, IsToday = d == Today,
-            }).ToList();
+            // 시안처럼 그 달의 날짜만 그린다. 앞쪽 빈칸은 IsOther 로 표시해 화면에서 숨긴다
+            return Enumerable.Range(0, (int)_editCalMonth.DayOfWeek).Select(i => new MiniDay { Date = _editCalMonth.AddDays(-1 - i), IsOther = true })
+                .Concat(Enumerable.Range(0, DateTime.DaysInMonth(_editCalMonth.Year, _editCalMonth.Month)).Select(i => _editCalMonth.AddDays(i))
+                    .Select(d => new MiniDay { Date = d, IsSelected = d == selected, IsToday = d == Today })).ToList();
         }
     }
-    private void RaiseEditCal() { Raise(nameof(EditCalTitle)); Raise(nameof(EditCalCells)); Raise(nameof(EditDateText)); }
+    private void RaiseEditCal() { Raise(nameof(EditCalTitle)); Raise(nameof(EditCalCells)); Raise(nameof(EditDateText)); Raise(nameof(MonthDayChips)); }
 
     public string EditAmPm => EditHour < 12 ? "오전" : "오후";
     public string EditHour12 => (EditHour % 12 == 0 ? 12 : EditHour % 12).ToString();
@@ -147,38 +182,5 @@ public sealed partial class MainViewModel
         Raise(nameof(WeekdayChips)); Raise(nameof(MonthDayChips)); Raise(nameof(EditRepeatSummary));
     }
 
-    // ---------- 도감 보기 방식 ----------
-    public ICommand SetDexModeCommand { get; private set; } = null!;
-    private string _dexMode = "all";
-    public string DexMode => _dexMode;
-
-    private bool _dexOnlyMissing;
-    public bool DexOnlyMissing { get => _dexOnlyMissing; set { if (Set(ref _dexOnlyMissing, value)) Raise(string.Empty); } }
-
-    private static readonly string[] DexSorts = ["만난 순", "호감도 순", "이름 순"];
-    private int _dexSort;
-    public string DexSortLabel => DexSorts[_dexSort];
-    public ICommand NextDexSortCommand => new RelayCommand(_ => { _dexSort = (_dexSort + 1) % DexSorts.Length; Raise(string.Empty); });
-
-    public IReadOnlyList<SpiritRow> Spirits
-    {
-        get
-        {
-            IEnumerable<SpiritRow> list = _dexOnlyMissing ? AllSpirits.Where(s => !s.Owned) : AllSpirits;
-            // 못 만난 정령은 어느 정렬에서도 뒤에 둔다
-            list = _dexSort switch
-            {
-                1 => list.OrderByDescending(s => s.Owned).ThenByDescending(s => s.Affection),
-                2 => list.OrderByDescending(s => s.Owned).ThenBy(s => s.Name, StringComparer.CurrentCulture),
-                _ => list,
-            };
-            return list.ToList();
-        }
-    }
-    public IReadOnlyList<SpiritGroup> SpiritGroups => new[] { "자연", "동물", "우주" }
-        .Select(c => new SpiritGroup(c,
-            $"{AllSpirits.Count(s => s.Category == c && s.Owned)} / {AllSpirits.Count(s => s.Category == c)}",
-            Spirits.Where(s => s.Category == c).ToList()))
-        .Where(g => g.Spirits.Count > 0).ToList();
-    public bool DexEmpty => Spirits.Count == 0;
+    // 도감 보기 방식(전체/카테고리별 · 미보유만 · 정렬)은 MainViewModel.Dex.cs 로 옮겼다
 }
