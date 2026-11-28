@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>설정 v4 — 둥글고 부드러운 톤</title>
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";r.classList.add("booting");setTimeout(()=>r.classList.remove("booting"),1500);})()</script>
+<style>
+  .main.settings { grid-template-rows: auto 1fr; }
+  .set-wrap { display: grid; grid-template-columns: 248px 1fr; gap: 28px; min-height: 0; padding-bottom: 20px; }
+  .set-list { overflow-y: auto; min-height: 0; padding: 2px 4px 8px; margin: 0 -4px; display: flex; flex-direction: column; gap: 4px; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+  .me-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--r-card); background: var(--white); border: 1px solid var(--stroke); box-shadow: var(--shadow); text-align: left; width: 100%; margin-bottom: 8px; transition: background .15s, box-shadow .15s; }
+  .me-card:hover { background: var(--panel-bg); }
+  .me-card[aria-current="true"] { box-shadow: 0 0 0 3px var(--lime-ring); }
+  .me-card .big-avatar { width: 42px; height: 42px; font-size: 17px; flex-shrink: 0; }
+  .me-card b { display: block; font-size: 15px; }
+  .me-card small { display: block; font-size: 12px; color: var(--text-2); margin-top: 2px; }
+  .set-sec { font-size: 12px; font-weight: 800; color: var(--text-2); margin: 10px 12px 2px; }
+  .set-item { width: 100%; min-height: 38px; border-radius: 12px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 14px; text-align: left; color: var(--text); text-decoration: none; transition: background .15s; flex-shrink: 0; }
+  .set-item:hover { background: var(--back-02); }
+  .set-item[aria-current="true"] { background: var(--white); box-shadow: var(--shadow); font-weight: 800; }
+  .set-item[aria-current="true"] svg.i { color: var(--lime-t); }
+  .set-item svg.i { width: 18px; height: 18px; color: var(--text-2); }
+  .set-item.dim { color: var(--text-2); }
+  .set-item .badge-new { margin-left: auto; font-size: 10px; font-weight: 800; color: var(--pink-b); background: var(--pink-op); border-radius: var(--r-pill); padding: 2px 7px; }
+  .set-foot { margin: 10px 12px 0; font-size: 11px; color: var(--grey); }
+  .set-pane { overflow-y: auto; min-height: 0; padding: 2px 4px 8px; margin: 0 -4px; }
+  .pane-in { max-width: 560px; display: flex; flex-direction: column; gap: 16px; }
+  .pane-title { font-size: 20px; font-weight: 800; margin: 2px 4px 2px; display: flex; align-items: center; gap: 10px; }
+  .pane-title svg.i { width: 22px; height: 22px; color: var(--lime-t); }
+  .pane-note { font-size: 12px; color: var(--grey); margin: -4px 6px 0; }
+  .pane-desc { font-size: 13px; color: var(--text-2); margin: -8px 4px 0; line-height: 1.6; }
+  .opt-row { display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 0 18px; }
+  .opt-row + .opt-row { border-top: 1px solid var(--stroke); }
+  .opt-row .txt { flex: 1; }
+  .opt-row .txt b { display: block; font-size: 15px; }
+  .opt-row .txt small { display: block; font-size: 12px; color: var(--text-2); margin-top: 3px; }
+  .opt-row .val { color: var(--text-2); font-size: 14px; }
+  .opt-row input.inline { border: 0; background: var(--back-02); border-radius: var(--r-pill); padding: 8px 14px; font-size: 14px; outline: 0; width: 180px; text-align: right; }
+  .opt-row input.inline:focus { box-shadow: 0 0 0 3px var(--focus); background: var(--white); }
+  .profile-top { display: flex; align-items: center; gap: 16px; padding: 18px; }
+  .big-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--pink-op); color: var(--pink-b); font-size: 24px; font-weight: 800; display: grid; place-items: center; }
+  .profile-top .who b { font-size: 18px; display: block; }
+  .profile-top .who small { color: var(--text-2); font-size: 13px; }
+  .mini-sp { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); text-decoration: none; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); background: var(--back-02); }
+  .mini-sp img { width: 30px; height: 30px; }
+  .themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 14px; }
+  .theme { border-radius: 16px; border: 1.5px solid var(--stroke); padding: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center; font-size: 13px; font-weight: 700; transition: border-color .15s, box-shadow .15s; }
+  .theme[aria-pressed="true"] { border-color: var(--lime-ring); box-shadow: 0 0 0 4px var(--lime-op); }
+  .theme:disabled { opacity: .55; cursor: default; }
+  .theme .pv { width: 100%; height: 54px; border-radius: 10px; display: grid; grid-template-columns: 26% 1fr; overflow: hidden; border: 1px solid var(--stroke); }
+  .theme .pv.l { background: #FCFAF7; } .theme .pv.l i { background: #F5F0EA; }
+  .theme .pv.d { background: #2B2622; border-color: #3A342E; } .theme .pv.d i { background: #1E1B18; }
+  .theme .pv.s { background: linear-gradient(90deg, #FCFAF7 50%, #2B2622 50%); }
+  .theme small { font-weight: 400; color: var(--text-2); font-size: 11px; }
+  .range { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-2); }
+  .range input { accent-color: var(--lime); width: 160px; }
+  .list-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 18px; width: 100%; text-align: left; }
+  .list-item + .list-item { border-top: 1px solid var(--stroke); }
+  .list-item:hover { background: var(--panel-bg); }
+  .list-item .tag { font-size: 11px; font-weight: 800; color: var(--pink-b); background: var(--pink-op); padding: 3px 8px; border-radius: var(--r-pill); }
+  .list-item .date { margin-left: auto; font-size: 12px; color: var(--grey); }
+  .qa { border-top: 1px solid var(--stroke); }
+  .qa:first-child { border-top: 0; }
+  .qa summary { list-style: none; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 18px; cursor: pointer; font-weight: 700; }
+  .qa summary::-webkit-details-marker { display: none; }
+  .qa summary .q { color: var(--lime-t); font-weight: 800; }
+  .qa summary svg.i { margin-left: auto; width: 16px; height: 16px; transition: transform .2s; color: var(--text-2); }
+  .qa[open] summary svg.i { transform: rotate(180deg); }
+  .qa p { margin: 0; padding: 0 18px 16px 44px; font-size: 13px; line-height: 1.7; color: var(--text); }
+  @media (prefers-reduced-motion: no-preference) { .qa[open] p { animation: rise .25s ease; } }
+  .rules { display: flex; flex-direction: column; gap: 4px; margin: 10px 6px 0; font-size: 12px; color: var(--text-2); }
+  .rules span { display: flex; align-items: center; gap: 6px; transition: color .15s; }
+  .rules span::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--check-b); transition: background .15s, border-color .15s; }
+  .rules span.ok { color: var(--lime-t); }
+  .rules span.ok::before { background: var(--lime); border-color: var(--lime); }
+  .sad { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 18px 18px; text-align: center; }
+  .sad img { width: 120px; filter: saturate(.55); }
+  .rainy { width: 170px; height: 150px; border-radius: 50%; display: grid; place-items: center;
+    background: repeating-linear-gradient(90deg, rgba(133,117,99,.16) 0 2px, transparent 2px 7px), radial-gradient(closest-side, var(--back-02), transparent); }
+  .rainy img { width: 110px; }
+  .sad b { font-size: 17px; }
+  .sad p { margin: 0; font-size: 13px; color: var(--text-2); line-height: 1.7; }
+  .tag-tbd { font-size: 10px; font-weight: 800; color: var(--tbd); background: var(--back-02); border-radius: var(--r-pill); padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+  /* 디테일 */
+  .pane-head { display: flex; align-items: center; justify-content: space-between; }
+  .saved { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--lime-t); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; }
+  .saved.on { opacity: 1; transform: none; }
+  .saved svg.i { width: 14px; height: 14px; stroke-width: 2.6; }
+  .opt-row.click { cursor: pointer; border-radius: 0; transition: background .15s; }
+  .opt-row.click:hover { background: var(--panel-bg); }
+  .fcard > .opt-row:first-child { border-radius: var(--r-card) var(--r-card) 0 0; }
+  .fcard > .opt-row:last-child { border-radius: 0 0 var(--r-card) var(--r-card); }
+  .fcard > .opt-row:only-child { border-radius: var(--r-card); }
+  .counter { font-size: 11px; color: var(--grey); text-align: right; margin: 6px 6px 0; font-variant-numeric: tabular-nums; }
+  .counter.full { color: var(--pink-b); }
+  .strength { display: flex; align-items: center; gap: 8px; margin: 10px 6px 0; font-size: 12px; color: var(--text-2); }
+  .strength .bars { display: flex; gap: 4px; flex: 1; }
+  .strength .bars i { flex: 1; height: 6px; border-radius: 99px; background: var(--track); transition: background .2s; }
+  .strength[data-lv="1"] .bars i:nth-child(-n+1) { background: var(--del); }
+  .strength[data-lv="2"] .bars i:nth-child(-n+2) { background: #F2C14E; }
+  .strength[data-lv="3"] .bars i:nth-child(-n+3) { background: var(--lime); }
+  .list-item svg.i { width: 18px; height: 18px; color: var(--text-2); }
+  .list-item .date svg.i { width: 16px; height: 16px; transform: rotate(-90deg); }
+  .list-item.busy .date { color: var(--lime-t); }
+  .spin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--lime-op); border-top-color: var(--lime-t); vertical-align: -2px; margin-right: 4px; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .notice-body { padding: 0 18px 16px 18px; font-size: 13px; line-height: 1.7; color: var(--text); }
+  .notice-body[hidden] { display: none; }
+  .list-item[aria-expanded="true"] { font-weight: 800; }
+  .set-foot { display: flex; justify-content: space-between; align-items: center; }
+  .set-foot button { font-size: 11px; color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
+  .set-foot button:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="4" width="12" height="16" rx="2" transform="rotate(8 13 12)"/><path d="M5.5 7.5 4 17a2 2 0 0 0 1.7 2.3l2 .3"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 13l-2-2M12 12l2-2M12 21V8"/><path d="M9.8 16.6A6 6 0 1 1 14.2 6a6 6 0 0 1 0 10.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.9.5 1.9 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.9-3 1.9-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.9-.4-1.9-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0 7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.4 5.2A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.5-1.1-.3-.3-.5-.7-.5-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.6-9-7.6z"/><circle cx="7.5" cy="11" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.5" cy="8.5" r="1"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="M18 8a3 3 0 0 1 0 6M10 8v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-5M12 8l4.6-3.8A.8.8 0 0 1 18 5v12a.8.8 0 0 1-1.4.6L12 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h8"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M17 6l2 2M14 9l2 2"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2M9 12h12M18 9l3 3-3 3"/></symbol>
+  <symbol id="i-userx" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 11-5.7M17 15l4 4M21 15l-4 4"/></symbol>
+</defs></svg>
+
+<div class="window" id="win">
+  <div class="titlebar">
+    <div class="app"><img src="assets/spirit_neutral.png" alt=""><span>Todo with Spirits</span></div>
+    <div class="winctl">
+      <button aria-label="최소화"><svg class="i"><use href="#i-min"/></svg></button>
+      <button aria-label="최대화"><svg class="i"><use href="#i-max"/></svg></button>
+      <button class="close" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+
+  <div class="shell two">
+    <nav class="nav" aria-label="주 메뉴">
+      <div class="navgroup">
+        <a class="navbtn" href="home-v4.html"><svg class="i"><use href="#i-home"/></svg>홈</a>
+        <a class="navbtn" href="calendar-v4.html"><svg class="i"><use href="#i-cal"/></svg>캘린더</a>
+        <a class="navbtn" href="dex-v4.html"><svg class="i"><use href="#i-cards"/></svg>정령 도감</a>
+        <a class="navbtn locked" href="forest-v4.html"><svg class="i"><use href="#i-tree"/></svg>정령의 숲<span class="soon">출시 예정</span></a>
+      </div>
+      <div class="navgroup">
+        <button class="navbtn" aria-current="page"><svg class="i"><use href="#i-gear"/></svg>설정</button>
+        <div class="me"><span class="avatar">댕</span><span id="me-name">댕트리버</span></div>
+      </div>
+    </nav>
+
+    <main class="main settings">
+      <div class="head">
+        <h1>설정</h1>
+        <div class="tools"><button class="iconbtn" aria-label="알림"><svg class="i"><use href="#i-bell"/></svg><span class="badge">99+</span></button></div>
+      </div>
+      <div class="set-wrap">
+        <nav class="set-list" id="set-list" aria-label="설정 항목">
+          <button class="me-card" data-p="profile"><span class="big-avatar" id="card-av">댕</span><span><b id="card-name">댕트리버</b><small>spirit@example.com</small></span></button>
+          <div class="set-sec">시스템 설정</div>
+          <button class="set-item " data-p="notify"><svg class="i"><use href="#i-bell"/></svg>알림</button>
+          <button class="set-item " data-p="display"><svg class="i"><use href="#i-palette"/></svg>디스플레이</button>
+          <button class="set-item " data-p="pc"><svg class="i"><use href="#i-pc"/></svg>PC 설정</button>
+          <button class="set-item " data-p="data"><svg class="i"><use href="#i-db"/></svg>데이터</button>
+          <div class="set-sec">고객 지원</div>
+          <button class="set-item " data-p="notice"><svg class="i"><use href="#i-mega"/></svg>공지사항<span class="badge-new">NEW</span></button>
+          <button class="set-item " data-p="guide"><svg class="i"><use href="#i-book"/></svg>이용 안내</button>
+          <button class="set-item " data-p="qna"><svg class="i"><use href="#i-help"/></svg>QnA</button>
+          <button class="set-item " data-p="terms"><svg class="i"><use href="#i-file"/></svg>약관 및 정책</button>
+          <div class="set-sec">계정</div>
+          <button class="set-item " data-p="password"><svg class="i"><use href="#i-key"/></svg>비밀번호 변경</button>
+          <button class="set-item " data-p="logout"><svg class="i"><use href="#i-out"/></svg>로그아웃</button>
+          <button class="set-item dim" data-p="withdraw"><svg class="i"><use href="#i-userx"/></svg>회원탈퇴</button>
+          <div class="set-foot"><span>버전 1.0.0 (시안)</span><button id="upd">업데이트 확인</button></div>
+        </nav>
+        <div class="set-pane" id="pane"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"><img src="assets/spirit_neutral.png" alt=""><span id="toast-t"></span></div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const ic = (n, c = "i") => `<svg class="${c}"><use href="#${n}"/></svg>`;
+  const state = { nick: "댕트리버", notify: { remind: true, postponed: true, routine: true, streak: true, night: false }, dday: true, lang: "시스템", autostart: true, tray: true };
+  const sw = (key, on) => `<button class="switch" data-sw="${key}" role="switch" aria-checked="${on}"></button>`;
+  const ORDER = ["profile", "notify", "display", "pc", "data", "notice", "guide", "qna", "terms", "password", "logout", "withdraw"];
+  const T = (icon, title) => `<div class="pane-head"><div class="pane-title">${ic(icon)}${title}</div><span class="saved" id="saved">${ic("i-check")}저장됨</span></div>`;
+  let savedTimer;
+  const flashSaved = () => { const el = document.getElementById("saved"); if (!el) return; el.classList.add("on"); clearTimeout(savedTimer); savedTimer = setTimeout(() => el.classList.remove("on"), 1400); };
+  const TBD = `<div class="pane-note">세부 항목은 기획이 정해지기 전이라 예시로 채웠어요.</div>`;
+  let cur = "profile", toastTimer;
+
+  const PANES = {
+    profile: () => `${T("i-user", "프로필")}
+      <div class="fcard"><div class="profile-top"><span class="big-avatar">${state.nick[0]}</span><div class="who"><b>${state.nick}</b><small>spirit@example.com</small></div>
+        <a class="mini-sp" href="dex-v4.html"><img src="assets/spirit_neutral.png" alt="">대표 정령 · 구름이</a></div></div>
+      <div><label class="field-l" for="nick">닉네임</label><div style="display:flex;gap:8px"><input class="inp" id="nick" value="${state.nick}" maxlength="10" placeholder="비워 두면 랜덤으로 지어드려요"><button class="mini lime" id="nick-ok" style="height:50px;padding:0 22px;flex-shrink:0;white-space:nowrap">확인</button></div><div class="counter" id="nick-cnt">${state.nick.length} / 10</div></div>
+      <div class="fcard"><div class="opt-row"><div class="txt"><b>연동 계정</b></div><span class="val">spirit@example.com</span></div></div>`,
+    notify: () => `${T("i-bell", "알림 설정")}<div class="pane-desc">Windows 알림 센터로 보내드려요.</div>
+      <div class="fcard">
+        <div class="opt-row"><div class="txt"><b>리마인드 알림</b></div>${sw("remind", state.notify.remind)}</div>
+        <div class="opt-row"><div class="txt"><b>미룬 플랜 정기 알림</b></div>${sw("postponed", state.notify.postponed)}</div>
+        <div class="opt-row"><div class="txt"><b>루틴 안내 알림</b></div>${sw("routine", state.notify.routine)}</div>
+        <div class="opt-row"><div class="txt"><b>스트릭(연속 달성) 세이브 알림</b></div>${sw("streak", state.notify.streak)}</div>
+        <div class="opt-row"><div class="txt"><b>야간 푸시 알림 수신</b></div>${sw("night", state.notify.night)}</div>
+      </div>`,
+    display: () => { const th = localStorage.getItem("tws-theme") || "light", more = localStorage.getItem("tws-contrast") !== "normal";
+      return `${T("i-palette", "디스플레이 설정")}
+      <div class="fcard">
+        <div class="opt-row"><div class="txt"><b>다크모드</b></div>${sw("dark", th === "dark")}</div>
+        <div class="opt-row"><div class="txt"><b>Windows 설정 따라가기</b><small>윈도우 앱에서 더한 항목 · 켜면 Windows 라이트/다크를 따라가요</small></div>${sw("system", th === "system")}</div>
+        <div class="opt-row"><div class="txt"><b>플랜 디데이 표시</b></div>${sw("dday", state.dday)}</div>
+        <div class="opt-row"><div class="txt"><b>언어</b></div><span class="tf-dd"><button class="tf-val dd" id="lang-btn">${state.lang}<svg class="i"><use href="#i-chev"/></svg></button></span></div>
+      </div>
+      <div class="fcard"><div class="opt-row"><div class="txt"><b>글자 대비 높이기</b><small>윈도우 앱에서 더한 항목 · 기본으로 켜져 있어요 · 끄면 Figma 원래 색</small></div>${sw("contrast", more)}</div></div>`; },
+    pc: () => `${T("i-pc", "PC 설정")}<div class="pane-desc">윈도우 앱에서만 쓰는 설정이에요.</div>
+      <div class="fcard">
+        <div class="opt-row"><div class="txt"><b>Windows 시작 시 자동 실행</b></div>${sw("autostart", state.autostart)}</div>
+        <div class="opt-row"><div class="txt"><b>창을 닫으면 트레이로</b><small>알림을 계속 받을 수 있어요</small></div>${sw("tray", state.tray)}</div>
+        <div class="opt-row"><div class="txt"><b>단축키</b><small>Ctrl+N 일정 추가 · Ctrl+F 검색 · Ctrl+B 사이드바</small></div></div>
+      </div>`,
+    data: () => `${T("i-db", "데이터 설정")}
+      <div class="fcard">
+        <button class="list-item" id="backup">${ic("i-db")}백업<span class="date" id="backup-at">마지막 백업 · 10월 12일</span></button>
+        <button class="list-item" id="sync">${ic("i-pc")}동기화<span class="date" id="sync-at">마지막 동기화 · 오늘 오후 3:12</span></button>
+        <button class="list-item" id="export">${ic("i-file")}데이터 내보내기<span class="date">CSV ${ic("i-chev")}</span></button>
+      </div>`,
+    notice: () => `${T("i-mega", "공지사항")}
+      <div class="fcard stagger">
+        <button class="list-item" data-nt aria-expanded="false"><span class="tag">NEW</span>윈도우 앱이 나왔어요!<span class="date">2026.11.20</span></button>
+        <div class="notice-body" hidden>이제 PC에서도 정령들과 함께해요. 모바일과 같은 계정으로 로그인하면 일정이 함께 보여요.</div>
+        <button class="list-item" data-nt aria-expanded="false">크리스마스 한정 정령 이벤트 안내<span class="date">2026.11.12</span></button>
+        <div class="notice-body" hidden>12월 한 달 동안 7일 연속으로 일정을 끝내면 크리스마스 한정 정령을 만날 수 있어요.</div>
+        <button class="list-item" data-nt aria-expanded="false">개인정보 처리방침 개정 안내<span class="date">2026.10.30</span></button>
+        <div class="notice-body" hidden>11월 1일부터 개정된 개인정보 처리방침이 적용돼요.</div>
+        <button class="list-item" data-nt aria-expanded="false">정령 도감 카테고리 추가<span class="date">2026.10.02</span></button>
+        <div class="notice-body" hidden>도감에서 자연·동물·우주 카테고리별로 정령을 볼 수 있어요.</div>
+      </div><div class="pane-desc">공지 내용은 예시예요.</div>`,
+    guide: () => `${T("i-book", "이용 안내")}
+      <div class="fcard">
+        <details class="qa" open><summary><span class="q">1</span>일정을 추가해요${ic("i-chev")}</summary><p>홈이나 캘린더의 "+ 일정 추가"를 누르거나 Ctrl+N을 눌러요. 중요한 일정은 ★로 표시할 수 있어요.</p></details>
+        <details class="qa"><summary><span class="q">2</span>일정을 끝내요${ic("i-chev")}</summary><p>동그라미를 누르거나 일정을 선택하고 Space를 눌러요. 정령이 함께 기뻐해요.</p></details>
+        <details class="qa"><summary><span class="q">3</span>정령을 모아요${ic("i-chev")}</summary><p>꾸준히 일정을 끝내면 새로운 정령을 만날 수 있어요. 정령 도감에서 힌트를 확인해 보세요.</p></details>
+      </div>`,
+    qna: () => `${T("i-help", "QnA")}
+      <div class="fcard">
+        <details class="qa"><summary><span class="q">Q</span>모바일 앱과 일정이 같이 보이나요?${ic("i-chev")}</summary><p>같은 계정으로 로그인하면 일정이 함께 동기화돼요.</p></details>
+        <details class="qa"><summary><span class="q">Q</span>어제 못 한 일은 어떻게 되나요?${ic("i-chev")}</summary><p>홈의 "어제 하지 못한 일"에서 오늘 할지, 다른 날로 옮길지 직접 고를 수 있어요.</p></details>
+        <details class="qa"><summary><span class="q">Q</span>대표 정령은 어떻게 바꾸나요?${ic("i-chev")}</summary><p>정령 도감에서 정령을 고르고 "대표 정령으로 설정"을 누르거나 카드를 두 번 눌러요.</p></details>
+      </div><div class="pane-desc">질문과 답변은 예시예요.</div>`,
+    terms: () => `${T("i-file", "약관 및 정책")}
+      <div class="fcard">
+        <button class="list-item">서비스 이용약관<span class="date">${ic("i-chev")}</span></button>
+        <button class="list-item">개인정보 처리방침<span class="date">${ic("i-chev")}</span></button>
+        <button class="list-item">오픈소스 라이선스<span class="date">${ic("i-chev")}</span></button>
+      </div>
+      <div class="pane-desc">글꼴: 나눔스퀘어라운드 (SIL Open Font License 1.1)</div>`,
+    password: () => `${T("i-key", "비밀번호 변경")}
+      <div><label class="field-l" for="pw-old">기존 비밀번호</label><input class="inp" id="pw-old" type="password" placeholder="기존 비밀번호"></div>
+      <div><label class="field-l" for="pw-new">새로운 비밀번호</label>
+        <div class="inp-wrap"><input class="inp" id="pw-new" type="password" placeholder="새로운 비밀번호">
+          <span class="inp-tools"><button id="pw-eye" aria-label="비밀번호 보기">${ic("i-eyeoff")}</button><button id="pw-clear" aria-label="지우기">${ic("i-x")}</button></span></div>
+        <div class="strength" id="strength" data-lv="0"><span class="bars"><i></i><i></i><i></i></span><span id="strength-t">안전도</span></div>
+        <div class="rules" id="rules"><span data-r="mix">영문/숫자/특수문자 중 2가지 이상 포함</span><span data-r="len">8자 이상 20자 이내</span></div></div>
+      <button class="okbtn" id="pw-next" disabled>다음</button>`,
+    withdraw: () => `${T("i-userx", "회원탈퇴")}
+      <div class="fcard"><div class="sad"><span class="rainy"><img class="float" src="assets/spirit_neutral.png" alt=""></span><small style="color:var(--text-2)">${state.nick}님,</small><b>벌써 헤어지기엔 너무 아쉬워요...</b>
+        <p>탈퇴 대신 잠시 쉬어가는 건 어떨까요?<br>계정은 그대로 두고 편하게 쉬다 오시는 걸 추천드려요.</p></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn-soft" id="wd-stay">더 머무르기</button><button class="btn-lav" id="wd-btn">탈퇴하기</button></div>
+      <div class="pane-note">탈퇴 화면의 정령 그림은 Figma에서 만드는 중이에요.</div>`,
+    logout: () => `${T("i-out", "로그아웃")}
+      <div class="fcard"><div class="sad"><img class="float" src="assets/spirit_neutral.png" alt=""><b>다음에 또 만나요!</b><p>로그아웃해도 일정은 계정에 그대로 남아 있어요.</p></div></div>
+      <a class="okbtn" href="login-v4.html" style="display:grid;place-items:center;text-decoration:none">로그아웃</a>`,
+  };
+
+  function toast(text) { $("#toast-t").textContent = text; $("#toast").classList.add("open"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").classList.remove("open"), 2800); }
+
+  function show(key, dir) {
+    if (!PANES[key]) key = "profile";
+    const back = ORDER.indexOf(key) < ORDER.indexOf(cur);
+    cur = key;
+    document.querySelectorAll("#set-list [data-p]").forEach(b => b.setAttribute("aria-current", b.dataset.p === key));
+    $("#pane").innerHTML = `<div class="pane-in">${PANES[key]()}</div>`;
+    if (dir !== false && window.App) { App.stagger($("#pane")); App.anim("#pane .pane-in", back ? "swap-back" : "swap"); }
+    bind(key);
+    if (location.hash.slice(1) !== key) history.replaceState(null, "", "#" + key);
+  }
+
+  function bind(key) {
+    document.querySelectorAll("[data-sw]").forEach(b => {
+      b.onclick = e => {
+        e.stopPropagation();
+        const on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on);
+        const k = b.dataset.sw; if (k in state.notify) state.notify[k] = on; else if (k in state) state[k] = on;
+        flashSaved();
+      };
+      const row = b.closest(".opt-row"); if (row) { row.classList.add("click"); row.onclick = e => { if (!e.target.closest("button, input, a")) b.click(); }; }
+    });
+    if (key === "profile") {
+      const save = () => { const v = $("#nick").value.trim() || ["구름", "새싹", "별빛", "몽실"][Math.floor(Math.random() * 4)] + "친구"; state.nick = v; $("#card-name").textContent = v; $("#card-av").textContent = v[0]; $("#me-name").textContent = v; document.querySelector(".me .avatar").textContent = v[0]; show("profile", false); toast("닉네임을 바꿨어요"); };
+      $("#nick-ok").onclick = save; $("#nick").onkeydown = e => { if (e.key === "Enter") save(); };
+      $("#nick").oninput = () => { const n = $("#nick").value.length; $("#nick-cnt").textContent = `${n} / 10`; $("#nick-cnt").classList.toggle("full", n >= 10); };
+    }
+    if (key === "display") {
+      const dark = document.querySelector('[data-sw="dark"]'), sys = document.querySelector('[data-sw="system"]');
+      dark.onclick = e => { e && e.stopPropagation(); const on = dark.getAttribute("aria-checked") !== "true"; window.App && App.theme.set(on ? "dark" : "light"); show("display", false); flashSaved(); };
+      sys.onclick = e => { e && e.stopPropagation(); const on = sys.getAttribute("aria-checked") !== "true"; window.App && App.theme.set(on ? "system" : (document.documentElement.dataset.theme === "dark" ? "dark" : "light")); show("display", false); flashSaved(); };
+      const cs = document.querySelector('[data-sw="contrast"]');
+      cs.onclick = e => { e && e.stopPropagation(); const on = cs.getAttribute("aria-checked") !== "true"; cs.setAttribute("aria-checked", on); window.App && App.theme.setContrast(on); flashSaved(); };
+      $("#lang-btn").onclick = e => {
+        e.stopPropagation(); const host = e.currentTarget.parentElement; if (host.querySelector(".tf-menu")) { host.querySelector(".tf-menu").remove(); return; }
+        host.insertAdjacentHTML("beforeend", `<div class="tf-menu tf-new">${["시스템", "한국어", "English", "日本語", "中文"].map(l => `<button aria-selected="${l === state.lang}" data-lang="${l}">${l}</button>`).join("")}</div>`);
+        host.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { state.lang = b.dataset.lang; show("display", false); flashSaved(); });
+      };
+    }
+    if (key === "data") {
+      const run = (id, label, done) => { const el = $(id), row = el.closest(".list-item"); el.innerHTML = `<span class="spin"></span>${label}`; row.classList.add("busy"); setTimeout(() => { if (!el.isConnected) return; row.classList.remove("busy"); done(); }, 1100); }; /* 그 사이 다른 패널로 옮겨 가면 결과 표시는 건너뜀 */
+      $("#backup").onclick = () => run("#backup-at", "백업 중…", () => { $("#backup-at").textContent = "마지막 백업 · 방금 전"; toast("백업했어요"); });
+      $("#sync").onclick = () => run("#sync-at", "동기화 중…", () => { $("#sync-at").textContent = "마지막 동기화 · 방금 전"; window.App && App.anim("#sync-at", "bump"); toast("동기화했어요"); });
+      $("#export").onclick = () => toast("시안에서는 파일을 만들지 않아요");
+    }
+    if (key === "password") {
+      const nw = $("#pw-new"), old = $("#pw-old"), next = $("#pw-next");
+      const check = () => {
+        const v = nw.value, kinds = [/[a-zA-Z]/, /\d/, /[^a-zA-Z\d]/].filter(r => r.test(v)).length;
+        const ok = { mix: kinds >= 2, len: v.length >= 8 && v.length <= 20 };
+        document.querySelectorAll("#rules span").forEach(s => s.classList.toggle("ok", ok[s.dataset.r]));
+        const lv = !v ? 0 : (ok.len && kinds >= 3) || (v.length >= 12 && kinds >= 2) ? 3 : ok.mix && ok.len ? 2 : 1;
+        $("#strength").dataset.lv = lv; $("#strength-t").textContent = ["안전도", "약해요", "보통이에요", "안전해요"][lv];
+        next.disabled = !(ok.mix && ok.len && old.value);
+      };
+      nw.oninput = check; old.oninput = check;
+      $("#pw-eye").onclick = () => { const show = nw.type === "password"; nw.type = show ? "text" : "password"; $("#pw-eye").innerHTML = ic(show ? "i-eye" : "i-eyeoff"); };
+      $("#pw-clear").onclick = () => { nw.value = ""; check(); nw.focus(); };
+      next.onclick = () => {
+        if (old.value.length < 4) { old.classList.add("err"); window.App && App.anim(old, "shake"); toast("기존 비밀번호를 확인해 주세요"); return; }
+        old.classList.remove("err"); toast("비밀번호를 바꿨어요"); show("profile");
+      };
+    }
+    if (key === "notice") {
+      document.querySelectorAll("[data-nt]").forEach(b => b.onclick = () => {
+        const open = b.getAttribute("aria-expanded") !== "true", body = b.nextElementSibling;
+        b.setAttribute("aria-expanded", open); body.hidden = !open; if (open && window.App) App.anim(body, "swap");
+        b.querySelector(".tag")?.remove();
+      });
+    }
+    if (key === "withdraw") {
+      $("#wd-stay").onclick = () => { toast("함께해 줘서 고마워요!"); show("profile"); };
+      $("#wd-btn").onclick = async () => {
+        const ok = await App.modal({ title: "정말 떠나시는 건가요?", text: "탈퇴 시 소중하게 키운 기록과 재화가 모두 사라져 복구할 수 없어요.", ok: "탈퇴", cancel: "취소", tone: "lav" });
+        if (ok) toast("시안에서는 탈퇴하지 않아요");
+      };
+    }
+  }
+
+  $("#upd").onclick = () => { $("#upd").textContent = "확인 중…"; setTimeout(() => { $("#upd").textContent = "최신 버전이에요"; }, 900); };
+  $("#set-list").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b && b.dataset.p !== cur) show(b.dataset.p); });
+  document.addEventListener("keydown", e => {
+    if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const i = ORDER.indexOf(cur) + (e.key === "ArrowDown" ? 1 : -1); if (ORDER[i]) show(ORDER[i]); }
+  });
+  window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+  show(location.hash.slice(1) || "profile", false);
+})();
+</script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

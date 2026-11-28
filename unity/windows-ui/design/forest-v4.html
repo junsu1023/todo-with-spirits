@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정령의 숲 (잠금) v4</title>
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";r.classList.add("booting");setTimeout(()=>r.classList.remove("booting"),1500);})()</script>
+<style>
+  .main.forest { grid-template-rows: auto 1fr; padding-bottom: 24px; }
+  .lockview { position: relative; border-radius: 28px; overflow: hidden; display: grid; place-items: center; min-height: 0; box-shadow: var(--shadow); }
+  .lockview .bg { position: absolute; inset: -20px; background: url("assets/forest-bg.png") center 60% / cover; filter: blur(7px) saturate(.75) brightness(1.06); }
+  .lockview .veil { position: absolute; inset: 0; background: linear-gradient(180deg, var(--veil-1, rgba(252,250,247,.55)) 0%, var(--veil-2, rgba(252,250,247,.75)) 100%); }
+  .lock-card { position: relative; width: 420px; background: var(--glass, rgba(255,255,255,.88)); backdrop-filter: blur(6px); border-radius: 28px; padding: 30px 32px 28px;
+    box-shadow: 0 20px 50px rgba(90,70,50,.14); display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+  .lock-art { position: relative; width: 140px; height: 140px; display: grid; place-items: center; }
+  .lock-art img { width: 132px; filter: grayscale(.3) opacity(.85); }
+  .lock-badge { position: absolute; right: 6px; bottom: 10px; width: 46px; height: 46px; border-radius: 50%; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; box-shadow: 0 6px 14px rgba(193,221,0,.35); }
+  .lock-badge svg.i { width: 24px; height: 24px; stroke-width: 2; }
+  .lock-card h2 { margin: 4px 0 0; font-size: 21px; font-weight: 800; }
+  .lock-card p { margin: 0; font-size: 14px; color: var(--text-2); line-height: 1.7; }
+  .lock-card .okbtn { width: 100%; margin-top: 8px; display: grid; place-items: center; text-decoration: none; }
+  .tbd { font-size: 11px; color: var(--tbd); background: var(--back-02); border-radius: var(--r-pill); padding: 3px 10px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .lock-badge { animation: jiggle 3.2s ease-in-out infinite; transform-origin: 50% 20%; }
+    @keyframes jiggle { 0%,86%,100% { transform: rotate(0); } 89% { transform: rotate(-12deg); } 92% { transform: rotate(10deg); } 95% { transform: rotate(-6deg); } }
+    .lockview .bg { animation: drift 18s ease-in-out infinite alternate; }
+    @keyframes drift { to { transform: scale(1.06) translateX(-10px); } }
+  }
+  html[data-theme="dark"] { --glass: rgba(42,38,34,.9); --veil-1: rgba(27,24,21,.55); --veil-2: rgba(27,24,21,.8); }
+  html[data-theme="dark"] .lock-art img { filter: grayscale(.3) brightness(.95); } /* 다크: 반투명이면 어두운 카드에서 탁해 보여 불투명으로 */
+  /* 디테일: 떠다니는 잎·반짝임, 예고 기능, 출시 알림 신청 */
+  .drift { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .drift i { position: absolute; top: -20px; width: 14px; height: 9px; border-radius: 0 100% 0 100%; background: #A9CB6A; opacity: .7; }
+  .drift i:nth-child(3n) { background: #F4B6D8; border-radius: 50%; width: 8px; height: 8px; }
+  .drift i:nth-child(4n) { background: #E2C26A; width: 10px; height: 7px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .drift i { animation: fall linear infinite; }
+    @keyframes fall { 0% { transform: translate(0, -20px) rotate(0); } 50% { transform: translate(30px, 50vh) rotate(160deg); } 100% { transform: translate(-10px, 110vh) rotate(320deg); } }
+  }
+  .lock-card { width: 460px; gap: 10px; }
+  .soon-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--lime-t); background: var(--lime-op); border-radius: 99px; padding: 4px 12px; }
+  .soon-pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+  @media (prefers-reduced-motion: no-preference) { .soon-pill i { animation: pulse 1.6s ease-in-out infinite; } @keyframes pulse { 50% { transform: scale(1.6); opacity: .4; } } }
+  .preview { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 4px; }
+  .preview div { border-radius: 16px; background: var(--back-02); padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+  .preview small { font-weight: 400; color: var(--text-2); font-size: 11px; line-height: 1.4; }
+  .preview svg.i { width: 22px; height: 22px; color: var(--lime-t); }
+  .notify-btn { width: 100%; height: 50px; border-radius: var(--r-ctl); font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--lime); color: var(--on-lime); box-shadow: 0 6px 16px var(--lime-shadow); transition: background .2s, transform .12s; }
+  .notify-btn:active { transform: scale(.98); }
+  .notify-btn[aria-pressed="true"] { background: var(--back-02); color: var(--text); box-shadow: none; }
+  .notify-btn svg.i { width: 18px; height: 18px; }
+  .home-link { font-size: 13px; color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+  .home-link:hover { color: var(--text); }
+  .preview-note { font-size: 11px; color: var(--grey); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="4" width="12" height="16" rx="2" transform="rotate(8 13 12)"/><path d="M5.5 7.5 4 17a2 2 0 0 0 1.7 2.3l2 .3"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 13l-2-2M12 12l2-2M12 21V8"/><path d="M9.8 16.6A6 6 0 1 1 14.2 6a6 6 0 0 1 0 10.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.9.5 1.9 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.9-3 1.9-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.9-.4-1.9-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0 7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-album" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+</defs></svg>
+
+<div class="window" id="win">
+  <div class="titlebar">
+    <div class="app"><img src="assets/spirit_neutral.png" alt=""><span>Todo with Spirits</span></div>
+    <div class="winctl">
+      <button aria-label="최소화"><svg class="i"><use href="#i-min"/></svg></button>
+      <button aria-label="최대화"><svg class="i"><use href="#i-max"/></svg></button>
+      <button class="close" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+  <div class="shell two">
+    <nav class="nav" aria-label="주 메뉴">
+      <div class="navgroup">
+        <a class="navbtn" href="home-v4.html"><svg class="i"><use href="#i-home"/></svg>홈</a>
+        <a class="navbtn" href="calendar-v4.html"><svg class="i"><use href="#i-cal"/></svg>캘린더</a>
+        <a class="navbtn" href="dex-v4.html"><svg class="i"><use href="#i-cards"/></svg>정령 도감</a>
+        <button class="navbtn locked" aria-current="page"><svg class="i"><use href="#i-tree"/></svg>정령의 숲<span class="soon">출시 예정</span></button>
+      </div>
+      <div class="navgroup">
+        <a class="navbtn" href="settings-v4.html"><svg class="i"><use href="#i-gear"/></svg>설정</a>
+        <div class="me"><span class="avatar">댕</span>댕트리버</div>
+      </div>
+    </nav>
+    <main class="main forest">
+      <div class="head"><h1>정령의 숲</h1><div class="tools"><button class="iconbtn" aria-label="알림"><svg class="i"><use href="#i-bell"/></svg><span class="badge">99+</span></button></div></div>
+      <section class="lockview">
+        <div class="bg" aria-hidden="true"></div><div class="veil" aria-hidden="true"></div>
+        <div class="drift" aria-hidden="true"><i style="left:6%;animation-duration:14s;animation-delay:-2s"></i><i style="left:18%;animation-duration:18s;animation-delay:-9s"></i><i style="left:29%;animation-duration:12s;animation-delay:-5s"></i><i style="left:41%;animation-duration:20s;animation-delay:-13s"></i><i style="left:53%;animation-duration:15s;animation-delay:-1s"></i><i style="left:64%;animation-duration:17s;animation-delay:-7s"></i><i style="left:76%;animation-duration:13s;animation-delay:-11s"></i><i style="left:87%;animation-duration:19s;animation-delay:-4s"></i><i style="left:95%;animation-duration:16s;animation-delay:-8s"></i><i style="left:35%;animation-duration:22s;animation-delay:-16s"></i></div>
+        <div class="lock-card">
+          <div class="lock-art"><img class="float" src="assets/spirit_neutral.png" alt=""><span class="lock-badge"><svg class="i"><use href="#i-lock"/></svg></span></div>
+          <span class="soon-pill"><i></i>출시 예정</span>
+          <h2>정령의 숲이 곧 열려요</h2>
+          <p>정령들이 사는 숲을 준비하고 있어요.<br>그동안 일정을 차근차근 끝내며 정령들과 친해져 보세요.</p>
+          <div class="preview">
+            <div><svg class="i"><use href="#i-tree"/></svg>정령과 사는 숲<small>오늘 한 일이<br>정령의 하루가 돼요</small></div>
+            <div><svg class="i"><use href="#i-gift"/></svg>꾸미기 · 나들이<small>소품을 놓고<br>모험을 보내요</small></div>
+            <div><svg class="i"><use href="#i-album"/></svg>기억 앨범<small>함께한 날을<br>돌아봐요</small></div>
+          </div>
+          <span class="preview-note">기능 소개는 숲 프로토타입 기획 기준 예고예요</span>
+          <button class="notify-btn" id="notify-me" aria-pressed="false"><svg class="i"><use href="#i-bell"/></svg>출시되면 알려주세요</button>
+          <a class="home-link" href="home-v4.html">홈으로 돌아가기</a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"><img src="assets/spirit_neutral.png" alt=""><span id="toast-t"></span></div>
+</div>
+<script>
+(() => {
+  const b = document.getElementById("notify-me"), t = document.getElementById("toast"), tt = document.getElementById("toast-t");
+  const paint = on => { b.setAttribute("aria-pressed", on); b.innerHTML = on ? `<svg class="i"><use href="#i-check"/></svg>알림 신청 완료` : `<svg class="i"><use href="#i-bell"/></svg>출시되면 알려주세요`; };
+  paint(localStorage.getItem("tws-forest-notify") === "1");
+  b.onclick = () => {
+    const on = b.getAttribute("aria-pressed") !== "true"; localStorage.setItem("tws-forest-notify", on ? "1" : "0"); paint(on);
+    tt.textContent = on ? "숲이 열리면 가장 먼저 알려드릴게요" : "출시 알림을 취소했어요";
+    t.classList.remove("open"); void t.offsetWidth; t.classList.add("open"); clearTimeout(b.tm); b.tm = setTimeout(() => t.classList.remove("open"), 2600);
+    if (on && window.App) App.anim(b, "bump");
+  };
+})();
+</script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

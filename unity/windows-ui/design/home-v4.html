@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>W01 홈 v4 — 둥글고 부드러운 톤</title>
+
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";r.classList.add("booting");setTimeout(()=>r.classList.remove("booting"),1500);})()</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="4" width="12" height="16" rx="2" transform="rotate(8 13 12)"/><path d="M5.5 7.5 4 17a2 2 0 0 0 1.7 2.3l2 .3"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 13l-2-2M12 12l2-2M12 21V8"/><path d="M9.8 16.6A6 6 0 1 1 14.2 6a6 6 0 0 1 0 10.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.9.5 1.9 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.9-3 1.9-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.9-.4-1.9-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m21 21-6-6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0 7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 17.8-6.2 3.2 1.2-6.9-5-4.9 6.9-1L12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-updown" viewBox="0 0 24 24"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12V9a3 3 0 0 1 3-3h13l-3-3m3 3-3 3"/><path d="M20 12v3a3 3 0 0 1-3 3H4l3 3m-3-3 3-3"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20h4L18.5 9.5a2.8 2.8 0 0 0-4-4L4 16v4"/><path d="m13.5 6.5 4 4"/></symbol>
+</defs></svg>
+
+<div class="window" id="win">
+  <div class="titlebar">
+    <div class="app"><img src="assets/spirit_neutral.png" alt=""><span>Todo with Spirits</span></div>
+    <div class="winctl">
+      <button aria-label="최소화"><svg class="i"><use href="#i-min"/></svg></button>
+      <button aria-label="최대화"><svg class="i"><use href="#i-max"/></svg></button>
+      <button class="close" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+
+  <div class="shell slide">
+    <nav class="nav" aria-label="주 메뉴">
+      <div class="navgroup">
+        <button class="navbtn" aria-current="page"><svg class="i"><use href="#i-home"/></svg>홈</button>
+        <a class="navbtn" href="calendar-v4.html"><svg class="i"><use href="#i-cal"/></svg>캘린더</a>
+        <a class="navbtn" href="dex-v4.html"><svg class="i"><use href="#i-cards"/></svg>정령 도감</a>
+        <a class="navbtn locked" href="forest-v4.html"><svg class="i"><use href="#i-tree"/></svg>정령의 숲<span class="soon">출시 예정</span></a>
+      </div>
+      <div class="navgroup">
+        <a class="navbtn" href="settings-v4.html"><svg class="i"><use href="#i-gear"/></svg>설정</a>
+        <div class="me"><span class="avatar">댕</span>댕트리버</div>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="head">
+        <h1><span class="greet" id="greet">좋은 오후예요, 댕트리버님</span>10월 13일 (화)</h1>
+        <div class="tools">
+          <label class="search" id="search-box"><input id="search" type="search" placeholder="일정 검색"></label>
+          <button class="iconbtn" id="search-btn" aria-label="검색 (Ctrl+F)"><svg class="i"><use href="#i-search"/></svg></button>
+          <button class="iconbtn" aria-label="알림"><svg class="i"><use href="#i-bell"/></svg><span class="badge">99+</span></button>
+        </div>
+      </div>
+
+      <section class="summary" aria-label="오늘 요약">
+        <div>
+          <div class="label">오늘 일정</div>
+          <div class="num"><span id="n-left">8</span><small>/ <span id="n-total">10</span></small></div>
+        </div>
+        <div class="next" id="next"></div>
+      </section>
+
+      <div class="chips">
+        <button class="chip imp" id="chip-imp" aria-pressed="false"><svg class="i"><use href="#i-star"/></svg><span id="chip-imp-t"></span></button>
+        <button class="chip done" id="chip-done" aria-pressed="true"><svg class="i"><use href="#i-check"/></svg><span id="chip-done-t"></span></button>
+      </div>
+
+      <div class="listwrap">
+        <button class="addbtn" id="add-btn"><svg class="i"><use href="#i-plus"/></svg>일정 추가</button>
+        <div id="list"></div>
+      </div>
+    </main>
+
+    <aside class="panel" id="panel" aria-label="일정 상세"></aside>
+  </div>
+
+  <div class="menu" id="menu" role="menu">
+    <button data-m="toggle"><svg class="i"><use href="#i-check"/></svg><span id="m-toggle">완료</span><span class="k">Space</span></button>
+    <button data-m="star"><svg class="i"><use href="#i-star"/></svg><span id="m-star">중요 표시</span></button>
+    <button data-m="edit"><svg class="i"><use href="#i-pencil"/></svg>자세히 보기<span class="k">Enter</span></button>
+    <button data-m="tomorrow"><svg class="i"><use href="#i-cal"/></svg>내일로 미루기</button>
+    <hr>
+    <button data-m="delete" class="danger"><svg class="i"><use href="#i-trash"/></svg>삭제<span class="k">Del</span></button>
+  </div>
+  <div class="toast" id="toast"><img src="assets/spirit_neutral.png" alt=""><span id="toast-t"></span><button id="toast-undo" hidden>되돌리기</button></div>
+</div>
+
+<script src="scripts/task-form.js"></script>
+<script>
+(() => {
+  const TODAY = "2026-10-13", YESTERDAY = "2026-10-12", NOW = "15:20";
+  let tasks = [
+    { id: 1, title: "오전 스크럼 회의", date: TODAY, time: "10:00", imp: false, done: true, repeat: "매주", alarm: "10분 전" },
+    { id: 2, title: "비타민 챙겨 먹기", date: TODAY, time: "09:00", imp: false, done: true, repeat: "매일", alarm: "정각" },
+    { id: 3, title: "민지랑 저녁", date: TODAY, time: "17:50", imp: true, done: false, repeat: "없음", alarm: "30분 전" },
+    { id: 4, title: "디자인 시스템 토큰 정리", date: TODAY, time: "14:30", imp: true, done: false, repeat: "없음", alarm: "없음" },
+    { id: 5, title: "성과 보고서 초안 제출", date: TODAY, time: "16:00", imp: true, done: false, repeat: "없음", alarm: "10분 전" },
+    { id: 6, title: "필라테스 수업", date: TODAY, time: "20:00", imp: false, done: false, repeat: "매주", alarm: "1시간 전" },
+    { id: 7, title: "고양이 간식 주문하기", date: TODAY, time: "21:15", imp: false, done: false, repeat: "없음", alarm: "없음" },
+    { id: 8, title: "택배 반품 접수", date: TODAY, time: "", imp: false, done: false, repeat: "없음", alarm: "없음" },
+    { id: 9, title: "주간 회고 메모", date: TODAY, time: "", imp: false, done: false, repeat: "없음", alarm: "없음" },
+    { id: 10, title: "물 2리터 마시기", date: TODAY, time: "", imp: false, done: false, repeat: "매일", alarm: "없음" },
+    { id: 11, title: "은행 서류 출력", date: YESTERDAY, time: "", imp: true, done: false, repeat: "없음", alarm: "없음" },
+    { id: 12, title: "엄마한테 전화하기", date: YESTERDAY, time: "19:00", imp: false, done: false, repeat: "없음", alarm: "없음" },
+  ];
+  let selId = null, mode = "detail", onlyImp = false, showDone = true, nextId = 100, undoFn = null, toastTimer;
+  let draft = null;
+  const $ = s => document.querySelector(s);
+  const ic = (id, c = "i") => `<svg class="${c}"><use href="#${id}"/></svg>`;
+  const find = id => tasks.find(t => t.id === id);
+  const DAYS = "일월화수목금토";
+  const fmtT = t => { if (!t) return ""; const h = +t.slice(0, 2); return `${h < 12 ? "오전" : "오후"} ${h % 12 || 12}:${t.slice(3)}`; }; // "오후 2:30"
+  const fmtD = d => { const x = new Date(d + "T00:00"); return `${x.getMonth() + 1}월 ${x.getDate()}일 (${DAYS[x.getDay()]})`; };
+  const mins = t => +t.slice(0, 2) * 60 + +t.slice(3);
+  const byTime = (a, b) => (a.time || "99").localeCompare(b.time || "99");
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const subOf = (t, withDate) => {
+    const parts = [];
+    if (withDate) parts.push(fmtD(t.date));
+    if (t.time) parts.push(fmtT(t.time)); else if (!withDate) parts.push("하루 종일");
+    let s = parts.join(" ");
+    if (t.repeat && t.repeat !== "없음") s += `<span class="meta-ic" title="반복">${ic("i-repeat")}${TaskForm.summary(t)}</span>`;
+    if (t.alarm && t.alarm !== "없음" && t.alarm !== "정각") s += `<span class="meta-ic" title="알림">${ic("i-bell")}${t.alarm}</span>`;
+    return s;
+  };
+  function card(t, carry) {
+    const past = !t.done && t.time && t.date === TODAY && mins(t.time) < mins(NOW);
+    const sub = subOf(t, carry) + (past ? ` <span class="late">· 시간이 지났어요</span>` : "");
+    return `<div class="card ${t.done ? "done" : ""} ${carry ? "carry" : ""} ${t.id === selId && mode === "detail" ? "sel" : ""}" data-id="${t.id}" tabindex="0">
+      <button class="check" data-act="toggle" aria-label="${t.done ? "완료 취소" : "완료"}: ${esc(t.title)}">${ic("i-check")}</button>
+      <div class="ttl"><div class="t">${esc(t.title)}${t.imp ? ic("i-star", "i star") : ""}</div><div class="s">${sub}</div></div>
+      ${carry
+        ? `<div class="carry-acts"><button class="mini lime" data-act="today">오늘 하기</button><label class="mini">다른 날<input type="date" data-act="move" value="${TODAY}"></label></div>`
+        : `<span class="chev">${ic("i-chev")}</span>`}
+    </div>`;
+  }
+
+  function render() {
+    const q = $("#search").value.trim();
+    const today = tasks.filter(t => t.date === TODAY);
+    const open = today.filter(t => !t.done), done = today.filter(t => t.done);
+    const imps = open.filter(t => t.imp);
+    $("#n-left").textContent = open.length; $("#n-total").textContent = today.length;
+    $("#chip-imp-t").textContent = `중요 일정이 ${imps.length}건 있어요!`;
+    $("#chip-imp").style.display = imps.length ? "" : "none";
+    if (!imps.length) onlyImp = false;
+    $("#chip-imp").setAttribute("aria-pressed", onlyImp);
+    $("#chip-done-t").textContent = `완료 (${done.length})`;
+    $("#chip-done").setAttribute("aria-pressed", showDone);
+
+    const nx = open.filter(t => t.time && mins(t.time) >= mins(NOW)).sort(byTime)[0];
+    if (nx) { const d = mins(nx.time) - mins(NOW); $("#next").innerHTML = `<span class="k">다음 일정</span><span>${esc(nx.title)}</span><span class="w">${fmtT(nx.time)} · ${d >= 60 ? Math.floor(d / 60) + "시간 " : ""}${d % 60 ? d % 60 + "분 " : ""}후</span>`; }
+    else $("#next").innerHTML = `<span class="w">남은 시간 일정이 없어요</span>`;
+
+    const m = t => (!q || t.title.includes(q)) && (!onlyImp || t.imp);
+    const timed = open.filter(t => t.time && m(t)).sort(byTime);
+    const any = open.filter(t => !t.time && m(t));
+    const carry = tasks.filter(t => t.date < TODAY && !t.done && m(t));
+    const doneL = done.filter(m).sort(byTime);
+    const sec = (title, n, body, right = "", icon = "") => `<div class="sec"><div class="sec-h">${icon ? ic(icon) : ""}${title} <span class="cnt">${n}</span>${right}</div><div class="cards">${body}</div></div>`;
+
+    let h = "";
+    if (carry.length) h += sec("어제 하지 못한 일", carry.length, carry.map(t => card(t, true)).join(""), `<span class="right"><button class="linkbtn" id="carry-all">모두 오늘 하기</button></span>`, "i-cal");
+    if (timed.length) h += sec("시간 일정", timed.length, timed.map(t => card(t)).join(""), "", "i-clock");
+    if (any.length) h += sec("할 일", any.length, any.map(t => card(t)).join(""), "", "i-check");
+    if (doneL.length && showDone) h += sec("완료", doneL.length, doneL.map(t => card(t)).join(""), "", "i-check");
+    if (!h) h = `<div class="empty-ill"><img class="float" src="assets/spirit_neutral.png" alt="">${q || onlyImp ? "조건에 맞는 일정이 없어요" : "일정을 추가해보세요!"}</div>`;
+    $("#list").innerHTML = h;
+    renderPanel();
+    $("#win").classList.toggle("panel-open", mode === "add" || !!find(selId));
+  }
+
+  const opts = (list, cur) => list.map(o => `<option ${o === cur ? "selected" : ""}>${o}</option>`).join("");
+  // 일정 폼: scripts/task-form.js (Figma 일정 추가 화면 기준)
+  const formHTML = t => TaskForm.html(t);
+  const bindForm = (t, onChange) => TaskForm.bind($("#panel"), t, onChange, mode === "add");
+  document.addEventListener("taskform:redraw", () => renderPanel());
+
+  function renderPanel() {
+    const p = $("#panel");
+    if (mode === "add") {
+      p.innerHTML = `<div class="panel-h"><span></span><span>일정 추가</span><button class="iconbtn" id="p-close" aria-label="닫기">${ic("i-x")}</button></div>
+        <div class="panel-b">${formHTML(draft)}</div>
+        <div class="panel-f one"><button class="okbtn" id="p-ok" ${draft.title.trim() ? "" : "disabled"}>확인</button></div>`;
+      bindForm(draft, () => renderPanel());
+      $("#p-close").onclick = () => { mode = "detail"; render(); };
+      $("#p-ok").onclick = () => {
+        if (!draft.title.trim()) return;
+        const t = { ...draft, title: draft.title.trim(), id: nextId++, done: false };
+        tasks.push(t); mode = "detail"; selId = t.id; render(); fx(t.id, "just-new");
+        toast(t.date === TODAY ? "일정을 추가했어요" : `${fmtD(t.date)}에 일정을 추가했어요`);
+      };
+      const ti = $("#p-title"); ti.focus({ preventScroll: true }); /* 패널이 밀려 나오는 중에 화면이 옆으로 끌려가지 않게 */ ti.setSelectionRange(ti.value.length, ti.value.length);
+      return;
+    }
+    const t = find(selId);
+    if (!t) return; // 닫히는 동안 이전 내용을 그대로 둔 채 밀려 들어감
+    p.innerHTML = `<div class="panel-h"><span></span><span>${t.date < TODAY ? "어제 하지 못한 일" : "일정 상세"}</span><button class="iconbtn" id="p-close" aria-label="닫기">${ic("i-x")}</button></div>
+      <div class="panel-b">${formHTML(t)}<div class="p-note">변경 내용은 바로 저장돼요</div></div>
+      <div class="panel-f">
+        <button class="pbtn del" id="p-del">${ic("i-trash")}삭제</button>
+        <button class="pbtn" id="p-toggle">${ic("i-check")}${t.done ? "완료 취소" : "완료"}</button>
+      </div>`;
+    bindForm(t, k => { render(); if (k === "date" && t.date !== TODAY) toast(`${fmtD(t.date)}로 옮겼어요`); });
+    $("#p-close").onclick = () => { selId = null; render(); };
+    $("#p-del").onclick = () => del(t);
+    $("#p-toggle").onclick = () => toggle(t);
+  }
+
+  function openAdd() { TaskForm.reset(); setTimeout(() => window.App && App.anim("#panel .panel-b", "swap"));  draft = { title: "", date: TODAY, time: "", imp: false, repeat: "없음", repeatDays: [], alarm: "없음" }; mode = "add"; render(); }
+
+  function toast(text, undo) {
+    $("#toast-t").textContent = text; undoFn = undo || null; $("#toast-undo").hidden = !undo;
+    $("#toast").classList.add("open"); clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $("#toast").classList.remove("open"), 4000);
+  }
+  $("#toast-undo").onclick = () => { if (undoFn) undoFn(); $("#toast").classList.remove("open"); };
+
+  const fx = (id, cls) => window.App && App.anim(`#list .card[data-id="${id}"]`, cls);
+  const swapPanel = () => window.App && App.anim("#panel .panel-b", "swap");
+  function toggle(t) {
+    t.done = !t.done; render(); if (t.done) { fx(t.id, "just-done"); window.App && App.anim("#n-left", "bump"); }
+    if (t.done) { const left = tasks.filter(x => x.date === TODAY && !x.done).length; toast(left ? `잘했어요! 이제 ${left}개 남았어요` : "오늘 일정을 모두 끝냈어요!"); }
+  }
+  function del(t) {
+    const i = tasks.indexOf(t); tasks.splice(i, 1); if (selId === t.id) selId = null; render();
+    toast(`"${t.title}" 삭제했어요`, () => { tasks.splice(i, 0, t); selId = t.id; render(); });
+  }
+
+  $("#list").addEventListener("click", e => {
+    if (e.target.closest("#carry-all")) { tasks.filter(t => t.date < TODAY && !t.done).forEach(t => t.date = TODAY); render(); toast("어제 일을 오늘로 옮겼어요"); return; }
+    const r = e.target.closest(".card"); if (!r) return; const t = find(+r.dataset.id);
+    const a = e.target.closest("[data-act]")?.dataset.act;
+    if (a === "toggle") return toggle(t);
+    if (a === "today") { t.date = TODAY; render(); fx(t.id, "just-new"); toast(`"${t.title}" 오늘 하기로 했어요`); return; }
+    if (e.target.closest("label.mini")) { e.preventDefault(); const inp = r.querySelector('input[data-act="move"]'); try { inp.showPicker(); } catch { inp.click(); } return; }
+    const changed = selId !== t.id || mode !== "detail"; if (changed) TaskForm.reset(); mode = "detail"; selId = t.id; render(); if (changed) swapPanel();
+  });
+  $("#list").addEventListener("change", e => {
+    if (e.target.dataset.act !== "move") return; const t = find(+e.target.closest(".card").dataset.id);
+    t.date = e.target.value; render(); toast(t.date === TODAY ? `"${t.title}" 오늘 하기로 했어요` : `${fmtD(t.date)}로 옮겼어요`);
+  });
+  $("#list").addEventListener("keydown", e => {
+    const r = e.target.closest(".card"); if (!r || e.target !== r) return; const t = find(+r.dataset.id);
+    if (e.key === " ") { e.preventDefault(); toggle(t); }
+    if (e.key === "Enter") { mode = "detail"; selId = t.id; render(); $("#p-title")?.focus({ preventScroll: true }); }
+    if (e.key === "Delete") del(t);
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { const rs = [...document.querySelectorAll("#list .card")], i = rs.indexOf(r); rs[e.key === "ArrowDown" ? i + 1 : i - 1]?.focus(); e.preventDefault(); }
+  });
+
+  // 우클릭 메뉴
+  const menu = $("#menu"); let menuId = null;
+  const closeMenu = () => { menu.classList.remove("open"); menuId = null; };
+  $("#list").addEventListener("contextmenu", e => {
+    const r = e.target.closest(".card"); if (!r) return; e.preventDefault();
+    menuId = +r.dataset.id; const t = find(menuId);
+    $("#m-toggle").textContent = t.done ? "완료 취소" : "완료"; $("#m-star").textContent = t.imp ? "중요 표시 해제" : "중요 표시";
+    const w = $("#win").getBoundingClientRect(), z = parseFloat(getComputedStyle(document.body).zoom) || 1;
+    menu.style.left = Math.min((e.clientX - w.left) / z, 1280 - 210) + "px"; menu.style.top = Math.min((e.clientY - w.top) / z, 800 - 250) + "px";
+    menu.classList.remove("open"); void menu.offsetWidth; menu.classList.add("open");
+  });
+  menu.addEventListener("click", e => {
+    const b = e.target.closest("[data-m]"); if (!b) return; const t = find(menuId); closeMenu(); if (!t) return;
+    if (b.dataset.m === "toggle") toggle(t);
+    if (b.dataset.m === "star") { t.imp = !t.imp; render(); }
+    if (b.dataset.m === "edit") { mode = "detail"; selId = t.id; render(); swapPanel(); }
+    if (b.dataset.m === "tomorrow") { const prev = t.date; t.date = "2026-10-14"; render(); toast(`"${t.title}" 내일로 미뤘어요`, () => { t.date = prev; render(); }); }
+    if (b.dataset.m === "delete") del(t);
+  });
+  document.addEventListener("click", e => { if (!e.target.closest("#menu")) closeMenu(); });
+
+  $("#chip-imp").onclick = () => { onlyImp = !onlyImp; render(); };
+  $("#chip-done").onclick = () => { showDone = !showDone; render(); };
+  $("#search").addEventListener("input", render);
+  const openSearch = () => { $("#search-box").classList.add("open"); $("#search").focus(); };
+  $("#search-btn").onclick = () => { const box = $("#search-box"); if (box.classList.contains("open") && !$("#search").value) box.classList.remove("open"); else openSearch(); };
+  $("#add-btn").onclick = openAdd;
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key.toLowerCase() === "n") { e.preventDefault(); openAdd(); }
+    if (e.ctrlKey && e.key.toLowerCase() === "f") { e.preventDefault(); openSearch(); }
+    if (e.key === "Escape") { closeMenu(); if (mode === "add") { mode = "detail"; render(); } else if (selId != null && !/INPUT|SELECT/.test(document.activeElement.tagName)) { selId = null; render(); } }
+  });
+
+  const hr = +NOW.slice(0, 2);
+  $("#greet").textContent = `${hr < 6 ? "늦은 밤이에요" : hr < 12 ? "좋은 아침이에요" : hr < 18 ? "좋은 오후예요" : "편안한 저녁이에요"}, 댕트리버님`;
+  render();
+})();
+</script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

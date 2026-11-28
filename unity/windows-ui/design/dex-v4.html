@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정령 도감 v4 — 둥글고 부드러운 톤</title>
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";r.classList.add("booting");setTimeout(()=>r.classList.remove("booting"),1500);})()</script>
+<style>
+  .main.dex { grid-template-rows: auto auto auto 1fr; padding-bottom: 0; }
+  .dex-sum { display: flex; align-items: center; gap: 18px; padding: 14px 18px; margin-bottom: 14px; border-radius: var(--r-card); background: var(--white); border: 1px solid var(--stroke); box-shadow: var(--shadow); }
+  .dex-sum .rep-av { width: 54px; height: 54px; border-radius: 16px; background: var(--pink-op); display: grid; place-items: center; flex-shrink: 0; overflow: hidden; }
+  .dex-sum .rep-av .art { width: 46px; }
+  .dex-sum .who small { display: block; font-size: 12px; color: var(--text-2); }
+  .dex-sum .who b { font-size: 16px; }
+  .dex-sum .prog { margin-left: auto; min-width: 220px; display: block; }
+  .dex-sum .prog .lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+  .dex-sum .prog .lbl b { color: var(--text); font-size: 14px; }
+  .dex-sum .bar { display: block; height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; }
+  .dex-sum .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--pink), var(--lime)); transition: width .4s; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .toolbar .seg { width: 260px; flex-shrink: 0; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--back-02); padding: 5px; border-radius: var(--r-pill); }
+  .seg button { height: 36px; border-radius: var(--r-pill); font-size: 14px; color: var(--text-2); font-weight: 700; }
+  .seg button:hover { color: var(--text); }
+  .seg button[aria-selected="true"] { background: var(--text); color: var(--on-text); box-shadow: var(--shadow); }
+  .seg button.pink[aria-selected="true"] { background: var(--pink); color: var(--on-pink); }
+  .filters { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 0 4px; font-size: 14px; color: var(--text-2); }
+  .cbx { display: flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; }
+  .cbx .box { width: 20px; height: 20px; border-radius: 6px; }
+  .cbx .box svg.i { width: 12px; height: 12px; }
+  .cbx .box[aria-checked="true"] { background: var(--text); border-color: var(--text); }
+  .sort { border: 0; background: transparent; color: var(--text); font-size: 14px; cursor: pointer; }
+
+  .dexwrap { overflow-y: auto; min-height: 0; padding: 4px 4px 28px; margin: 0 -4px; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 12px; }
+  .sp { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; background: none; }
+  .sp .frame { position: relative; width: 100%; aspect-ratio: 1; background: var(--white); border: 1px solid var(--stroke); border-radius: var(--r-card); box-shadow: var(--shadow);
+    display: grid; place-items: center; overflow: hidden; transition: box-shadow .12s, border-color .12s, transform .12s; }
+  .sp:hover .frame { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(133,117,99,.1); }
+  .sp.sel .frame { border-color: var(--sel-b); box-shadow: 0 0 0 4px rgba(133,117,99,.1); }
+  .sp .rep { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; border-radius: 50%; background: var(--lime); display: grid; place-items: center; box-shadow: 0 2px 6px rgba(193,221,0,.4); }
+  .sp .rep svg.i { width: 15px; height: 15px; fill: var(--on-lime); stroke: var(--on-lime); }
+  .sp .nm { font-size: 14px; font-weight: 700; }
+  .sp.unknown .nm { color: var(--grey); }
+  .hearts { display: flex; gap: 2px; }
+  .hearts svg { width: 14px; height: 14px; }
+  .hearts .on { fill: #FF96DE; stroke: #F168C6; stroke-width: 1.2; }
+  .hearts .off { fill: var(--heart-off, #A89684); stroke: var(--heart-off, #A89684); stroke-width: 1.2; opacity: .55; }
+  .sp.unknown .hearts { display: none; }
+
+  /* 정령 그림: 구름이는 원본 PNG, 나머지는 Figma 캡처(dex-sheet) 일부를 잘라 표시 */
+  .art { width: 78%; aspect-ratio: 1; background-repeat: no-repeat; }
+  .art.png { background-size: contain; background-position: center; }
+  .sp.unknown .art { opacity: .7; }
+
+  .cat { margin-bottom: 22px; border-radius: var(--r-card); overflow: hidden; border: 1px solid var(--stroke); background: var(--white); box-shadow: var(--shadow); }
+  .cat-h { display: flex; align-items: center; gap: 8px; padding: 12px 18px; font-size: 15px; font-weight: 800; }
+  .cat-h .cnt { font-weight: 400; font-size: 13px; opacity: .8; }
+  .cat-h.nature { background: var(--cat-n-bg, #F1F8DC); color: var(--cat-n, #66730A); }
+  .cat-h.animal { background: var(--cat-a-bg, #FFF6D6); color: var(--cat-a, #7E6414); }
+  .cat-h.space  { background: var(--cat-s-bg, #E3F2FB); color: var(--cat-s, #3F6A84); }
+  .cat-b { padding: 16px; }
+  .cat-b .grid4 { gap: 14px 12px; }
+  .cat-empty { color: var(--text-2); font-size: 13px; padding: 6px 4px; }
+
+  /* 상세 패널 */
+  .sp-detail { align-items: center; text-align: center; }
+  .sp-hero { width: 100%; aspect-ratio: 1.15; border-radius: var(--r-card); display: grid; place-items: center; margin-top: 4px;
+    background: radial-gradient(60% 55% at 50% 55%, var(--hero-glow) 0%, var(--panel-bg) 75%); border: 1px solid var(--stroke); position: relative; }
+  .sp-hero .art { width: 62%; }
+  @media (prefers-reduced-motion: no-preference) { .sp-hero .art { animation: float 3.2s ease-in-out infinite; } }
+  .sp-hero .rep-tag { position: absolute; top: 12px; left: 12px; font-size: 11px; font-weight: 800; color: var(--lime-t); background: var(--lime-op); padding: 4px 10px; border-radius: var(--r-pill); display: flex; gap: 4px; align-items: center; }
+  .sp-hero .rep-tag svg.i { width: 12px; height: 12px; fill: var(--lime-t); stroke: var(--lime-t); }
+  .sp-name { font-size: 22px; font-weight: 800; margin-top: 6px; }
+  .sp-tags { display: flex; gap: 6px; justify-content: center; }
+  .sp-tag { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); background: var(--back-02); }
+  .sp-aff { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+  .sp-aff .hearts svg { width: 20px; height: 20px; }
+  .sp-desc { font-size: 14px; line-height: 1.7; background: var(--white); border: 1px solid var(--stroke); border-radius: var(--r-card); padding: 14px 16px; text-align: left; width: 100%; }
+  .hint-art { filter: grayscale(1); opacity: .45; }
+  .hint-box { font-size: 15px; line-height: 1.7; color: var(--text); background: var(--white); border: 1px dashed var(--carry-b); border-radius: var(--r-card); padding: 16px; width: 100%; }
+  .hint-box small { display: block; color: var(--text-2); font-size: 12px; margin-bottom: 4px; }
+  /* 다크 모드: Figma 캡처에서 잘라 쓴 그림은 흰 배경이 있어 그림 칸만 밝은 액자로 둔다 (투명 원본을 받으면 제거) */
+  html[data-theme="dark"] { --heart-off: #7A6C5F;--cat-n-bg: #2C3214; --cat-n: #D6EC5E; --cat-a-bg: #352D14; --cat-a: #F0CF6A; --cat-s-bg: #17293A; --cat-s: #9CCBEA; }
+  html[data-theme="dark"] .sp .frame { background: #F3EDE6; border-color: #4A423A; }
+  html[data-theme="dark"] .sp-hero { background: radial-gradient(60% 55% at 50% 55%, #FFF6FB 0%, #EFE7DE 80%); border-color: #4A423A; }
+  /* 디테일: 속성 배지, 미발견 점선, 정보 표, 호감도 진행 */
+  .el { position: absolute; right: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; padding: 2px 7px 2px 5px; border-radius: 99px; background: var(--white); box-shadow: 0 1px 4px rgba(var(--shade),.12); color: var(--text); }
+  .el i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  .sp.unknown .frame { border-style: dashed; border-color: var(--carry-b); box-shadow: none; background: var(--panel-bg); }
+  .sp .nm { display: flex; align-items: center; gap: 4px; }
+  .sp:focus-visible { outline: none; }
+  .sp:focus-visible .frame { box-shadow: 0 0 0 3px var(--focus); }
+  .sp-info { width: 100%; text-align: left; }
+  .sp-info .row { display: flex; align-items: center; justify-content: space-between; min-height: 42px; padding: 0 16px; font-size: 13px; }
+  .sp-info .row + .row { border-top: 1px solid var(--stroke); }
+  .sp-info .row span:first-child { color: var(--text-2); }
+  .sp-info .row b { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+  .sp-info .row b i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+  .next-heart { width: 100%; text-align: left; font-size: 12px; color: var(--text-2); }
+  .next-heart .bar { display: block; height: 8px; border-radius: 99px; background: var(--track); margin-top: 6px; overflow: hidden; }
+  .next-heart .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--pink-op), var(--pink)); }
+  .okbtn .ok-ic { display: inline-flex; vertical-align: -3px; margin-right: 4px; }
+  .okbtn .ok-ic svg.i { width: 16px; height: 16px; stroke-width: 2.4; }
+  .kbd-hint { font-size: 11px; color: var(--grey); text-align: center; margin-top: 8px; }
+  /* 다크 모드 디테일: 빈 하트 3.2:1 이상, 미발견 칸·힌트 그림은 밝은 액자 대신 어두운 실루엣, 선택 테두리 강조 */
+  html[data-theme="dark"] .hearts .off { opacity: 1; }
+  html[data-theme="dark"] .sp.unknown .frame { background: var(--panel-bg); border-color: #5A5046; }
+  html[data-theme="dark"] .sp.unknown .art, html[data-theme="dark"] .sp-hero .hint-art { filter: invert(1) grayscale(1); mix-blend-mode: screen; opacity: .85; }
+  html[data-theme="dark"] .sp-hero:has(.hint-art) { background: radial-gradient(60% 55% at 50% 55%, #2F2A25 0%, var(--panel-bg) 80%); }
+  html[data-theme="dark"] .sp.sel .frame { border-color: var(--text-2); box-shadow: 0 0 0 3px rgba(185,168,149,.3); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="4" width="12" height="16" rx="2" transform="rotate(8 13 12)"/><path d="M5.5 7.5 4 17a2 2 0 0 0 1.7 2.3l2 .3"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 13l-2-2M12 12l2-2M12 21V8"/><path d="M9.8 16.6A6 6 0 1 1 14.2 6a6 6 0 0 1 0 10.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.9.5 1.9 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.9-3 1.9-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.9-.4-1.9-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m21 21-6-6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0 7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 17.8-6.2 3.2 1.2-6.9-5-4.9 6.9-1L12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-9.2-9.3C1.6 7.3 4 4 7.3 4c2 0 3.5 1.1 4.7 2.7C13.2 5.1 14.7 4 16.7 4 20 4 22.4 7.3 21.2 10.7 19.5 15.4 12 20 12 20z"/></symbol>
+</defs></svg>
+
+<div class="window" id="win">
+  <div class="titlebar">
+    <div class="app"><img src="assets/spirit_neutral.png" alt=""><span>Todo with Spirits</span></div>
+    <div class="winctl">
+      <button aria-label="최소화"><svg class="i"><use href="#i-min"/></svg></button>
+      <button aria-label="최대화"><svg class="i"><use href="#i-max"/></svg></button>
+      <button class="close" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="nav" aria-label="주 메뉴">
+      <div class="navgroup">
+        <a class="navbtn" href="home-v4.html"><svg class="i"><use href="#i-home"/></svg>홈</a>
+        <a class="navbtn" href="calendar-v4.html"><svg class="i"><use href="#i-cal"/></svg>캘린더</a>
+        <button class="navbtn" aria-current="page"><svg class="i"><use href="#i-cards"/></svg>정령 도감</button>
+        <a class="navbtn locked" href="forest-v4.html"><svg class="i"><use href="#i-tree"/></svg>정령의 숲<span class="soon">출시 예정</span></a>
+      </div>
+      <div class="navgroup">
+        <a class="navbtn" href="settings-v4.html"><svg class="i"><use href="#i-gear"/></svg>설정</a>
+        <div class="me"><span class="avatar">댕</span>댕트리버</div>
+      </div>
+    </nav>
+
+    <main class="main dex">
+      <div class="head">
+        <h1>정령 도감</h1>
+        <div class="tools">
+          <button class="iconbtn" aria-label="알림"><svg class="i"><use href="#i-bell"/></svg><span class="badge">99+</span></button>
+        </div>
+      </div>
+      <section class="dex-sum" id="dex-sum" aria-label="도감 요약"></section>
+      <div class="toolbar">
+        <div class="seg" role="tablist">
+          <button role="tab" id="tab-all" aria-selected="true">전체</button>
+          <button role="tab" id="tab-cat" class="pink" aria-selected="false">카테고리별</button>
+        </div>
+        <div class="filters">
+          <label class="cbx"><button class="box" id="only-missing" role="checkbox" aria-checked="false"><svg class="i"><use href="#i-check"/></svg></button>미보유만</label>
+          <select class="sort" id="sort" aria-label="정렬"><option>호감도 순</option><option>만난 순</option><option>이름 순</option></select>
+        </div>
+      </div>
+      <div class="dexwrap" id="dex"></div>
+    </main>
+
+    <aside class="panel" id="panel" aria-label="정령 정보"></aside>
+  </div>
+
+  <div class="toast" id="toast"><img src="assets/spirit_neutral.png" alt=""><span id="toast-t"></span><button id="toast-undo" hidden></button></div>
+</div>
+
+<script>
+(() => {
+  // 정령 데이터 — 이름·하트·카테고리·힌트는 Figma Mobile_GUI 기준, 설명 문구는 예시
+  // sheet: Figma 도감 캡처(360×800)에서 그림이 있는 칸의 좌상단 좌표 (96×96 영역)
+  const SPIRITS = [
+    { id: "wind",  name: "구름이", el: "바람", cat: "자연", aff: 5, met: 1, owned: true, png: "assets/spirit_neutral.png",
+      desc: "몽실몽실한 바람 정령이에요. 할 일을 하나씩 끝낼 때마다 볼이 더 발그레해져요." },
+    { id: "leaf",  name: "꽃잎이", el: "숲", cat: "자연", aff: 4, met: 2, owned: true, sheet: [132, 214],
+      desc: "꽃잎 모자를 쓴 숲 정령이에요. 꾸준히 해낸 날이 쌓이면 꽃이 하나씩 피어나요." },
+    { id: "fire",  name: "불꽃이", el: "불", cat: "자연", aff: 3, met: 3, owned: true, sheet: [246, 214],
+      desc: "열정 가득한 불 정령이에요. 중요한 일정을 끝내면 불꽃이 더 크게 타올라요." },
+    { id: "water", name: "물순이", el: "물", cat: "자연", aff: 2, met: 4, owned: true, sheet: [18, 370],
+      desc: "말랑말랑한 물방울 정령이에요. 차분하게 하루를 정리하는 걸 좋아해요." },
+    { id: "star",  name: "별아기", el: "별", cat: "우주", aff: 1, met: 5, owned: true, sheet: [132, 370],
+      desc: "반짝이는 별 정령이에요. 늦은 밤까지 남은 일을 끝내면 살며시 빛나요." },
+    { id: "q1", name: "???", cat: "자연", owned: false, sheet: [246, 370], hint: "작심삼일을 무사히 넘긴 날에 나타나요." },
+    { id: "q2", name: "???", cat: "동물", owned: false, sheet: [246, 370], hint: "일주일 동안 매일 하나씩 완료하면 만날 수 있어요." },
+    { id: "q3", name: "???", cat: "동물", owned: false, sheet: [246, 370], hint: "중요 일정을 10번 끝내면 찾아와요." },
+  ];
+  const CATS = [["자연", "nature"], ["동물", "animal"], ["우주", "space"]];
+  const EL = { 바람: "#FF96DE", 숲: "#8BC34A", 불: "#FF8A3D", 물: "#6EC6F0", 별: "#F7C948" };
+  // 예시 값 — 실제 규칙은 기획 확정 후
+  const EXTRA = { wind: ["2026. 08. 02", 72, 100], leaf: ["2026. 08. 20", 54, 60], fire: ["2026. 09. 03", 40, 35], water: ["2026. 09. 21", 22, 70], star: ["2026. 10. 05", 8, 20] };
+  let rep = "wind", sel = "wind", tab = "all", onlyMissing = false, sort = "호감도 순", toastTimer;
+  const $ = s => document.querySelector(s);
+  const josa = w => ((w.charCodeAt(w.length - 1) - 0xAC00) % 28 ? "이" : "가");
+  const ic = (n, c = "i") => `<svg class="${c}"><use href="#${n}"/></svg>`;
+
+  const art = (s, cls = "") => s.png
+    ? `<span class="art png ${cls}" style="background-image:url('${s.png}')"></span>`
+    : `<span class="art sheet ${cls}" data-x="${s.sheet[0]}" data-y="${s.sheet[1]}"></span>`;
+  // 캡처에서 잘라 쓰는 그림은 그려진 뒤 실제 크기에 맞춰 배경 위치를 계산
+  function fitSheets(root = document) {
+    root.querySelectorAll(".art.sheet").forEach(el => {
+      const k = el.offsetWidth / 96;
+      el.style.backgroundImage = "url('assets/dex-sheet.png')";
+      el.style.backgroundSize = `${360 * k}px ${800 * k}px`;
+      el.style.backgroundPosition = `${-el.dataset.x * k}px ${-el.dataset.y * k}px`;
+    });
+  }
+  const hearts = n => `<span class="hearts" aria-label="호감도 ${n}/5">${[1, 2, 3, 4, 5].map(i => `<svg class="${i <= n ? "on" : "off"}"><use href="#i-heart"/></svg>`).join("")}</span>`;
+
+  function cardHTML(s) {
+    return `<button class="sp ${s.owned ? "" : "unknown"} ${s.id === sel ? "sel" : ""}" data-id="${s.id}" aria-label="${s.owned ? s.name : "아직 만나지 못한 정령"}">
+      <span class="frame">${s.id === rep ? `<span class="rep" title="대표 정령">${ic("i-star")}</span>` : ""}${art(s)}${s.owned ? `<span class="el" style="--c:${EL[s.el]}"><i></i>${s.el}</span>` : ""}</span>
+      <span class="nm">${s.name}</span><span title="${s.owned ? `호감도 ${s.aff} / 5` : "아직 만나지 못했어요"}">${hearts(s.aff || 0)}</span></button>`;
+  }
+
+  const sorters = {
+    "호감도 순": (a, b) => (b.owned - a.owned) || ((b.aff || 0) - (a.aff || 0)),
+    "이름 순": (a, b) => (b.owned - a.owned) || a.name.localeCompare(b.name, "ko"),
+    "만난 순": (a, b) => (b.owned - a.owned) || ((a.met || 99) - (b.met || 99)),
+  };
+
+  function renderSum() {
+    const owned = SPIRITS.filter(s => s.owned).length, r = SPIRITS.find(s => s.id === rep);
+    $("#dex-sum").innerHTML = `<span class="rep-av">${art(r)}</span>
+      <span class="who"><small>대표 정령</small><b>${r.name}</b></span>
+      <span class="prog"><span class="lbl">만난 정령<b>${owned} / ${SPIRITS.length}</b></span><span class="bar"><i style="width:${owned / SPIRITS.length * 100}%"></i></span></span>`;
+  }
+
+  function render() {
+    renderSum();
+    $("#tab-all").setAttribute("aria-selected", tab === "all");
+    $("#tab-cat").setAttribute("aria-selected", tab === "cat");
+    $("#only-missing").setAttribute("aria-checked", onlyMissing);
+    const list = SPIRITS.filter(s => !onlyMissing || !s.owned).sort(sorters[sort]);
+    let h;
+    if (tab === "all") h = list.length ? `<div class="grid4">${list.map(cardHTML).join("")}</div>` : `<div class="empty-ill"><img class="float" src="assets/spirit_neutral.png" alt="">모든 정령을 만났어요!</div>`;
+    else h = CATS.map(([c, cls]) => {
+      const all = SPIRITS.filter(s => s.cat === c), items = list.filter(s => s.cat === c);
+      return `<section class="cat"><div class="cat-h ${cls}">${c} <span class="cnt">(${all.filter(s => s.owned).length} / ${all.length})</span></div>
+        <div class="cat-b">${items.length ? `<div class="grid4">${items.map(cardHTML).join("")}</div>` : `<div class="cat-empty">${onlyMissing ? "이 카테고리의 정령을 모두 만났어요" : "아직 만난 정령이 없어요"}</div>`}</div></section>`;
+    }).join("");
+    $("#dex").innerHTML = h;
+    renderPanel();
+    fitSheets();
+  }
+
+  function renderPanel() {
+    const s = SPIRITS.find(x => x.id === sel), p = $("#panel");
+    if (!s) { p.innerHTML = `<div class="panel-h"><span></span><span>정령 정보</span><span></span></div><div class="panel-empty">정령을 선택해 주세요</div><div></div>`; return; }
+    if (!s.owned) {
+      p.innerHTML = `<div class="panel-h"><span></span><span>힌트</span><span></span></div>
+        <div class="panel-b sp-detail">
+          <div class="sp-hero">${art(s, "hint-art")}</div>
+          <div class="sp-name">???</div>
+          <div class="sp-tags"><span class="sp-tag">${s.cat}</span></div>
+          <div class="hint-box"><small>이 정령을 만나려면</small>${s.hint}</div>
+          <div class="next-heart">${s.cat}에서 ${SPIRITS.filter(x => x.cat === s.cat && x.owned).length} / ${SPIRITS.filter(x => x.cat === s.cat).length} 만났어요<span class="bar"><i style="width:${SPIRITS.filter(x => x.cat === s.cat && x.owned).length / SPIRITS.filter(x => x.cat === s.cat).length * 100}%"></i></span></div>
+        </div><div></div>`;
+      return;
+    }
+    const isRep = s.id === rep;
+    p.innerHTML = `<div class="panel-h"><span></span><span>정령 정보</span><span></span></div>
+      <div class="panel-b sp-detail">
+        <div class="sp-hero">${isRep ? `<span class="rep-tag">${ic("i-star")}대표 정령</span>` : ""}${art(s)}</div>
+        <div class="sp-name">${s.name}</div>
+        <div class="sp-aff">${hearts(s.aff)}호감도 ${s.aff} / 5</div>
+        ${s.aff < 5 ? `<div class="next-heart">다음 하트까지 ${EXTRA[s.id][2]}%<span class="bar"><i style="width:${EXTRA[s.id][2]}%"></i></span></div>` : `<div class="next-heart" style="text-align:center">호감도가 가득 찼어요 💗</div>`}
+        <div class="fcard sp-info">
+          <div class="row"><span>속성</span><b style="--c:${EL[s.el]}"><i></i>${s.el}</b></div>
+          <div class="row"><span>카테고리</span><b>${s.cat}</b></div>
+          <div class="row"><span>처음 만난 날</span><b>${EXTRA[s.id][0]}</b></div>
+          <div class="row"><span>함께한 날</span><b>${EXTRA[s.id][1]}일</b></div>
+        </div>
+        <div class="sp-desc">${s.desc}</div>
+      </div>
+      <div class="panel-f one"><button class="okbtn" id="set-rep" ${isRep ? "disabled" : ""}>${isRep ? `<span class="ok-ic">${ic("i-check")}</span>지금 대표 정령이에요` : "대표 정령으로 설정"}</button><div class="kbd-hint">카드를 두 번 누르거나 Enter로도 바꿀 수 있어요</div></div>`;
+    $("#set-rep").onclick = () => { rep = s.id; render(); window.App && App.anim(`.sp[data-id="${s.id}"] .rep`, "just-new"); toast(`${s.name}${josa(s.name)} 대표 정령이 됐어요`, s); };
+  }
+
+  function toast(text, s) {
+    $("#toast-t").textContent = text;
+    $("#toast img").src = s && s.png ? s.png : "assets/spirit_neutral.png";
+    $("#toast").classList.add("open"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").classList.remove("open"), 3000);
+  }
+
+  $("#dex").addEventListener("click", e => { const b = e.target.closest(".sp"); if (!b) return; const ch = sel !== b.dataset.id; sel = b.dataset.id; render(); if (ch) window.App && App.anim("#panel .panel-b", "swap"); });
+  $("#dex").addEventListener("dblclick", e => { const b = e.target.closest(".sp"); if (!b) return; const s = SPIRITS.find(x => x.id === b.dataset.id); if (s.owned) { rep = s.id; render(); toast(`${s.name}${josa(s.name)} 대표 정령이 됐어요`, s); } });
+  $("#tab-all").onclick = () => { tab = "all"; render(); window.App && App.anim("#dex", "swap-back"); };
+  $("#tab-cat").onclick = () => { tab = "cat"; render(); window.App && App.anim("#dex", "swap"); };
+  $("#only-missing").onclick = () => { onlyMissing = !onlyMissing; if (onlyMissing && SPIRITS.find(s => s.id === sel)?.owned) sel = SPIRITS.find(s => !s.owned)?.id; render(); };
+  $("#sort").onchange = e => { sort = e.target.value; render(); };
+  /* 창 크기 버튼·가장자리 끌기·사이드바 접힘처럼 브라우저 resize 없이 칸 크기가 바뀌어도 그림 위치를 다시 맞춘다 */
+  { let raf = 0; const ro = new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => fitSheets()); }); ["#dex", "#panel"].forEach(s => { const el = document.querySelector(s); if (el) ro.observe(el); }); }
+  $("#dex").addEventListener("keydown", e => {
+    const b = e.target.closest(".sp"); if (!b) return;
+    const all = [...document.querySelectorAll("#dex .sp")], i = all.indexOf(b);
+    const cols = getComputedStyle(b.parentElement).gridTemplateColumns.split(" ").length;
+    const go = j => { const t = all[j]; if (t) { sel = t.dataset.id; render(); window.App && App.anim("#panel .panel-b", "swap"); document.querySelector(`#dex .sp[data-id="${sel}"]`)?.focus(); } };
+    if (e.key === "ArrowRight") { e.preventDefault(); go(i + 1); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); go(i - 1); }
+    if (e.key === "ArrowDown") { e.preventDefault(); go(i + cols); }
+    if (e.key === "ArrowUp") { e.preventDefault(); go(i - cols); }
+    if (e.key === "Enter") { const s = SPIRITS.find(x => x.id === b.dataset.id); if (s.owned && s.id !== rep) { e.preventDefault(); rep = s.id; render(); toast(`${s.name}${josa(s.name)} 대표 정령이 됐어요`, s); document.querySelector(`#dex .sp[data-id="${s.id}"]`)?.focus(); } }
+  });
+
+  render();
+})();
+</script>
+<script src="scripts/app.js"></script>
+</body>
+</html>
