@@ -31,16 +31,30 @@ public static class Fmt
         total == 0 ? "" : done == total ? "모두 완료" : done > 0 ? $"{total}개 중 {done}개 완료" : $"일정 {total}개";
 }
 
-/// <summary>화면에 그리는 일정 한 줄. Refresh 때마다 새로 만든다.</summary>
-public sealed class TaskRow(TodoItem item, DateOnly today, TimeOnly now)
+/// <summary>일정의 한 회차: 어느 일정이 어느 날짜에 나타나는가.</summary>
+public readonly record struct Occ(TodoItem Item, DateOnly Date)
 {
-    public TodoItem Item { get; } = item;
+    public bool Done => Recur.IsDone(Item, Date);
+}
+
+/// <summary>화면에 그리는 일정 한 줄. Refresh 때마다 새로 만든다.</summary>
+public sealed class TaskRow(Occ occ, DateOnly today, TimeOnly now, bool justDone = false)
+{
+    public TodoItem Item { get; } = occ.Item;
+    /// <summary>이 줄이 나타내는 날짜 (반복 일정이면 그 회차의 날짜).</summary>
+    public DateOnly Date { get; } = occ.Date;
     public string Title => Item.Title;
-    public bool Done => Item.Done;
+    public bool Done { get; } = occ.Done;
     public bool Important => Item.Important;
-    public bool IsOverdue => !Item.Done && Item.Date == today && Item.Time is { } t && t < now;
+    public bool IsOverdue => !Done && Date == today && Item.Time is { } t && t < now;
     public string Sub => (Item.Time is { } t ? Fmt.Time(t) : "하루 종일") + (IsOverdue ? " · 시간이 지났어요" : "");
-    public string CarrySub => Fmt.Short(Item.Date) + (Item.Time is { } t ? " " + Fmt.Time(t) : "");
+    public string CarrySub => Fmt.Short(Date) + (Item.Time is { } t ? " " + Fmt.Time(t) : "");
+    public string RepeatText => Recur.Summary(Item);
+    public bool HasRepeat => Recur.IsRepeating(Item);
+    public string AlarmText => Item.Alarm;
+    public bool HasAlarm => Item.Time is not null && Alarm.MinutesBefore(Item.Alarm) is not null;
+    /// <summary>방금 완료한 줄: 체크가 톡 튀어나온다.</summary>
+    public bool JustDone { get; } = justDone;
 }
 
 /// <summary>달력의 하루 칸 (주간 띠·월간 칸·연간 숫자 공용).</summary>

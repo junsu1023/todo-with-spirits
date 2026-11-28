@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="정령" Width="300" SizeToContent="Height" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ShowInTaskbar="False" Topmost="True" ResizeMode="NoResize" ShowActivated="True"
-        FontFamily="{StaticResource AppFont}" UseLayoutRounding="True" Deactivated="OnDeactivated" KeyDown="OnKeyDown">
+        FontFamily="{StaticResource AppFont}" FontSize="15" Foreground="{DynamicResource Text}" UseLayoutRounding="True" Deactivated="OnDeactivated" KeyDown="OnKeyDown">
     <!-- 바탕화면 정령 옆에 뜨는 작은 창: 좌클릭 = 오늘 일정, 우클릭 = 메뉴 -->
     <Border Margin="14" CornerRadius="20" Background="{DynamicResource Elev}" BorderBrush="{DynamicResource StrokeStrong}" BorderThickness="1" Padding="14">
         <Border.Effect>
@@ -54,7 +54,7 @@
                 </ScrollViewer>
                 <TextBlock Text="오늘은 일정이 없어요" FontSize="13" Foreground="{DynamicResource Grey}" Margin="4,4,0,8"
                            Visibility="{Binding TodayEmpty, Converter={StaticResource BoolVis}}"/>
-                <Button Content="+  일정 추가" Style="{StaticResource Primary}" Height="42" FontSize="14" Margin="0,4,0,0" Click="OnAdd"/>
+                <Button Content="일정 추가" Tag="{StaticResource IcPlus}" Style="{StaticResource Primary}" Height="42" FontSize="14" Margin="0,4,0,0" Click="OnAdd"/>
             </StackPanel>
 
             <!-- 우클릭 메뉴 -->

@@ -38,22 +38,24 @@ public sealed partial class MainViewModel : ObservableObject
         GoTodayCommand = new RelayCommand(_ => SelectDate(Today));
         ToggleThemeCommand = new RelayCommand(_ => IsDark = !IsDark);
         AddCommand = new RelayCommand(p => BeginAdd(p is DayCell c ? c.Date : Page == "calendar" ? SelectedDate : Today));
-        OpenCommand = new RelayCommand(p => BeginEdit(((TaskRow)p!).Item));
-        ToggleCommand = new RelayCommand(p => Toggle(((TaskRow)p!).Item));
+        OpenCommand = new RelayCommand(p => BeginEdit((TaskRow)p!));
+        ToggleCommand = new RelayCommand(p => { var row = (TaskRow)p!; Toggle(row.Item, row.Date); });
         MoveToTodayCommand = new RelayCommand(p => { var t = ((TaskRow)p!).Item; var from = t.Date; t.Date = Today; Commit(); ShowToast("오늘 일정으로 옮겼어요", () => { t.Date = from; Commit(); }); });
         MoveAllToTodayCommand = new RelayCommand(_ => MoveAllToToday());
         SaveCommand = new RelayCommand(_ => SaveNew(), _ => IsNew && !string.IsNullOrWhiteSpace(EditTitle));
         DeleteCommand = new RelayCommand(_ => DeleteEditing(), _ => _editing is not null);
-        ToggleEditingCommand = new RelayCommand(_ => { if (_editing is not null) { Toggle(_editing); Raise(nameof(EditDoneLabel)); } }, _ => _editing is not null);
-        ClosePanelCommand = new RelayCommand(_ => ClosePanel());
+        ToggleEditingCommand = new RelayCommand(_ => { if (_editing is not null) { Toggle(_editing, _editingDate); Raise(nameof(EditDoneLabel)); } }, _ => _editing is not null);
+        ClosePanelCommand = new RelayCommand(_ => { if (HelpOpen) HelpOpen = false; else if (NotiOpen) NotiOpen = false; else ClosePanel(); });
         UndoCommand = new RelayCommand(_ => { _undo?.Invoke(); HideToast(); });
 
         _toastTimer.Tick += (_, _) => HideToast();
-        _clock.Tick += (_, _) => { var d = DateOnly.FromDateTime(DateTime.Now); if (d != Today) { Today = d; Raise(nameof(Today)); } Refresh(); };
+        _clock.Tick += (_, _) => { var d = DateOnly.FromDateTime(DateTime.Now); if (d != Today) { Today = d; Raise(nameof(Today)); } Refresh(); CheckAlarms(); };
         _clock.Start();
 
         ThemeService.Apply(_isDark, _data.ContrastMore);
         InitExtras();
+        InitPolish();
+        InitAlarms();
         Refresh();
         InitSpirit();
         if (warning is not null) ShowToast(warning, null);
@@ -123,7 +125,7 @@ public sealed partial class MainViewModel : ObservableObject
     public bool HasCarry => Carry.Count > 0;
     public bool HasTimed => Timed.Count > 0;
     public bool HasAllDay => AllDay.Count > 0;
-    public bool HomeEmpty => TodayTotal == 0 && !HasCarry;
+    public bool HomeEmpty => TodayTotal == 0 && !HasCarry && !IsSearching;
     public string CarryCount => Carry.Count.ToString();
     public string TimedCount => Timed.Count.ToString();
     public string AllDayCount => AllDay.Count.ToString();
@@ -143,6 +145,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     // ---------- 일정 패널 (추가·상세) ----------
     private TodoItem? _editing;
+    private DateOnly _editingDate;
     private bool _loading;
 
     private bool _panelOpen;
@@ -150,7 +153,7 @@ public sealed partial class MainViewModel : ObservableObject
     public bool IsNew => _panelOpen && _editing is null;
     public bool IsExisting => _editing is not null;
     public string PanelTitle => _editing is null ? "일정 추가" : "일정 상세";
-    public string EditDoneLabel => _editing?.Done == true ? "완료 취소" : "완료";
+    public string EditDoneLabel => _editing is not null && Recur.IsDone(_editing, _editingDate) ? "완료 취소" : "완료";
 
     private string _editTitle = "";
     public string EditTitle { get => _editTitle; set { if (Set(ref _editTitle, value)) { ApplyEdit(); CommandManager.InvalidateRequerySuggested(); } } }
@@ -159,17 +162,17 @@ public sealed partial class MainViewModel : ObservableObject
     public bool EditImportant { get => _editImportant; set { if (Set(ref _editImportant, value)) ApplyEdit(); } }
 
     private DateTime? _editDate;
-    public DateTime? EditDate { get => _editDate; set { if (value is not null && Set(ref _editDate, value)) ApplyEdit(); } }
+    public DateTime? EditDate { get => _editDate; set { if (value is not null && Set(ref _editDate, value)) { ApplyEdit(); RaiseEditDerived(); } } }
 
     private bool _editHasTime;
-    public bool EditHasTime { get => _editHasTime; set { if (Set(ref _editHasTime, value)) ApplyEdit(); } }
+    public bool EditHasTime { get => _editHasTime; set { if (Set(ref _editHasTime, value)) { ApplyEdit(); RaiseEditDerived(); } } }
 
     private int _editHour = 9;
-    public int EditHour { get => _editHour; set { if (Set(ref _editHour, value)) ApplyEdit(); } }
+    public int EditHour { get => _editHour; set { if (Set(ref _editHour, value)) { ApplyEdit(); RaiseEditDerived(); } } }
 
     private int _editMinuteIndex;
     /// <summary>5분 단위 목록의 위치 (0 = 00분, 11 = 55분).</summary>
-    public int EditMinuteIndex { get => _editMinuteIndex; set { if (Set(ref _editMinuteIndex, value)) ApplyEdit(); } }
+    public int EditMinuteIndex { get => _editMinuteIndex; set { if (Set(ref _editMinuteIndex, value)) { ApplyEdit(); RaiseEditDerived(); } } }
 
     public IReadOnlyList<string> Hours { get; } = Enumerable.Range(0, 24).Select(h => $"{(h < 12 ? "오전" : "오후")} {(h % 12 == 0 ? 12 : h % 12)}시").ToList();
     public IReadOnlyList<string> Minutes { get; } = Enumerable.Range(0, 12).Select(i => $"{i * 5:00}분").ToList();
@@ -204,24 +207,32 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void BeginAdd(DateOnly date)
     {
+        NotiOpen = false;
         _editing = null;
         _loading = true;
         EditTitle = ""; EditImportant = false; EditDate = date.ToDateTime(TimeOnly.MinValue); EditHasTime = false;
         var now = DateTime.Now.AddHours(1);
         EditHour = now.Hour; EditMinuteIndex = 0;
+        EditRepeat = Recur.None; _editRepeatDays = []; EditAlarm = Alarm.None;
         _loading = false;
+        EditCalOpen = false; RaiseEditDerived(); RaiseRepeat();
         PanelOpen = true;
         RaisePanel();
     }
 
-    private void BeginEdit(TodoItem item)
+    private void BeginEdit(TaskRow row)
     {
+        var item = row.Item;
+        NotiOpen = false;
         _editing = item;
+        _editingDate = row.Date;
         _loading = true;
+        EditRepeat = item.Repeat; _editRepeatDays = [.. item.RepeatDays]; EditAlarm = item.Alarm;
         EditTitle = item.Title; EditImportant = item.Important; EditDate = item.Date.ToDateTime(TimeOnly.MinValue);
         EditHasTime = item.Time is not null;
         EditHour = item.Time?.Hour ?? 9; EditMinuteIndex = (item.Time?.Minute ?? 0) / 5;
         _loading = false;
+        EditCalOpen = false; RaiseEditDerived(); RaiseRepeat();
         PanelOpen = true;
         RaisePanel();
     }
@@ -242,6 +253,8 @@ public sealed partial class MainViewModel : ObservableObject
         _editing.Important = EditImportant;
         _editing.Date = DateOnly.FromDateTime(EditDate!.Value);
         _editing.Time = EditTime;
+        _editing.Repeat = EditRepeat; _editing.RepeatDays = [.. _editRepeatDays]; _editing.Alarm = EditTime is null ? Alarm.None : EditAlarm;
+        if (!Recur.IsRepeating(_editing)) _editingDate = _editing.Date;
         Commit();
     }
 
@@ -252,6 +265,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             Title = EditTitle.Trim(), Important = EditImportant,
             Date = DateOnly.FromDateTime(EditDate!.Value), Time = EditTime,
+            Repeat = EditRepeat, RepeatDays = [.. _editRepeatDays], Alarm = EditTime is null ? Alarm.None : EditAlarm,
         };
         _data.Tasks.Add(item);
         if (Page == "calendar") _selected = item.Date;
@@ -271,16 +285,21 @@ public sealed partial class MainViewModel : ObservableObject
         ShowToast($"\"{item.Title}\" 삭제했어요", () => { _data.Tasks.Insert(Math.Min(index, _data.Tasks.Count), item); Commit(); });
     }
 
-    private void Toggle(TodoItem item)
+    /// <summary>완료 표시를 바꾼다. 반복 일정은 그 날짜의 회차만 바뀐다.</summary>
+    private void Toggle(TodoItem item, DateOnly date)
     {
-        item.Done = !item.Done;
+        bool done = !Recur.IsDone(item, date);
+        Recur.SetDone(item, date, done);
+        _justDone = done ? (item.Id, date) : null;
         Commit();
-        if (item.Done) ShowToast("잘했어요!", () => { item.Done = false; Commit(); });
+        _justDone = null;
+        if (done) ShowToast("잘했어요!", () => { Recur.SetDone(item, date, false); Commit(); });
     }
+    private (Guid, DateOnly)? _justDone;
 
     private void MoveAllToToday()
     {
-        var moved = _data.Tasks.Where(t => !t.Done && t.Date < Today).Select(t => (t, t.Date)).ToList();
+        var moved = _data.Tasks.Where(t => !t.Done && t.Date < Today && !Recur.IsRepeating(t)).Select(t => (t, t.Date)).ToList();
         if (moved.Count == 0) return;
         foreach (var (t, _) in moved) t.Date = Today;
         Commit();
@@ -317,63 +336,72 @@ public sealed partial class MainViewModel : ObservableObject
     private void HideToast() { _toastTimer.Stop(); ToastOpen = false; _undo = null; }
 
     // ---------- 화면용 목록 다시 만들기 ----------
-    private static IOrderedEnumerable<TodoItem> ByTime(IEnumerable<TodoItem> list) =>
-        list.OrderBy(t => t.Time is null ? 0 : 1).ThenBy(t => t.Time).ThenBy(t => t.Title);
+    private static IOrderedEnumerable<Occ> ByTime(IEnumerable<Occ> list) =>
+        list.OrderBy(o => o.Item.Time is null ? 0 : 1).ThenBy(o => o.Item.Time).ThenBy(o => o.Item.Title);
 
-    private DayCell Cell(DateOnly d, ILookup<DateOnly, TodoItem> byDate, bool other = false)
+    /// <summary>그 날짜에 나타나는 일정들 (반복 일정의 회차 포함).</summary>
+    private List<Occ> On(DateOnly d) => ByTime(_data.Tasks.Where(t => Recur.Occurs(t, d)).Select(t => new Occ(t, d))).ToList();
+
+    private DayCell Cell(DateOnly d, bool other = false)
     {
-        var list = ByTime(byDate[d]).ToList();
-        var first = list.FirstOrDefault(t => !t.Done);
+        var list = On(d);
+        var first = list.FirstOrDefault(o => !o.Done);
         return new DayCell
         {
             Date = d, IsToday = d == Today, IsSelected = d == _selected, IsOther = other, IsPast = d < Today,
-            Total = list.Count, DoneCount = list.Count(t => t.Done),
-            HasImportant = list.Any(t => t.Important && !t.Done),
-            FirstTitle = first?.Title ?? "", FirstImportant = first?.Important ?? false,
+            Total = list.Count, DoneCount = list.Count(o => o.Done),
+            HasImportant = list.Any(o => o.Item.Important && !o.Done),
+            FirstTitle = first.Item?.Title ?? "", FirstImportant = first.Item?.Important ?? false,
         };
     }
 
     public void Refresh()
     {
         var now = TimeOnly.FromDateTime(DateTime.Now);
-        var byDate = _data.Tasks.ToLookup(t => t.Date);
-        TaskRow Row(TodoItem t) => new(t, Today, now);
+        TaskRow Row(Occ o) => new(o, Today, now, _justDone == (o.Item.Id, o.Date));
 
         // 홈
-        var today = ByTime(byDate[Today]).ToList();
+        var today = On(Today);
         Greeting = now.Hour switch { < 5 => "늦은 밤이에요", < 12 => "좋은 아침이에요", < 18 => "좋은 오후예요", _ => "좋은 저녁이에요" };
         if (_data.Nickname.Length > 0) Greeting += $", {_data.Nickname}님";
         TodayText = Fmt.Short(Today);
-        TodayTotal = today.Count; TodayDone = today.Count(t => t.Done);
-        var next = today.Where(t => !t.Done && t.Time >= now).OrderBy(t => t.Time).FirstOrDefault();
-        NextTitle = next?.Title ?? "";
-        if (next?.Time is { } nt)
+        TodayTotal = today.Count; TodayDone = today.Count(o => o.Done);
+        var next = today.Where(o => !o.Done && o.Item.Time >= now).OrderBy(o => o.Item.Time).FirstOrDefault();
+        NextTitle = next.Item?.Title ?? "";
+        if (next.Item?.Time is { } nt)
         {
             var mins = (int)(nt.ToTimeSpan() - now.ToTimeSpan()).TotalMinutes;
-            NextWhen = $"{Fmt.Time(nt)} · {(mins >= 60 ? $"{mins / 60}시간 " : "")}{(mins % 60 > 0 || mins < 60 ? $"{mins % 60}분 " : "")}후";
+            NextWhen = mins <= 0 ? $"{Fmt.Time(nt)} · 곧 시작" : $"{Fmt.Time(nt)} · {(mins >= 60 ? $"{mins / 60}시간 " : "")}{(mins % 60 > 0 ? $"{mins % 60}분 " : "")}후";
         }
         else NextWhen = "";
-        Carry = _data.Tasks.Where(t => !t.Done && t.Date < Today).OrderBy(t => t.Date).ThenBy(t => t.Time).Select(Row).ToList();
-        Timed = today.Where(t => t.Time is not null).Select(Row).ToList();
-        AllDay = today.Where(t => t.Time is null).Select(Row).ToList();
+        // 어제 하지 못한 일: 한 번짜리 일정만. 반복 일정의 지난 회차는 쌓이지 않게 넘기지 않는다.
+        Carry = _data.Tasks.Where(t => !Recur.IsRepeating(t) && !t.Done && t.Date < Today && Match(t))
+            .OrderBy(t => t.Date).ThenBy(t => t.Time).Select(t => Row(new Occ(t, t.Date))).ToList();
+        Timed = today.Where(o => o.Item.Time is not null && ShowOnHome(o)).Select(Row).ToList();
+        AllDay = today.Where(o => o.Item.Time is null && ShowOnHome(o)).Select(Row).ToList();
+        ImportantLeft = today.Count(o => o.Item.Important && !o.Done);
 
         // 캘린더
         var weekStart = _selected.AddDays(-(int)_selected.DayOfWeek);
         var weekEnd = weekStart.AddDays(6);
-        WeekCells = Enumerable.Range(0, 7).Select(i => Cell(weekStart.AddDays(i), byDate)).ToList();
+        WeekCells = Enumerable.Range(0, 7).Select(i => Cell(weekStart.AddDays(i))).ToList();
 
         var first = new DateOnly(_selected.Year, _selected.Month, 1);
         var gridStart = first.AddDays(-(int)first.DayOfWeek);
         MonthRows = (int)Math.Ceiling(((int)first.DayOfWeek + DateTime.DaysInMonth(first.Year, first.Month)) / 7.0);
-        MonthCells = Enumerable.Range(0, MonthRows * 7).Select(i => gridStart.AddDays(i)).Select(d => Cell(d, byDate, d.Month != first.Month)).ToList();
+        MonthCells = Enumerable.Range(0, MonthRows * 7).Select(i => gridStart.AddDays(i)).Select(d => Cell(d, d.Month != first.Month)).ToList();
 
-        YearCards = Enumerable.Range(1, 12).Select(m =>
+        // 연간은 365일을 모두 계산하므로 연간 보기일 때만 만든다
+        if (CalMode == "year" && Page == "calendar")
         {
-            var f = new DateOnly(_selected.Year, m, 1);
-            var cells = Enumerable.Range(0, (int)f.DayOfWeek).Select(_ => new DayCell { IsBlank = true })
-                .Concat(Enumerable.Range(0, DateTime.DaysInMonth(f.Year, m)).Select(i => Cell(f.AddDays(i), byDate))).ToList();
-            return new MonthCard { Year = f.Year, Month = m, IsCurrent = Today.Year == f.Year && Today.Month == m, Total = cells.Sum(c => c.Total), Cells = cells };
-        }).ToList();
+            YearCards = Enumerable.Range(1, 12).Select(m =>
+            {
+                var f = new DateOnly(_selected.Year, m, 1);
+                var cells = Enumerable.Range(0, (int)f.DayOfWeek).Select(_ => new DayCell { IsBlank = true })
+                    .Concat(Enumerable.Range(0, DateTime.DaysInMonth(f.Year, m)).Select(i => Cell(f.AddDays(i)))).ToList();
+                return new MonthCard { Year = f.Year, Month = m, IsCurrent = Today.Year == f.Year && Today.Month == m, Total = cells.Sum(c => c.Total), Cells = cells };
+            }).ToList();
+        }
 
         PeriodTitle = CalMode switch
         {
@@ -389,10 +417,10 @@ public sealed partial class MainViewModel : ObservableObject
             "year" => "날짜를 누르면 그 달로 이동해요",
             _ => "날짜를 누르면 그 날 일정이 보여요",
         };
-        var day = ByTime(byDate[_selected]).ToList();
-        DayTasks = day.Select(Row).ToList();
+        var day = On(_selected);
+        DayTasks = day.Where(o => Match(o.Item)).Select(Row).ToList();
         SelectedLong = Fmt.Long(_selected);
-        SelectedStat = Fmt.Stat(day.Count, day.Count(t => t.Done));
+        SelectedStat = Fmt.Stat(day.Count, day.Count(o => o.Done));
 
         Raise(string.Empty); // 화면용 값이 한꺼번에 바뀌므로 전체 갱신
     }

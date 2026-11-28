@@ -10,7 +10,10 @@ namespace TodoSpirits.Windows.ViewModels;
 /// <summary>도감과 설정 화면의 상태.</summary>
 public sealed partial class MainViewModel
 {
-    public sealed record Section(string Key, string Label);
+    public sealed record Section(string Key, string Label, System.Windows.Media.Geometry Icon, string? Header = null)
+    {
+        public bool HasHeader => Header is not null;
+    }
 
     private bool _applyingSystem;
 
@@ -37,15 +40,15 @@ public sealed partial class MainViewModel
     private string _selectedSpirit = "wind";
     public ICommand SelectSpiritCommand { get; private set; } = null!;
     public ICommand SetRepresentativeCommand { get; private set; } = null!;
-    public IReadOnlyList<SpiritRow> Spirits { get; private set; } = [];
-    public SpiritRow? SelectedSpirit => Spirits.FirstOrDefault(s => s.IsSelected);
-    public SpiritRow? Representative => Spirits.FirstOrDefault(s => s.IsRepresentative);
-    public int SpiritsOwned => Spirits.Count(s => s.Owned);
-    public int SpiritsTotal => Spirits.Count;
+    public IReadOnlyList<SpiritRow> AllSpirits { get; private set; } = [];
+    public SpiritRow? SelectedSpirit => AllSpirits.FirstOrDefault(s => s.IsSelected);
+    public SpiritRow? Representative => AllSpirits.FirstOrDefault(s => s.IsRepresentative);
+    public int SpiritsOwned => AllSpirits.Count(s => s.Owned);
+    public int SpiritsTotal => AllSpirits.Count;
     public string SpiritsProgress => $"{SpiritsOwned} / {SpiritsTotal}";
     public string RepresentativeLabel => SelectedSpirit?.IsRepresentative == true ? "지금 대표 정령이에요" : "대표 정령으로 설정";
 
-    private void RebuildSpirits() => Spirits = SpiritCatalog.Build(_data.RepresentativeId, _selectedSpirit);
+    private void RebuildSpirits() => AllSpirits = SpiritCatalog.Build(_data.RepresentativeId, _selectedSpirit);
 
     private void SetRepresentative()
     {
@@ -59,9 +62,11 @@ public sealed partial class MainViewModel
     // ---------- 설정 ----------
     public IReadOnlyList<Section> Sections { get; } =
     [
-        new("profile", "프로필"), new("display", "디스플레이"), new("notify", "알림"),
-        new("data", "데이터"), new("guide", "이용 안내"), new("about", "앱 정보"),
+        new("profile", "프로필", Ic("IcUser"), "내 정보"), new("display", "디스플레이", Ic("IcPalette"), "시스템 설정"), new("notify", "알림", Ic("IcBell")),
+        new("data", "데이터", Ic("IcDb")), new("guide", "이용 안내", Ic("IcBook"), "고객 지원"), new("about", "앱 정보", Ic("IcHelp")),
     ];
+
+    private static System.Windows.Media.Geometry Ic(string key) => (System.Windows.Media.Geometry)System.Windows.Application.Current.FindResource(key);
 
     private string _section = "profile";
     public string SettingsSection { get => _section; set { if (value is not null) Set(ref _section, value); } }

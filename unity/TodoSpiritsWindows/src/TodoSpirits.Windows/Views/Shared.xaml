@@ -6,9 +6,29 @@
     <v:EqVis x:Key="EqVis"/>
     <v:BoolVis x:Key="BoolVis"/>
 
-    <!-- 일정 한 줄: 동그라미(완료) · 제목 ★ · 시간. 눌러서 상세 -->
+    <!-- 일정 카드의 우클릭 메뉴. 메뉴는 화면 나무 밖에 있어서, 카드의 Tag(화면 상태)와 DataContext(일정)를 건너서 쓴다 -->
+    <ContextMenu x:Key="TaskMenu">
+        <MenuItem Header="완료 / 완료 취소" Tag="{StaticResource IcCheck}"
+                  Command="{Binding PlacementTarget.Tag.ToggleCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+        <MenuItem Header="중요 표시 / 해제" Tag="{StaticResource IcStar}"
+                  Command="{Binding PlacementTarget.Tag.ToggleImportantCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+        <MenuItem Header="자세히 보기" Tag="{StaticResource IcChevRight}"
+                  Command="{Binding PlacementTarget.Tag.OpenCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+        <MenuItem Header="내일로 미루기" Tag="{StaticResource IcArrowDay}"
+                  Command="{Binding PlacementTarget.Tag.PostponeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+        <MenuItem Header="삭제" Tag="{StaticResource IcTrash}" Foreground="{DynamicResource Del}"
+                  Command="{Binding PlacementTarget.Tag.DeleteRowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+    </ContextMenu>
+
+    <!-- 일정 한 줄: 동그라미(완료) · 제목 ★ · 시간. 눌러서 상세, 우클릭으로 메뉴 -->
     <DataTemplate x:Key="TaskCard" DataType="{x:Type vm:TaskRow}">
-        <Button Style="{StaticResource CardButton}"
+        <Button Style="{StaticResource CardButton}" ContextMenu="{StaticResource TaskMenu}"
+                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
                 Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -16,17 +36,31 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Style="{StaticResource Check}" Tag="{Binding Done}" ToolTip="완료 표시"
-                        Command="{Binding DataContext.ToggleCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>
+                <Button x:Name="ck" Style="{StaticResource Check}" Tag="{Binding Done}" ToolTip="완료 표시" RenderTransformOrigin="0.5,0.5"
+                        Command="{Binding DataContext.ToggleCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
+                    <Button.RenderTransform>
+                        <ScaleTransform/>
+                    </Button.RenderTransform>
+                </Button>
                 <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock x:Name="title" Text="{Binding Title}" FontSize="15" FontWeight="Bold"/>
-                        <TextBlock Text="★" Foreground="{DynamicResource Pink}" FontSize="14" Margin="6,0,0,0"
-                                   Visibility="{Binding Important, Converter={StaticResource BoolVis}}"/>
+                        <v:Icon Data="{StaticResource IcStar}" Filled="True" Thickness="1.2" Width="15" Height="15" Foreground="{DynamicResource Pink}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                Visibility="{Binding Important, Converter={StaticResource BoolVis}}"/>
                     </StackPanel>
-                    <TextBlock x:Name="sub" Text="{Binding Sub}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,2,0,0"/>
+                    <WrapPanel Margin="0,3,0,0">
+                        <TextBlock x:Name="sub" Text="{Binding Sub}" FontSize="13" Foreground="{DynamicResource Text2}"/>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0" ToolTip="반복" Visibility="{Binding HasRepeat, Converter={StaticResource BoolVis}}">
+                            <v:Icon Data="{StaticResource IcRepeat}" Width="13" Height="13" Foreground="{DynamicResource Text2}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding RepeatText}" FontSize="13" Foreground="{DynamicResource Text2}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0" ToolTip="알림" Visibility="{Binding HasAlarm, Converter={StaticResource BoolVis}}">
+                            <v:Icon Data="{StaticResource IcBell}" Width="13" Height="13" Foreground="{DynamicResource Text2}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding AlarmText}" FontSize="13" Foreground="{DynamicResource Text2}"/>
+                        </StackPanel>
+                    </WrapPanel>
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="›" FontSize="18" Foreground="{DynamicResource Grey}" VerticalAlignment="Center" Margin="8,0,2,0"/>
+                <v:Icon Grid.Column="2" Data="{StaticResource IcChevRight}" Width="16" Height="16" Foreground="{DynamicResource Grey}" VerticalAlignment="Center" Margin="8,0,0,0"/>
             </Grid>
         </Button>
         <DataTemplate.Triggers>
@@ -38,12 +72,28 @@
             <DataTrigger Binding="{Binding IsOverdue}" Value="True">
                 <Setter TargetName="sub" Property="Foreground" Value="{DynamicResource Del}"/>
             </DataTrigger>
+            <!-- 방금 완료한 줄: 체크가 톡 튀어나온다 -->
+            <DataTrigger Binding="{Binding JustDone}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ck" Storyboard.TargetProperty="RenderTransform.ScaleX" From="0.4" To="1" Duration="0:0:0.35">
+                                <DoubleAnimation.EasingFunction><BackEase EasingMode="EaseOut" Amplitude="0.9"/></DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation Storyboard.TargetName="ck" Storyboard.TargetProperty="RenderTransform.ScaleY" From="0.4" To="1" Duration="0:0:0.35">
+                                <DoubleAnimation.EasingFunction><BackEase EasingMode="EaseOut" Amplitude="0.9"/></DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+            </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
     <!-- 어제 하지 못한 일: 직접 "오늘 하기"를 고른다 -->
     <DataTemplate x:Key="CarryCard" DataType="{x:Type vm:TaskRow}">
-        <Button Style="{StaticResource CardButton}"
+        <Button Style="{StaticResource CardButton}" ContextMenu="{StaticResource TaskMenu}"
+                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
                 Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -56,10 +106,10 @@
                 <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Bold"/>
-                        <TextBlock Text="★" Foreground="{DynamicResource Pink}" FontSize="14" Margin="6,0,0,0"
-                                   Visibility="{Binding Important, Converter={StaticResource BoolVis}}"/>
+                        <v:Icon Data="{StaticResource IcStar}" Filled="True" Thickness="1.2" Width="15" Height="15" Foreground="{DynamicResource Pink}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                Visibility="{Binding Important, Converter={StaticResource BoolVis}}"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding CarrySub}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,2,0,0"/>
+                    <TextBlock Text="{Binding CarrySub}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,3,0,0"/>
                 </StackPanel>
                 <Button Grid.Column="2" Content="오늘 하기" Style="{StaticResource Pill}" Background="{DynamicResource Lime}" Foreground="{DynamicResource OnLime}"
                         Command="{Binding DataContext.MoveToTodayCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/>

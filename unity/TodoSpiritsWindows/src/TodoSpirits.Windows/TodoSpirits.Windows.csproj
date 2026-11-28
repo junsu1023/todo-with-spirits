@@ -3,6 +3,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <!-- 트레이 아이콘과 Windows 알림(NotifyIcon)에만 쓴다 -->
+    <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TodoSpirits.Windows</RootNamespace>
@@ -10,6 +12,11 @@
     <ApplicationIcon />
     <Version>0.1.0</Version>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- WinForms 의 이름이 WPF 와 겹치지 않게 자동 using 에서 뺀다 -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
   <ItemGroup>
     <!-- 정령과 주고받는 메시지 형식: Unity 프로젝트와 같은 파일을 함께 쓴다 (복사본을 두지 않는다) -->
     <Compile Include="..\..\SpiritOverlay\Assets\Scripts\Shared\SpiritWire.cs" Link="Contracts\SpiritWire.cs" />

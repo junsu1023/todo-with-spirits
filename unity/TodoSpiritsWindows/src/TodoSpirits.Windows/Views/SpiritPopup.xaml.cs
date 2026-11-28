@@ -83,7 +83,7 @@ public partial class SpiritPopup : Window
 
     private void OnRest(object sender, RoutedEventArgs e) { _vm.SpiritEnabled = false; CloseOnce(); }
 
-    private void OnQuit(object sender, RoutedEventArgs e) { CloseOnce(); _main.Close(); }
+    private void OnQuit(object sender, RoutedEventArgs e) { CloseOnce(); if (_main is MainWindow main) main.Quit(); else _main.Close(); }
 
     protected override void OnSourceInitialized(EventArgs e)
     {

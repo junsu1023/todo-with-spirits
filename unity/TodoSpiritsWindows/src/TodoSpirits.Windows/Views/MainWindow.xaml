@@ -3,15 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:v="clr-namespace:TodoSpirits.Windows.Views"
         Title="Todo with Spirits" Width="1280" Height="800" MinWidth="960" MinHeight="640"
-        WindowStartupLocation="CenterScreen" Background="{DynamicResource Back01}"
-        FontFamily="{StaticResource AppFont}" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource Back01}" Foreground="{DynamicResource Text}"
+        FontFamily="{StaticResource AppFont}" FontSize="15" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Control" Command="{Binding AddCommand}"/>
+        <KeyBinding Key="B" Modifiers="Control" Command="{Binding ToggleNavCommand}"/>
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding ToggleSearchCommand}"/>
+        <KeyBinding Key="OemQuestion" Modifiers="Shift" Command="{Binding ToggleHelpCommand}"/>
+        <KeyBinding Key="F1" Command="{Binding ToggleHelpCommand}"/>
         <KeyBinding Key="Escape" Command="{Binding ClosePanelCommand}"/>
     </Window.InputBindings>
+    <Window.Resources>
+        <!-- 사이드바 버튼: CommandParameter(화면 이름)가 지금 화면과 같으면 선택 표시 -->
+        <Style x:Key="NavItem" TargetType="Button" BasedOn="{StaticResource Nav}">
+            <Setter Property="Command" Value="{Binding NavigateCommand}"/>
+        </Style>
+    </Window.Resources>
 
     <Border x:Name="Root" BorderBrush="{DynamicResource Stroke}" BorderThickness="1">
         <Grid>
@@ -22,87 +32,119 @@
 
             <!-- 제목 표시줄 -->
             <Grid Background="{DynamicResource Back01}">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                    <Image Source="/Assets/spirit_neutral.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                    <Button Style="{StaticResource TitleBtn}" Width="34" Height="26" Tag="{StaticResource IcSide}" ToolTip="{Binding NavTip}" AutomationProperties.Name="사이드바"
+                            Command="{Binding ToggleNavCommand}" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Image Source="/Assets/spirit_neutral.png" Width="18" Height="18" Margin="6,0,0,0" RenderOptions.BitmapScalingMode="HighQuality"/>
                     <TextBlock Text="Todo with Spirits" FontSize="12" Foreground="{DynamicResource Text2}" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
-                    <Button Style="{StaticResource Flat}" Content="{Binding ThemeLabel}" FontSize="12" Padding="10,4" Margin="0,3,8,3"
-                            Foreground="{DynamicResource Text2}" Command="{Binding ToggleThemeCommand}" ToolTip="테마 바꾸기"/>
-                    <Button Style="{StaticResource Flat}" Content="—" Width="44" Padding="0" HorizontalContentAlignment="Center" ToolTip="최소화" Click="OnMinimize"/>
-                    <Button Style="{StaticResource Flat}" Content="☐" Width="44" Padding="0" HorizontalContentAlignment="Center" ToolTip="최대화" Click="OnMaximize"/>
-                    <Button Style="{StaticResource Flat}" Content="✕" Width="44" Padding="0" HorizontalContentAlignment="Center" ToolTip="닫기" Click="OnClose"/>
+                    <Button ToolTip="{Binding ThemeLabel}" Command="{Binding ToggleThemeCommand}" AutomationProperties.Name="{Binding ThemeLabel}" Margin="0,0,6,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource TitleBtn}">
+                                <Setter Property="Tag" Value="{StaticResource IcMoon}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsDark}" Value="True">
+                                        <Setter Property="Tag" Value="{StaticResource IcSun}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Style="{StaticResource TitleBtn}" Tag="{StaticResource IcMin}" ToolTip="최소화" AutomationProperties.Name="최소화" Click="OnMinimize"/>
+                    <Button Style="{StaticResource TitleBtn}" Tag="{StaticResource IcMax}" ToolTip="최대화" AutomationProperties.Name="최대화" Click="OnMaximize"/>
+                    <Button Style="{StaticResource TitleClose}" Tag="{StaticResource IcX}" ToolTip="닫기" AutomationProperties.Name="닫기" Click="OnClose"/>
                 </StackPanel>
             </Grid>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="212"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- 사이드바 -->
-                <DockPanel Background="{DynamicResource Back01}" Margin="12,8,8,14">
+                <DockPanel Width="192" Margin="12,8,8,14" Visibility="{Binding NavVisible, Converter={StaticResource BoolVis}}" v:Motion.Enter="Fade">
                     <StackPanel DockPanel.Dock="Bottom">
-                        <Button Content="설정" Tag="settings" Command="{Binding NavigateCommand}" CommandParameter="settings">
+                        <Button Content="설정" Tag="{StaticResource IcGear}" CommandParameter="settings" AutomationProperties.Name="설정">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource Nav}">
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Page}" Value="settings">
                                             <Setter Property="Background" Value="{DynamicResource Card}"/>
                                             <Setter Property="FontWeight" Value="ExtraBold"/>
+                                            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
+                        <Border Height="1" Background="{DynamicResource Stroke}" Margin="6,6,6,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                            <Border Width="30" Height="30" CornerRadius="15" Background="{DynamicResource PinkOp}">
+                                <TextBlock Text="{Binding AvatarText}" FontSize="13" FontWeight="ExtraBold" Foreground="{DynamicResource PinkB}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="{Binding ProfileName}" FontSize="14" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Center" MaxWidth="130"/>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel>
-                        <Button Content="홈" Command="{Binding NavigateCommand}" CommandParameter="home">
+                        <Button Content="홈" Tag="{StaticResource IcHome}" CommandParameter="home" AutomationProperties.Name="홈">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource Nav}">
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Page}" Value="home">
                                             <Setter Property="Background" Value="{DynamicResource Card}"/>
                                             <Setter Property="FontWeight" Value="ExtraBold"/>
+                                            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content="캘린더" Command="{Binding NavigateCommand}" CommandParameter="calendar">
+                        <Button Content="캘린더" Tag="{StaticResource IcCal}" CommandParameter="calendar" AutomationProperties.Name="캘린더">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource Nav}">
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Page}" Value="calendar">
                                             <Setter Property="Background" Value="{DynamicResource Card}"/>
                                             <Setter Property="FontWeight" Value="ExtraBold"/>
+                                            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content="정령 도감" Command="{Binding NavigateCommand}" CommandParameter="dex">
+                        <Button Content="정령 도감" Tag="{StaticResource IcCards}" CommandParameter="dex" AutomationProperties.Name="정령 도감">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource Nav}">
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Page}" Value="dex">
                                             <Setter Property="Background" Value="{DynamicResource Card}"/>
                                             <Setter Property="FontWeight" Value="ExtraBold"/>
+                                            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Content="정령의 숲  · 출시 예정" Command="{Binding NavigateCommand}" CommandParameter="forest">
+                        <Button Tag="{StaticResource IcTree}" CommandParameter="forest" AutomationProperties.Name="정령의 숲">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="정령의 숲" VerticalAlignment="Center"/>
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="8" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="출시 예정" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource Text2}"/>
+                                    </Border>
+                                </StackPanel>
+                            </Button.Content>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource Nav}">
+                                <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                                     <Setter Property="Foreground" Value="{DynamicResource Grey}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Page}" Value="forest">
                                             <Setter Property="Background" Value="{DynamicResource Card}"/>
                                             <Setter Property="FontWeight" Value="ExtraBold"/>
+                                            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -113,27 +155,91 @@
 
                 <!-- 화면 -->
                 <Grid Grid.Column="1" Margin="14,0,26,0">
-                    <v:HomeView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=home}"/>
-                    <v:CalendarView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=calendar}"/>
-                    <v:DexView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=dex}"/>
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=forest}">
+                    <v:HomeView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=home}" v:Motion.Enter="Up"/>
+                    <v:CalendarView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=calendar}" v:Motion.Enter="Up"/>
+                    <v:DexView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=dex}" v:Motion.Enter="Up"/>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" v:Motion.Enter="Up"
+                                Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=forest}">
+                        <Image Source="/Assets/spirit_neutral.png" Width="120" Opacity="0.9" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <Border Style="{StaticResource LimeTag}" HorizontalAlignment="Center" Margin="0,14,0,10">
+                            <TextBlock Text="출시 예정" FontSize="12" FontWeight="ExtraBold" Foreground="{DynamicResource LimeT}"/>
+                        </Border>
                         <TextBlock Text="정령의 숲이 곧 열려요" FontSize="24" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
                         <TextBlock Text="정령들이 사는 숲을 준비하고 있어요." Foreground="{DynamicResource Text2}" Margin="0,10,0,0" HorizontalAlignment="Center"/>
                     </StackPanel>
-                    <v:SettingsView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=settings}"/>
+                    <v:SettingsView Visibility="{Binding Page, Converter={StaticResource EqVis}, ConverterParameter=settings}" v:Motion.Enter="Up"/>
                 </Grid>
 
-                <!-- 일정 추가·상세 패널 -->
-                <v:TaskPanel Grid.Column="2" Width="384" Visibility="{Binding PanelOpen, Converter={StaticResource BoolVis}}"/>
+                <!-- 일정 추가·상세 패널: 오른쪽에서 밀려 나온다 -->
+                <v:TaskPanel Grid.Column="2" Width="384" Visibility="{Binding PanelOpen, Converter={StaticResource BoolVis}}" v:Motion.Enter="Right"/>
+                <v:NotiPanel Grid.Column="2" Width="384" Visibility="{Binding NotiOpen, Converter={StaticResource BoolVis}}" v:Motion.Enter="Right"/>
+
+                <!-- 단축키 안내: 뒤를 살짝 가리고 가운데에 띄운다 -->
+                <Grid Grid.ColumnSpan="3" Visibility="{Binding HelpOpen, Converter={StaticResource BoolVis}}">
+                    <Border Background="#33000000">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding ToggleHelpCommand}"/>
+                        </Border.InputBindings>
+                    </Border>
+                    <Border Width="400" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="22" Padding="24,20,24,22"
+                            Background="{DynamicResource Elev}" BorderBrush="{DynamicResource StrokeStrong}" BorderThickness="1" Effect="{StaticResource FloatShadow}" v:Motion.Enter="Up">
+                        <StackPanel>
+                            <TextBlock Text="단축키" FontSize="18" FontWeight="ExtraBold" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + N" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="일정 추가" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + F" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="일정 검색" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Ctrl + B" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="사이드바 숨기기 / 보이기" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Esc" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="패널 · 알림 · 이 창 닫기" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Enter" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="새 일정의 제목 입력 뒤 저장" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="마우스 휠" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="시간 고르기에서 시 · 분 바꾸기" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,9">
+                                    <Border Background="{DynamicResource Back02}" CornerRadius="7" Padding="9,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="? 또는 F1" FontSize="12" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="이 안내 열기" FontSize="13" Foreground="{DynamicResource Text2}" Margin="118,0,0,0" VerticalAlignment="Center"/>
+                                </Grid>
+                            </StackPanel>
+                            <Button Style="{StaticResource Primary}" Content="확인" Height="44" FontSize="15" Margin="0,10,0,0" Command="{Binding ToggleHelpCommand}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
                 <!-- 토스트 -->
-                <Border Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,22" Padding="18,10,10,10" CornerRadius="22"
-                        Background="{DynamicResource Elev}" BorderBrush="{DynamicResource StrokeStrong}" BorderThickness="1"
-                        Visibility="{Binding ToastOpen, Converter={StaticResource BoolVis}}">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="24" ShadowDepth="6" Opacity="0.14" Color="#5A4632"/>
-                    </Border.Effect>
+                <Border Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,22" Padding="12,9,10,9" CornerRadius="22"
+                        Background="{DynamicResource Elev}" BorderBrush="{DynamicResource StrokeStrong}" BorderThickness="1" Effect="{StaticResource FloatShadow}"
+                        Visibility="{Binding ToastOpen, Converter={StaticResource BoolVis}}" v:Motion.Enter="Up">
                     <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/spirit_neutral.png" Width="24" Height="24" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Text="{Binding ToastText}" FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <Button Content="되돌리기" Style="{StaticResource Pill}" Command="{Binding UndoCommand}"
                                 Visibility="{Binding CanUndo, Converter={StaticResource BoolVis}}"/>

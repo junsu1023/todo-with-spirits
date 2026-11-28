@@ -34,4 +34,6 @@
     <!-- 도감 그림 칸: Figma 캡처에서 잘라 쓴 그림에 흰 바탕이 있어 칸도 흰색으로 둔다 (투명 원본을 받으면 바꾼다) -->
     <SolidColorBrush x:Key="Frame" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="HeartOff" Color="#7A6C5F"/>
+    <DropShadowEffect x:Key="LimeGlow" BlurRadius="18" ShadowDepth="5" Direction="270" Opacity="0.07" Color="#C9E43A"/>
+    <LinearGradientBrush x:Key="SummaryTint" StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#2A2622" Offset="0.55"/><GradientStop Color="#2F2629" Offset="1"/></LinearGradientBrush>
 </ResourceDictionary>

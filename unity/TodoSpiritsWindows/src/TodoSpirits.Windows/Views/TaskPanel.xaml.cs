@@ -22,4 +22,19 @@ public partial class TaskPanel : UserControl
         if (e.Key == Key.Enter && DataContext is MainViewModel vm && vm.SaveCommand.CanExecute(null))
             vm.SaveCommand.Execute(null);
     }
+
+    // 시간 휠: 위로 굴리면 앞의 값, 아래로 굴리면 다음 값. 패널 전체가 같이 스크롤되지 않게 막는다
+    private void OnHourWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (DataContext is not MainViewModel vm) return;
+        (e.Delta > 0 ? vm.HourDownCommand : vm.HourUpCommand).Execute(null);
+        e.Handled = true;
+    }
+
+    private void OnMinuteWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (DataContext is not MainViewModel vm) return;
+        (e.Delta > 0 ? vm.MinuteDownCommand : vm.MinuteUpCommand).Execute(null);
+        e.Handled = true;
+    }
 }

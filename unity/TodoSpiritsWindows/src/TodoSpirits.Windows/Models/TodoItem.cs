@@ -9,6 +9,26 @@ public sealed class TodoItem
     public TimeOnly? Time { get; set; }
     public bool Important { get; set; }
     public bool Done { get; set; }
+    /// <summary>반복: 없음 / 매일 / 매주 / 매월 (Recur 참고).</summary>
+    public string Repeat { get; set; } = "없음";
+    /// <summary>매주면 요일(0=일 … 6=토), 매월이면 날짜(1~31). 비어 있으면 시작 날짜를 따른다.</summary>
+    public List<int> RepeatDays { get; set; } = [];
+    /// <summary>반복 일정에서 완료한 회차의 날짜들.</summary>
+    public List<DateOnly> DoneDates { get; set; } = [];
+    /// <summary>알림: 없음 / 정각 / 10분 전 / 30분 전 / 1시간 전.</summary>
+    public string Alarm { get; set; } = "없음";
+}
+
+/// <summary>알림 패널에 쌓이는 알림 한 건.</summary>
+public sealed class NotiItem
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public DateTime When { get; set; }
+    public string Title { get; set; } = "";
+    public string Body { get; set; } = "";
+    public Guid TaskId { get; set; }
+    public DateOnly TaskDate { get; set; }
+    public bool Read { get; set; }
 }
 
 /// <summary>앱 설정과 일정 전체. 한 파일에 저장한다.</summary>
@@ -29,5 +49,11 @@ public sealed class AppData
     public bool NotifyNight { get; set; }
     /// <summary>바탕화면에 정령(Unity 오버레이)을 띄운다.</summary>
     public bool SpiritEnabled { get; set; } = true;
+    public bool NavHidden { get; set; }
+    /// <summary>창을 닫아도 트레이에 남아 알림과 정령을 유지한다.</summary>
+    public bool CloseToTray { get; set; }
+    public List<NotiItem> Notifications { get; set; } = [];
+    /// <summary>이미 울린 알림("일정 id|날짜"). 같은 알림이 두 번 울리지 않게 한다.</summary>
+    public List<string> FiredAlarms { get; set; } = [];
     public List<TodoItem> Tasks { get; set; } = [];
 }
