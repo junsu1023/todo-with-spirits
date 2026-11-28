@@ -1,0 +1,7 @@
+{
+  "name": "TodoSpirits.Spirit",
+  "rootNamespace": "TodoSpirits.Spirit",
+  "references": ["Kirurobo.UniWindowController"],
+  "includePlatforms": ["Editor", "WindowsStandalone64"],
+  "autoReferenced": true
+}

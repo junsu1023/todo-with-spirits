@@ -8,7 +8,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = new MainViewModel();
+        var vm = new MainViewModel();
+        DataContext = vm;
+        // 바탕화면 정령을 누르면 그 옆에 작은 창을 띄운다 (좌클릭 = 오늘 일정, 우클릭 = 메뉴)
+        vm.SpiritClicked += click => new SpiritPopup(vm, this, click).Show();
+        Closed += (_, _) => vm.ShutdownSpirit();
         StateChanged += (_, _) => Root.Padding = WindowState == WindowState.Maximized ? new Thickness(7) : new Thickness(0);
     }
 

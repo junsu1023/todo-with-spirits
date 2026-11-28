@@ -1,0 +1,7 @@
+{
+  "name": "TodoSpirits.Spirit.Tests",
+  "references": ["TodoSpirits.Spirit"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}

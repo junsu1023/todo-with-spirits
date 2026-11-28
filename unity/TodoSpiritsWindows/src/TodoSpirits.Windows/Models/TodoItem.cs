@@ -27,5 +27,7 @@ public sealed class AppData
     public bool NotifyRoutine { get; set; } = true;
     public bool NotifyStreak { get; set; } = true;
     public bool NotifyNight { get; set; }
+    /// <summary>바탕화면에 정령(Unity 오버레이)을 띄운다.</summary>
+    public bool SpiritEnabled { get; set; } = true;
     public List<TodoItem> Tasks { get; set; } = [];
 }

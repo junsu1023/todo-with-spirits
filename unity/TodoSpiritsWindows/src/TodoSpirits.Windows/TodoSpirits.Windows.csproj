@@ -11,6 +11,10 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <!-- 정령과 주고받는 메시지 형식: Unity 프로젝트와 같은 파일을 함께 쓴다 (복사본을 두지 않는다) -->
+    <Compile Include="..\..\SpiritOverlay\Assets\Scripts\Shared\SpiritWire.cs" Link="Contracts\SpiritWire.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Assets\*.png" />
     <!-- 나눔스퀘어라운드 (OFL 1.1, Assets/Fonts/OFL.txt) -->
     <Resource Include="Assets\Fonts\*.ttf" />

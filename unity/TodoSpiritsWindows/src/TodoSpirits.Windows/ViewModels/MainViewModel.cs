@@ -55,6 +55,7 @@ public sealed partial class MainViewModel : ObservableObject
         ThemeService.Apply(_isDark, _data.ContrastMore);
         InitExtras();
         Refresh();
+        InitSpirit();
         if (warning is not null) ShowToast(warning, null);
     }
 

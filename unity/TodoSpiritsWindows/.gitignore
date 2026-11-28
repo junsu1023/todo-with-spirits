@@ -2,3 +2,5 @@
 **/obj/
 .vs/
 *.user
+spirit-player/
+spirit-player-logs/

@@ -113,6 +113,16 @@
                     <Border Style="{StaticResource CardBorder}" Padding="18,4" Margin="0,12,0,0">
                         <Grid MinHeight="56">
                             <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
+                                <TextBlock Text="바탕화면 정령" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Style="{StaticResource RowNote}" Text="정령이 바탕화면을 돌아다녀요. 누르면 오늘 일정, 오른쪽 버튼으로 누르면 메뉴가 나와요."/>
+                                <TextBlock Style="{StaticResource RowNote}" Text="{Binding SpiritStatusText}" Foreground="{DynamicResource LimeT}"/>
+                            </StackPanel>
+                            <CheckBox Style="{StaticResource Switch}" IsChecked="{Binding SpiritEnabled}" HorizontalAlignment="Right" AutomationProperties.Name="바탕화면 정령"/>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource CardBorder}" Padding="18,4" Margin="0,12,0,0">
+                        <Grid MinHeight="56">
+                            <StackPanel VerticalAlignment="Center" Margin="0,8,60,8">
                                 <TextBlock Text="글자 대비 높이기" Style="{StaticResource RowTitle}"/>
                                 <TextBlock Style="{StaticResource RowNote}" Text="기본으로 켜져 있어요. 끄면 라이트 모드 글자가 Figma 원래 색(더 옅은 색)으로 바뀌어요."/>
                             </StackPanel>
