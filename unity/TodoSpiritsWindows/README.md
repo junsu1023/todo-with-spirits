@@ -1,93 +1,58 @@
-# Todo with Spirits — 윈도우 앱
+# Todo with Spirits Windows
 
-[윈도우 UI 시안](../windows-ui/README.md)을 기준으로 처음부터 새로 만드는 WPF 데스크톱 앱입니다.
+WPF로 만든 Windows 데스크톱 앱이다. 로그인 전에는 일정과 설정을 %LOCALAPPDATA%\TodoWithSpirits\data.json에 저장한다. 이메일로 로그인하면 계정 일정을 불러오고, 로그아웃하면 이 PC의 일정으로 돌아간다.
 
-- .NET 10, WPF, 외부 패키지 없음
-- 글꼴은 나눔스퀘어라운드(OFL 1.1)를 앱에 넣어 둡니다: `src/TodoSpirits.Windows/Assets/Fonts/`
-- 일정은 이 컴퓨터에만 저장합니다: `%LOCALAPPDATA%\TodoWithSpirits\data.json`
+[HTML 화면 시안](../windows-ui/README.md) · [화면별 API 연동표](docs/windows-gui-api.html) · [API 및 서버 제약](API-INTEGRATION.md)
 
 ## 실행
 
-.NET 10 SDK가 필요합니다. 레포 최상위에서:
+.NET 10 SDK가 필요하다. 저장소 루트에서 실행한다.
 
 ```powershell
 dotnet run --project unity/TodoSpiritsWindows/src/TodoSpirits.Windows
 ```
 
-시험할 때 실제 일정 파일을 건드리지 않으려면 저장 위치를 바꿔서 실행합니다.
+별도 일정 파일을 써서 확인하려면 실행 전에 TODOSPIRITS_DATA를 설정한다.
 
 ```powershell
-$env:TODOSPIRITS_DATA = "$env:TEMP\todo-test.json"; dotnet run --project unity/TodoSpiritsWindows/src/TodoSpirits.Windows
+$env:TODOSPIRITS_DATA = Join-Path $env:TEMP 'todo-spirits-test.json'
+dotnet run --project unity/TodoSpiritsWindows/src/TodoSpirits.Windows
 ```
+
+서버 주소는 실행 전 TODOSPIRITS_API_URL로 바꿀 수 있다. 기본값은 웹 클라이언트에서 사용하는 Render 주소다.
+
+## 주요 기능
+
+| 화면 | 기능 |
+|---|---|
+| 홈 | 오늘 일정 요약, 어제 미완료 일정 옮기기, 중요·완료 필터, 검색 |
+| 캘린더 | 주간·월간·연간 보기, 월간 날짜 패널에서 일정 조회와 추가 |
+| 일정 | 날짜·시간·중요 표시, 매일·매주·매월 반복, 날짜별 완료, 삭제 |
+| 알림 | Windows 일정 알림, 알림 목록과 읽음 처리, 로그인 시 서버 알림 조회 |
+| 정령 도감 | 보유 여부와 호감도, 대표 정령 선택, 로그인 시 이름과 즐겨찾기 변경 |
+| 설정 | 이메일 가입·로그인·프로필, 계정 일정 동기화, 테마·글자 대비, 알림, 자동 실행·트레이, 로컬 백업·CSV |
+
+- Ctrl+N으로 일정 추가, Ctrl+F로 검색, Ctrl+B로 사이드바 고정 전환, F1으로 단축키 안내를 연다.
+- 반복 일정은 전체 시리즈를 삭제한다. 짧은 달에 해당 날짜가 없으면 로컬 일정은 말일에 표시하고, 계정 일정은 서버가 내려준 회차를 표시한다.
+- 일정 알림은 앱이 실행 중일 때만 울린다. 앱을 다시 열면 일정 시각에서 15분이 지나지 않은 알림을 확인한다. 리마인드나 야간 알림 설정에 따라 Windows 풍선 알림을 생략하고 알림 목록에만 남긴다.
+- 소셜 로그인, 로컬 일정의 계정 가져오기, 계정 일정 오프라인 편집은 미지원이다. 정령의 숲 메뉴는 출시 안내를 표시한다.
 
 ## 바탕화면 정령
 
-정령은 앱 창 밖, 바탕화면 위를 돌아다닙니다. Unity 로 만든 별도 프로그램(`SpiritOverlay/`)이고, 윈도우 앱이 띄우고 감시합니다.
-
-먼저 한 번 빌드합니다 (Unity 6000.3.27f2 필요, 첫 빌드는 몇 분 걸림).
+정령은 Unity 6000.3.27f2로 만든 별도 프로세스다. 아래 스크립트로 빌드한 다음 Windows 앱의 디스플레이 설정에서 켠다.
 
 ```powershell
-unity/TodoSpiritsWindows/Build-Spirit.ps1
+./unity/TodoSpiritsWindows/Build-Spirit.ps1
 ```
 
-출력은 `spirit-player/TodoSpirit.exe` 이고 git 에는 올리지 않습니다. 빌드가 없으면 앱은 그대로 동작하고, 설정 › 디스플레이에 "정령 실행 파일이 없어요"라고 나옵니다.
+실행 파일은 spirit-player/TodoSpirit.exe에 생성된다. 빌드 전에는 앱에서 바탕화면 정령을 켤 수 없다. 정령을 클릭하면 오늘 일정을 확인하고 완료할 수 있다. 우클릭 메뉴에서 일정 추가, 앱 열기, 정령 끄기를 선택할 수 있다.
 
-- 정령: 작업 영역 아래를 산책, 끌어서 옮기기, 던지면 떨어져 튕김, 끄는 동안 늘어나고 표정이 바뀜
-- 좌클릭: 정령 옆에 오늘 일정(완료 체크, 일정 추가, 앱 열기)
-- 우클릭: 메뉴(오늘 일정 보기, 일정 추가, 앱 열기, 정령 쉬게 하기, 앱 종료)
-- 설정 › 디스플레이 › 바탕화면 정령 스위치로 켜고 끔
-- Unity 시작 로고는 끔. Unity 가 켜질 때 잠깐 띄우는 일반 창은 스스로 화면 밖으로 옮기고(`EarlyWindow.cs`), 첫 장면을 그린 뒤에 정령만 보이게 함. 측정으로는 그 창이 화면에 보이는 시간이 약 0.2초에서 0.03~0.06초로 줄었고, 완전히 없애지는 못함
-- 앱과 정령은 이 앱만 접속할 수 있는 Named Pipe 로 이야기합니다. 메시지 형식은 `SpiritOverlay/Assets/Scripts/Shared/SpiritWire.cs` 한 파일을 양쪽이 함께 씁니다.
-- 정령이 응답하지 않으면 최대 3번 다시 띄우고, 앱을 끄면 정령도 꺼집니다.
+Windows 앱과 정령은 Named Pipe로 통신한다. 정령이 응답하지 않으면 앱이 최대 세 번 다시 실행하며, 앱을 종료하면 정령도 종료된다. 현재 정령 그림은 한 장이다.
 
-정령 그림은 아직 한 장(`spirit_neutral.png`)입니다. 걷기 · 앉기 같은 애니메이션은 에셋이 준비되면 Unity 프로젝트에 넣습니다.
+## 폴더
 
-## 지금 되는 것 (0.1.0)
+- src/TodoSpirits.Windows/ — 앱, 로컬 저장, API 호출, WPF 테마
+- SpiritOverlay/ — 바탕화면 정령과 EditMode 테스트
+- docs/ — 화면별 API 연동표와 캡처
 
-| 화면 | 내용 |
-|---|---|
-| 창 | 직접 그린 제목 표시줄(아이콘), 사이드바 숨김(Ctrl+B, 기억됨), 라이트·다크 전환(기억됨), 최소 960×640 |
-| 홈 | 오늘 일정 요약과 다음 일정, 중요 일정 칩과 완료 숨기기, 검색(Ctrl+F), 어제 하지 못한 일(오늘 하기 · 모두 오늘 하기), 시간 일정 · 하루 종일 목록 |
-| 캘린더 주간 | 한 주 띠(날짜 · 일정 개수) + 고른 날 하루의 목록 |
-| 캘린더 월간 | 칸에 날짜 · 첫 일정 제목 한 줄 · "외 n개", 오른쪽에 고른 날 목록, 두 번 눌러 추가 |
-| 캘린더 연간 | 12달, 날짜나 달 이름을 누르면 그 달로 이동 |
-| 일정 | 추가(Ctrl+N), 제목 · 중요 · 날짜(작은 달력) · 시간(5분 단위, 마우스 휠) · 반복 · 알림 수정(바로 저장), 완료, 삭제, 되돌리기, 우클릭 메뉴(완료 · 중요 · 자세히 · 내일로 미루기 · 삭제) |
-| 반복 일정 | 매일 · 매주(요일 고르기) · 매월(날짜 고르기). 완료는 날짜마다 따로 기록 |
-| 알림 | 시간이 있는 일정에 정각 · 10분 전 · 30분 전 · 1시간 전. 앱의 알림 패널(종 아이콘, 읽지 않은 수)에 쌓이고 Windows 알림도 뜸 |
-| 단축키 안내 | ? 또는 F1, 설정 › 이용 안내 › 단축키 보기 |
-| 정령 도감 | 대표 정령과 만난 정령 수, 전체 / 카테고리별 보기, 정렬(만난 순 · 호감도 순 · 이름 순), 미보유만, 정령 정보 · 다음 하트까지 · 힌트, 대표 정령 바꾸기(기억됨) |
-| 설정 | 프로필(닉네임), 디스플레이(다크모드 · Windows 설정 따라가기 · 글자 대비 높이기), 알림(리마인드 · 야간 수신 · 창을 닫으면 트레이로), 데이터(저장 폴더 열기 · CSV 내보내기), 이용 안내, 앱 정보 |
-
-## 반복과 알림의 규칙
-
-- 반복 일정은 한 건으로 저장하고, 날짜마다 나타나는지를 계산합니다(`Models/Recur.cs`). 매월 29~31일은 짧은 달에서 그 달의 마지막 날로 옮깁니다.
-- 반복 일정을 지우면 모든 날짜에서 사라집니다. 반복 일정은 "어제 하지 못한 일"에 나오지 않고, "내일로 미루기"를 할 수 없습니다. 특정 하루만 건너뛰기 · 끝나는 날은 아직 없습니다.
-- 알림은 앱이 켜져 있을 때만 울립니다(30초마다 확인). 앱이 꺼져 있다가 켜지면, 일정 시각에서 15분이 지나지 않은 알림만 그때 울립니다. 같은 일정은 하루에 한 번만 알립니다.
-- 설정 › 알림에서 리마인드를 끄거나 야간(밤 10시~아침 8시) 수신을 끄면 Windows 알림은 띄우지 않고 알림 패널에만 남깁니다.
-- "창을 닫으면 트레이로"를 켜면 창을 닫아도 앱이 트레이에 남습니다(기본은 꺼짐). 트레이 아이콘 우클릭 › 종료로 끝냅니다.
-- Windows 알림은 트레이 아이콘의 풍선 알림을 씁니다. Windows 의 방해 금지가 켜져 있으면 보이지 않을 수 있습니다.
-
-## 아직 없는 것
-
-- 로그인, 정령의 숲 화면 (숲은 자리만 있음)
-- 정령을 만나는 규칙과 호감도: 도감의 정령 · 호감도 · 처음 만난 날은 시안의 예시 값입니다. 도감 그림 4종은 Figma 캡처에서 잘라 쓴 것이라 투명 배경 원본으로 바꿔야 합니다.
-- 설정 중 서버가 필요한 것: 계정(비밀번호 변경 · 로그아웃 · 회원탈퇴), 백업 · 동기화, 공지사항 · QnA · 약관
-- 알림 설정 중 미룬 플랜 · 루틴 · 스트릭 알림은 고른 값만 저장합니다.
-- 좁은 창에서 패널 겹쳐 열기, 목록이 차례로 등장하는 효과
-- 서버 연동(계정, 동기화)
-- 정령 애니메이션(그림이 한 장뿐), 전체화면 앱을 쓸 때 정령 숨기기
-
-## 구조
-
-```text
-src/TodoSpirits.Windows/
-  Themes/      Light.xaml · LightOriginal.xaml · Dark.xaml (색 토큰), Icons.xaml (시안의 선 아이콘), Controls.xaml (버튼 · 카드 · 스위치 · 스크롤 막대 · 메뉴 모양)
-  Models/      TodoItem, AppData, Recur (반복 규칙 · 알림 시점)
-  Services/    TaskStore (JSON 저장), ThemeService, SpiritHost (정령 띄우기 · 감시 · 통신)
-  ViewModels/  MainViewModel (화면 상태 전체, Extras 는 도감 · 설정, Polish 는 검색 · 칩 · 패널 달력 등 세부, Spirit 은 정령 연결, Alarm 은 반복 · 알림 · 알림 패널), Items (화면용 한 줄 · 달력 칸), Spirits (도감 목록), Mvvm (기반 클래스)
-  Views/       MainWindow, HomeView, CalendarView, DexView, SettingsView, TaskPanel, NotiPanel (알림 패널), SpiritPopup (정령 옆 작은 창), Shared.xaml (일정 카드 · 우클릭 메뉴), Icon (아이콘 그리기), Motion (등장 움직임)
-SpiritOverlay/   Unity 프로젝트 (바탕화면 정령)
-Build-Spirit.ps1 정령 빌드
-```
-
-색 값은 `unity/windows-ui/design/styles/app.css`의 토큰과 같게 맞춥니다. 시안의 색을 바꾸면 `Themes/Light.xaml`(대비 높임), `Themes/LightOriginal.xaml`(Figma 원색), `Themes/Dark.xaml`도 함께 바꿉니다.
+글꼴은 나눔스퀘어라운드를 사용한다. 라이선스는 [OFL.txt](src/TodoSpirits.Windows/Assets/Fonts/OFL.txt)에 있다.
