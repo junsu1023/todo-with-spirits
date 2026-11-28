@@ -1,0 +1,78 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="2,14,0,12">
+            <TextBlock Text="{Binding Greeting}" FontSize="13" Foreground="{DynamicResource Text2}"/>
+            <TextBlock Text="{Binding TodayText}" FontSize="26" FontWeight="ExtraBold"/>
+        </StackPanel>
+
+        <!-- 오늘 일정 요약 -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Padding="22,16" Margin="0,0,0,14">
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="오늘 일정" FontSize="14" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <TextBlock Text="{Binding TodayDone}" FontSize="40" FontWeight="ExtraBold"/>
+                        <TextBlock FontSize="20" Foreground="{DynamicResource Text2}" VerticalAlignment="Bottom" Margin="8,0,0,7">
+                            <Run Text="/ "/><Run Text="{Binding TodayTotal, Mode=OneWay}"/><Run Text=" 완료"/>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding HasNext, Converter={StaticResource BoolVis}}">
+                    <Border Background="{DynamicResource LimeOp}" CornerRadius="10" Padding="9,2" HorizontalAlignment="Right">
+                        <TextBlock Text="다음 일정" FontSize="11" FontWeight="ExtraBold" Foreground="{DynamicResource LimeT}"/>
+                    </Border>
+                    <TextBlock Text="{Binding NextTitle}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0" MaxWidth="320"/>
+                    <TextBlock Text="{Binding NextWhen}" FontSize="13" Foreground="{DynamicResource Text2}" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Button Grid.Row="2" Style="{StaticResource Primary}" Content="+  일정 추가" Command="{Binding AddCommand}" ToolTip="Ctrl+N" Margin="0,0,0,14"/>
+
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="0,0,-14,0" Padding="0,0,14,0">
+            <StackPanel Margin="0,0,0,24">
+                <!-- 어제 하지 못한 일 -->
+                <StackPanel Visibility="{Binding HasCarry, Converter={StaticResource BoolVis}}">
+                    <Grid Margin="4,4,0,10">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="어제 하지 못한 일" FontSize="14" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding CarryCount}" FontSize="14" Foreground="{DynamicResource Text2}" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <Button Content="모두 오늘 하기" Style="{StaticResource Pill}" HorizontalAlignment="Right" Command="{Binding MoveAllToTodayCommand}"/>
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Carry}" ItemTemplate="{StaticResource CarryCard}" Focusable="False"/>
+                </StackPanel>
+
+                <StackPanel Visibility="{Binding HasTimed, Converter={StaticResource BoolVis}}">
+                    <StackPanel Orientation="Horizontal" Margin="4,8,0,10">
+                        <TextBlock Text="시간 일정" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TimedCount}" FontSize="14" Foreground="{DynamicResource Text2}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding Timed}" ItemTemplate="{StaticResource TaskCard}" Focusable="False"/>
+                </StackPanel>
+
+                <StackPanel Visibility="{Binding HasAllDay, Converter={StaticResource BoolVis}}">
+                    <StackPanel Orientation="Horizontal" Margin="4,8,0,10">
+                        <TextBlock Text="하루 종일" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding AllDayCount}" FontSize="14" Foreground="{DynamicResource Text2}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding AllDay}" ItemTemplate="{StaticResource TaskCard}" Focusable="False"/>
+                </StackPanel>
+
+                <StackPanel Margin="0,60,0,0" HorizontalAlignment="Center" Visibility="{Binding HomeEmpty, Converter={StaticResource BoolVis}}">
+                    <Image Source="/Assets/spirit_neutral.png" Width="96" Opacity="0.9" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="일정을 추가해보세요!" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

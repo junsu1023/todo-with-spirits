@@ -1,0 +1,324 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.CalendarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:TodoSpirits.Windows.ViewModels">
+    <UserControl.Resources>
+        <!-- 보기 전환 버튼 -->
+        <Style x:Key="Seg" TargetType="Button" BasedOn="{StaticResource Flat}">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="18,7"/>
+            <Setter Property="Foreground" Value="{DynamicResource Text2}"/>
+        </Style>
+
+        <!-- 고른 날 하루의 목록 (주간 아래, 월간 오른쪽 공용) -->
+        <DataTemplate x:Key="DayList">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Margin="4,0,0,10">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedLong}" FontSize="17" FontWeight="ExtraBold"/>
+                        <Border Background="{DynamicResource LimeOp}" CornerRadius="10" Padding="9,2" Margin="10,0,0,0" VerticalAlignment="Center"
+                                Visibility="{Binding SelectedIsToday, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="오늘" FontSize="12" FontWeight="ExtraBold" Foreground="{DynamicResource LimeT}"/>
+                        </Border>
+                    </StackPanel>
+                    <Button Content="+ 일정 추가" Style="{StaticResource Pill}" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding AddCommand}"/>
+                    <TextBlock Text="{Binding SelectedStat}" FontSize="13" Foreground="{DynamicResource Text2}" Margin="0,38,0,0"/>
+                </Grid>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,-14,0" Padding="0,0,14,0">
+                    <StackPanel Margin="0,0,0,20">
+                        <ItemsControl ItemsSource="{Binding DayTasks}" ItemTemplate="{StaticResource TaskCard}" Focusable="False"/>
+                        <TextBlock Text="일정 없음" FontSize="14" Foreground="{DynamicResource Grey}" Margin="6,2,0,0"
+                                   Visibility="{Binding DayEmpty, Converter={StaticResource BoolVis}}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+
+        <!-- 주간 띠의 하루 -->
+        <DataTemplate x:Key="WeekDay" DataType="{x:Type vm:DayCell}">
+            <Button Cursor="Hand" Margin="4,0" ToolTip="{Binding Tip}" FocusVisualStyle="{StaticResource FocusRing}"
+                    Command="{Binding DataContext.SelectDateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{DynamicResource Card}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1" CornerRadius="18" Padding="4,9">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock x:Name="dow" Text="{Binding DowLabel}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="num" Text="{Binding Num}" FontSize="20" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="★ " FontSize="11" Foreground="{DynamicResource Pink}" VerticalAlignment="Center"
+                                               Visibility="{Binding HasImportant, Converter={StaticResource BoolVis}}"/>
+                                    <TextBlock x:Name="cnt" Text="{Binding CountText}" FontSize="12" Foreground="{DynamicResource Text2}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsPast}" Value="True">
+                                <Setter TargetName="num" Property="Foreground" Value="{DynamicResource Text2}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding HasTasks}" Value="False">
+                                <Setter TargetName="cnt" Property="Foreground" Value="{DynamicResource Grey}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource LimeOp}"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource LimeRing}"/>
+                                <Setter TargetName="dow" Property="Foreground" Value="{DynamicResource LimeT}"/>
+                                <Setter TargetName="num" Property="Foreground" Value="{DynamicResource Text}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Text2}"/>
+                                <Setter TargetName="b" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="b" Property="Padding" Value="3,8"/>
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Text2}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <!-- 월간 칸: 날짜 + 첫 일정 제목 한 줄 + "외 n개" -->
+        <DataTemplate x:Key="MonthDay" DataType="{x:Type vm:DayCell}">
+            <Button Cursor="Hand" Margin="2" ToolTip="{Binding Tip}" FocusVisualStyle="{StaticResource FocusRing}" MouseDoubleClick="OnDayDoubleClick"
+                    Command="{Binding DataContext.SelectDateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="14" Padding="8,6">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="num" Text="{Binding Num}" FontSize="16" FontWeight="ExtraBold"/>
+                                    <TextBlock Text="오늘" FontSize="11" FontWeight="ExtraBold" Foreground="{DynamicResource LimeT}" Margin="6,0,0,1" VerticalAlignment="Bottom"
+                                               Visibility="{Binding IsToday, Converter={StaticResource BoolVis}}"/>
+                                </StackPanel>
+                                <DockPanel Margin="0,2,0,0" Visibility="{Binding ShowFirst, Converter={StaticResource BoolVis}}">
+                                    <TextBlock DockPanel.Dock="Left" Text="★ " FontSize="11" Foreground="{DynamicResource Pink}" VerticalAlignment="Center"
+                                               Visibility="{Binding FirstImportant, Converter={StaticResource BoolVis}}"/>
+                                    <TextBlock Text="{Binding FirstTitle}" FontSize="12"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding RestText}" FontSize="12" Foreground="{DynamicResource Text2}" Margin="0,1,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsPast}" Value="True">
+                                <Setter TargetName="num" Property="Foreground" Value="{DynamicResource Text2}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsOther}" Value="True">
+                                <Setter TargetName="num" Property="Foreground" Value="{DynamicResource Grey}"/>
+                                <Setter TargetName="num" Property="FontWeight" Value="Normal"/>
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Back02}"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource LimeOp}"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource LimeRing}"/>
+                                <Setter TargetName="num" Property="Foreground" Value="{DynamicResource Text}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Text2}"/>
+                                <Setter TargetName="b" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="b" Property="Padding" Value="7,5"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <!-- 연간의 하루 숫자 -->
+        <DataTemplate x:Key="YearDay" DataType="{x:Type vm:DayCell}">
+            <Button Cursor="Hand" Height="20" Margin="1,0" ToolTip="{Binding Tip}" FocusVisualStyle="{StaticResource FocusRing}"
+                    Visibility="{Binding IsBlank, Converter={StaticResource BoolVis}, ConverterParameter=inv-hide}"
+                    Command="{Binding DataContext.YearDayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="Transparent" CornerRadius="7" BorderThickness="1" BorderBrush="Transparent">
+                            <Grid>
+                                <TextBlock x:Name="t" Text="{Binding Num}" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Ellipse Width="5" Height="5" Fill="{DynamicResource Pink}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,2,0"
+                                         Visibility="{Binding HasImportant, Converter={StaticResource BoolVis}}"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Heat}" Value="1">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Heat1}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Heat}" Value="2">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Heat2}"/>
+                                <Setter TargetName="t" Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsToday}" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Lime}"/>
+                                <Setter TargetName="t" Property="Foreground" Value="{DynamicResource OnLime}"/>
+                                <Setter TargetName="t" Property="FontWeight" Value="ExtraBold"/>
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="{DynamicResource Text2}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="Seven">
+            <UniformGrid Columns="7"/>
+        </ItemsPanelTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 머리: 기간 · 이동 · 오늘 -->
+        <StackPanel Orientation="Horizontal" Margin="2,16,0,12">
+            <TextBlock Text="{Binding PeriodTitle}" FontSize="26" FontWeight="ExtraBold" VerticalAlignment="Center"/>
+            <Button Style="{StaticResource Flat}" Content="‹" FontSize="20" Width="36" Height="36" Padding="0" HorizontalContentAlignment="Center" Margin="14,0,0,0" ToolTip="이전" Command="{Binding PrevCommand}"/>
+            <Button Style="{StaticResource Flat}" Content="›" FontSize="20" Width="36" Height="36" Padding="0" HorizontalContentAlignment="Center" ToolTip="다음" Command="{Binding NextCommand}"/>
+            <Button Style="{StaticResource Pill}" Content="오늘" Margin="8,0,0,0" VerticalAlignment="Center" Command="{Binding GoTodayCommand}"/>
+        </StackPanel>
+
+        <!-- 보기 전환 -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Border Background="{DynamicResource Back02}" CornerRadius="18" Padding="4" HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="주간" Command="{Binding SetModeCommand}" CommandParameter="week">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource Seg}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalMode}" Value="week">
+                                        <Setter Property="Background" Value="{DynamicResource Card}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="월간" Command="{Binding SetModeCommand}" CommandParameter="month">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource Seg}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalMode}" Value="month">
+                                        <Setter Property="Background" Value="{DynamicResource Card}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="연간" Command="{Binding SetModeCommand}" CommandParameter="year">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource Seg}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalMode}" Value="year">
+                                        <Setter Property="Background" Value="{DynamicResource Card}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="{Binding CalHint}" FontSize="12" Foreground="{DynamicResource Text2}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- 주간: 한 주 띠 + 고른 날 목록 -->
+        <Grid Grid.Row="2" Visibility="{Binding CalMode, Converter={StaticResource EqVis}, ConverterParameter=week}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ItemsControl ItemsSource="{Binding WeekCells}" ItemTemplate="{StaticResource WeekDay}" ItemsPanel="{StaticResource Seven}" Margin="-4,0,-4,16" Focusable="False"/>
+            <ContentControl Grid.Row="1" Content="{Binding}" ContentTemplate="{StaticResource DayList}" Focusable="False"/>
+        </Grid>
+
+        <!-- 월간: 달력 + 오른쪽 목록 -->
+        <Grid Grid.Row="2" Visibility="{Binding CalMode, Converter={StaticResource EqVis}, ConverterParameter=month}" Margin="0,0,0,18">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="360"/>
+            </Grid.ColumnDefinitions>
+            <Border Style="{StaticResource CardBorder}" Padding="8,6,8,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="36"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <UniformGrid Columns="7">
+                        <TextBlock Text="일" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="월" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="화" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="수" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="목" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="금" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="토" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </UniformGrid>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding MonthCells}" ItemTemplate="{StaticResource MonthDay}" Focusable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="7" Rows="{Binding MonthRows}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+            <ContentControl Grid.Column="1" Margin="22,4,0,0" Content="{Binding}" ContentTemplate="{StaticResource DayList}" Focusable="False"/>
+        </Grid>
+
+        <!-- 연간: 12달 -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,0,-14,0" Padding="0,0,14,0"
+                      Visibility="{Binding CalMode, Converter={StaticResource EqVis}, ConverterParameter=year}">
+            <ItemsControl ItemsSource="{Binding YearCards}" Margin="-5,0,-5,14" Focusable="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:MonthCard}">
+                        <Border x:Name="card" Style="{StaticResource CardBorder}" Padding="12,6,12,8" Margin="5,4">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Style="{StaticResource Flat}" Content="{Binding Name}" FontSize="16" FontWeight="ExtraBold" Padding="8,2" Margin="-8,0,0,0"
+                                                Command="{Binding DataContext.GoMonthCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                        <Border Background="{DynamicResource LimeOp}" CornerRadius="9" Padding="8,2" Margin="6,0,0,0" VerticalAlignment="Center"
+                                                Visibility="{Binding IsCurrent, Converter={StaticResource BoolVis}}">
+                                            <TextBlock Text="이번 달" FontSize="11" FontWeight="ExtraBold" Foreground="{DynamicResource LimeT}"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding CountText}" FontSize="12" Foreground="{DynamicResource Text2}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                                <UniformGrid Columns="7" Margin="0,0,0,2">
+                                    <TextBlock Text="일" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="월" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="화" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="수" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="목" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="금" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="토" FontSize="11" Foreground="{DynamicResource Text2}" HorizontalAlignment="Center"/>
+                                </UniformGrid>
+                                <ItemsControl ItemsSource="{Binding Cells}" ItemTemplate="{StaticResource YearDay}" ItemsPanel="{StaticResource Seven}" Focusable="False"/>
+                            </StackPanel>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                <Setter TargetName="card" Property="BorderBrush" Value="{DynamicResource Lime}"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

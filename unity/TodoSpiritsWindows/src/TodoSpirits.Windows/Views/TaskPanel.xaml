@@ -1,0 +1,62 @@
+<UserControl x:Class="TodoSpirits.Windows.Views.TaskPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="OnVisibleChanged">
+    <Border Background="{DynamicResource PanelBg}" BorderBrush="{DynamicResource Stroke}" BorderThickness="1,0,0,0">
+        <Grid Margin="22,0,22,22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <TextBlock Text="{Binding PanelTitle}" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button Style="{StaticResource Flat}" Content="✕" Width="36" Height="36" Padding="0" HorizontalContentAlignment="Center"
+                        HorizontalAlignment="Right" ToolTip="닫기 (Esc)" Command="{Binding ClosePanelCommand}"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1">
+                <TextBox x:Name="TitleBox" Height="52" FontSize="17" FontWeight="Bold"
+                         Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" KeyDown="OnTitleKeyDown"/>
+                <TextBlock Text="제목을 입력해 주세요" FontSize="12" Foreground="{DynamicResource Grey}" Margin="6,6,0,0"
+                           Visibility="{Binding IsNew, Converter={StaticResource BoolVis}}"/>
+
+                <Border Style="{StaticResource CardBorder}" Padding="16,4" Margin="0,16,0,0">
+                    <StackPanel>
+                        <Grid Height="48">
+                            <TextBlock Text="★  중요" VerticalAlignment="Center"/>
+                            <CheckBox Style="{StaticResource Switch}" AutomationProperties.Name="중요" IsChecked="{Binding EditImportant}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource Stroke}"/>
+                        <Grid Height="48">
+                            <TextBlock Text="날짜" VerticalAlignment="Center"/>
+                            <DatePicker SelectedDate="{Binding EditDate}" HorizontalAlignment="Right" VerticalAlignment="Center" Width="150"/>
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource Stroke}"/>
+                        <Grid Height="48">
+                            <TextBlock Text="시간 정하기" VerticalAlignment="Center"/>
+                            <CheckBox Style="{StaticResource Switch}" AutomationProperties.Name="시간 정하기" IsChecked="{Binding EditHasTime}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10"
+                                    Visibility="{Binding EditHasTime, Converter={StaticResource BoolVis}}">
+                            <ComboBox ItemsSource="{Binding Hours}" SelectedIndex="{Binding EditHour}" Width="110"/>
+                            <ComboBox ItemsSource="{Binding Minutes}" SelectedIndex="{Binding EditMinuteIndex}" Width="80" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="변경 내용은 바로 저장돼요" FontSize="12" Foreground="{DynamicResource Text2}" Margin="6,10,0,0"
+                           Visibility="{Binding IsExisting, Converter={StaticResource BoolVis}}"/>
+            </StackPanel>
+
+            <Button Grid.Row="2" Style="{StaticResource Primary}" Content="확인" Command="{Binding SaveCommand}"
+                    Visibility="{Binding IsNew, Converter={StaticResource BoolVis}}"/>
+            <UniformGrid Grid.Row="2" Columns="2" Visibility="{Binding IsExisting, Converter={StaticResource BoolVis}}">
+                <Button Style="{StaticResource Pill}" Content="삭제" Height="50" FontSize="15" Margin="0,0,5,0" HorizontalContentAlignment="Center"
+                        Foreground="{DynamicResource Del}" Background="{DynamicResource DelBg}" Command="{Binding DeleteCommand}"/>
+                <Button Style="{StaticResource Pill}" Content="{Binding EditDoneLabel}" Height="50" FontSize="15" Margin="5,0,0,0" HorizontalContentAlignment="Center"
+                        Command="{Binding ToggleEditingCommand}"/>
+            </UniformGrid>
+        </Grid>
+    </Border>
+</UserControl>
