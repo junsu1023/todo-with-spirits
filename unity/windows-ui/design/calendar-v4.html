@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>W03 캘린더 v4 — 둥글고 부드러운 톤</title>
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";r.classList.add("booting");setTimeout(()=>r.classList.remove("booting"),1500);})()</script>
+<style>
+  /* 캘린더 전용 */
+  .main.cal { grid-template-rows: auto auto 1fr; padding-bottom: 24px; }
+  .main.cal .head { gap: 12px; }
+  .monthnav { display: flex; align-items: center; gap: 8px; }
+  .monthnav h1 { margin: 0 8px 0 0; }
+  .roundbtn { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); }
+  .roundbtn:hover { background: var(--back-02); color: var(--text); }
+  .roundbtn svg.i { width: 20px; height: 20px; }
+  .roundbtn.prev svg.i { transform: rotate(90deg); }
+  .roundbtn.next svg.i { transform: rotate(-90deg); }
+  .todaybtn { height: 32px; padding: 0 14px; border-radius: var(--r-pill); background: var(--back-02); font-size: 13px; font-weight: 700; }
+  .todaybtn:hover { background: var(--hover-2); }
+
+  /* 월간: 칸에는 날짜 + 아직 안 끝낸 첫 일정 제목 한 줄 + "외 n개", 전체 내용은 오른쪽 목록에서 15px로 읽는다 */
+  .month { background: var(--white); border: 1px solid var(--stroke); border-radius: var(--r-card); box-shadow: var(--shadow);
+    display: grid; grid-template-rows: 38px 1fr; min-height: 0; padding: 6px 10px 10px; }
+  .dow, .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .dow span { display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--text-2); }
+  .grid { grid-auto-rows: 1fr; gap: 4px; min-height: 0; }
+  .day { position: relative; border-radius: 14px; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; min-height: 0; overflow: hidden; text-align: left; cursor: pointer; border: 1px solid transparent; transition: background .12s, border-color .12s; }
+  .day:hover { background: var(--back-02); }
+  .day .top { display: flex; align-items: baseline; gap: 6px; }
+  .day .n { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .day .tday { font-size: 11px; font-weight: 800; color: var(--lime-t); }
+  .day.other .n { color: var(--grey); font-weight: 400; }
+  .day.past:not(.other) .n { color: var(--text-2); }
+  .day.today { background: var(--lime-op); border-color: var(--lime-ring); }
+  .day.sel { border-color: var(--text-2); box-shadow: 0 0 0 3px rgba(var(--shade), .1); }
+  html[data-theme="dark"] .day.sel { box-shadow: 0 0 0 3px rgba(185,168,149,.25); }
+  .day .ev1 { display: flex; align-items: center; gap: 3px; min-width: 0; font-size: 12px; line-height: 16px; color: var(--text); }
+  .day .ev1 span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .day .ev1 svg.i { width: 11px; height: 11px; flex-shrink: 0; fill: var(--pink); stroke: var(--pink-b); stroke-width: 1.2; }
+  .day .cnt { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+  .day .cnt svg.i { width: 11px; height: 11px; flex-shrink: 0; }
+  .day .cnt svg.star { fill: var(--pink); stroke: var(--pink-b); stroke-width: 1.2; }
+
+  /* 보기 전환 */
+  .viewseg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--back-02); padding: 4px; border-radius: var(--r-pill); }
+  .viewseg button { white-space: nowrap; height: 32px; padding: 0 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 700; color: var(--text-2); transition: background .15s, color .15s; }
+  .viewseg button:hover { color: var(--text); }
+  .viewseg button[aria-pressed="true"] { background: var(--seg-on); color: var(--text); box-shadow: var(--shadow); }
+  .calview { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
+  .calbar { display: flex; align-items: center; justify-content: space-between; margin: -6px 0 12px; }
+  .calbar .hint { font-size: 12px; color: var(--text-2); }
+  .monthnav h1 { min-width: 0; white-space: nowrap; }
+
+  /* 주간: 위는 한 주 띠(어느 날이 바쁜지), 아래는 고른 날 하루의 큰 목록(무슨 일인지)
+     처음 보는 사람 기준 — 본문 15px·한 줄에 한 일정, 한글 요일, 색 대신 글자(오늘·n개·완료)로 표시 */
+  .week2 { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; min-height: 0; }
+  .wstrip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+  .wday { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 9px 4px 9px; border-radius: var(--r-card); background: var(--white); border: 1px solid var(--stroke); box-shadow: var(--shadow); transition: border-color .15s, box-shadow .15s, transform .12s; }
+  .wday:hover { border-color: var(--card-hover-b); transform: translateY(-1px); }
+  .wday small { font-size: 12px; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+  .wday b { font-size: 20px; font-weight: 800; line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .wday .cnt { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+  .wday .cnt.none { color: var(--grey); }
+  .wday .cnt svg.i { width: 11px; height: 11px; }
+  .wday .cnt svg.star { fill: var(--pink); stroke: var(--pink-b); stroke-width: 1.2; }
+  .wday.past b { color: var(--text-2); }
+  .wday.today { background: var(--lime-op); border-color: var(--lime-ring); }
+  .wday.today small { color: var(--lime-t); font-weight: 800; }
+  .wday.sel { border-color: var(--text-2); box-shadow: 0 0 0 3px rgba(var(--shade), .1); }
+  html[data-theme="dark"] .wday.sel { box-shadow: 0 0 0 3px rgba(185,168,149,.25); }
+  .wlist { overflow-y: auto; min-height: 0; padding: 0 8px 0 2px; margin-right: -8px; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+  .wsec { padding-bottom: 12px; }
+  .wsec-h { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 8px 4px 8px; background: var(--back-01); }
+  .wsec-h h2 { margin: 0; font-size: 17px; font-weight: 800; }
+  .wsec.past .wsec-h h2 { color: var(--text-2); }
+  .wsec-h .today-tag { font-size: 12px; font-weight: 800; color: var(--lime-t); background: var(--lime-op); border-radius: var(--r-pill); padding: 2px 9px; }
+  .wsec-h .stat { font-size: 13px; color: var(--text-2); }
+  .wsec-add { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--text-2); padding: 6px 12px 6px 9px; border-radius: var(--r-pill); transition: background .15s, color .15s; }
+  .wsec-add:hover { background: var(--back-02); color: var(--text); }
+  .wsec-add svg.i { width: 15px; height: 15px; }
+  .wsec .none { font-size: 14px; color: var(--grey); padding: 2px 6px 4px; }
+  .wspace { flex-shrink: 0; }
+
+  /* 연간: 오른쪽 패널을 접고 12달을 넓게. 숫자 12px, 날짜나 달 이름을 누르면 그 달로 이동 */
+  .year { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: max-content; gap: 10px; min-height: 0; overflow-y: auto; align-content: start; padding: 2px 8px 14px 2px; margin: -2px -8px 0 -2px; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+  @container (max-width: 820px) { .year { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ymon { background: var(--white); border: 1px solid var(--stroke); border-radius: var(--r-card); box-shadow: var(--shadow); padding: 8px 12px 9px; display: flex; flex-direction: column; gap: 4px; }
+  .ymon.cur { border-color: var(--lime-b); }
+  .ymon-h { display: flex; align-items: center; gap: 8px; }
+  .ymon-h button { font-size: 16px; font-weight: 800; border-radius: 8px; padding: 2px 8px; margin-left: -8px; }
+  .ymon-h button:hover { background: var(--back-02); }
+  .ymon-h .now { font-size: 11px; font-weight: 800; color: var(--lime-t); background: var(--lime-op); border-radius: var(--r-pill); padding: 2px 8px; }
+  .ymon-h small { margin-left: auto; font-size: 12px; color: var(--text-2); }
+  .ygrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .ygrid i { display: block; }
+  .ygrid span { font-size: 11px; color: var(--text-2); text-align: center; padding-bottom: 2px; }
+  .yd { position: relative; height: 21px; border-radius: 7px; font-size: 12px; font-variant-numeric: tabular-nums; display: grid; place-items: center; color: var(--text); }
+  .yd:hover { box-shadow: inset 0 0 0 1.5px var(--text-2); }
+  .yd.has1 { background: var(--heat1); }
+  .yd.has2 { background: var(--heat2); font-weight: 700; }
+  .yd.imp::after { content: ""; position: absolute; top: 2px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 1px var(--white); }
+  .yd.today { background: var(--lime); color: var(--on-lime); font-weight: 800; }
+  .ylegend { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--text-2); }
+  .ylegend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: -2px; margin-right: 5px; }
+  .dp-stat { text-align: center; font-size: 13px; color: var(--text-2); margin: -14px 0 12px; min-height: 18px; }
+
+  /* 오른쪽: 선택한 날짜 목록 */
+  .panel.day-panel { grid-template-rows: 74px auto 1fr; }
+  .dp-top { padding: 0 22px; }
+  .dp-top .addbtn { margin-bottom: 14px; }
+  .filters { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 12px; font-size: 14px; color: var(--text-2); }
+  .cbx { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .cbx .box { width: 20px; height: 20px; border-radius: 6px; }
+  .cbx .box svg.i { width: 12px; height: 12px; }
+  .cbx .box[aria-checked="true"] { background: var(--text); border-color: var(--text); }
+  .sort { border: 0; background: transparent; color: var(--text); font-size: 14px; cursor: pointer; }
+  .dp-list { overflow-y: auto; padding: 2px 22px 22px; min-height: 0; }
+  .dp-list .cards { gap: 10px; }
+  .dp-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 48px 0; color: var(--text-2); font-size: 14px; }
+  .dp-empty svg.i { width: 44px; height: 44px; stroke-width: 1.2; }
+  .backbtn svg.i { transform: rotate(90deg); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M5 12H3l9-9 9 9h-2"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></symbol>
+  <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="4" width="12" height="16" rx="2" transform="rotate(8 13 12)"/><path d="M5.5 7.5 4 17a2 2 0 0 0 1.7 2.3l2 .3"/></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><path d="M12 13l-2-2M12 12l2-2M12 21V8"/><path d="M9.8 16.6A6 6 0 1 1 14.2 6a6 6 0 0 1 0 10.6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 4.3c.4-1.8 3-1.8 3.4 0a1.7 1.7 0 0 0 2.6 1.1c1.5-.9 3.3.8 2.4 2.4a1.7 1.7 0 0 0 1 2.5c1.9.5 1.9 3.1 0 3.5a1.7 1.7 0 0 0-1 2.6c.9 1.5-.9 3.3-2.4 2.4a1.7 1.7 0 0 0-2.6 1c-.4 1.9-3 1.9-3.4 0a1.7 1.7 0 0 0-2.6-1c-1.5.9-3.3-.9-2.4-2.4a1.7 1.7 0 0 0-1-2.6c-1.9-.4-1.9-3 0-3.5a1.7 1.7 0 0 0 1-2.5c-.9-1.6.9-3.3 2.4-2.4 1 .6 2.3.1 2.6-1.1z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m21 21-6-6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0 7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 17.8-6.2 3.2 1.2-6.9-5-4.9 6.9-1L12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12V9a3 3 0 0 1 3-3h13l-3-3m3 3-3 3"/><path d="M20 12v3a3 3 0 0 1-3 3H4l3 3m-3-3 3-3"/></symbol>
+  <symbol id="i-sad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9.5 15.5a3.5 3.5 0 0 1 5 0"/></symbol>
+</defs></svg>
+
+<div class="window" id="win">
+  <div class="titlebar">
+    <div class="app"><img src="assets/spirit_neutral.png" alt=""><span>Todo with Spirits</span></div>
+    <div class="winctl">
+      <button aria-label="최소화"><svg class="i"><use href="#i-min"/></svg></button>
+      <button aria-label="최대화"><svg class="i"><use href="#i-max"/></svg></button>
+      <button class="close" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="nav" aria-label="주 메뉴">
+      <div class="navgroup">
+        <a class="navbtn" href="home-v4.html"><svg class="i"><use href="#i-home"/></svg>홈</a>
+        <button class="navbtn" aria-current="page"><svg class="i"><use href="#i-cal"/></svg>캘린더</button>
+        <a class="navbtn" href="dex-v4.html"><svg class="i"><use href="#i-cards"/></svg>정령 도감</a>
+        <a class="navbtn locked" href="forest-v4.html"><svg class="i"><use href="#i-tree"/></svg>정령의 숲<span class="soon">출시 예정</span></a>
+      </div>
+      <div class="navgroup">
+        <a class="navbtn" href="settings-v4.html"><svg class="i"><use href="#i-gear"/></svg>설정</a>
+        <div class="me"><span class="avatar">댕</span>댕트리버</div>
+      </div>
+    </nav>
+
+    <main class="main cal">
+      <div class="head">
+        <div class="monthnav">
+          <h1 id="month-title">2026년 10월</h1>
+          <button class="roundbtn prev" id="prev" aria-label="이전 (PageUp)"><svg class="i"><use href="#i-chev"/></svg></button>
+          <button class="roundbtn next" id="next" aria-label="다음 (PageDown)"><svg class="i"><use href="#i-chev"/></svg></button>
+          <button class="todaybtn" id="go-today">오늘</button>
+        </div>
+        <div class="tools">
+          <label class="search" id="search-box"><input id="search" type="search" placeholder="일정 검색"></label>
+          <button class="iconbtn" id="search-btn" aria-label="검색 (Ctrl+F)"><svg class="i"><use href="#i-search"/></svg></button>
+          <button class="iconbtn" aria-label="알림"><svg class="i"><use href="#i-bell"/></svg><span class="badge">99+</span></button>
+        </div>
+      </div>
+      <div class="calbar">
+        <div class="viewseg" role="group" aria-label="보기">
+          <button data-v="week" title="주간 (W)">주간</button><button data-v="month" title="월간 (M)">월간</button><button data-v="year" title="연간 (Y)">연간</button>
+        </div>
+        <span class="hint" id="cal-hint"></span>
+      </div>
+      <section class="calview" id="calview" aria-label="달력"></section>
+    </main>
+
+    <aside class="panel" id="panel" aria-label="선택한 날짜"></aside>
+  </div>
+
+  <div class="toast" id="toast"><img src="assets/spirit_neutral.png" alt=""><span id="toast-t"></span><button id="toast-undo" hidden>되돌리기</button></div>
+</div>
+
+<script src="scripts/task-form.js"></script>
+<script>
+(() => {
+  const TODAY = "2026-10-13";
+  const iso = (y, m, d) => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  let id = 1;
+  const T = (date, title, time = "", imp = false, done = false, repeat = "없음", alarm = "없음") => ({ id: id++, date, title, time, imp, done, repeat, alarm });
+  let tasks = [
+    T("2026-10-01", "개천절 가족 모임", "12:00", true, true), T("2026-10-01", "장보기", "", false, true),
+    T("2026-10-02", "월간 목표 정리", "", false, true),
+    T("2026-10-05", "치과 검진", "10:30", false, true), T("2026-10-06", "팀 회의 자료", "14:00", false, true),
+    T("2026-10-08", "독서 모임", "19:30", false, true), T("2026-10-09", "한글날 산책", "", false, true),
+    T("2026-10-12", "은행 서류 출력", "", true), T("2026-10-12", "엄마한테 전화하기", "19:00"),
+    T("2026-10-13", "디자인 시스템 토큰 정리", "14:30", true), T("2026-10-13", "성과 보고서 초안 제출", "16:00", true, false, "없음", "10분 전"),
+    T("2026-10-13", "민지랑 저녁", "17:50", true, false, "없음", "30분 전"), T("2026-10-13", "필라테스 수업", "20:00", false, false, "매주", "1시간 전"),
+    T("2026-10-13", "오전 스크럼 회의", "10:00", false, true, "매주"),
+    T("2026-10-15", "필라테스 수업", "20:00", false, false, "매주"), T("2026-10-16", "부모님 선물 주문", "", true),
+    T("2026-10-17", "민지랑 저녁", "17:50", true), T("2026-10-17", "영화 보기", "21:00"),
+    T("2026-10-19", "분기 보고 발표", "11:00", true, false, "없음", "1시간 전"), T("2026-10-20", "자동차 정기 점검", "09:00"),
+    T("2026-10-22", "필라테스 수업", "20:00", false, false, "매주"), T("2026-10-24", "친구 결혼식", "13:00", true),
+    T("2026-10-27", "건강검진 예약", ""), T("2026-10-29", "필라테스 수업", "20:00", false, false, "매주"),
+    T("2026-10-31", "할로윈 파티 준비", "18:00"), T("2026-10-31", "월말 가계부 정리", ""),
+  ];
+  // 연간 보기용 예시 일정 (고정 시드로 매번 같은 결과)
+  (() => {
+    const TITLES = ["필라테스 수업", "독서 모임", "장보기", "팀 회의", "가족 저녁", "치과 검진", "운동", "청소하기", "공과금 납부", "친구 만나기", "영어 공부", "산책"];
+    let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    for (let m = 0; m < 12; m++) {
+      if (m === 9) continue;
+      const n = 6 + Math.floor(rnd() * 12), days = new Date(2026, m + 1, 0).getDate();
+      for (let k = 0; k < n; k++) {
+        const d = 1 + Math.floor(rnd() * days), date = iso(2026, m, d), past = date < TODAY;
+        const h = 8 + Math.floor(rnd() * 13);
+        tasks.push(T(date, TITLES[Math.floor(rnd() * TITLES.length)], rnd() < .6 ? `${String(h).padStart(2, "0")}:${rnd() < .5 ? "00" : "30"}` : "", rnd() < .18, past));
+      }
+    }
+  })();
+  const QS = new URLSearchParams(location.search);
+  let calMode = QS.get("mode") || localStorage.getItem("tws-calmode") || "month";
+  let view = { y: 2026, m: 9 }, sel = TODAY, hideDone = false, sort = "시간 순", panelMode = "list", detailId = null, draft = null, undoFn = null, toastTimer;
+
+  const $ = s => document.querySelector(s);
+  const ic = (n, c = "i") => `<svg class="${c}"><use href="#${n}"/></svg>`;
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const DAYS = "일월화수목금토";
+  const fmtD = d => { const x = new Date(d + "T00:00"); return `${x.getMonth() + 1}월 ${x.getDate()}일 (${DAYS[x.getDay()]})`; };
+  const fmtT = t => { if (!t) return ""; const h = +t.slice(0, 2); return `${h < 12 ? "오전" : "오후"} ${h % 12 || 12}:${t.slice(3)}`; }; // "오후 2:30"
+  const find = i => tasks.find(t => t.id === i);
+  const q = () => $("#search").value.trim();
+  const match = t => !q() || t.title.includes(q());
+  const sorters = {
+    "시간 순": (a, b) => (a.time || "99").localeCompare(b.time || "99"),
+    "중요 순": (a, b) => (b.imp - a.imp) || (a.time || "99").localeCompare(b.time || "99"),
+    "완료 순": (a, b) => (a.done - b.done) || (a.time || "99").localeCompare(b.time || "99"),
+  };
+  const dayTasks = d => tasks.filter(t => t.date === d && match(t)).sort(sorters["시간 순"]);
+
+  const MONTHS = d => new Date(d + "T00:00");
+  const weekStart = d => { const x = MONTHS(d); x.setDate(x.getDate() - x.getDay()); return x; };
+  const keyOf = x => iso(x.getFullYear(), x.getMonth(), x.getDate());
+  const fmtLong = d => { const x = new Date(d + "T00:00"); return `${x.getMonth() + 1}월 ${x.getDate()}일 ${DAYS[x.getDay()]}요일${d === TODAY ? " · 오늘" : ""}`; };
+  const statOf = list => { const n = list.length, dn = list.filter(t => t.done).length; return !n ? "" : dn === n ? "모두 완료" : dn ? `${n}개 중 ${dn}개 완료` : `일정 ${n}개`; };
+
+  function renderMonth() {
+    $("#month-title").textContent = `${view.y}년 ${view.m + 1}월`;
+    const first = new Date(view.y, view.m, 1), start = new Date(first); start.setDate(1 - first.getDay());
+    const weeks = Math.ceil((first.getDay() + new Date(view.y, view.m + 1, 0).getDate()) / 7);
+    let h = "";
+    for (let i = 0; i < weeks * 7; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i);
+      const key = keyOf(d);
+      const list = dayTasks(key), imp = list.filter(t => t.imp && !t.done).length;
+      const other = d.getMonth() !== view.m;
+      const n = list.length, dn = list.filter(t => t.done).length;
+      // 칸에는 아직 안 끝낸 첫 일정의 제목 한 줄 + 나머지 개수("외 4개")
+      const first = list.find(t => !t.done), rest = n - 1;
+      const cnt = other || !n ? "" : dn === n ? `<span class="cnt">${ic("i-check")}모두 완료</span>`
+        : `<span class="ev1">${first.imp ? ic("i-star", "i star") : ""}<span>${esc(first.title)}</span></span>${rest ? `<span class="cnt">${imp > (first.imp ? 1 : 0) ? ic("i-star", "i star") : ""}외 ${rest}개</span>` : ""}`;
+      h += `<button class="day ${other ? "other" : ""} ${key === TODAY ? "today" : ""} ${key === sel ? "sel" : ""} ${key < TODAY ? "past" : ""}" data-d="${key}" role="gridcell"
+        aria-label="${fmtD(key)}${key === TODAY ? " 오늘" : ""} 일정 ${n}개${imp ? `, 중요 ${imp}개` : ""}">
+        <span class="top"><span class="n">${d.getDate()}</span>${key === TODAY ? `<span class="tday">오늘</span>` : ""}</span>${other ? "" : `<span class="qadd" data-add="${key}" title="이 날 일정 추가">${ic("i-plus")}</span>`}${cnt}
+      </button>`;
+    }
+    return `<div class="month"><div class="dow">${[...DAYS].map(d => `<span>${d}</span>`).join("")}</div>
+      <div class="grid" id="grid" role="grid" style="grid-template-rows:repeat(${weeks}, 1fr)">${h}</div></div>`;
+  }
+
+  // 주간: 한 주 띠 + 고른 날 하루의 큰 목록. 오른쪽 패널은 일정을 누르거나 추가할 때만 열림
+  let weekPanel = false, wkAnchor = null;
+  function renderWeek() {
+    const st = weekStart(sel), en = new Date(st); en.setDate(st.getDate() + 6);
+    $("#month-title").textContent = st.getMonth() === en.getMonth()
+      ? `${st.getFullYear()}년 ${st.getMonth() + 1}월 ${st.getDate()}일 – ${en.getDate()}일`
+      : `${st.getFullYear()}년 ${st.getMonth() + 1}월 ${st.getDate()}일 – ${en.getMonth() + 1}월 ${en.getDate()}일`;
+    let strip = "", secs = "";
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(st); d.setDate(st.getDate() + i); const key = keyOf(d);
+      const all = dayTasks(key), list = all.filter(t => !(hideDone && t.done));
+      const n = all.length, dn = all.filter(t => t.done).length, imp = all.some(t => t.imp && !t.done);
+      const cls = `${key === TODAY ? "today" : ""} ${key === sel ? "sel" : ""} ${key < TODAY ? "past" : ""}`;
+      const cnt = !n ? `<span class="cnt none">없음</span>`
+        : dn === n ? `<span class="cnt">${ic("i-check")}모두 완료</span>`
+        : `<span class="cnt">${imp ? ic("i-star", "i star") : ""}${n}개</span>`;
+      strip += `<button class="wday ${cls}" data-d="${key}" ${key === sel ? 'aria-current="date"' : ""} title="${fmtD(key)} · 일정 ${n}개${imp ? " · 중요 있음" : ""}">
+        <small>${key === TODAY ? "오늘 · " : ""}${DAYS[i]}</small><b>${d.getDate()}</b>${cnt}</button>`;
+      const stat = !n ? "" : dn === n ? "모두 완료" : dn ? `${n}개 중 ${dn}개 완료` : `${n}개`;
+      if (key === sel) secs += `<section class="wsec ${cls}" data-d="${key}">
+        <div class="wsec-h"><h2>${d.getDate()}일 ${DAYS[i]}요일</h2>${key === TODAY ? `<span class="today-tag">오늘</span>` : ""}<span class="stat">${stat}</span>
+          <button class="wsec-add" data-add="${key}">${ic("i-plus")}일정 추가</button></div>
+        ${list.length ? `<div class="cards">${list.map(card).join("")}</div>` : `<div class="none">${n ? "완료한 일정만 있어요" : "일정 없음"}</div>`}</section>`;
+    }
+    return `<div class="week2"><div class="wstrip" aria-label="이번 주">${strip}</div><div class="wlist" id="wlist">${secs}<div class="wspace"></div></div></div>`;
+  }
+  // 다시 그린 뒤: 고른 날이 바뀌었으면 그 날로 스크롤, 아니면 보던 위치 유지
+  function placeWeek(saved) {
+    const l = $("#wlist"); if (!l) { wkAnchor = null; return; }
+    if (wkAnchor !== sel) { l.scrollTop = 0; if (wkAnchor) window.App && App.anim(l, sel > wkAnchor ? "swap" : "swap-back"); wkAnchor = sel; }
+    else if (saved != null) l.scrollTop = saved;
+  }
+
+  function renderYear() {
+    $("#month-title").textContent = `${view.y}년`;
+    let h = "";
+    for (let m = 0; m < 12; m++) {
+      const first = new Date(view.y, m, 1), days = new Date(view.y, m + 1, 0).getDate();
+      const monthTasks = tasks.filter(t => t.date.startsWith(`${view.y}-${String(m + 1).padStart(2, "0")}`) && match(t));
+      let cells = [...DAYS].map(d => `<span>${d}</span>`).join("") + "<i></i>".repeat(first.getDay());
+      for (let d = 1; d <= days; d++) {
+        const key = iso(view.y, m, d), list = monthTasks.filter(t => t.date === key);
+        const hasImp = list.some(t => t.imp && !t.done);
+        const cls = [list.length >= 2 ? "has2" : list.length ? "has1" : "", hasImp ? "imp" : "", key === TODAY ? "today" : ""].join(" ");
+        const lab = `${fmtD(key)}${key === TODAY ? " 오늘" : ""} · 일정 ${list.length}개${hasImp ? " · 중요 있음" : ""}`;
+        cells += `<button class="yd ${cls}" data-d="${key}" title="${lab}" aria-label="${lab}">${d}</button>`;
+      }
+      const isCur = TODAY.startsWith(`${view.y}-${String(m + 1).padStart(2, "0")}`);
+      h += `<div class="ymon ${isCur ? "cur" : ""}"><div class="ymon-h"><button data-month="${m}" title="${m + 1}월 보기">${m + 1}월</button>${isCur ? `<span class="now">이번 달</span>` : ""}<small>${monthTasks.length ? `일정 ${monthTasks.length}개` : "일정 없음"}</small></div><div class="ygrid">${cells}</div></div>`;
+    }
+    return `<div class="year">${h}</div>`;
+  }
+
+  function renderGrid() {
+    document.querySelectorAll(".viewseg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === calMode));
+    const saved = $("#wlist") ? $("#wlist").scrollTop : null;
+    $("#calview").innerHTML = calMode === "week" ? renderWeek() : calMode === "year" ? renderYear() : renderMonth();
+    placeWeek(saved);
+    $("#cal-hint").innerHTML = calMode === "year"
+      ? `<span class="ylegend"><span>날짜를 누르면 그 달로 이동해요</span><span><i style="background:var(--heat1)"></i>일정 1개</span><span><i style="background:var(--heat2)"></i>2개 이상</span><span><i style="background:var(--pink);border-radius:50%;width:6px;height:6px"></i>중요</span></span>`
+      : calMode === "week" ? "위에서 날짜를 누르면 그 날 일정이 보여요 · ← → 하루, PageUp/Down 한 주" : "날짜를 누르면 그 날 일정이 보여요 · 두 번 누르면 추가";
+  }
+
+  const subOf = (t, withDate) => {
+    const parts = [];
+    if (withDate) parts.push(fmtD(t.date));
+    if (t.time) parts.push(fmtT(t.time)); else if (!withDate) parts.push("하루 종일");
+    let s = parts.join(" ");
+    if (t.repeat && t.repeat !== "없음") s += `<span class="meta-ic" title="반복">${ic("i-repeat")}${TaskForm.summary(t)}</span>`;
+    if (t.alarm && t.alarm !== "없음" && t.alarm !== "정각") s += `<span class="meta-ic" title="알림">${ic("i-bell")}${t.alarm}</span>`;
+    return s;
+  };
+  function card(t) {
+    return `<div class="card ${t.done ? "done" : ""}" data-id="${t.id}" tabindex="0">
+      <button class="check" data-act="toggle" aria-label="${t.done ? "완료 취소" : "완료"}: ${esc(t.title)}">${ic("i-check")}</button>
+      <div class="ttl"><div class="t">${esc(t.title)}${t.imp ? ic("i-star", "i star") : ""}</div><div class="s">${subOf(t, false)}</div></div>
+      <span class="chev">${ic("i-chev")}</span></div>`;
+  }
+
+  const opts = (list, cur) => list.map(o => `<option ${o === cur ? "selected" : ""}>${o}</option>`).join("");
+  // 일정 폼: scripts/task-form.js (Figma 일정 추가 화면 기준)
+  const formHTML = t => TaskForm.html(t);
+  const bindForm = (t, onChange) => TaskForm.bind($("#panel"), t, onChange, panelMode === "add");
+  document.addEventListener("taskform:redraw", () => renderPanel());
+
+  function renderPanel() {
+    const p = $("#panel");
+    if (panelMode === "list") {
+      p.className = "panel day-panel";
+      let list = tasks.filter(t => t.date === sel && match(t) && !(hideDone && t.done)).sort(sorters[sort]);
+      p.innerHTML = `<div class="panel-h"><span></span><span>${fmtLong(sel)}</span>${calMode !== "month" ? `<button class="iconbtn p-x" id="p-x" aria-label="패널 닫기 (Esc)">${ic("i-x")}</button>` : "<span></span>"}</div>
+        <div class="dp-top">
+          <div class="dp-stat">${statOf(tasks.filter(t => t.date === sel && match(t)))}</div>
+          <button class="addbtn" id="add-btn">${ic("i-plus")}일정 추가</button>
+          <div class="filters">
+            <label class="cbx"><button class="box" id="hide-done" role="checkbox" aria-checked="${hideDone}">${ic("i-check")}</button>완료 제외</label>
+            <select class="sort" id="sort" aria-label="정렬">${opts(Object.keys(sorters), sort)}</select>
+          </div>
+        </div>
+        <div class="dp-list">${list.length ? `<div class="cards">${list.map(card).join("")}</div>`
+          : `<div class="dp-empty">${ic("i-sad")}예정된 일정이 없습니다.</div>`}</div>`;
+      $("#add-btn").onclick = openAdd;
+      $("#p-x") && ($("#p-x").onclick = () => { weekPanel = false; render(); });
+      $("#hide-done").onclick = () => { hideDone = !hideDone; renderPanel(); };
+      $("#sort").onchange = e => { sort = e.target.value; renderPanel(); };
+      return;
+    }
+    p.className = "panel";
+    const t = panelMode === "add" ? draft : find(detailId);
+    if (!t) { panelMode = "list"; return renderPanel(); }
+    p.innerHTML = `<div class="panel-h"><button class="iconbtn backbtn" id="p-back" aria-label="뒤로">${ic("i-chev")}</button><span>${panelMode === "add" ? "일정 추가" : "일정 상세"}</span><span></span></div>
+      <div class="panel-b">${formHTML(t)}${panelMode === "detail" ? `<div class="p-note">변경 내용은 바로 저장돼요</div>` : ""}</div>
+      ${panelMode === "add"
+        ? `<div class="panel-f one"><button class="okbtn" id="p-ok" ${t.title.trim() ? "" : "disabled"}>확인</button></div>`
+        : `<div class="panel-f"><button class="pbtn del" id="p-del">${ic("i-trash")}삭제</button><button class="pbtn" id="p-toggle">${ic("i-check")}${t.done ? "완료 취소" : "완료"}</button></div>`}`;
+    $("#p-back").onclick = () => { panelMode = "list"; render(); window.App && App.anim("#panel .dp-list", "swap-back"); };
+    if (panelMode === "add") {
+      bindForm(t, () => renderPanel());
+      $("#p-ok").onclick = () => {
+        if (!draft.title.trim()) return;
+        const nt = { ...draft, title: draft.title.trim(), id: id++, done: false };
+        tasks.push(nt); sel = nt.date; panelMode = "list"; goMonthOf(nt.date); render(); toast(`${fmtD(nt.date)}에 일정을 추가했어요`); window.App && App.anim(`#panel .card[data-id="${nt.id}"]`, "just-new");
+      };
+      const ti = $("#p-title"); ti.focus({ preventScroll: true }); /* 패널이 밀려 나오는 중에 화면이 옆으로 끌려가지 않게 */ ti.setSelectionRange(ti.value.length, ti.value.length);
+    } else {
+      bindForm(t, k => { if (k === "date") { sel = t.date; goMonthOf(t.date); toast(`${fmtD(t.date)}로 옮겼어요`); } render(); });
+      $("#p-del").onclick = () => del(t);
+      $("#p-toggle").onclick = () => toggle(t);
+    }
+  }
+
+  function render() {
+    if (calMode !== "month" && panelMode === "list") weekPanel = false; // 주간·연간: 패널은 상세·추가일 때만
+    renderGrid(); renderPanel();
+    const slide = calMode !== "month";
+    document.querySelector(".shell").classList.toggle("slide", slide);
+    $("#win").classList.toggle("panel-open", !slide || weekPanel);
+  }
+  const openWeekPanel = () => { if (calMode !== "month") { weekPanel = true; $("#win").classList.add("panel-open"); } };
+  function goMonthOf(d) { const x = new Date(d + "T00:00"); view = { y: x.getFullYear(), m: x.getMonth() }; }
+  function openAdd() { openWeekPanel(); TaskForm.reset(); draft = { title: "", date: sel, time: "", imp: false, repeat: "없음", repeatDays: [], alarm: "없음" }; panelMode = "add"; renderPanel(); window.App && App.anim("#panel .panel-b", "swap"); }
+  function toast(text, undo) {
+    $("#toast-t").textContent = text; undoFn = undo || null; $("#toast-undo").hidden = !undo;
+    $("#toast").classList.add("open"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("#toast").classList.remove("open"), 4000);
+  }
+  $("#toast-undo").onclick = () => { if (undoFn) undoFn(); $("#toast").classList.remove("open"); };
+  function toggle(t) { t.done = !t.done; render(); if (t.done) { toast("잘했어요!"); window.App && App.anim(`#panel .card[data-id="${t.id}"]`, "just-done"); } }
+  function del(t) {
+    const i = tasks.indexOf(t); tasks.splice(i, 1); panelMode = "list"; render();
+    toast(`"${t.title}" 삭제했어요`, () => { tasks.splice(i, 0, t); render(); });
+  }
+
+  const pick = d => { const ch = sel !== d; sel = d; panelMode = "list"; setTimeout(() => ch && window.App && App.anim("#panel .dp-list", "swap")); };
+  const setMode = m => { if (m === calMode) return; const order = ["week", "month", "year"], dir = order.indexOf(m) > order.indexOf(calMode);
+    calMode = m; localStorage.setItem("tws-calmode", m); goMonthOf(sel); weekPanel = false; render(); window.App && App.anim("#calview", dir ? "swap" : "swap-back"); };
+  document.querySelectorAll(".viewseg button").forEach(b => b.onclick = () => setMode(b.dataset.v));
+  $("#calview").addEventListener("click", e => {
+    const c = e.target.closest(".card");
+    if (c) { const t = find(+c.dataset.id);
+      if (e.target.closest('[data-act="toggle"]')) { toggle(t); if (t.done) window.App && App.anim(`#wlist .card[data-id="${t.id}"]`, "just-done"); return; }
+      TaskForm.reset(); sel = wkAnchor = t.date; detailId = t.id; panelMode = "detail"; openWeekPanel(); render(); window.App && App.anim("#panel .panel-b", "swap"); return; }
+    const add = e.target.closest("[data-add]"); if (add) { sel = add.dataset.add; if (calMode === "week") wkAnchor = sel; render(); openAdd(); return; }
+    const mb = e.target.closest("[data-month]"); if (mb) { view.m = +mb.dataset.month; sel = iso(view.y, view.m, 1); calMode = "month"; localStorage.setItem("tws-calmode", "month"); render(); window.App && App.anim("#calview", "swap-back"); return; }
+    const yd1 = e.target.closest(".yd"); if (yd1) { sel = yd1.dataset.d; panelMode = "list"; calMode = "month"; localStorage.setItem("tws-calmode", "month"); goMonthOf(sel); render(); window.App && App.anim("#calview", "swap-back"); return; }
+    const b = e.target.closest(".day, .wday"); if (!b) return;
+    pick(b.dataset.d);
+    if (calMode === "month") { const x = new Date(sel + "T00:00"); if (x.getMonth() !== view.m) goMonthOf(sel); }
+    render();
+  });
+  $("#calview").addEventListener("keydown", e => {
+    const c = e.target.closest(".card"); if (!c || e.target !== c || (e.key !== "Enter" && e.key !== " ")) return;
+    e.preventDefault(); e.stopPropagation();
+    if (e.key === " ") c.querySelector('[data-act="toggle"]').click(); else c.click();
+  });
+  $("#calview").addEventListener("dblclick", e => {
+    const b = e.target.closest(".day, .wsec"); if (b && !e.target.closest(".card, .wsec-add, .qadd")) { sel = b.dataset.d; if (calMode === "week") wkAnchor = sel; render(); openAdd(); }
+  });
+  $("#panel").addEventListener("click", e => {
+    const c = e.target.closest(".card"); if (!c) return; const t = find(+c.dataset.id);
+    if (e.target.closest('[data-act="toggle"]')) return toggle(t);
+    TaskForm.reset(); detailId = t.id; panelMode = "detail"; renderPanel(); window.App && App.anim("#panel .panel-b", "swap");
+  });
+
+  const shiftMonth = n => {
+    if (calMode === "week") { const x = MONTHS(sel); x.setDate(x.getDate() + 7 * n); sel = keyOf(x); goMonthOf(sel); render(); }
+    else if (calMode === "year") { view.y += n; renderGrid(); }
+    else { view.m += n; if (view.m < 0) { view.m = 11; view.y--; } if (view.m > 11) { view.m = 0; view.y++; } renderGrid(); }
+    window.App && App.anim("#calview", n > 0 ? "swap" : "swap-back");
+  };
+  const shiftDay = n => { const x = new Date(sel + "T00:00"); x.setDate(x.getDate() + n); sel = iso(x.getFullYear(), x.getMonth(), x.getDate()); goMonthOf(sel); panelMode = "list"; render(); };
+  $("#prev").onclick = () => shiftMonth(-1);
+  $("#next").onclick = () => shiftMonth(1);
+  $("#go-today").onclick = () => { sel = TODAY; goMonthOf(TODAY); panelMode = "list"; render(); };
+  $("#search").addEventListener("input", render);
+  const openSearch = () => { $("#search-box").classList.add("open"); $("#search").focus(); };
+  $("#search-btn").onclick = () => { const box = $("#search-box"); if (box.classList.contains("open") && !$("#search").value) box.classList.remove("open"); else openSearch(); };
+
+  document.addEventListener("keydown", e => {
+    const typing = /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName);
+    if (e.ctrlKey && e.key.toLowerCase() === "n") { e.preventDefault(); openAdd(); return; }
+    if (e.ctrlKey && e.key.toLowerCase() === "f") { e.preventDefault(); openSearch(); return; }
+    if (e.key === "Escape" && panelMode !== "list") { panelMode = "list"; render(); return; }
+    if (e.key === "Escape" && calMode !== "month" && weekPanel) { weekPanel = false; render(); return; }
+    if (typing) return;
+    if (e.key === "ArrowLeft") shiftDay(-1);
+    if (e.key === "ArrowRight") shiftDay(1);
+    if (e.key === "ArrowUp") shiftDay(-7);
+    if (e.key === "ArrowDown") shiftDay(7);
+    if (e.key === "PageUp") { e.preventDefault(); shiftMonth(-1); }
+    if (e.key === "PageDown") { e.preventDefault(); shiftMonth(1); }
+    if (!e.ctrlKey && !e.altKey) { const k = e.key.toLowerCase(); if (k === "w") setMode("week"); if (k === "m") setMode("month"); if (k === "y") setMode("year"); }
+  });
+
+  render();
+})();
+</script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

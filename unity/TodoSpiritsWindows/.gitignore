@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+*_wpftmp.csproj
+.vs/
+*.user
+spirit-player/
+spirit-player-logs/

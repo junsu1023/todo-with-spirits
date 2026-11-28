@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3027021052272701105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6685856692346312403}
+  - component: {fileID: 3845425904607358976}
+  m_Layer: 0
+  m_Name: PF_UI_ForestApp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6685856692346312403
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3027021052272701105}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3845425904607358976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3027021052272701105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8837a27bfe9bac04291ce5afb58926d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TodoSpirits.Presentation::TodoSpirits.Presentation.Forest.ForestAppView
+  regularFont: {fileID: 12800000, guid: 2ed266476d4311044a678c517da39ccb, type: 3}
+  boldFont: {fileID: 12800000, guid: 88b80a02c1c5d5b4b8dfbe6114819c9e, type: 3}
+  forestBackground: {fileID: 21300000, guid: 0dea1f9fd5855f841a4c19347ab6afd5, type: 3}
+  spiritPoses:
+  - {fileID: -7564782727809224365, guid: 000b6f38bc1deb643b247d0bc40302cd, type: 3}
+  - {fileID: 5388345916804333217, guid: 000b6f38bc1deb643b247d0bc40302cd, type: 3}
+  - {fileID: 4081460947572445097, guid: 000b6f38bc1deb643b247d0bc40302cd, type: 3}
+  - {fileID: 7924891835631481984, guid: 000b6f38bc1deb643b247d0bc40302cd, type: 3}
+  adolescentSpiritPoses:
+  - {fileID: 1432482860, guid: 5699e3932032a1d42993e2e01c54847a, type: 3}
+  - {fileID: 297228883, guid: 5699e3932032a1d42993e2e01c54847a, type: 3}
+  - {fileID: 937482745, guid: 5699e3932032a1d42993e2e01c54847a, type: 3}
+  - {fileID: -1811797692, guid: 5699e3932032a1d42993e2e01c54847a, type: 3}
+  adultSpiritPoses:
+  - {fileID: 713967913, guid: cc3bd4814dd744b4494b62873ec53d2c, type: 3}
+  - {fileID: 2038371885, guid: cc3bd4814dd744b4494b62873ec53d2c, type: 3}
+  - {fileID: 1039911747, guid: cc3bd4814dd744b4494b62873ec53d2c, type: 3}
+  - {fileID: -415093912, guid: cc3bd4814dd744b4494b62873ec53d2c, type: 3}
+  forestProps:
+  - {fileID: -6727615521423043804, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  - {fileID: 5861409217440676607, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  - {fileID: -3686998675416075112, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  - {fileID: 8760368180796428340, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  - {fileID: 944983140897745335, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  - {fileID: -9003071744359891069, guid: 4bd70423b40388d4197af38be55c6c6d, type: 3}
+  journeyProps:
+  - {fileID: -7886113852366792498, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: -3870795806504794109, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: -137198727447476473, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: -6653175444612088501, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: 5250193199902033824, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: -8042117335785582997, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: 4066616060623695830, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: 4087523083786448537, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  - {fileID: -5384217388036044068, guid: c1134fb959fd6b242b1f947ee25809f4, type: 3}
+  giftProps:
+  - {fileID: -5349795713361489834, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  - {fileID: 8224779964925595741, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  - {fileID: -8932776580661841440, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  - {fileID: 6333082636666309097, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  - {fileID: -7980265989178792411, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  - {fileID: -8699009211002089492, guid: b1b51db909142f94b89d27216b07c169, type: 3}
+  tripLunchSprite: {fileID: 21300000, guid: 90aac9bc661910e479fb58218ad01706, type: 3}
+  artKitCatalog: {fileID: 11400000, guid: dd0bbb518310524489bed68449f8e0f6, type: 2}
+  readingSpirit: {fileID: 21300000, guid: eb6aba005c5e509d8e0e98d492cfd44c, type: 3}
+  readingDesk: {fileID: 21300000, guid: 79e2a2af08455dd79896dfe537cbfd2a, type: 3}
+  teaCup: {fileID: 21300000, guid: a16a5d9173fbdb543ba32e145a1b1cf5, type: 3}
+  restCushion: {fileID: 21300000, guid: cf56f7a1e69d2c84aa4437ef00850f52, type: 3}

@@ -1,0 +1,12 @@
+{
+  "file": "TodoSpirits-Forest-release.apk",
+  "bytes": 62948739,
+  "sha256": "EC6399DE5B297A4713B4369BAF11448EFA24C3F85EF6898DA3CD8D7F18FB50EE",
+  "configuration": "Android ARM64 IL2CPP non-development",
+  "standalone": true,
+  "storeSigningConfigured": false,
+  "package": "com.DefaultCompany.TodoSpirits",
+  "minSdk": 25,
+  "targetSdk": 36,
+  "debuggable": false
+}

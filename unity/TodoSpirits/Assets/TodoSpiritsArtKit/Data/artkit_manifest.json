@@ -1,0 +1,4093 @@
+{
+  "schemaVersion": 1,
+  "kitVersion": "1.0.0",
+  "unityProjectSnapshot": "6000.3.16f1",
+  "sprites": [
+    {
+      "id": "btn_primary_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_primary_normal.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "9a036439b46b84b6e3c97425b287f732"
+    },
+    {
+      "id": "btn_primary_highlighted",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_primary_highlighted.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e854697179fc24cefa217259d9040503"
+    },
+    {
+      "id": "btn_primary_pressed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_primary_pressed.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "c99ee7fafdc38e6e0b3975cca4811fa1"
+    },
+    {
+      "id": "btn_primary_disabled",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_primary_disabled.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e96aab00efae5ee3dba3fc1da8b6abc3"
+    },
+    {
+      "id": "btn_secondary_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_secondary_normal.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "304fa23752b94b0a389b091f06bf6475"
+    },
+    {
+      "id": "btn_secondary_highlighted",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_secondary_highlighted.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "fbce6740c426fde0658f8a71efb2c76c"
+    },
+    {
+      "id": "btn_secondary_pressed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_secondary_pressed.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "4af0af9bc72dad828d7dcbab51eba571"
+    },
+    {
+      "id": "btn_secondary_disabled",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_secondary_disabled.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "6940b7e853662411657dfce4ac22ad57"
+    },
+    {
+      "id": "btn_paper_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_paper_normal.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e3e36e9d11cfc6420802d42d21b3048b"
+    },
+    {
+      "id": "btn_paper_highlighted",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_paper_highlighted.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "94bd282b91cc57d9aa92a9d868bbb1d8"
+    },
+    {
+      "id": "btn_paper_pressed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_paper_pressed.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "7faf10d8ffcf7fd0e0c76967265ba65d"
+    },
+    {
+      "id": "btn_paper_disabled",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_paper_disabled.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "87dc5a64fccf3f8af5ed18f4e08e6bd2"
+    },
+    {
+      "id": "btn_danger_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_danger_normal.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "c2f63404782b9e689a92c9b4159cde09"
+    },
+    {
+      "id": "btn_danger_highlighted",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_danger_highlighted.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e01ea90eae2777a26685076204bf99e8"
+    },
+    {
+      "id": "btn_danger_pressed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_danger_pressed.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "16f1ecf41de95eca34fd631a581bd418"
+    },
+    {
+      "id": "btn_danger_disabled",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/btn_danger_disabled.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "a67bea28dd7290a86ae4b0eb2b73adef"
+    },
+    {
+      "id": "panel_paper",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/panel_paper.png",
+      "width": 256,
+      "height": 256,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e1f0d641e5d63cd2357e105ebb06eceb"
+    },
+    {
+      "id": "panel_wood",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/panel_wood.png",
+      "width": 256,
+      "height": 256,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "d0a80a28e484d20404e2084fd41171b4"
+    },
+    {
+      "id": "card_paper",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/card_paper.png",
+      "width": 192,
+      "height": 128,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "0277a859d998e66bf765de6aa6edb750"
+    },
+    {
+      "id": "card_selected",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/card_selected.png",
+      "width": 192,
+      "height": 128,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "e3f8bfe6d3776b7c7d3bf5eccd8115b1"
+    },
+    {
+      "id": "card_pink",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/card_pink.png",
+      "width": 192,
+      "height": 128,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "be2c714985116877ba6ebb17627df11e"
+    },
+    {
+      "id": "header_wood",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/header_wood.png",
+      "width": 256,
+      "height": 96,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "3e541441937b52e42f0223357d114c44"
+    },
+    {
+      "id": "bubble_body",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/bubble_body.png",
+      "width": 256,
+      "height": 128,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "6d4d7a002bc6d5d9cb9c2f800072cc3b"
+    },
+    {
+      "id": "badge_paper",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/badge_paper.png",
+      "width": 128,
+      "height": 64,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "d63a788ee30b83c905efe500d6e63bec"
+    },
+    {
+      "id": "toggle_track_on",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/toggle_track_on.png",
+      "width": 128,
+      "height": 64,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "681076345a3c8408738b75a4c45691bb"
+    },
+    {
+      "id": "toggle_track_off",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/toggle_track_off.png",
+      "width": 128,
+      "height": 64,
+      "border": [
+        28,
+        28,
+        28,
+        28
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "9b7db8b09e0e631b0e70b8059b112678"
+    },
+    {
+      "id": "progress_track",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/progress_track.png",
+      "width": 128,
+      "height": 48,
+      "border": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "56ec38ef433efe3a34b7ccf2b35a0168"
+    },
+    {
+      "id": "progress_fill_green",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/progress_fill_green.png",
+      "width": 128,
+      "height": 48,
+      "border": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "55ba1af713eee6ad6cfdbb3c14fd5f49"
+    },
+    {
+      "id": "progress_fill_pink",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/progress_fill_pink.png",
+      "width": 128,
+      "height": 48,
+      "border": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "0ee8942040bd36d1e84583f3eb8d0ae0"
+    },
+    {
+      "id": "circle_paper_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/circle_paper_normal.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "5cd722866da018b553bd2ec254eea83b"
+    },
+    {
+      "id": "circle_paper_highlighted",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/circle_paper_highlighted.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "915017c6a02c71c25585174c3435fa6e"
+    },
+    {
+      "id": "circle_paper_pressed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/circle_paper_pressed.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "7facc83cb7661256873fcb7552829ec3"
+    },
+    {
+      "id": "circle_paper_disabled",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/circle_paper_disabled.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "a2678bf2dada67fe3336062c5bd169c3"
+    },
+    {
+      "id": "thumb_cream_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/thumb_cream_normal.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "6e05b62eead658795dd84aeadc4363ed"
+    },
+    {
+      "id": "circle_green_normal",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/circle_green_normal.png",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "12864e3b7e23d2c2bd78f3807dfc2067"
+    },
+    {
+      "id": "focus_ring",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/focus_ring.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "be7cdbde16b049c1b3a6c8393f97082d"
+    },
+    {
+      "id": "selection_ring",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/selection_ring.png",
+      "width": 192,
+      "height": 96,
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "f3b08e1588087431627d7bed0ef62e89"
+    },
+    {
+      "id": "mask_round",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/mask_round.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        26,
+        26,
+        26,
+        26
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic UI mask",
+      "notes": "",
+      "guid": "96c6ff4611e25a82356bffd7112b0ffe"
+    },
+    {
+      "id": "white_pixel",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/white_pixel.png",
+      "width": 4,
+      "height": 4,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic utility",
+      "notes": "",
+      "guid": "b7633cecc82ac75b208c0ed5970c2b0f"
+    },
+    {
+      "id": "bubble_tail",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/bubble_tail.png",
+      "width": 64,
+      "height": 48,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        1
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "4b700f2266c80dc7ef9562c67f46b1b4"
+    },
+    {
+      "id": "ic_close",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_close.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "0e634ca1f0c7eaafe6700dda51faead9"
+    },
+    {
+      "id": "ic_back",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_back.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "eeed8b0ae9865e761edb4492a505b70a"
+    },
+    {
+      "id": "ic_next",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_next.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "6b491a0bc74a1746bae066e50457010d"
+    },
+    {
+      "id": "ic_chevron_down",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_chevron_down.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "8571f1ce0ba25f454b4bd65ee66b9d05"
+    },
+    {
+      "id": "ic_check",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_check.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "8d5fa0e42e9acae37be3e3407ca7d2da"
+    },
+    {
+      "id": "ic_music",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_music.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "7aae12d3e8caa29e6b4fe9c00489b6fd"
+    },
+    {
+      "id": "ic_sound",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_sound.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "31a994117120e922b2d14d4c1fbee274"
+    },
+    {
+      "id": "ic_bell",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_bell.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "40443ef4f802c7ac0cc74b7b1bdba05a"
+    },
+    {
+      "id": "ic_vibration",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_vibration.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "8a9542583fe0d2e73dbe8e882f3d1649"
+    },
+    {
+      "id": "ic_language",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_language.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "c40ae51b669bf6fbec687ba76462eb3e"
+    },
+    {
+      "id": "ic_account",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_account.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "083f27c700aa5dc96f52340e7685f910"
+    },
+    {
+      "id": "ic_help",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_help.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "6d67358727dea5f7f5037805732d9888"
+    },
+    {
+      "id": "ic_terms",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_terms.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "c85c14f9d17c8d021ffb35f261eb7482"
+    },
+    {
+      "id": "ic_album",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_album.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "7cee0ac4298be63f145fc86e05fc0f9f"
+    },
+    {
+      "id": "ic_leaf",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_leaf.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "185f18e91c5b306c758ebb4ef113650a"
+    },
+    {
+      "id": "ic_heart",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_heart.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "bac06c3a81cfae0ae1f1f57be3ec6b0c"
+    },
+    {
+      "id": "ic_gift",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_gift.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "7e39c6a4ef7dca602ea1a14a64578dc3"
+    },
+    {
+      "id": "ic_flower",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_flower.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "5535d335691a5ecf95586dad186eb3ee"
+    },
+    {
+      "id": "ic_walk",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_walk.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "52385062d4d95a67ef3352f002cd05db"
+    },
+    {
+      "id": "ic_sun",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_sun.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "0ae20bed226ea3fa737105dc6d539cb1"
+    },
+    {
+      "id": "ic_moon",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_moon.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "a98c1bfd78b47f3e4ee0d6fe08863761"
+    },
+    {
+      "id": "ic_reduce_motion",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_reduce_motion.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "e8b18950235ccc64fd8d131b3ac11c69"
+    },
+    {
+      "id": "ic_sync",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_sync.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "192b93148ee7e5afb4a3e66242df1933"
+    },
+    {
+      "id": "ic_clock",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_clock.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "89e8faca6d58962f4f0654069e86b809"
+    },
+    {
+      "id": "ic_home",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_home.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "8a0bb31a089888ba8717f295af3864a8"
+    },
+    {
+      "id": "ic_more",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_more.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "6db35677085e6298df64bf8687717653"
+    },
+    {
+      "id": "ic_settings",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/ic_settings.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new vector-derived production icon",
+      "notes": "",
+      "guid": "39436445555bc48b88b6def20b1616bb"
+    },
+    {
+      "id": "notification_dot",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/notification_dot.png",
+      "width": 48,
+      "height": 48,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "1c6d70e731986806de4c55355e92bcf2"
+    },
+    {
+      "id": "read_complete",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/read_complete.png",
+      "width": 48,
+      "height": 48,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "",
+      "guid": "37b7245ff5b7c6543ee3160f780d6e3c"
+    },
+    {
+      "id": "photo_frame",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/UI_Core/photo_frame.png",
+      "width": 256,
+      "height": 256,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic production UI",
+      "notes": "Use separate masked photo behind this frame. Keep aspect 1:1.",
+      "guid": "e01e3b0d61d65202199fbbfe9e57539b"
+    },
+    {
+      "id": "spirit_neutral",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_neutral.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "bd7560365827196ba55ae78e739a57be"
+    },
+    {
+      "id": "spirit_half",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_half.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "2b52a87e8dfbd59f8b771413d6da8759"
+    },
+    {
+      "id": "spirit_closed",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_closed.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "8381973095b3472f57316a84a9f8d6d4"
+    },
+    {
+      "id": "spirit_happy",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_happy.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "b6acd4cf38e4e8af3d0a7f9ae25db448"
+    },
+    {
+      "id": "spirit_sleep",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_sleep.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "e4dc263de0212ef0c5d2d63abe59b5bc"
+    },
+    {
+      "id": "spirit_wink",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_wink.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "3b90ff743bb657a57d65cf7279cd8088"
+    },
+    {
+      "id": "spirit_talk",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_talk.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing wind spirit, cleaned alpha and deterministic eyelid/mouth variants",
+      "notes": "512x512 fixed canvas; same body registration; not new evolved character art.",
+      "guid": "12a935659962282367ed61217405f1a6"
+    },
+    {
+      "id": "spirit_curious_pose",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_curious_pose.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing expression source, cleaned and registered",
+      "notes": "Reaction key pose, do not play as walk cycle.",
+      "guid": "23c4d1a8c84d2d558bd88ccaf3d120f5"
+    },
+    {
+      "id": "spirit_cheer_pose",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Spirit/spirit_cheer_pose.png",
+      "width": 512,
+      "height": 512,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.06640625
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing expression source, cleaned and registered",
+      "notes": "Reaction key pose, do not play as walk cycle.",
+      "guid": "5724a175a77e2855af8240831c424eb3"
+    },
+    {
+      "id": "shadow_soft",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/shadow_soft.png",
+      "width": 256,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new procedural soft shadow",
+      "notes": "",
+      "guid": "6a2630a7248ca56f5f5c2fdf21b6fbbc"
+    },
+    {
+      "id": "tree_house",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/tree_house.png",
+      "width": 452,
+      "height": 399,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "60e7a2d43c4879fc9d470303946d14d7"
+    },
+    {
+      "id": "door",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/door.png",
+      "width": 261,
+      "height": 254,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "f168758171f2973d7b005834c1accb8f"
+    },
+    {
+      "id": "stump",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/stump.png",
+      "width": 300,
+      "height": 219,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "b9ffdcf773de1e6d52fbc6030ff07ef6"
+    },
+    {
+      "id": "bridge",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/bridge.png",
+      "width": 406,
+      "height": 229,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "a8b18759954abfc1bab811809391dea7"
+    },
+    {
+      "id": "pond",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/pond.png",
+      "width": 453,
+      "height": 159,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "1a679bf94083aadacc215c260bce3fb4"
+    },
+    {
+      "id": "lantern",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/lantern.png",
+      "width": 119,
+      "height": 166,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "3514a6fe299986c82000121a4f3d6728"
+    },
+    {
+      "id": "mailbox",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/mailbox.png",
+      "width": 129,
+      "height": 175,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "047e8469470f58b199a213f94dd9cdbb"
+    },
+    {
+      "id": "fence",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/fence.png",
+      "width": 226,
+      "height": 143,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "a1ee25df26a1f483b1fac1a25e6388f9"
+    },
+    {
+      "id": "fence_post",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/fence_post.png",
+      "width": 97,
+      "height": 152,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "488ba5d456c556363f4c47ef47e405e7"
+    },
+    {
+      "id": "sign_blank",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/sign_blank.png",
+      "width": 187,
+      "height": 174,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "669ac6c5e8d6ae1151b65350ed7fbc8b"
+    },
+    {
+      "id": "sign_arrow",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/sign_arrow.png",
+      "width": 165,
+      "height": 183,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "61785ad8e6de73445af331aa6d5074d1"
+    },
+    {
+      "id": "stepping_stones",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/stepping_stones.png",
+      "width": 191,
+      "height": 119,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "0762c2650c8bca9a3f4b85a600cf43bc"
+    },
+    {
+      "id": "basket",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/basket.png",
+      "width": 163,
+      "height": 126,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "560e8abf198eac233a5933c0f6b19f45"
+    },
+    {
+      "id": "books",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/books.png",
+      "width": 158,
+      "height": 123,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "6dde73235754d81101bdbd712cf8a24c"
+    },
+    {
+      "id": "sleeping_cat",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/sleeping_cat.png",
+      "width": 219,
+      "height": 114,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "118bb7da7f0e52ecec4ecd17a977cea9"
+    },
+    {
+      "id": "mushrooms",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/mushrooms.png",
+      "width": 228,
+      "height": 134,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "d737914463195c79b68535f32cec86f8"
+    },
+    {
+      "id": "flowers_white",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/flowers_white.png",
+      "width": 106,
+      "height": 101,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "945c568d8cb938e7a4ae449b5ece101e"
+    },
+    {
+      "id": "flowers_pink",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/flowers_pink.png",
+      "width": 92,
+      "height": 98,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "a105b457a3e0b84b24b8c588ef41d0e8"
+    },
+    {
+      "id": "flowers_yellow",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/flowers_yellow.png",
+      "width": 90,
+      "height": 94,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "ef3cdb1676a1ee2136121376f79cf569"
+    },
+    {
+      "id": "flowers_purple",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/flowers_purple.png",
+      "width": 95,
+      "height": 116,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "e35551feea56aa8760975b7c8b2a45db"
+    },
+    {
+      "id": "grass_a",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/grass_a.png",
+      "width": 99,
+      "height": 84,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "bf5898298a1ef8b5605e493db2b345b2"
+    },
+    {
+      "id": "grass_b",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/grass_b.png",
+      "width": 95,
+      "height": 83,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "11079483f957bd4844fd55b5733d7a6a"
+    },
+    {
+      "id": "grass_c",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/grass_c.png",
+      "width": 77,
+      "height": 80,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "93d26232966dcf9a5869cd6dcdce5b7f"
+    },
+    {
+      "id": "bush_small",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/bush_small.png",
+      "width": 138,
+      "height": 95,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "c003a094d5344dd331078609e8739c29"
+    },
+    {
+      "id": "bush_medium",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/bush_medium.png",
+      "width": 181,
+      "height": 118,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "1d69c18d597ad31b1a3b06a96a87ad2d"
+    },
+    {
+      "id": "bush_large",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/bush_large.png",
+      "width": 259,
+      "height": 129,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "93689da3789fb5b1e5ad084d339faad7"
+    },
+    {
+      "id": "rocks_small",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/rocks_small.png",
+      "width": 172,
+      "height": 94,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "b39896e4dc94c4e7d4cc0d211a6ac9e9"
+    },
+    {
+      "id": "rocks_large",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/rocks_large.png",
+      "width": 209,
+      "height": 123,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "7c950f00135bd3754419316583852773"
+    },
+    {
+      "id": "wind_chime",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/wind_chime.png",
+      "width": 80,
+      "height": 139,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "deecc3405c9fa5ed1a80fa4dfbc1b38b"
+    },
+    {
+      "id": "branch_top",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/branch_top.png",
+      "width": 319,
+      "height": 126,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "176c0b3ed92f34077aa7f490ee779340"
+    },
+    {
+      "id": "branch_right",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/branch_right.png",
+      "width": 272,
+      "height": 144,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.05
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing prop sheet",
+      "notes": "Native detail retained; avoid magnifying beyond ~1.5x on final device.",
+      "guid": "b6d5dc9b508de44635ad5d7b76d044bf"
+    },
+    {
+      "id": "leaf_single",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/leaf_single.png",
+      "width": 58,
+      "height": 65,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "18ae0270955b2f70d8c4511cb5101347"
+    },
+    {
+      "id": "sprout_pair",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/sprout_pair.png",
+      "width": 77,
+      "height": 63,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "64318eb09945cd1d00328724ca000b36"
+    },
+    {
+      "id": "heart_green",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/heart_green.png",
+      "width": 65,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "19690e580110e049db111ed031955088"
+    },
+    {
+      "id": "flower_cream",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/flower_cream.png",
+      "width": 66,
+      "height": 65,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "3799c277e50445eddefc53791120662a"
+    },
+    {
+      "id": "flower_pink",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/flower_pink.png",
+      "width": 60,
+      "height": 59,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "da32d229177715d3785e5723e3d34e0d"
+    },
+    {
+      "id": "petal_pink_a",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/petal_pink_a.png",
+      "width": 39,
+      "height": 46,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "d462dc22449209c3020f179b2a8ff5a2"
+    },
+    {
+      "id": "petal_pink_b",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/petal_pink_b.png",
+      "width": 47,
+      "height": 43,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned existing UI decoration",
+      "notes": "",
+      "guid": "117c4a9500a1ccdffaddf48cf97ae098"
+    },
+    {
+      "id": "corner_botanical",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/corner_botanical.png",
+      "width": 160,
+      "height": 144,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "recomposed existing botanical components",
+      "notes": "",
+      "guid": "ab4a9c4f834cc6fd78dd693a81c4b267"
+    },
+    {
+      "id": "corner_botanical_mirror",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Decor/corner_botanical_mirror.png",
+      "width": 160,
+      "height": 144,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "recomposed existing botanical components",
+      "notes": "",
+      "guid": "d9f719a9d769d8c78ddae8aca1b358df"
+    },
+    {
+      "id": "fx_tap_ring_00",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_00.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "851e551436c1d90adc1d72a9a055409e"
+    },
+    {
+      "id": "fx_tap_ring_01",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_01.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "95ea9aec8b289507824ed62dee4650a5"
+    },
+    {
+      "id": "fx_tap_ring_02",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_02.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "76e3670bb32bf2398212165f6db36552"
+    },
+    {
+      "id": "fx_tap_ring_03",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_03.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "47f568062c89ec8e91b42123e0efa0f6"
+    },
+    {
+      "id": "fx_tap_ring_04",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_04.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "4c6518c1f65d3692b7c629c3ab93ec2b"
+    },
+    {
+      "id": "fx_tap_ring_05",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_05.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "ab6dfe465fa7c2e645b32880cec5f1c7"
+    },
+    {
+      "id": "fx_tap_ring_06",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_06.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "24748f8481c5e015fab84a75a300a249"
+    },
+    {
+      "id": "fx_tap_ring_07",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_07.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "476281e3c44aaeadfa1f384ee933adab"
+    },
+    {
+      "id": "fx_tap_ring_08",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_08.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "3e392f87ce0976b5b8a02142d80615d7"
+    },
+    {
+      "id": "fx_tap_ring_09",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_09.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "f199561100d160c0686726fd1139a627"
+    },
+    {
+      "id": "fx_tap_ring_10",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_10.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "48817b387bae93c5a150e949d6d17216"
+    },
+    {
+      "id": "fx_tap_ring_11",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_tap_ring_11.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "49740ada3998571bb5f5f924a61ce603"
+    },
+    {
+      "id": "fx_reward_sparkle_00",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_00.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "787638c3208c38c4c573a5885a67b739"
+    },
+    {
+      "id": "fx_reward_sparkle_01",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_01.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "851ff655c2837786f17e1522ef528123"
+    },
+    {
+      "id": "fx_reward_sparkle_02",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_02.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "6fdc37028ee7a7e5ef93fdefe834b9a2"
+    },
+    {
+      "id": "fx_reward_sparkle_03",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_03.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "006f1b54046454a04e203f5be7905602"
+    },
+    {
+      "id": "fx_reward_sparkle_04",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_04.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "8562f47c9002c9e1bb5d896983adac7c"
+    },
+    {
+      "id": "fx_reward_sparkle_05",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_05.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "328cc487fcf4da0c58d342b0522b384a"
+    },
+    {
+      "id": "fx_reward_sparkle_06",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_06.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "008317abda02bca7eff9c38b60d99f4e"
+    },
+    {
+      "id": "fx_reward_sparkle_07",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_07.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "9900a20537b140382d24bd89c4cfe079"
+    },
+    {
+      "id": "fx_reward_sparkle_08",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_08.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "8fc4931c393203e3e8d1f4d08fb2423e"
+    },
+    {
+      "id": "fx_reward_sparkle_09",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_09.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "0e6b5e696be96fc17f7800488dbbb422"
+    },
+    {
+      "id": "fx_reward_sparkle_10",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_10.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "d77619d9d920c3413b77b5459c4a39a0"
+    },
+    {
+      "id": "fx_reward_sparkle_11",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_reward_sparkle_11.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "4abaab109c98e7be1d4f81001d820500"
+    },
+    {
+      "id": "fx_heart_rise_00",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_00.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "01f9e8d833f3baf13e119d6b16458306"
+    },
+    {
+      "id": "fx_heart_rise_01",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_01.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "1665b203f9f1de1f54c5d720e344e4c9"
+    },
+    {
+      "id": "fx_heart_rise_02",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_02.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e0ccfe05dd8b87f7e2adfcd174e196bb"
+    },
+    {
+      "id": "fx_heart_rise_03",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_03.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "ef54d53501e2f4bcf892811452bbbd6a"
+    },
+    {
+      "id": "fx_heart_rise_04",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_04.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "d632e635b4869d8a7bdb37f1ff2e066a"
+    },
+    {
+      "id": "fx_heart_rise_05",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_05.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "b86641df25e3307a147ae4c0ee478580"
+    },
+    {
+      "id": "fx_heart_rise_06",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_06.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e2045f43629f807749fdddcbc87bab0d"
+    },
+    {
+      "id": "fx_heart_rise_07",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_07.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "87c7d93228e343619ba22aafa5bc07a0"
+    },
+    {
+      "id": "fx_heart_rise_08",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_08.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e2b031325fe7700480e28e295966f9ff"
+    },
+    {
+      "id": "fx_heart_rise_09",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_09.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "a5efcea508b6ae54878e4fd23f682207"
+    },
+    {
+      "id": "fx_heart_rise_10",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_10.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "b4fda9b7694b054675754d093e980af4"
+    },
+    {
+      "id": "fx_heart_rise_11",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_heart_rise_11.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "3c3d5311a711177b7feaa4bfaf605823"
+    },
+    {
+      "id": "fx_leaf_orbit_00",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_00.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "361b3fd787a400fdc712cbdbf54d0b5b"
+    },
+    {
+      "id": "fx_leaf_orbit_01",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_01.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "c6b6006dac18fd8e36a2fe07d9039a46"
+    },
+    {
+      "id": "fx_leaf_orbit_02",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_02.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "aeeba9998c29dc912b944a4ce71797e1"
+    },
+    {
+      "id": "fx_leaf_orbit_03",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_03.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "2cc9245496d5331cf962dbdd8d0d3ffc"
+    },
+    {
+      "id": "fx_leaf_orbit_04",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_04.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "02eba6321c7e78d454cb9cacead8f83f"
+    },
+    {
+      "id": "fx_leaf_orbit_05",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_05.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "b1659f3d6cc5a638fae56b26bf643d72"
+    },
+    {
+      "id": "fx_leaf_orbit_06",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_06.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e3052849004baf933e78bca48e0db64d"
+    },
+    {
+      "id": "fx_leaf_orbit_07",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_07.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "b45c00c36d7ed72192294b1514c97c17"
+    },
+    {
+      "id": "fx_leaf_orbit_08",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_08.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "034e3618545e7945dff5c24640678a8f"
+    },
+    {
+      "id": "fx_leaf_orbit_09",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_09.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "df1d20986a93a16111c71d91700abbe3"
+    },
+    {
+      "id": "fx_leaf_orbit_10",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_10.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "77abb07dfe83884c16244f24b4fea4a2"
+    },
+    {
+      "id": "fx_leaf_orbit_11",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_11.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "b52eb0c2662ff90c73e53a617d1298a8"
+    },
+    {
+      "id": "fx_leaf_orbit_12",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_12.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "f541ff6ebff0e2a628dceed750d80db6"
+    },
+    {
+      "id": "fx_leaf_orbit_13",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_13.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "39e03541cdddcfd3eedc011fc63c0080"
+    },
+    {
+      "id": "fx_leaf_orbit_14",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_14.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "786f03728ead49b4a6a2121e5d7b034e"
+    },
+    {
+      "id": "fx_leaf_orbit_15",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_leaf_orbit_15.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "c770d11cd7915904bc6f51b40dd3ca89"
+    },
+    {
+      "id": "fx_shine_00",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_00.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e9c6abc1638d439d7ade67e94ff811ae"
+    },
+    {
+      "id": "fx_shine_01",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_01.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "74b00f29fe4f0ba2756041ee7cb04b59"
+    },
+    {
+      "id": "fx_shine_02",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_02.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "7a23b33d40d42c9823d0fdcc3a924707"
+    },
+    {
+      "id": "fx_shine_03",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_03.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "462b389b8a46d6bf236cc17521e7df9d"
+    },
+    {
+      "id": "fx_shine_04",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_04.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "72b4406a060127da2767fcd0882cc9a3"
+    },
+    {
+      "id": "fx_shine_05",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_05.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "60f38cc7e935728a97dd02b960c0958a"
+    },
+    {
+      "id": "fx_shine_06",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_06.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "28bf47aa5de6f2f7ebea3fb83281bad6"
+    },
+    {
+      "id": "fx_shine_07",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_07.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "e893982aa2dfa4f90eade655dca5961d"
+    },
+    {
+      "id": "fx_shine_08",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_08.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "0fb4e991cc466b27d1886a5a6bc1804d"
+    },
+    {
+      "id": "fx_shine_09",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_09.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "86a46001b6a1639a19b4043e9ca7b01a"
+    },
+    {
+      "id": "fx_shine_10",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_10.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "7d837a1b68db78b7049eba2a7696a3b0"
+    },
+    {
+      "id": "fx_shine_11",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/fx_shine_11.png",
+      "width": 256,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new deterministic animation frame",
+      "notes": "Fixed frame bounds; do not trim/recenter.",
+      "guid": "ec34a85689cd9227bf345627a3881c01"
+    },
+    {
+      "id": "lantern_glow",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/lantern_glow.png",
+      "width": 256,
+      "height": 256,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new procedural glow",
+      "notes": "",
+      "guid": "24711aab7d36251f3bab049db8bb275a"
+    },
+    {
+      "id": "spirit_glow",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/FX/spirit_glow.png",
+      "width": 256,
+      "height": 256,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "new procedural glow",
+      "notes": "",
+      "guid": "0c46e764a1b8515c396bbe7dc0a8f726"
+    },
+    {
+      "id": "bg_forest_storybook_fallback",
+      "path": "Assets/TodoSpiritsArtKit/Backgrounds/bg_forest_storybook_fallback.png",
+      "width": 1024,
+      "height": 1536,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing project background, retained fallback",
+      "notes": "Unmodified approved-project source; not a new Concept-01 repaint. Keep out of sprite atlases.",
+      "guid": "f975f7280265ef1c45d6e7b0b3e8fb3b"
+    },
+    {
+      "id": "bg_forest_release_fallback",
+      "path": "Assets/TodoSpiritsArtKit/Backgrounds/bg_forest_release_fallback.png",
+      "width": 1024,
+      "height": 1536,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "existing project background, retained fallback",
+      "notes": "Unmodified approved-project source; not a new Concept-01 repaint. Keep out of sprite atlases.",
+      "guid": "523a5f57f201d9416e242ce70970cce1"
+    },
+    {
+      "id": "layer_distant_village",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_distant_village.png",
+      "width": 696,
+      "height": 156,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "9d39adb124a978183f2309d546050cea"
+    },
+    {
+      "id": "layer_mid_forest",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_mid_forest.png",
+      "width": 736,
+      "height": 145,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "86b7db50b866d25642d068839ab7b234"
+    },
+    {
+      "id": "layer_ground_strip",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_ground_strip.png",
+      "width": 762,
+      "height": 97,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "39d156663b998e26d88d361ed34d6e6f"
+    },
+    {
+      "id": "layer_foreground_flowers",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_foreground_flowers.png",
+      "width": 453,
+      "height": 147,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "7d15001e62c22da6e75e7ba20f257b0c"
+    },
+    {
+      "id": "layer_stream_strip",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_stream_strip.png",
+      "width": 604,
+      "height": 153,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "beef9eaec20e0e160643a905e8a236da"
+    },
+    {
+      "id": "layer_path",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_path.png",
+      "width": 359,
+      "height": 144,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "1661ddb15dc3b6ce236ecaace73cad34"
+    },
+    {
+      "id": "layer_canopy_top",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_canopy_top.png",
+      "width": 1411,
+      "height": 174,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "dbafc260998b3951317d8d192c5acf61"
+    },
+    {
+      "id": "layer_tree_left",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_tree_left.png",
+      "width": 388,
+      "height": 477,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "544d9f3054b97375d303160bca7e04ac"
+    },
+    {
+      "id": "layer_tree_right",
+      "path": "Assets/TodoSpiritsArtKit/Sprites/Props/layer_tree_right.png",
+      "width": 334,
+      "height": 485,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100,
+      "origin": "cleaned previous layered background sheet",
+      "notes": "Original native resolution; layers are not claimed to be seamless tiles.",
+      "guid": "f8e425ee44b01ae6eeca7d5c4713a620"
+    }
+  ],
+  "clips": [
+    {
+      "name": "tap_ring",
+      "fps": 20,
+      "loop": false,
+      "frames": [
+        "fx_tap_ring_00",
+        "fx_tap_ring_01",
+        "fx_tap_ring_02",
+        "fx_tap_ring_03",
+        "fx_tap_ring_04",
+        "fx_tap_ring_05",
+        "fx_tap_ring_06",
+        "fx_tap_ring_07",
+        "fx_tap_ring_08",
+        "fx_tap_ring_09",
+        "fx_tap_ring_10",
+        "fx_tap_ring_11"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "reward_sparkle",
+      "fps": 20,
+      "loop": false,
+      "frames": [
+        "fx_reward_sparkle_00",
+        "fx_reward_sparkle_01",
+        "fx_reward_sparkle_02",
+        "fx_reward_sparkle_03",
+        "fx_reward_sparkle_04",
+        "fx_reward_sparkle_05",
+        "fx_reward_sparkle_06",
+        "fx_reward_sparkle_07",
+        "fx_reward_sparkle_08",
+        "fx_reward_sparkle_09",
+        "fx_reward_sparkle_10",
+        "fx_reward_sparkle_11"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "heart_rise",
+      "fps": 20,
+      "loop": false,
+      "frames": [
+        "fx_heart_rise_00",
+        "fx_heart_rise_01",
+        "fx_heart_rise_02",
+        "fx_heart_rise_03",
+        "fx_heart_rise_04",
+        "fx_heart_rise_05",
+        "fx_heart_rise_06",
+        "fx_heart_rise_07",
+        "fx_heart_rise_08",
+        "fx_heart_rise_09",
+        "fx_heart_rise_10",
+        "fx_heart_rise_11"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "leaf_orbit",
+      "fps": 20,
+      "loop": true,
+      "frames": [
+        "fx_leaf_orbit_00",
+        "fx_leaf_orbit_01",
+        "fx_leaf_orbit_02",
+        "fx_leaf_orbit_03",
+        "fx_leaf_orbit_04",
+        "fx_leaf_orbit_05",
+        "fx_leaf_orbit_06",
+        "fx_leaf_orbit_07",
+        "fx_leaf_orbit_08",
+        "fx_leaf_orbit_09",
+        "fx_leaf_orbit_10",
+        "fx_leaf_orbit_11",
+        "fx_leaf_orbit_12",
+        "fx_leaf_orbit_13",
+        "fx_leaf_orbit_14",
+        "fx_leaf_orbit_15"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "shine",
+      "fps": 20,
+      "loop": false,
+      "frames": [
+        "fx_shine_00",
+        "fx_shine_01",
+        "fx_shine_02",
+        "fx_shine_03",
+        "fx_shine_04",
+        "fx_shine_05",
+        "fx_shine_06",
+        "fx_shine_07",
+        "fx_shine_08",
+        "fx_shine_09",
+        "fx_shine_10",
+        "fx_shine_11"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "blink",
+      "fps": 20,
+      "loop": false,
+      "frames": [
+        "spirit_neutral",
+        "spirit_half",
+        "spirit_closed",
+        "spirit_half",
+        "spirit_neutral"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    },
+    {
+      "name": "talk",
+      "fps": 8,
+      "loop": false,
+      "frames": [
+        "spirit_neutral",
+        "spirit_talk",
+        "spirit_neutral",
+        "spirit_talk",
+        "spirit_neutral"
+      ],
+      "target": "Image",
+      "timeMode": "unscaled",
+      "gameplayAuthority": false
+    }
+  ]
+}

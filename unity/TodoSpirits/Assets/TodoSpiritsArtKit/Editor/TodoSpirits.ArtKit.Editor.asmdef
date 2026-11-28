@@ -1,0 +1,7 @@
+{
+  "name": "TodoSpirits.ArtKit.Editor",
+  "rootNamespace": "TodoSpirits.ArtKit.Editor",
+  "references": ["TodoSpirits.ArtKit.Runtime", "Unity.ugui"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

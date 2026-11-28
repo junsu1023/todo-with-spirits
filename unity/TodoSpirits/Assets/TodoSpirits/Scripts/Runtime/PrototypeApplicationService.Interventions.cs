@@ -69,6 +69,8 @@ namespace TodoSpirits.Runtime
                 result = PendingTrip;
                 CompanionTravelStories.Resolve(result);
                 result.Claimed = true;
+                result.ClaimedOn = CurrentDateKey;
+                if (_saveData.Forest.Enabled) CaptureForestDay();
             });
             return result;
         }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Todo with Spirits — 윈도우 앱 디자인 시안 v4</title>
+<link rel="stylesheet" href="styles/app.css">
+<script>/* 테마 깜빡임 방지: 저장된 테마를 먼저 적용 */(()=>{const t=localStorage.getItem("tws-theme")||"light",c=localStorage.getItem("tws-contrast"),d=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";if(c!=="normal")r.dataset.contrast="more";})()</script>
+<style>
+  body { display: block; padding: 48px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 { margin: 0; font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+  h1 img { width: 48px; }
+  .lead { color: var(--text); margin: 8px 0 28px; line-height: 1.7; font-size: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .tile { background: var(--white); border: 1px solid var(--stroke); border-radius: 22px; padding: 20px 22px; text-decoration: none; color: inherit; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 6px; transition: transform .15s, box-shadow .15s; }
+  .tile:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(133,117,99,.12); }
+  .tile b { font-size: 17px; }
+  .tile span { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+  .tile .k { font-size: 11px; font-weight: 800; color: var(--lime-t); background: var(--lime-op); border-radius: 999px; padding: 3px 10px; align-self: flex-start; }
+  .tile .k.p { color: var(--pink-b); background: var(--pink-op); }
+  .notes { margin-top: 28px; background: var(--white); border: 1px solid var(--stroke); border-radius: 22px; padding: 18px 24px; font-size: 13px; line-height: 1.8; }
+  .notes b { font-size: 14px; }
+  .notes ul { margin: 6px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><img class="float" src="assets/spirit_neutral.png" alt="">윈도우 앱 디자인 시안 v4</h1>
+  <p class="lead">Figma Mobile_GUI의 색과 구성을 바탕으로, 둥글고 부드러운 톤과 나눔스퀘어라운드 글꼴로 만든 1280×800 창 시안이에요.<br>각 화면은 실제로 눌러 볼 수 있고, 사이드바로 서로 이동할 수 있어요.</p>
+  <div class="tiles stagger">
+    <a class="tile" href="home-v4.html"><span class="k">W01</span><b>홈</b><span>오늘 일정, 어제 하지 못한 일, 오른쪽 상세·추가 패널, 우클릭 메뉴</span></a>
+    <a class="tile" href="calendar-v4.html"><span class="k">W03</span><b>캘린더</b><span>주간·월간·연간 보기(W·M·Y), 선택한 날짜 목록, 일정 추가·상세</span></a>
+    <a class="tile" href="dex-v4.html"><span class="k">W05·06</span><b>정령 도감</b><span>전체·카테고리별, 미보유만, 힌트, 대표 정령 설정</span></a>
+    <a class="tile" href="settings-v4.html"><span class="k">W08·09</span><b>설정</b><span>프로필, 알림, 디스플레이, 데이터, 고객 지원, 비밀번호 변경, 회원탈퇴</span></a>
+    <a class="tile" href="login-v4.html"><span class="k">W10–12</span><b>로그인 · 회원가입</b><span>카카오·Google·이메일 로그인, 이메일 인증(5분 타이머)</span></a>
+    <a class="tile" href="forest-v4.html"><span class="k p">W13</span><b>정령의 숲 (잠금)</b><span>열리기 전 안내 화면. 숲 본 화면은 기획 확정 후</span></a>
+  </div>
+  <div class="notes">
+    <b>모든 화면 공통</b>
+    <ul>
+      <li>알림(벨 아이콘): 오른쪽 알림 패널 — 종류별 보기(전체·시스템·이벤트·정령의숲), 읽음·지우기, 누르면 관련 화면으로 이동</li>
+      <li>애니메이션: 화면 진입 시 순서대로 떠오르기, 화면 전환 페이드, 완료 체크 튕김, 새 항목 등장, 패널 슬라이드, 토스트, 버튼 눌림</li>
+      <li>Windows "애니메이션 효과 끄기"(동작 줄이기) 설정을 켜면 움직임이 멈춰요</li>
+      <li>다크 모드: 창 오른쪽 위 달 아이콘, 또는 설정 › 디스플레이 (라이트·다크·시스템, 글자 대비 높이기). 색 대비 분석은 <code>CONTRAST.md</code></li>
+      <li>왼쪽 패널: 창 왼쪽 위 ▯ 아이콘(Ctrl+B)으로 고정/숨김, 숨긴 상태에서는 ≡ 아이콘 또는 창 왼쪽 끝에 마우스를 대면 잠깐 열림</li>
+      <li>창 크기: 위쪽 막대에서 1440×900 · 1280×800(기본) · 1100×720 · 960×640(최소) 선택, 창 오른쪽 아래 모서리를 끌어 직접 조절. 1100 미만이면 왼쪽 패널이 자동으로 숨고 홈 상세 패널은 겹쳐서 열림</li>
+      <li>캘린더 월간·연간: 칸에는 날짜와 일정 개수만 두고 내용은 목록에서 읽음. 연간은 날짜를 누르면 그 달로 이동</li>
+      <li>캘린더 주간 보기: 위는 한 주 띠(날짜·일정 개수), 아래는 고른 날 하루의 큰 목록. 일정을 누르면 오른쪽에서 상세가 나옴</li>
+      <li>공용 스타일 <code>styles/app.css</code>, 공용 스크립트 <code>scripts/app.js</code></li>
+    </ul>
+  </div>
+</div>
+<script src="scripts/app.js"></script>
+</body>
+</html>

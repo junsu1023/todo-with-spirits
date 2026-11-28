@@ -1,0 +1,486 @@
+fileFormatVersion: 2
+guid: c1134fb959fd6b242b1f947ee25809f4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5979045474395450178
+    second: forest-journey-props_0
+  - first:
+      213: 1097538013086876040
+    second: forest-journey-props_1
+  - first:
+      213: 316979774899160713
+    second: forest-journey-props_2
+  - first:
+      213: -2872455615327376600
+    second: forest-journey-props_3
+  - first:
+      213: -8614696750525835162
+    second: forest-journey-props_4
+  - first:
+      213: 731445792088329948
+    second: forest-journey-props_5
+  - first:
+      213: 5935011687938849092
+    second: forest-journey-props_6
+  - first:
+      213: 9144295928402462028
+    second: forest-journey-props_7
+  - first:
+      213: 2808134516140717022
+    second: forest-journey-props_8
+  - first:
+      213: 4358126798300106815
+    second: forest-journey-props_9
+  - first:
+      213: 6304044632848587334
+    second: forest-journey-props_10
+  - first:
+      213: -5285455223857530574
+    second: forest-journey-props_11
+  - first:
+      213: 3874344227637051916
+    second: forest-journey-props_12
+  - first:
+      213: 4479898905281297630
+    second: forest-journey-props_13
+  - first:
+      213: -700717547531307961
+    second: forest-journey-props_14
+  - first:
+      213: -2897129847094007203
+    second: forest-journey-props_15
+  - first:
+      213: -3662774489659288632
+    second: forest-journey-props_16
+  - first:
+      213: 2844286984394924569
+    second: forest-journey-props_17
+  - first:
+      213: -7454595942180454558
+    second: forest-journey-props_18
+  - first:
+      213: 4034629441030113951
+    second: forest-journey-props_19
+  - first:
+      213: 1313771236319705738
+    second: forest-journey-props_20
+  - first:
+      213: -4509142938390784270
+    second: forest-journey-props_21
+  - first:
+      213: -4977986607401040235
+    second: forest-journey-props_22
+  - first:
+      213: -2972389738056945633
+    second: forest-journey-props_23
+  - first:
+      213: -7886113852366792498
+    second: journey_notebook
+  - first:
+      213: -3870795806504794109
+    second: journey_backpack
+  - first:
+      213: -137198727447476473
+    second: journey_pinwheel
+  - first:
+      213: -6653175444612088501
+    second: gift_bookmark
+  - first:
+      213: 5250193199902033824
+    second: gift_map
+  - first:
+      213: -8042117335785582997
+    second: gift_chime
+  - first:
+      213: 4066616060623695830
+    second: egg_sunshine
+  - first:
+      213: 4087523083786448537
+    second: egg_dew
+  - first:
+      213: -5384217388036044068
+    second: egg_wind
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: journey_notebook
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 836
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec8d363db35ee8290800000000000000
+      internalID: -7886113852366792498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: journey_backpack
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 836
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 308c53be8bb284ac0800000000000000
+      internalID: -3870795806504794109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: journey_pinwheel
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 836
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7078bdafb72981ef0800000000000000
+      internalID: -137198727447476473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gift_bookmark
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 418
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4d7b83ee2c2ba3a0800000000000000
+      internalID: -6653175444612088501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gift_map
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 418
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a7055a06ee6cd840800000000000000
+      internalID: 5250193199902033824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gift_chime
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 418
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6e4d7e54e8a46090800000000000000
+      internalID: -8042117335785582997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: egg_sunshine
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dfaf53e2c58f6830800000000000000
+      internalID: 4066616060623695830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: egg_dew
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 0
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99eec4c869cc9b830800000000000000
+      internalID: 4087523083786448537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: egg_wind
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 0
+        width: 418
+        height: 418
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cda41a8ffca6745b0800000000000000
+      internalID: -5384217388036044068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      egg_dew: 4087523083786448537
+      egg_sunshine: 4066616060623695830
+      egg_wind: -5384217388036044068
+      forest-journey-props_0: -5979045474395450178
+      forest-journey-props_1: 1097538013086876040
+      forest-journey-props_10: 6304044632848587334
+      forest-journey-props_11: -5285455223857530574
+      forest-journey-props_12: 3874344227637051916
+      forest-journey-props_13: 4479898905281297630
+      forest-journey-props_14: -700717547531307961
+      forest-journey-props_15: -2897129847094007203
+      forest-journey-props_16: -3662774489659288632
+      forest-journey-props_17: 2844286984394924569
+      forest-journey-props_18: -7454595942180454558
+      forest-journey-props_19: 4034629441030113951
+      forest-journey-props_2: 316979774899160713
+      forest-journey-props_20: 1313771236319705738
+      forest-journey-props_21: -4509142938390784270
+      forest-journey-props_22: -4977986607401040235
+      forest-journey-props_23: -2972389738056945633
+      forest-journey-props_3: -2872455615327376600
+      forest-journey-props_4: -8614696750525835162
+      forest-journey-props_5: 731445792088329948
+      forest-journey-props_6: 5935011687938849092
+      forest-journey-props_7: 9144295928402462028
+      forest-journey-props_8: 2808134516140717022
+      forest-journey-props_9: 4358126798300106815
+      gift_bookmark: -6653175444612088501
+      gift_chime: -8042117335785582997
+      gift_map: 5250193199902033824
+      journey_backpack: -3870795806504794109
+      journey_notebook: -7886113852366792498
+      journey_pinwheel: -137198727447476473
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

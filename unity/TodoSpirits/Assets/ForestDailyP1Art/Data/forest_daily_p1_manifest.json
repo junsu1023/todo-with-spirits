@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "packageVersion": "2.0.0",
+  "sourcePackage": "ForestDaily_P1_FirstGate_v1",
+  "delivery": "2_CANDIDATES_ONLY",
+  "artApproval": "NOT_RECORDED",
+  "spriteCount": 2,
+  "sprites": [
+    {
+      "id": "spirit_read_01",
+      "relativePath": "Sprites/Spirit/spirit_read_01.png",
+      "status": "ART_REVIEW_REQUIRED",
+      "role": "Reading pose, static first frame",
+      "width": 512,
+      "height": 512,
+      "format": "RGBA8",
+      "pixelsPerUnit": 100,
+      "pivot": [
+        0.5,
+        0.0703125
+      ],
+      "baselineTopLeftPixels": [
+        256,
+        476
+      ],
+      "sha256": "f5989a67c574cc433dfa7373b240c45b41de5916235a7f85e71d921184328931",
+      "alphaBoundsTopLeft": [
+        67,
+        22,
+        446,
+        477
+      ],
+      "nativeStandaloneGeneration": false
+    },
+    {
+      "id": "station_desk",
+      "relativePath": "Sprites/Stations/station_desk.png",
+      "status": "ART_REVIEW_REQUIRED",
+      "role": "Separate empty low wooden desk",
+      "width": 512,
+      "height": 512,
+      "format": "RGBA8",
+      "pixelsPerUnit": 100,
+      "pivot": [
+        0.5,
+        0.0703125
+      ],
+      "baselineTopLeftPixels": [
+        256,
+        476
+      ],
+      "sha256": "b3680ace800387c1a2ef638cbdcf2e0ee9e74d8fa1cbaabf1f147909e428d7d4",
+      "alphaBoundsTopLeft": [
+        40,
+        248,
+        472,
+        476
+      ],
+      "nativeStandaloneGeneration": false
+    }
+  ],
+  "missingAssets": [
+    "spirit_read_02",
+    "spirit_move_01",
+    "spirit_move_02",
+    "spirit_make_01",
+    "spirit_make_02",
+    "spirit_tea_01",
+    "station_workbench",
+    "station_tea_table"
+  ],
+  "animationClips": [],
+  "unityValidation": "NOT_RUN",
+  "referencesImported": false
+}

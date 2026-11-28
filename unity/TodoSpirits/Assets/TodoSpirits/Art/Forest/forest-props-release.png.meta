@@ -1,0 +1,536 @@
+fileFormatVersion: 2
+guid: 4bd70423b40388d4197af38be55c6c6d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6953983538081843470
+    second: forest-props-release_0
+  - first:
+      213: -7909698526534185572
+    second: forest-props-release_1
+  - first:
+      213: 5414310058050755478
+    second: forest-props-release_2
+  - first:
+      213: 5429548303277227422
+    second: forest-props-release_3
+  - first:
+      213: 2745811977250952792
+    second: forest-props-release_4
+  - first:
+      213: -8211221758655800427
+    second: forest-props-release_5
+  - first:
+      213: -374726197772837336
+    second: forest-props-release_6
+  - first:
+      213: 7039372301947732661
+    second: forest-props-release_7
+  - first:
+      213: -2689259027085754115
+    second: forest-props-release_8
+  - first:
+      213: -8652057330252837550
+    second: forest-props-release_9
+  - first:
+      213: -7771422193113179473
+    second: forest-props-release_10
+  - first:
+      213: -1324820274092132272
+    second: forest-props-release_11
+  - first:
+      213: -4915016110975383575
+    second: forest-props-release_12
+  - first:
+      213: -9087317026108773077
+    second: forest-props-release_13
+  - first:
+      213: -3613822617208263809
+    second: forest-props-release_14
+  - first:
+      213: 430324749310314008
+    second: forest-props-release_15
+  - first:
+      213: -8111817954935824519
+    second: forest-props-release_16
+  - first:
+      213: -7573885910080960741
+    second: forest-props-release_17
+  - first:
+      213: -6600853466281416060
+    second: forest-props-release_18
+  - first:
+      213: -1431758605126979774
+    second: forest-props-release_19
+  - first:
+      213: 5872433040597437131
+    second: forest-props-release_20
+  - first:
+      213: 4969820954262465069
+    second: forest-props-release_21
+  - first:
+      213: -3919471469275464246
+    second: forest-props-release_22
+  - first:
+      213: 1976977672361354330
+    second: forest-props-release_23
+  - first:
+      213: 8329568497212724132
+    second: forest-props-release_24
+  - first:
+      213: -4186065816885758553
+    second: forest-props-release_25
+  - first:
+      213: 7954725141934315710
+    second: forest-props-release_26
+  - first:
+      213: -1905090712391002683
+    second: forest-props-release_27
+  - first:
+      213: 2317968004351557373
+    second: forest-props-release_28
+  - first:
+      213: -3869825424704097095
+    second: forest-props-release_29
+  - first:
+      213: 8652214603679030432
+    second: forest-props-release_30
+  - first:
+      213: 2869805560895544852
+    second: forest-props-release_31
+  - first:
+      213: 7055786542038884188
+    second: forest-props-release_32
+  - first:
+      213: -1883397273603892987
+    second: forest-props-release_33
+  - first:
+      213: 2848781768527727587
+    second: forest-props-release_34
+  - first:
+      213: -7299904821975108317
+    second: forest-props-release_35
+  - first:
+      213: 728739623716319851
+    second: forest-props-release_36
+  - first:
+      213: -7773381940731048639
+    second: forest-props-release_37
+  - first:
+      213: -7823582739124136678
+    second: forest-props-release_38
+  - first:
+      213: -3578710706110584701
+    second: forest-props-release_39
+  - first:
+      213: 670692945480842404
+    second: forest-props-release_40
+  - first:
+      213: 8190713610881048461
+    second: forest-props-release_41
+  - first:
+      213: 6378551673111455573
+    second: forest-props-release_42
+  - first:
+      213: -3880916339958409984
+    second: forest-props-release_43
+  - first:
+      213: -2801656327728878127
+    second: forest-props-release_44
+  - first:
+      213: 555117909864221395
+    second: forest-props-release_45
+  - first:
+      213: 3519746196436431338
+    second: forest-props-release_46
+  - first:
+      213: -2513063999912571593
+    second: forest-props-release_47
+  - first:
+      213: 5480421318394270594
+    second: forest-props-release_48
+  - first:
+      213: -4341681712857590675
+    second: forest-props-release_49
+  - first:
+      213: -3769994949698965090
+    second: forest-props-release_50
+  - first:
+      213: -4730372213991532993
+    second: forest-props-release_51
+  - first:
+      213: -7085418886317007557
+    second: forest-props-release_52
+  - first:
+      213: 6396350435132316379
+    second: forest-props-release_53
+  - first:
+      213: -5303003268079222378
+    second: forest-props-release_54
+  - first:
+      213: 6521774812850030195
+    second: forest-props-release_55
+  - first:
+      213: -6727615521423043804
+    second: forest_books
+  - first:
+      213: 5861409217440676607
+    second: forest_tools
+  - first:
+      213: -3686998675416075112
+    second: forest_tea
+  - first:
+      213: 8760368180796428340
+    second: forest_plant
+  - first:
+      213: 944983140897745335
+    second: forest_cushion
+  - first:
+      213: -9003071744359891069
+    second: forest_letter
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: forest_books
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 423dc24e355b2a2a0800000000000000
+      internalID: -6727615521423043804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_tools
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 512
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffa70c0d0a8e75150800000000000000
+      internalID: 5861409217440676607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_tea
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 512
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8943d704d3625dcc0800000000000000
+      internalID: -3686998675416075112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_plant
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 430910e2274139970800000000000000
+      internalID: 8760368180796428340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_cushion
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b961ffe8214d1d00800000000000000
+      internalID: 944983140897745335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_letter
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38f7216e2f9ae0380800000000000000
+      internalID: -9003071744359891069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      forest-props-release_0: -6953983538081843470
+      forest-props-release_1: -7909698526534185572
+      forest-props-release_10: -7771422193113179473
+      forest-props-release_11: -1324820274092132272
+      forest-props-release_12: -4915016110975383575
+      forest-props-release_13: -9087317026108773077
+      forest-props-release_14: -3613822617208263809
+      forest-props-release_15: 430324749310314008
+      forest-props-release_16: -8111817954935824519
+      forest-props-release_17: -7573885910080960741
+      forest-props-release_18: -6600853466281416060
+      forest-props-release_19: -1431758605126979774
+      forest-props-release_2: 5414310058050755478
+      forest-props-release_20: 5872433040597437131
+      forest-props-release_21: 4969820954262465069
+      forest-props-release_22: -3919471469275464246
+      forest-props-release_23: 1976977672361354330
+      forest-props-release_24: 8329568497212724132
+      forest-props-release_25: -4186065816885758553
+      forest-props-release_26: 7954725141934315710
+      forest-props-release_27: -1905090712391002683
+      forest-props-release_28: 2317968004351557373
+      forest-props-release_29: -3869825424704097095
+      forest-props-release_3: 5429548303277227422
+      forest-props-release_30: 8652214603679030432
+      forest-props-release_31: 2869805560895544852
+      forest-props-release_32: 7055786542038884188
+      forest-props-release_33: -1883397273603892987
+      forest-props-release_34: 2848781768527727587
+      forest-props-release_35: -7299904821975108317
+      forest-props-release_36: 728739623716319851
+      forest-props-release_37: -7773381940731048639
+      forest-props-release_38: -7823582739124136678
+      forest-props-release_39: -3578710706110584701
+      forest-props-release_4: 2745811977250952792
+      forest-props-release_40: 670692945480842404
+      forest-props-release_41: 8190713610881048461
+      forest-props-release_42: 6378551673111455573
+      forest-props-release_43: -3880916339958409984
+      forest-props-release_44: -2801656327728878127
+      forest-props-release_45: 555117909864221395
+      forest-props-release_46: 3519746196436431338
+      forest-props-release_47: -2513063999912571593
+      forest-props-release_48: 5480421318394270594
+      forest-props-release_49: -4341681712857590675
+      forest-props-release_5: -8211221758655800427
+      forest-props-release_50: -3769994949698965090
+      forest-props-release_51: -4730372213991532993
+      forest-props-release_52: -7085418886317007557
+      forest-props-release_53: 6396350435132316379
+      forest-props-release_54: -5303003268079222378
+      forest-props-release_55: 6521774812850030195
+      forest-props-release_6: -374726197772837336
+      forest-props-release_7: 7039372301947732661
+      forest-props-release_8: -2689259027085754115
+      forest-props-release_9: -8652057330252837550
+      forest_books: -6727615521423043804
+      forest_cushion: 944983140897745335
+      forest_letter: -9003071744359891069
+      forest_plant: 8760368180796428340
+      forest_tea: -3686998675416075112
+      forest_tools: 5861409217440676607
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

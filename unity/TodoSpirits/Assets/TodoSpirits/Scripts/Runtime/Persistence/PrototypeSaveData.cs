@@ -15,6 +15,7 @@ namespace TodoSpirits.Runtime
         public string SessionDate;
         public CompanionInterventions Interventions = new CompanionInterventions();
         public TaskClassificationMemory ClassificationMemory = new TaskClassificationMemory();
+        public ForestJournal Forest = new ForestJournal();
 
         public PrototypeSaveData()
         {
@@ -23,6 +24,8 @@ namespace TodoSpirits.Runtime
 
         public void EnsureCollections()
         {
+            if (Forest == null) Forest = new ForestJournal();
+            Forest.EnsureCollections();
             if (ClassificationMemory == null) ClassificationMemory = new TaskClassificationMemory();
             ClassificationMemory.EnsureCollections();
             if (Interventions == null) Interventions = new CompanionInterventions();

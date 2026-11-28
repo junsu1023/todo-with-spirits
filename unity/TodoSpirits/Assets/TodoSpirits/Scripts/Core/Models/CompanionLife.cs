@@ -32,6 +32,7 @@ namespace TodoSpirits.Core
     {
         public string SpiritId = string.Empty;
         public string Name = string.Empty;
+        public bool NamingOffered;
         public string StartedOn = string.Empty;
         public string IndependentOn = string.Empty;
         public CompanionStage Stage;
@@ -48,6 +49,7 @@ namespace TodoSpirits.Core
         public List<string> RouteReasons = new List<string>();
         public List<string> Letters = new List<string>();
         public List<CompanionProject> Projects = new List<CompanionProject>();
+        public ForestStory Story = new ForestStory();
         public CompanionProject ActiveProject => Projects?.Find(project => !project.IsComplete);
 
         public string DisplayName => string.IsNullOrEmpty(Name) ? "작은 정령" : Name;
@@ -55,6 +57,8 @@ namespace TodoSpirits.Core
 
         public void EnsureCollections()
         {
+            if (Story == null) Story = new ForestStory();
+            Story.EnsureCollections();
             if (Temperaments == null) Temperaments = new List<SpiritTemperament>();
             if (FinalizedDates == null) FinalizedDates = new List<string>();
             if (Actions == null) Actions = new List<LifeActionCount>();

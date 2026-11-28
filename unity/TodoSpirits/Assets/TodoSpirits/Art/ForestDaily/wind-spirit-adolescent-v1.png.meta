@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: f5b89dafb8e2b2e428fa98f0bf3f7962
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5809497214666165763
+    second: wind-spirit-adolescent-v1_0
+  - first:
+      213: -2608366959227212397
+    second: wind-spirit-adolescent-v1_1
+  - first:
+      213: 489812624247803400
+    second: wind-spirit-adolescent-v1_2
+  - first:
+      213: 435562127361974203
+    second: wind-spirit-adolescent-v1_3
+  - first:
+      213: 2638924390740988508
+    second: wind-spirit-adolescent-v1_4
+  - first:
+      213: 7108078959298283104
+    second: wind-spirit-adolescent-v1_5
+  - first:
+      213: -1126598451748351691
+    second: wind-spirit-adolescent-v1_6
+  - first:
+      213: 9098149621506878846
+    second: wind-spirit-adolescent-v1_7
+  - first:
+      213: -1124359948842560034
+    second: wind-spirit-adolescent-v1_8
+  - first:
+      213: -7666856896456382841
+    second: wind-spirit-adolescent-v1_9
+  - first:
+      213: 3018222343444880889
+    second: wind-spirit-adolescent-v1_10
+  - first:
+      213: 9039671774865900174
+    second: wind-spirit-adolescent-v1_11
+  - first:
+      213: 5881739856599732248
+    second: wind-spirit-adolescent-v1_12
+  - first:
+      213: -8041008942457519804
+    second: wind-spirit-adolescent-v1_13
+  - first:
+      213: -7607353578489539166
+    second: wind-spirit-adolescent-v1_14
+  - first:
+      213: -2248271262429039120
+    second: wind-spirit-adolescent-v1_15
+  - first:
+      213: 6661290789337906313
+    second: wind-spirit-adolescent-v1_16
+  - first:
+      213: 554732307011085029
+    second: wind-spirit-adolescent-v1_17
+  - first:
+      213: 4452097020572500219
+    second: wind-spirit-adolescent-v1_18
+  - first:
+      213: 8175174889000996765
+    second: wind-spirit-adolescent-v1_19
+  - first:
+      213: 6193118860999648772
+    second: wind-spirit-adolescent-v1_20
+  - first:
+      213: -7726441301932018468
+    second: wind-spirit-adolescent-v1_21
+  - first:
+      213: 7849610361621773128
+    second: wind-spirit-adolescent-v1_22
+  - first:
+      213: 8097859085758486370
+    second: wind-spirit-adolescent-v1_23
+  - first:
+      213: 8361728279314804371
+    second: wind-spirit-adolescent-v1_24
+  - first:
+      213: -6878257157376438606
+    second: wind-spirit-adolescent-v1_25
+  - first:
+      213: 8386992424833120130
+    second: wind-spirit-adolescent-v1_26
+  - first:
+      213: -3330729916194729441
+    second: wind-spirit-adolescent-v1_27
+  - first:
+      213: -4955409209410930727
+    second: wind-spirit-adolescent-v1_28
+  - first:
+      213: -8172264904305951762
+    second: wind-spirit-adolescent-v1_29
+  - first:
+      213: -3099956839221939008
+    second: wind-spirit-adolescent-v1_30
+  - first:
+      213: 1236887858673043748
+    second: wind-spirit-adolescent-v1_31
+  - first:
+      213: -5964430019893059851
+    second: wind-spirit-adolescent-v1_32
+  - first:
+      213: -6290084094685276691
+    second: wind-spirit-adolescent-v1_33
+  - first:
+      213: -83039003349631240
+    second: wind-spirit-adolescent-v1_34
+  - first:
+      213: 5937800618912125733
+    second: wind-spirit-adolescent-v1_35
+  - first:
+      213: -8036533856711448460
+    second: wind-spirit-adolescent-v1_36
+  - first:
+      213: -541370680851171762
+    second: wind-spirit-adolescent-v1_37
+  - first:
+      213: 3752887213158974506
+    second: wind-spirit-adolescent-v1_38
+  - first:
+      213: -8392325043003337711
+    second: wind-spirit-adolescent-v1_39
+  - first:
+      213: 2804788738641182818
+    second: wind-spirit-adolescent-v1_40
+  - first:
+      213: 1493960248103601041
+    second: wind-spirit-adolescent-v1_41
+  - first:
+      213: -8137279566838238617
+    second: wind-spirit-adolescent-v1_42
+  - first:
+      213: 9130608115884177561
+    second: wind-spirit-adolescent-v1_43
+  - first:
+      213: -3854973667494905771
+    second: wind-spirit-adolescent-v1_44
+  - first:
+      213: -7430499177101713029
+    second: wind-spirit-adolescent-v1_45
+  - first:
+      213: -2042759523585662371
+    second: wind-spirit-adolescent-v1_46
+  - first:
+      213: 6434245973935008928
+    second: wind-spirit-adolescent-v1_47
+  - first:
+      213: 7637392201888705758
+    second: wind-spirit-adolescent-v1_48
+  - first:
+      213: 4944638295733385916
+    second: wind-spirit-adolescent-v1_49
+  - first:
+      213: -6761647134890949583
+    second: wind-spirit-adolescent-v1_50
+  - first:
+      213: 1694623772878604327
+    second: wind-spirit-adolescent-v1_51
+  - first:
+      213: -4967596079064138809
+    second: wind-spirit-adolescent-v1_52
+  - first:
+      213: -483411820410919982
+    second: wind-spirit-adolescent-v1_53
+  - first:
+      213: -7790007936392076711
+    second: wind-spirit-adolescent-v1_54
+  - first:
+      213: -7845132917469200560
+    second: wind-spirit-adolescent-v1_55
+  - first:
+      213: -341361732733967713
+    second: wind-spirit-adolescent-v1_56
+  - first:
+      213: 7594505304968827361
+    second: wind-spirit-adolescent-v1_57
+  - first:
+      213: -4890172620613451577
+    second: wind-spirit-adolescent-v1_58
+  - first:
+      213: 4697866029680670377
+    second: wind-spirit-adolescent-v1_59
+  - first:
+      213: 1138736469607220501
+    second: wind-spirit-adolescent-v1_60
+  - first:
+      213: 1714506508219107235
+    second: wind-spirit-adolescent-v1_61
+  - first:
+      213: -8643507982980700777
+    second: wind-spirit-adolescent-v1_62
+  - first:
+      213: 253806881647668894
+    second: wind-spirit-adolescent-v1_63
+  - first:
+      213: 1260846711073209874
+    second: wind-spirit-adolescent-v1_64
+  - first:
+      213: -7232677821222598045
+    second: wind-spirit-adolescent-v1_65
+  - first:
+      213: 190461153012099982
+    second: wind-spirit-adolescent-v1_66
+  - first:
+      213: -5523616207695538372
+    second: wind-spirit-adolescent-v1_67
+  - first:
+      213: -5260700772551525921
+    second: wind-spirit-adolescent-v1_68
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 2
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 12
+    textureCompression: 2
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: wind_adolescent_idle
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 627
+        width: 627
+        height: 627
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de7b388b870d6bd48894c95cfa160d2b
+      internalID: -1686062690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wind_adolescent_blink
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 627
+        width: 627
+        height: 627
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9aa2b9a9b2ffa04680b5ea81930947e
+      internalID: 1600631583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wind_adolescent_happy
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 627
+        height: 627
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab6843ffa6349574884425739630f8d0
+      internalID: 1846686105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wind_adolescent_curious
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 0
+        width: 627
+        height: 627
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d425af0cd6a36284abd84a0408f70b04
+      internalID: -1549018186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 25ffc7fafdc7403458277c3e70fa57a5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      wind_adolescent_blink: 1600631583
+      wind_adolescent_curious: -1549018186
+      wind_adolescent_happy: 1846686105
+      wind_adolescent_idle: -1686062690
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

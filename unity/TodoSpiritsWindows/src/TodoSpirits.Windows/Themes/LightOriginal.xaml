@@ -1,0 +1,73 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 라이트 원색(글자 대비 높이기 끔) = Figma Mobile_GUI 색 그대로. 나머지는 Light.xaml 과 같음
+         라이트(글자 대비 높임 기본) — unity/windows-ui/design/styles/app.css 의 토큰과 같은 값 -->
+    <SolidColorBrush x:Key="Back01" Color="#FCFAF7"/>
+    <SolidColorBrush x:Key="Back02" Color="#F5F0EA"/>
+    <SolidColorBrush x:Key="Card" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Stroke" Color="#F0EAE3"/>
+    <SolidColorBrush x:Key="StrokeStrong" Color="#E6DCD1"/>
+    <SolidColorBrush x:Key="Text" Color="#857563"/>
+    <SolidColorBrush x:Key="Text2" Color="#C7B19C"/>
+    <SolidColorBrush x:Key="Grey" Color="#CFCAC2"/>
+    <SolidColorBrush x:Key="GreyOff" Color="#CFCAC2"/>
+    <SolidColorBrush x:Key="Lime" Color="#C1DD00"/>
+    <SolidColorBrush x:Key="LimeHover" Color="#BAD500"/>
+    <SolidColorBrush x:Key="LimeOp" Color="#F1F9CF"/>
+    <SolidColorBrush x:Key="LimeRing" Color="#DCEB8F"/>
+    <SolidColorBrush x:Key="LimeT" Color="#8B9C10"/>
+    <SolidColorBrush x:Key="OnLime" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Pink" Color="#FF96DE"/>
+    <SolidColorBrush x:Key="PinkOp" Color="#FFEDF8"/>
+    <SolidColorBrush x:Key="PinkB" Color="#EE7CC8"/>
+    <SolidColorBrush x:Key="Del" Color="#EB8E88"/>
+    <SolidColorBrush x:Key="DelBg" Color="#FFF5F4"/>
+    <SolidColorBrush x:Key="PanelBg" Color="#FFFDFB"/>
+    <SolidColorBrush x:Key="Hover" Color="#EDE5DC"/>
+    <SolidColorBrush x:Key="CheckB" Color="#DCCAB8"/>
+    <SolidColorBrush x:Key="OnText" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Heat1" Color="#F1F9CF"/>
+    <SolidColorBrush x:Key="Heat2" Color="#E3F08C"/>
+    <SolidColorBrush x:Key="Elev" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SwitchOn" Color="#857563"/>
+    <SolidColorBrush x:Key="SwitchOff" Color="#EAE3DB"/>
+    <SolidColorBrush x:Key="Knob" Color="#FFFFFF"/>
+    <!-- 도감 그림 칸: Figma 캡처에서 잘라 쓴 그림에 흰 바탕이 있어 칸도 흰색으로 둔다 (투명 원본을 받으면 바꾼다) -->
+    <SolidColorBrush x:Key="Frame" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="HeartOff" Color="#CFC5BB"/>
+    <LinearGradientBrush x:Key="SummaryTint" StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#FFFFFF" Offset="0.55"/><GradientStop Color="#FFF6FB" Offset="1"/></LinearGradientBrush>
+    <!-- 보조 토큰 · 그림자 (app.css 의 같은 이름) -->
+    <SolidColorBrush x:Key="LimeB" Color="#A9C200"/>
+    <SolidColorBrush x:Key="SelB" Color="#D8C6B4"/>
+    <SolidColorBrush x:Key="Scroll" Color="#E2DAD0"/>
+    <SolidColorBrush x:Key="Track" Color="#F5F0EA"/>
+    <SolidColorBrush x:Key="SegOn" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ElevRing" Color="#F0EAE3"/>
+    <SolidColorBrush x:Key="Focus" Color="#8CC1DD00"/>
+    <SolidColorBrush x:Key="CarryBg" Color="#FFFBF6"/>
+    <SolidColorBrush x:Key="CarryB" Color="#EBDCCB"/>
+    <SolidColorBrush x:Key="Chev" Color="#DCCDBE"/>
+    <SolidColorBrush x:Key="ErrB" Color="#F3B4AF"/>
+    <SolidColorBrush x:Key="BannerHover" Color="#7A6A58"/>
+    <SolidColorBrush x:Key="HeroGlow" Color="#FFF0F9"/>
+    <SolidColorBrush x:Key="Lav" Color="#CDB9F4"/>
+    <SolidColorBrush x:Key="Scrim" Color="#475A4632"/>
+    <SolidColorBrush x:Key="ScrimSoft" Color="#0F5A4632"/>
+    <SolidColorBrush x:Key="CardHover" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MenuHover" Color="#F5F0EA"/>
+    <SolidColorBrush x:Key="SelRing" Color="#1A857563"/>
+    <SolidColorBrush x:Key="CloseHover" Color="#E86F66"/>
+    <SolidColorBrush x:Key="OnPink" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Banner" Color="#857563"/>
+    <SolidColorBrush x:Key="Tbd" Color="#A08B76"/>
+    <SolidColorBrush x:Key="NotiSys" Color="#B4A898"/>
+    <SolidColorBrush x:Key="OnLav" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CheckDone" Color="#857563"/>
+    <DropShadowEffect x:Key="CardShadow" BlurRadius="10" ShadowDepth="2" Direction="270" Opacity="0.06" Color="#857563"/>
+    <DropShadowEffect x:Key="LiftShadow" BlurRadius="14" ShadowDepth="4" Direction="270" Opacity="0.09" Color="#857563"/>
+    <DropShadowEffect x:Key="FloatShadow" BlurRadius="32" ShadowDepth="12" Direction="270" Opacity="0.22" Color="#5A4632"/>
+    <DropShadowEffect x:Key="ModalShadow" BlurRadius="60" ShadowDepth="24" Direction="270" Opacity="0.24" Color="#5A4632"/>
+    <DropShadowEffect x:Key="SideShadow" BlurRadius="40" ShadowDepth="0" Direction="270" Opacity="0.16" Color="#5A4632"/>
+    <DropShadowEffect x:Key="LimeGlow" BlurRadius="16" ShadowDepth="6" Direction="270" Opacity="0.28" Color="#C1DD00"/>
+    <DropShadowEffect x:Key="KnobShadow" BlurRadius="3" ShadowDepth="1" Direction="270" Opacity="0.15" Color="#000000"/>
+</ResourceDictionary>

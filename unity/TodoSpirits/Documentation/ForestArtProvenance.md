@@ -1,0 +1,23 @@
+# Forest release art provenance
+
+Generated 2026-09-17 with the built-in image generation tool. These are new bitmap assets; the original generated files were preserved. User-supplied pink spirit design remains the character reference. UI controls and line icons are code-native, not baked into artwork.
+
+## Background
+
+Project output: `Assets/TodoSpirits/Art/Forest/forest-background-release.png` (1024×1536). Full-bleed scene, no interface. Existing `forest-background.png` retained.
+
+Exact generation prompt:
+
+> Use case: illustration-story. Asset type: production mobile game background, portrait 1024x1536 or equivalent 2:3. Create a polished, enchanting forest clearing for a cozy spirit companion and habit journal game. This is an actual scene asset, NOT a UI mockup. No text, no lettering, no interface, no characters, no animals. Art direction: softly hand-painted gouache children's picture book, restrained painterly grain, clear generous shapes, gentle outlines, sophisticated calming pastel palette of sage green, warm ivory light, muted celadon and dusty blossom pink. Visually compatible with a very simple round pink cloud spirit with thin pink outline, while not drawing that character. Composition: central clearing around the lower-middle third is deliberately open, pale moss green, spacious and low contrast, to place a large animated pink character later. A charming round wooden door and small warm window built into a broad tree trunk on the far left, few rounded ferns framing bottom corners, small pink and cream wildflowers along foreground edge, stepping-stone path winding to a distant luminous grove on the right. Soft rounded leaf canopy frames upper corners, dappled sunlight, background layers fade gently into warm creamy mist. Upper central quarter especially uncluttered, bright cream morning light for overlay readability. A high quality art-directed Korean/Japanese cozy mobile game environment. Avoid dense photorealistic foliage, avoid realistic textures, avoid dark horror forest, avoid over-detailed illustration, avoid thick black outlines. Full bleed art to all edges. Light, welcoming, cohesive, premium. The clearing must be spacious and mostly empty; objects stay on edges.
+
+## Transparent props atlas
+
+Project output: `Assets/TodoSpirits/Art/Forest/forest-props-release.png` (1536×1024, RGBA; transparent corner/gutter inspected). Imported through Unity Sprite slicing, three columns and two rows of 512×512 cells. Props correspond to the existing five decorations and reunion keepsake. No pixel-editing or substitute art process was used.
+
+Exact generation prompt:
+
+> Use case: game sprite atlas. Create a single 1536x1024 landscape image with true transparent background, an exactly aligned 3-column by 2-row grid of six separate cozy forest game prop sprites. Each object centered within its own 512x512 cell with generous transparent padding, no objects crossing cells, no grid lines. Top row left: tiny rounded honey-colored wood bookcase with three pastel books and one leaf. Top row middle: little open wooden crafting toolbox with a spool of pink ribbon and a small wooden mallet. Top row right: ivory ceramic tea cup and saucer with a tiny leaf motif and gently curling steam. Bottom row left: round terracotta pot with a short bushy sage green plant and a tiny pale pink flower. Bottom row middle: soft dusty rose floor cushion with cream tassels. Bottom row right: an ivory folded letter envelope tied with a pale pink ribbon and a leaf sprig. Soft hand-painted gouache children's picture-book style, gently irregular edges, clear simple rounded silhouettes, warm ivory/sage/wood/dusty blossom pink muted colors, delicate painterly texture. Slight three-quarter front view, consistent soft lighting, understated contact shadows included only beneath objects. Visually suitable for a cozy mobile game with a simple cute pink cloud spirit. No text, no numbers, no lettering, no borders, no interface, no character. Production sprite artwork, full objects fully visible, transparent outside each object. Keep all six visually balanced and occupying about 65 percent of their cell.
+
+## Review
+
+The background and props were visually inspected in the actual Unity Game View. The props are linked to saved ownership/equipment and the reunion claim, not placed as fake UI rewards. Character silhouettes and poses reuse the earlier imported character sheet. Separate adult form art and long-term content remain documented in ForestReleaseUi.md.

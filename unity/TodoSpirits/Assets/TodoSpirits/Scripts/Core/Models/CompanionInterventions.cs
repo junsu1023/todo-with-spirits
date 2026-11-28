@@ -36,6 +36,7 @@ namespace TodoSpirits.Core
         public string ReturnAtUtc;
         public int Preparation;
         public bool Claimed;
+        public string ClaimedOn;
         public string EventText;
         public string Discovery;
     }

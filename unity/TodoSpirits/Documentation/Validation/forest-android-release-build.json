@@ -1,0 +1,11 @@
+{
+    "development": false,
+    "apkPath": "C:\\Develop\\todo-with-spirits\\unity\\TodoSpirits\\Builds\\Forest\\TodoSpirits-Forest-release.apk",
+    "architectures": "ARM64",
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 971,
+    "bytes": 1120688274,
+    "seconds": 235.59501899999999,
+    "messages": []
+}

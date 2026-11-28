@@ -1,0 +1,6 @@
+{
+  "name": "TodoSpirits.ArtKit.Runtime",
+  "rootNamespace": "TodoSpirits.ArtKit",
+  "references": ["Unity.ugui"],
+  "autoReferenced": true
+}

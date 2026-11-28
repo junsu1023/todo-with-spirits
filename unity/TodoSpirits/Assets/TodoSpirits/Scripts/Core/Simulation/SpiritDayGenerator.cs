@@ -39,7 +39,8 @@ namespace TodoSpirits.Core
             SpiritState spiritState,
             string simulationVersion = DefaultSimulationVersion,
             IEnumerable<SpiritActionId> experienceActions = null,
-            SpiritActionId? ongoingAction = null)
+            SpiritActionId? ongoingAction = null,
+            int maxCategoryContributions = int.MaxValue)
         {
             if (string.IsNullOrWhiteSpace(date))
             {
@@ -64,7 +65,7 @@ namespace TodoSpirits.Core
             var seed = StableHash.ToSignedSeed(
                 BuildCanonicalSeedInput(date, taskList, classificationList, spiritState, version));
             var experiences = experienceActions == null ? new HashSet<SpiritActionId>() : new HashSet<SpiritActionId>(experienceActions);
-            var candidates = ScoreAllCandidates(seed, taskList.Count, classificationList, spiritState, experiences, ongoingAction);
+            var candidates = ScoreAllCandidates(seed, taskList.Count, classificationList, spiritState, experiences, ongoingAction, maxCategoryContributions);
             var rankedCandidates = new List<ActionCandidateScore>(candidates);
             rankedCandidates.Sort(CompareCandidateScores);
 
@@ -125,7 +126,8 @@ namespace TodoSpirits.Core
             List<TaskClassification> classifications,
             SpiritState spiritState,
             HashSet<SpiritActionId> experiences,
-            SpiritActionId? ongoingAction)
+            SpiritActionId? ongoingAction,
+            int maxCategoryContributions)
         {
             var candidates = new List<ActionCandidateScore>();
             var definitions = SpiritActionCatalog.All;
@@ -134,7 +136,7 @@ namespace TodoSpirits.Core
             {
                 var action = definitions[i].Id;
                 var baseScore = action == SpiritActionId.Rest ? 6f : 10f;
-                var taskScore = CountActionTags(classifications, action) * 24f;
+                var taskScore = CountActionTags(classifications, action, maxCategoryContributions) * 24f;
                 if (completedTaskCount == 0 && action == SpiritActionId.Rest)
                 {
                     taskScore += 40f;
@@ -312,9 +314,11 @@ namespace TodoSpirits.Core
 
         private static int CountActionTags(
             List<TaskClassification> classifications,
-            SpiritActionId action)
+            SpiritActionId action,
+            int maxCategoryContributions)
         {
             var count = 0;
+            var perCategory = new Dictionary<UserTaskCategory, int>();
             for (var i = 0; i < classifications.Count; i++)
             {
                 var tags = classifications[i].ActionTags;
@@ -327,7 +331,12 @@ namespace TodoSpirits.Core
                 {
                     if (tags[j] == action)
                     {
-                        count++;
+                        var category = classifications[i].UserCategory;
+                        perCategory.TryGetValue(category, out int contributions);
+                        if (contributions < maxCategoryContributions) {
+                            count++;
+                            perCategory[category] = contributions + 1;
+                        }
                         break;
                     }
                 }

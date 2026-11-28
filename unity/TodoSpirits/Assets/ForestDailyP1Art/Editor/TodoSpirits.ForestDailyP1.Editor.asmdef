@@ -1,0 +1,9 @@
+{
+  "name": "TodoSpirits.ForestDailyP1.Editor",
+  "rootNamespace": "TodoSpirits.ForestDailyP1.Editor",
+  "references": ["Unity.ugui"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true,
+  "allowUnsafeCode": false,
+  "noEngineReferences": false
+}
